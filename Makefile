@@ -4,9 +4,16 @@
 # GNU Make required
 #
 
-COMPILE_PLATFORM=$(shell uname|sed -e s/_.*//|tr '[:upper:]' '[:lower:]'|sed -e 's/\//_/g')
+NCC=gcc
+CC=gcc
 
-COMPILE_ARCH=$(shell uname -m | sed -e s/i.86/x86/ | sed -e 's/^arm.*/arm/')
+ifndef SHELL
+  SHELL:=sh
+endif
+
+COMPILE_PLATFORM:=$(shell uname | tr [:upper:] [:lower:] | sed 's/[_-].*//; s:/:_:g; s/32//; s/mingw/mingw32/; s/msys/mingw32/')
+
+COMPILE_ARCH:=$(shell uname -m | tr [:upper:] [:lower:] | sed 's/i.86/x86/; s/\-pc//')
 
 ifeq ($(COMPILE_PLATFORM),sunos)
   # Solaris uname and GNU uname differ
@@ -119,7 +126,7 @@ SERVERBIN=ioq3ded
 endif
 
 ifndef BASEGAME
-BASEGAME=baseq3
+BASEGAME=konkrete
 endif
 
 ifndef BASEGAME_CFLAGS
@@ -135,7 +142,7 @@ MISSIONPACK_CFLAGS=-DMISSIONPACK
 endif
 
 ifndef COPYDIR
-COPYDIR="/usr/local/games/quake3"
+COPYDIR="/usr/local/games/konkrete"
 endif
 
 ifndef COPYBINDIR
@@ -513,6 +520,8 @@ ifdef MINGW
       MINGW_PREFIXES=i586-mingw32msvc i686-w64-mingw32 i686-pc-mingw32
     endif
 
+    WINDRES?=windres
+
     ifndef CC
       CC=$(strip $(foreach MINGW_PREFIX, $(MINGW_PREFIXES), \
          $(call bin_path, $(MINGW_PREFIX)-gcc)))
@@ -532,6 +541,13 @@ ifdef MINGW
     ifndef WINDRES
       WINDRES=windres
     endif
+  endif
+  # give windres a target flag to avoid having it detect the host system's arch
+  ifeq ($(ARCH),x86)
+    WINDRES_FLAGS=-Fpe-i386
+  endif
+  ifeq ($(ARCH),x86_64)
+    WINDRES_FLAGS=-Fpe-x86-64
   endif
 
   ifeq ($(CC),)
