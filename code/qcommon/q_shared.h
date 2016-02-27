@@ -359,6 +359,7 @@ typedef vec_t vec2_t[2];
 typedef vec_t vec3_t[3];
 typedef vec_t vec4_t[4];
 typedef vec_t vec5_t[5];
+typedef vec_t quat_t[4];
 
 typedef	int	fixed4_t;
 typedef	int	fixed8_t;
@@ -666,6 +667,18 @@ vec_t VectorNormalize (vec3_t v);		// returns vector length
 vec_t VectorNormalize2( const vec3_t v, vec3_t out );
 void Vector4Scale( const vec4_t in, vec_t scale, vec4_t out );
 void VectorRotate( vec3_t in, vec3_t matrix[3], vec3_t out );
+
+void	quatset(quat_t q, float w, float x, float y, float z);
+void	angles2quat(const vec3_t angles, quat_t out);
+void	quat2angles(const quat_t q, vec3_t a);
+void	quat2axis(quat_t q, vec3_t axis[3]);
+void	quatmul(const quat_t q1, const quat_t q2, quat_t out);
+float	quatmag(const quat_t q);
+void	quatconj(const quat_t q, quat_t out);
+void	quatinv(const quat_t q, quat_t out);
+void	quatdiff(const quat_t initial, const quat_t final, quat_t out);
+
+
 int Q_log2(int val);
 
 float Q_acos(float c);

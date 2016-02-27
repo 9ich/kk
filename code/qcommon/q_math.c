@@ -995,6 +995,163 @@ void PerpendicularVector( vec3_t dst, const vec3_t src )
 }
 
 /*
+
+quaternions
+
+*/
+
+void
+quatset(quat_t q, float w, float x, float y, float z)
+{
+	q[0] = w;
+	q[1] = x;
+	q[2] = y;
+	q[3] = z;
+}
+
+/* Euler angles to quaternion */
+void
+angles2quat(const vec3_t angles, quat_t out)
+{
+	float cp, cy, cr, sp, sy, sr;
+	vec3_t a;
+	
+	a[PITCH] = (M_PI/360.0f)*angles[PITCH];
+	a[YAW] = (M_PI/360.0f)*angles[YAW];
+	a[ROLL] = (M_PI/360.0f)*angles[ROLL];
+	cp = cos(a[PITCH]);
+	cy = cos(a[YAW]);
+	cr = cos(a[ROLL]);
+	sp = sin(a[PITCH]);
+	sy = sin(a[YAW]);
+	sr = sin(a[ROLL]);
+	out[0] = cr*cp*cy + sr*sp*sy;	/* r */
+	out[1] = sr*cp*cy - cr*sp*sy;	/* v₀ */
+	out[2] = cr*sp*cy + sr*cp*sy;	/* v₁ */
+	out[3] = cr*cp*sy - sr*sp*cy;	/* v₂ */
+}
+
+/* quaternion to Euler angles */
+void
+quat2angles(const quat_t q, vec3_t a)
+{
+	quat_t q2;
+	
+	q2[0] = q[0]*q[0];
+	q2[1] = q[1]*q[1];
+	q2[2] = q[2]*q[2];
+	q2[3] = q[3]*q[3];
+	a[ROLL] = (180.0/M_PI)*atan2(2*(q[0]*q[1] + q[2]*q[3]), 1 - 2*(q2[1] + q2[2]));	/* φ */
+	a[PITCH] = (180.0/M_PI)*asin(2*(q[0]*q[2] - q[3]*q[1]));			/* θ */
+	a[YAW] = (180.0/M_PI)*atan2(2*(q[0]*q[3] + q[1]*q[2]), 1 - 2*(q2[2] + q2[3]));	/* ψ */
+}
+
+/* quaternion  to axis representation */
+void
+quat2axis(quat_t q, vec3_t  axis[3])
+{
+	float wx, wy, wz, xx, xy, yy, yz, xz, zz, x2, y2, z2;
+	
+	x2 = q[1] + q[1];
+	y2 = q[2] + q[2];
+	z2 = q[3] + q[3];
+	xx = q[1] * x2;
+	xy = q[1] * y2;
+	xz = q[1] * z2;
+	yy = q[2] * y2;
+	yz = q[2] * z2;
+	zz = q[3] * z2;
+	wx = q[0] * x2;
+	wy = q[0] * y2;
+	wz = q[0] * z2;
+	axis[0][0] = 1.0 - (yy + zz);
+	axis[1][0] = xy - wz;
+	axis[2][0] = xz + wy;
+	axis[0][1] = xy + wz;
+	axis[1][1] = 1.0 - (xx + zz);
+	axis[2][1] = yz - wx;
+	axis[0][2] = xz - wy;
+	axis[1][2] = yz + wx;
+	axis[2][2] = 1.0 - (xx + yy);
+}
+
+/*
+ * out = q1q2
+ */
+void
+quatmul(const quat_t q1, const quat_t q2, quat_t out)
+{
+	float a, b, c, d, e, f, g, h;
+
+	a = (q1[0] + q1[1])*(q2[0] + q2[1]);
+	b = (q1[3] - q1[2])*(q2[2] - q2[3]);
+	c = (q1[0] - q1[1])*(q2[2] + q2[3]);
+	d = (q1[2] + q1[3])*(q2[0] - q2[1]);
+	e = (q1[1] + q1[3])*(q2[1] + q2[2]);
+	f = (q1[1] - q1[3])*(q2[1] - q2[2]);
+	g = (q1[0] + q1[2])*(q2[0] - q2[3]);
+	h = (q1[0] - q1[2])*(q2[0] + q2[3]);
+	out[0] = b + (h - e - f + g)*0.5;	/* r */
+	out[1] = a - (e + f + g + h)*0.5;	/* v0 */
+	out[2] = c + (e - f + g - h)*0.5;	/* v1 */
+	out[3] = d + (e - f - g + h)*0.5;	/* v2 */
+}
+
+/*
+ * returns magnitude/norm of q
+ */
+float
+quatmag(const quat_t q)
+{
+	return sqrt(Square(q[0]) + Square(q[1]) + Square(q[2])
+		+ Square(q[3]));
+}
+
+/*
+ * out = conjugate of q
+ * a - bi - cj - dk
+ */
+void
+quatconj(const quat_t q, quat_t out)
+{
+	Vector4Copy(q, out);
+	VectorInverse(&out[1]);
+}
+
+/*
+ * out = inverse/reciprocal of q
+ * q^-1 = q* / ||q||^2 = q* / q x q*
+ */
+void
+quatinv(const quat_t q, quat_t out)
+{
+	float m;
+
+	quatconj(q, out);
+	m = Square(quatmag(q));
+	out[0] /= m;
+	out[1] /= m;
+	out[2] /= m;
+	out[3] /= m;
+}
+
+/*
+ * out = orientation between initial and final unit quaternions
+ *
+ * initial * diff = final
+ * diff = final * initial^-1
+ * diff = final * conj(initial)
+ */
+void
+quatdiff(const quat_t initial, const quat_t final, quat_t out)
+{
+	quat_t ci;
+
+	quatconj(initial, ci);
+	quatmul(final, ci, out);
+}
+
+/*
 ================
 Q_isnan
 
