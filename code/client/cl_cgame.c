@@ -626,8 +626,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 		return FloatAsInt( cos( VMF(1) ) );
 	case CG_ATAN2:
 		return FloatAsInt( atan2( VMF(1), VMF(2) ) );
-	case TRAP_ASIN:
-		return FloatAsInt( asin( VMF(1) ) );
 	case CG_SQRT:
 		return FloatAsInt( sqrt( VMF(1) ) );
 	case CG_FLOOR:
@@ -636,6 +634,8 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 		return FloatAsInt( ceil( VMF(1) ) );
 	case CG_ACOS:
 		return FloatAsInt( Q_acos( VMF(1) ) );
+	case CG_ASIN:
+		return FloatAsInt( asin( VMF(1) ) );
 
 	case CG_PC_ADD_GLOBAL_DEFINE:
 		return botlib_export->PC_AddGlobalDefine( VMA(1) );
