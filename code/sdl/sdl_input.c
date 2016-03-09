@@ -428,6 +428,9 @@ static void IN_InitJoystick( void )
 	int total = 0;
 	char buf[16384] = "";
 
+	if( !in_joystick->integer )
+		return;
+
 	if (stick != NULL)
 		SDL_JoystickClose(stick);
 
@@ -446,7 +449,7 @@ static void IN_InitJoystick( void )
 	}
 
 	total = SDL_NumJoysticks();
-	Com_DPrintf("%d possible joysticks\n", total);
+	Com_Printf("%d possible joysticks\n", total);
 
 	// Print list and build cvar to allow ui to select joystick.
 	for (i = 0; i < total; i++)
