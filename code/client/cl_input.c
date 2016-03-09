@@ -305,6 +305,9 @@ void CL_AdjustAngles( vec3_t delta ) {
 		speed = 0.001 * cls.frametime;
 	}
 
+	if(com_timescale->value != 0)
+		speed /= com_timescale->value;
+
 	delta[YAW] -= speed*cl_yawspeed->value*CL_KeyState (&in_right);
 	delta[YAW] += speed*cl_yawspeed->value*CL_KeyState (&in_left);
 
