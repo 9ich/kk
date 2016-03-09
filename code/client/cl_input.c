@@ -269,6 +269,7 @@ void IN_Button15Up(void) {IN_KeyUp(&in_buttons[15]);}
 
 void IN_CenterView (void) {
 	cl.viewangles[PITCH] = -SHORT2ANGLE(cl.snap.ps.delta_angles[PITCH]);
+	cl.viewangles[ROLL] = -SHORT2ANGLE(cl.snap.ps.delta_angles[ROLL]);
 }
 
 
@@ -289,7 +290,7 @@ CL_AdjustAngles
 Moves the local angle positions
 ================
 */
-void CL_AdjustAngles( void ) {
+void CL_AdjustAngles( vec3_t delta ) {
 	float	speed;
 	
 	if ( in_speed.active ) {
@@ -298,13 +299,11 @@ void CL_AdjustAngles( void ) {
 		speed = 0.001 * cls.frametime;
 	}
 
-	if ( !in_strafe.active ) {
-		cl.viewangles[YAW] -= speed*cl_yawspeed->value*CL_KeyState (&in_right);
-		cl.viewangles[YAW] += speed*cl_yawspeed->value*CL_KeyState (&in_left);
-	}
+	delta[YAW] -= speed*cl_yawspeed->value*CL_KeyState (&in_right);
+	delta[YAW] += speed*cl_yawspeed->value*CL_KeyState (&in_left);
 
-	cl.viewangles[PITCH] -= speed*cl_pitchspeed->value * CL_KeyState (&in_lookup);
-	cl.viewangles[PITCH] += speed*cl_pitchspeed->value * CL_KeyState (&in_lookdown);
+	delta[PITCH] -= speed*cl_pitchspeed->value * CL_KeyState (&in_lookup);
+	delta[PITCH] += speed*cl_pitchspeed->value * CL_KeyState (&in_lookdown);
 }
 
 /*
@@ -389,7 +388,7 @@ void CL_JoystickEvent( int axis, int value, int time ) {
 CL_JoystickMove
 =================
 */
-void CL_JoystickMove( usercmd_t *cmd ) {
+void CL_JoystickMove( usercmd_t *cmd, vec3_t delta ) {
 	float	anglespeed;
 
 	if ( !(in_speed.active ^ cl_run->integer) ) {
@@ -403,18 +402,18 @@ void CL_JoystickMove( usercmd_t *cmd ) {
 	}
 
 	if ( !in_strafe.active ) {
-		cl.viewangles[YAW] += anglespeed * j_yaw->value * cl.joystickAxis[j_yaw_axis->integer];
+		delta[YAW] += anglespeed * j_yaw->value * cl.joystickAxis[j_yaw_axis->integer];
 		cmd->rightmove = ClampChar( cmd->rightmove + (int) (j_side->value * cl.joystickAxis[j_side_axis->integer]) );
 	} else {
-		cl.viewangles[YAW] += anglespeed * j_side->value * cl.joystickAxis[j_side_axis->integer];
+		delta[YAW] += anglespeed * j_side->value * cl.joystickAxis[j_side_axis->integer];
 		cmd->rightmove = ClampChar( cmd->rightmove + (int) (j_yaw->value * cl.joystickAxis[j_yaw_axis->integer]) );
 	}
 
 	if ( in_mlooking ) {
-		cl.viewangles[PITCH] += anglespeed * j_forward->value * cl.joystickAxis[j_forward_axis->integer];
+		delta[PITCH] += anglespeed * j_forward->value * cl.joystickAxis[j_forward_axis->integer];
 		cmd->forwardmove = ClampChar( cmd->forwardmove + (int) (j_pitch->value * cl.joystickAxis[j_pitch_axis->integer]) );
 	} else {
-		cl.viewangles[PITCH] += anglespeed * j_pitch->value * cl.joystickAxis[j_pitch_axis->integer];
+		delta[PITCH] += anglespeed * j_pitch->value * cl.joystickAxis[j_pitch_axis->integer];
 		cmd->forwardmove = ClampChar( cmd->forwardmove + (int) (j_forward->value * cl.joystickAxis[j_forward_axis->integer]) );
 	}
 
@@ -427,7 +426,7 @@ CL_MouseMove
 =================
 */
 
-void CL_MouseMove(usercmd_t *cmd)
+void CL_MouseMove(usercmd_t *cmd, vec3_t delta)
 {
 	float mx, my;
 
@@ -498,16 +497,8 @@ void CL_MouseMove(usercmd_t *cmd)
 	mx *= cl.cgameSensitivity;
 	my *= cl.cgameSensitivity;
 
-	// add mouse X/Y movement to cmd
-	if(in_strafe.active)
-		cmd->rightmove = ClampChar(cmd->rightmove + m_side->value * mx);
-	else
-		cl.viewangles[YAW] -= m_yaw->value * mx;
-
-	if ((in_mlooking || cl_freelook->integer) && !in_strafe.active)
-		cl.viewangles[PITCH] += m_pitch->value * my;
-	else
-		cmd->forwardmove = ClampChar(cmd->forwardmove - m_forward->value * my);
+	delta[YAW] -= m_yaw->value * mx;
+	delta[PITCH] += m_pitch->value * my;
 }
 
 
@@ -570,13 +561,15 @@ CL_CreateCmd
 =================
 */
 usercmd_t CL_CreateCmd( void ) {
-	usercmd_t	cmd;
-	vec3_t		oldAngles;
+	usercmd_t cmd;
+	vec3_t oldAngles, delta;
+	quat_t qdelta, qangles;
 
 	VectorCopy( cl.viewangles, oldAngles );
+	VectorSet(delta, 0, 0, 0);
 
 	// keyboard angle adjustment
-	CL_AdjustAngles ();
+	CL_AdjustAngles (delta);
 	
 	Com_Memset( &cmd, 0, sizeof( cmd ) );
 
@@ -586,10 +579,15 @@ usercmd_t CL_CreateCmd( void ) {
 	CL_KeyMove( &cmd );
 
 	// get basic movement from mouse
-	CL_MouseMove( &cmd );
+	CL_MouseMove( &cmd, delta );
 
 	// get basic movement from joystick
-	CL_JoystickMove( &cmd );
+	CL_JoystickMove( &cmd, delta );
+
+	angles2quat(cl.viewangles, qangles);
+	angles2quat(delta, qdelta);
+	quatmul(qangles, qdelta, qangles);
+	quat2angles(qangles, cl.viewangles);
 
 	// check to make sure the angles haven't wrapped
 	if ( cl.viewangles[PITCH] - oldAngles[PITCH] > 90 ) {
