@@ -218,6 +218,15 @@ typedef int		clipHandle_t;
 #define NULL ((void *)0)
 #endif
 
+#ifndef nil
+#define nil ((void *)0)
+#endif
+
+typedef unsigned char	uchar;
+typedef unsigned short	ushort;
+typedef unsigned int	uint;
+typedef unsigned long	ulong;
+
 #define STRING(s)			#s
 // expand constants before stringifying them
 #define XSTRING(s)			STRING(s)
@@ -367,6 +376,9 @@ typedef	int	fixed16_t;
 
 #ifndef M_PI
 #define M_PI		3.14159265358979323846f	// matches value in gcc v2 math.h
+#endif
+#ifndef M_TAU
+#define M_TAU		(2*M_PI)
 #endif
 
 #define NUMVERTEXNORMALS	162
