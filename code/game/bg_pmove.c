@@ -352,47 +352,6 @@ static void PM_SetMovementDir( void ) {
 
 /*
 =============
-PM_CheckJump
-=============
-*/
-static qboolean PM_CheckJump( void ) {
-	if ( pm->ps->pm_flags & PMF_RESPAWNED ) {
-		return qfalse;		// don't allow jump until all buttons are up
-	}
-
-	if ( pm->cmd.upmove < 10 ) {
-		// not holding jump
-		return qfalse;
-	}
-
-	// must wait for jump to be released
-	if ( pm->ps->pm_flags & PMF_JUMP_HELD ) {
-		// clear upmove so cmdscale doesn't lower running speed
-		pm->cmd.upmove = 0;
-		return qfalse;
-	}
-
-	pml.groundPlane = qfalse;		// jumping away
-	pml.walking = qfalse;
-	pm->ps->pm_flags |= PMF_JUMP_HELD;
-
-	pm->ps->groundEntityNum = ENTITYNUM_NONE;
-	pm->ps->velocity[2] = JUMP_VELOCITY;
-	PM_AddEvent( EV_JUMP );
-
-	if ( pm->cmd.forwardmove >= 0 ) {
-		PM_ForceLegsAnim( LEGS_JUMP );
-		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
-	} else {
-		PM_ForceLegsAnim( LEGS_JUMPB );
-		pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
-	}
-
-	return qtrue;
-}
-
-/*
-=============
 PM_CheckWaterJump
 =============
 */
@@ -683,17 +642,6 @@ static void PM_WalkMove( void ) {
 		return;
 	}
 
-
-	if ( PM_CheckJump () ) {
-		// jumped away
-		if ( pm->waterlevel > 1 ) {
-			PM_WaterMove();
-		} else {
-			PM_AirMove();
-		}
-		return;
-	}
-
 	PM_Friction ();
 
 	fmove = pm->cmd.forwardmove;
@@ -977,161 +925,6 @@ static void PM_CrashLand( void ) {
 	pm->ps->bobCycle = 0;
 }
 
-/*
-=============
-PM_CheckStuck
-=============
-*/
-/*
-void PM_CheckStuck(void) {
-	trace_t trace;
-
-	pm->trace (&trace, pm->ps->origin, pm->mins, pm->maxs, pm->ps->origin, pm->ps->clientNum, pm->tracemask);
-	if (trace.allsolid) {
-		//int shit = qtrue;
-	}
-}
-*/
-
-/*
-=============
-PM_CorrectAllSolid
-=============
-*/
-static int PM_CorrectAllSolid( trace_t *trace ) {
-	int			i, j, k;
-	vec3_t		point;
-
-	if ( pm->debugLevel ) {
-		Com_Printf("%i:allsolid\n", c_pmove);
-	}
-
-	// jitter around
-	for (i = -1; i <= 1; i++) {
-		for (j = -1; j <= 1; j++) {
-			for (k = -1; k <= 1; k++) {
-				VectorCopy(pm->ps->origin, point);
-				point[0] += (float) i;
-				point[1] += (float) j;
-				point[2] += (float) k;
-				pm->trace (trace, point, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask);
-				if ( !trace->allsolid ) {
-					point[0] = pm->ps->origin[0];
-					point[1] = pm->ps->origin[1];
-					point[2] = pm->ps->origin[2] - 0.25;
-
-					pm->trace (trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask);
-					pml.groundTrace = *trace;
-					return qtrue;
-				}
-			}
-		}
-	}
-
-	pm->ps->groundEntityNum = ENTITYNUM_NONE;
-	pml.groundPlane = qfalse;
-	pml.walking = qfalse;
-
-	return qfalse;
-}
-
-
-/*
-=============
-PM_GroundTrace
-=============
-*/
-static void PM_GroundTrace( void ) {
-	vec3_t		point;
-	trace_t		trace;
-
-	point[0] = pm->ps->origin[0];
-	point[1] = pm->ps->origin[1];
-	point[2] = pm->ps->origin[2] - 0.25;
-
-	pm->trace (&trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask);
-	pml.groundTrace = trace;
-
-	// do something corrective if the trace starts in a solid...
-	if ( trace.allsolid ) {
-		if ( !PM_CorrectAllSolid(&trace) )
-			return;
-	}
-
-	// if the trace didn't hit anything, we are in free fall
-	if ( trace.fraction == 1.0 ) {
-		pml.groundPlane = qfalse;
-		pml.walking = qfalse;
-		return;
-	}
-
-	// check if getting thrown off the ground
-	if ( pm->ps->velocity[2] > 0 && DotProduct( pm->ps->velocity, trace.plane.normal ) > 10 ) {
-		if ( pm->debugLevel ) {
-			Com_Printf("%i:kickoff\n", c_pmove);
-		}
-		// go into jump animation
-		if ( pm->cmd.forwardmove >= 0 ) {
-			PM_ForceLegsAnim( LEGS_JUMP );
-			pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
-		} else {
-			PM_ForceLegsAnim( LEGS_JUMPB );
-			pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
-		}
-
-		pm->ps->groundEntityNum = ENTITYNUM_NONE;
-		pml.groundPlane = qfalse;
-		pml.walking = qfalse;
-		return;
-	}
-	
-	// slopes that are too steep will not be considered onground
-	if ( trace.plane.normal[2] < MIN_WALK_NORMAL ) {
-		if ( pm->debugLevel ) {
-			Com_Printf("%i:steep\n", c_pmove);
-		}
-		// FIXME: if they can't slide down the slope, let them
-		// walk (sharp crevices)
-		pm->ps->groundEntityNum = ENTITYNUM_NONE;
-		pml.groundPlane = qtrue;
-		pml.walking = qfalse;
-		return;
-	}
-
-	pml.groundPlane = qtrue;
-	pml.walking = qtrue;
-
-	// hitting solid ground will end a waterjump
-	if (pm->ps->pm_flags & PMF_TIME_WATERJUMP)
-	{
-		pm->ps->pm_flags &= ~(PMF_TIME_WATERJUMP | PMF_TIME_LAND);
-		pm->ps->pm_time = 0;
-	}
-
-	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE ) {
-		// just hit the ground
-		if ( pm->debugLevel ) {
-			Com_Printf("%i:Land\n", c_pmove);
-		}
-		
-		PM_CrashLand();
-
-		// don't do landing time if we were just going down a slope
-		if ( pml.previous_velocity[2] < -200 ) {
-			// don't allow another jump for a little while
-			pm->ps->pm_flags |= PMF_TIME_LAND;
-			pm->ps->pm_time = 250;
-		}
-	}
-
-	pm->ps->groundEntityNum = trace.entityNum;
-
-	// don't reset the z velocity for slopes
-//	pm->ps->velocity[2] = 0;
-
-	PM_AddTouchEnt( trace.entityNum );
-}
-
 
 /*
 =============
@@ -1266,18 +1059,6 @@ static void PM_Footsteps( void ) {
 	//
 	pm->xyspeed = sqrt( pm->ps->velocity[0] * pm->ps->velocity[0]
 		+  pm->ps->velocity[1] * pm->ps->velocity[1] );
-
-	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE ) {
-
-		if ( pm->ps->powerups[PW_INVULNERABILITY] ) {
-			PM_ContinueLegsAnim( LEGS_IDLECR );
-		}
-		// airborne leaves position in cycle intact, but doesn't advance
-		if ( pm->waterlevel > 1 ) {
-			PM_ContinueLegsAnim( LEGS_SWIM );
-		}
-		return;
-	}
 
 	// if not trying to move
 	if ( !pm->cmd.forwardmove && !pm->cmd.rightmove ) {
@@ -1915,8 +1696,7 @@ void PmoveSingle (pmove_t *pmove) {
 
 	PM_Animate();
 
-	// set groundentity, watertype, and waterlevel
-	PM_GroundTrace();
+	// watertype, and waterlevel
 	PM_SetWaterLevel();
 
 	// weapons
