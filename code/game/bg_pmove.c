@@ -590,6 +590,33 @@ static void PM_FlyMove( void ) {
 	PM_StepSlideMove( qfalse );
 }
 
+static void _airmove(usercmd_t *cmd, float *wvel, float *wdir, float *wspeed)
+{
+	int i;
+	float fm, sm, um, scale, wishspeed;
+	vec3_t wishvel, wishdir;
+
+	fm = cmd->forwardmove;
+	sm = cmd->rightmove;
+	um = cmd->upmove;
+	wishspeed = 0.0f;
+	scale = PM_CmdScale(cmd);
+	PM_SetMovementDir();
+	VectorNormalize(pml.forward);
+	VectorNormalize(pml.right);
+	VectorNormalize(pml.up);
+	for(i = 0; i < 3; i++)
+		wishvel[i] = pml.forward[i]*fm + pml.right[i]*sm + pml.up[i]*um;
+	wishspeed = VectorLength(wishvel);
+	if(wvel != NULL)
+		VectorCopy(wishvel, wvel);
+	if(wdir != NULL){
+		VectorCopy(wishvel, wdir);
+		VectorNormalize(wdir);
+	}
+	if(wspeed != NULL)
+		*wspeed = wishspeed * scale;
+}
 
 /*
 ===================
@@ -598,62 +625,13 @@ PM_AirMove
 ===================
 */
 static void PM_AirMove( void ) {
-	int			i;
-	vec3_t		wishvel;
-	float		fmove, smove;
-	vec3_t		wishdir;
-	float		wishspeed;
-	float		scale;
-	usercmd_t	cmd;
+	vec3_t wishvel, wishdir;
+	float wishspeed;
 
 	PM_Friction();
-
-	fmove = pm->cmd.forwardmove;
-	smove = pm->cmd.rightmove;
-
-	cmd = pm->cmd;
-	scale = PM_CmdScale( &cmd );
-
-	// set the movementDir so clients can rotate the legs for strafing
-	PM_SetMovementDir();
-
-	// project moves down to flat plane
-	pml.forward[2] = 0;
-	pml.right[2] = 0;
-	VectorNormalize (pml.forward);
-	VectorNormalize (pml.right);
-
-	for ( i = 0 ; i < 2 ; i++ ) {
-		wishvel[i] = pml.forward[i]*fmove + pml.right[i]*smove;
-	}
-	wishvel[2] = 0;
-
-	VectorCopy (wishvel, wishdir);
-	wishspeed = VectorNormalize(wishdir);
-	wishspeed *= scale;
-
-	// not on ground, so little effect on velocity
-	PM_Accelerate (wishdir, wishspeed, pm_airaccelerate);
-
-	// we may have a ground plane that is very steep, even
-	// though we don't have a groundentity
-	// slide along the steep plane
-	if ( pml.groundPlane ) {
-		PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal, 
-			pm->ps->velocity, OVERCLIP );
-	}
-
-#if 0
-	//ZOID:  If we are on the grapple, try stair-stepping
-	//this allows a player to use the grapple to pull himself
-	//over a ledge
-	if (pm->ps->pm_flags & PMF_GRAPPLE_PULL)
-		PM_StepSlideMove ( qtrue );
-	else
-		PM_SlideMove ( qtrue );
-#endif
-
-	PM_StepSlideMove ( qtrue );
+	_airmove(&pm->cmd, wishvel, wishdir, &wishspeed);
+	PM_Accelerate(wishdir,  wishspeed, pm_airaccelerate);
+	PM_SlideMove(qtrue);
 }
 
 /*
@@ -1060,46 +1038,6 @@ static int PM_CorrectAllSolid( trace_t *trace ) {
 
 /*
 =============
-PM_GroundTraceMissed
-
-The ground trace didn't hit a surface, so we are in freefall
-=============
-*/
-static void PM_GroundTraceMissed( void ) {
-	trace_t		trace;
-	vec3_t		point;
-
-	if ( pm->ps->groundEntityNum != ENTITYNUM_NONE ) {
-		// we just transitioned into freefall
-		if ( pm->debugLevel ) {
-			Com_Printf("%i:lift\n", c_pmove);
-		}
-
-		// if they aren't in a jumping animation and the ground is a ways away, force into it
-		// if we didn't do the trace, the player would be backflipping down staircases
-		VectorCopy( pm->ps->origin, point );
-		point[2] -= 64;
-
-		pm->trace (&trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask);
-		if ( trace.fraction == 1.0 ) {
-			if ( pm->cmd.forwardmove >= 0 ) {
-				PM_ForceLegsAnim( LEGS_JUMP );
-				pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
-			} else {
-				PM_ForceLegsAnim( LEGS_JUMPB );
-				pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
-			}
-		}
-	}
-
-	pm->ps->groundEntityNum = ENTITYNUM_NONE;
-	pml.groundPlane = qfalse;
-	pml.walking = qfalse;
-}
-
-
-/*
-=============
 PM_GroundTrace
 =============
 */
@@ -1122,7 +1060,6 @@ static void PM_GroundTrace( void ) {
 
 	// if the trace didn't hit anything, we are in free fall
 	if ( trace.fraction == 1.0 ) {
-		PM_GroundTraceMissed();
 		pml.groundPlane = qfalse;
 		pml.walking = qfalse;
 		return;
@@ -1948,9 +1885,6 @@ void PmoveSingle (pmove_t *pmove) {
 	// set mins, maxs, and viewheight
 	PM_CheckDuck ();
 
-	// set groundentity
-	PM_GroundTrace();
-
 	if ( pm->ps->pm_type == PM_DEAD ) {
 		PM_DeadMove ();
 	}
@@ -1974,9 +1908,6 @@ void PmoveSingle (pmove_t *pmove) {
 	} else if ( pm->waterlevel > 1 ) {
 		// swimming
 		PM_WaterMove();
-	} else if ( pml.walking ) {
-		// walking on ground
-		PM_WalkMove();
 	} else {
 		// airborne
 		PM_AirMove();
