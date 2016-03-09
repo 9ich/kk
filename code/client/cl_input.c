@@ -51,6 +51,7 @@ kbutton_t	in_left, in_right, in_forward, in_back;
 kbutton_t	in_lookup, in_lookdown, in_moveleft, in_moveright;
 kbutton_t	in_strafe, in_speed;
 kbutton_t	in_up, in_down;
+kbutton_t	in_rollleft, in_rollright;
 
 #ifdef USE_VOIP
 kbutton_t	in_voiprecord;
@@ -210,6 +211,10 @@ void IN_LookupDown(void) {IN_KeyDown(&in_lookup);}
 void IN_LookupUp(void) {IN_KeyUp(&in_lookup);}
 void IN_LookdownDown(void) {IN_KeyDown(&in_lookdown);}
 void IN_LookdownUp(void) {IN_KeyUp(&in_lookdown);}
+void IN_RollleftDown(void) {IN_KeyDown(&in_rollright);}
+void IN_RollleftUp(void) {IN_KeyUp(&in_rollright);}
+void IN_RollrightDown(void) {IN_KeyDown(&in_rollleft);}
+void IN_RollrightUp(void) {IN_KeyUp(&in_rollleft);}
 void IN_MoveleftDown(void) {IN_KeyDown(&in_moveleft);}
 void IN_MoveleftUp(void) {IN_KeyUp(&in_moveleft);}
 void IN_MoverightDown(void) {IN_KeyDown(&in_moveright);}
@@ -277,6 +282,7 @@ void IN_CenterView (void) {
 
 cvar_t	*cl_yawspeed;
 cvar_t	*cl_pitchspeed;
+cvar_t	*cl_rollspeed;
 
 cvar_t	*cl_run;
 
@@ -304,6 +310,9 @@ void CL_AdjustAngles( vec3_t delta ) {
 
 	delta[PITCH] -= speed*cl_pitchspeed->value * CL_KeyState (&in_lookup);
 	delta[PITCH] += speed*cl_pitchspeed->value * CL_KeyState (&in_lookdown);
+
+	delta[ROLL] += speed*cl_rollspeed->value*CL_KeyState (&in_rollleft);
+	delta[ROLL] -= speed*cl_rollspeed->value*CL_KeyState (&in_rollright);
 }
 
 /*
@@ -942,6 +951,10 @@ void CL_InitInput( void ) {
 	Cmd_AddCommand ("-lookup", IN_LookupUp);
 	Cmd_AddCommand ("+lookdown", IN_LookdownDown);
 	Cmd_AddCommand ("-lookdown", IN_LookdownUp);
+	Cmd_AddCommand ("+rollleft", IN_RollleftDown);
+	Cmd_AddCommand ("-rollleft", IN_RollleftUp);
+	Cmd_AddCommand ("+rollright", IN_RollrightDown);
+	Cmd_AddCommand ("-rollright", IN_RollrightUp);
 	Cmd_AddCommand ("+strafe", IN_StrafeDown);
 	Cmd_AddCommand ("-strafe", IN_StrafeUp);
 	Cmd_AddCommand ("+moveleft", IN_MoveleftDown);
@@ -1019,6 +1032,10 @@ void CL_ShutdownInput(void)
 	Cmd_RemoveCommand("-lookup");
 	Cmd_RemoveCommand("+lookdown");
 	Cmd_RemoveCommand("-lookdown");
+	Cmd_RemoveCommand("+rollleft");
+	Cmd_RemoveCommand("-rollleft");
+	Cmd_RemoveCommand("+rollright");
+	Cmd_RemoveCommand("-rollright");
 	Cmd_RemoveCommand("+strafe");
 	Cmd_RemoveCommand("-strafe");
 	Cmd_RemoveCommand("+moveleft");
