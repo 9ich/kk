@@ -748,6 +748,29 @@ void PerpendicularVector( vec3_t dst, const vec3_t src );
 #define MIN(x,y) ((x)<(y)?(x):(y))
 #endif
 
+// tough on RSI, tough on the causes of RSI
+#define vecset		VectorSet
+#define veccpy		VectorCopy
+#define vecclear	VectorClear
+#define veccpy		VectorCopy
+#define veccmp		VectorCompare
+#define vecdot		DotProduct
+#define veccross	CrossProduct
+#define vecsub		VectorSubtract
+#define vecadd		VectorAdd
+#define vecmul	VectorScale
+#define vecmad		VectorMA
+#define veclen		VectorLength
+#define veclensq	VectorLengthSquared
+#define vecdist		Distance
+#define vecdistsq	DistanceSquared
+#define vecinv		VectorInverse
+#define vecnorm		VectorNormalize
+#define vecrotate	VectorRotate
+#define anglevecs	AngleVectors
+#define vecperp		PerpendicularVector
+#define vecsnap		SnapVector
+
 //=============================================
 
 float Com_Clamp( float min, float max, float value );
