@@ -1453,6 +1453,17 @@ void BG_TouchJumpPad( playerState_t *ps, entityState_t *jumppad ) {
 	VectorCopy( jumppad->origin2, ps->velocity );
 }
 
+void
+BG_TouchTriggerGravity(playerState_t *ps, entityState_t *zone, float framedur)
+{
+	vec3_t grav;
+
+	if(ps->pm_type != PM_NORMAL)
+		return;
+	VectorScale(zone->origin2, 0.001f*framedur, grav);
+	VectorAdd(ps->velocity, grav, ps->velocity);
+}
+
 /*
 ========================
 BG_PlayerStateToEntityState

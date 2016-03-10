@@ -681,6 +681,7 @@ typedef enum {
 	ET_PORTAL,
 	ET_SPEAKER,
 	ET_PUSH_TRIGGER,
+	ET_TRIGGER_GRAVITY,
 	ET_TELEPORT_TRIGGER,
 	ET_INVISIBLE,
 	ET_GRAPPLE,				// grapple hooked on wall
@@ -699,6 +700,7 @@ void	BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 void	BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps );
 
 void	BG_TouchJumpPad( playerState_t *ps, entityState_t *jumppad );
+void	BG_TouchTriggerGravity( playerState_t *ps, entityState_t *zone, float framedur );
 
 void	BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean snap );
 void	BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time, qboolean snap );

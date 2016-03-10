@@ -354,6 +354,9 @@ void	Svcmd_EntityList_f (void) {
 		case ET_PUSH_TRIGGER:
 			G_Printf("ET_PUSH_TRIGGER     ");
 			break;
+		case ET_TRIGGER_GRAVITY:
+			G_Printf("ET_TRIGGER_GRAVITY     ");
+			break;
 		case ET_TELEPORT_TRIGGER:
 			G_Printf("ET_TELEPORT_TRIGGER ");
 			break;

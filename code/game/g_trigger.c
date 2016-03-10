@@ -149,6 +149,14 @@ void trigger_push_touch (gentity_t *self, gentity_t *other, trace_t *trace ) {
 	BG_TouchJumpPad( &other->client->ps, &self->s );
 }
 
+static void
+trigger_gravity_touch(gentity_t *self, gentity_t *other, trace_t *trace)
+{
+	if(other->client == nil)
+		return;
+	BG_TouchTriggerGravity(&other->client->ps, &self->s, level.time - level.previousTime);
+}
+
 
 /*
 =================
@@ -191,6 +199,28 @@ void AimAtTarget( gentity_t *self ) {
 	self->s.origin2[2] = time * gravity;
 }
 
+/*
+Copy target's "angles" key to origin2, then scale by "gravity" key.
+*/
+static void
+aimgravity(gentity_t *self)
+{
+	gentity_t *targ;
+	vec3_t dir;
+
+	if(self->target == nil){
+		G_Printf("trigger_gravity with null target\n");
+		return;
+	}
+	targ = nil;
+	targ = G_Find(targ, FOFS(targetname), self->target);
+	if(self->target == nil){
+		G_Printf("trigger_gravity with unfound target\n");
+		return;
+	}
+	AngleVectors(targ->s.angles, dir, nil, nil);
+	VectorScale(dir, self->speed, self->s.origin2);
+}
 
 /*QUAKED trigger_push (.5 .5 .5) ?
 Must point at a target_position, which will be the apex of the leap.
@@ -212,6 +242,29 @@ void SP_trigger_push( gentity_t *self ) {
 	trap_LinkEntity (self);
 }
 
+/* QUAKED trigger_gravity (.5 .9 .5) ?
+When entered, this brush additively increases the player's velocity in
+the direction given by the "angles" key of the target target_position.
+This effect is a trigger_ so that it can be client-side predicted.
+
+speed		strength of the gravity field (default 120).
+*/
+void
+SP_trigger_gravity(gentity_t *self)
+{
+	if(!self->speed)
+		self->speed = 120;
+
+	InitTrigger(self);
+
+	// send to client for prediction
+	self->r.svFlags &= ~SVF_NOCLIENT;
+	self->s.eType = ET_TRIGGER_GRAVITY;
+	self->touch = trigger_gravity_touch;
+	self->think = aimgravity;
+	self->nextthink = level.time + FRAMETIME;
+	trap_LinkEntity(self);
+}
 
 void Use_target_push( gentity_t *self, gentity_t *other, gentity_t *activator ) {
 	if ( !activator->client ) {
