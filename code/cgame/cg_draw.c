@@ -321,28 +321,7 @@ drawhead(float x, float y, float w, float h, int clientNum, vec3_t headAngles)
 
 	ci = &cgs.clientinfo[clientNum];
 
-	if(cg_draw3dIcons.integer){
-		cm = ci->headmodel;
-		if(!cm)
-			return;
-
-		// offset the origin y and z to center the head
-		trap_R_ModelBounds(cm, mins, maxs);
-
-		origin[2] = -0.5 * (mins[2] + maxs[2]);
-		origin[1] = 0.5 * (mins[1] + maxs[1]);
-
-		// calculate distance so the head nearly fills the box
-		// assume heads are taller than wide
-		len = 0.7 * (maxs[2] - mins[2]);
-		origin[0] = len / 0.268;	// len / tan( fov/2 )
-
-		// allow per-model tweaking
-		vecadd(origin, ci->headoffset, origin);
-
-		drawmodel(x, y, w, h, ci->headmodel, ci->headskin, origin, headAngles);
-	}else if(cg_drawIcons.integer)
-		drawpic(x, y, w, h, ci->modelicon);
+	drawpic(x, y, w, h, ci->modelicon);
 
 	// if they are deferred, draw a cross out
 	if(ci->deferred)

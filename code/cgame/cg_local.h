@@ -363,14 +363,8 @@ typedef struct
 	footstep_t	footsteps;
 	gender_t	gender;		// from model
 
-	qhandle_t	legsmodel;
-	qhandle_t	legsskin;
-
 	qhandle_t	torsomodel;
 	qhandle_t	torsoskin;
-
-	qhandle_t	headmodel;
-	qhandle_t	headskin;
 
 	qhandle_t	modelicon;
 
