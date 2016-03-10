@@ -380,7 +380,7 @@ typedef struct
 	float		xscale;
 	float		bias;
 	int		realTime;
-	int		frameTime;
+	int		frametime;
 	int		cursorx;
 	int		cursory;
 	qboolean	debug;

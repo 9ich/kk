@@ -346,7 +346,7 @@ UI_ConsoleCommand(int realTime)
 {
 	char *cmd;
 
-	uiInfo.uiDC.frameTime = realTime - uiInfo.uiDC.realTime;
+	uiInfo.uiDC.frametime = realTime - uiInfo.uiDC.realTime;
 	uiInfo.uiDC.realTime = realTime;
 
 	cmd = UI_Argv(0);

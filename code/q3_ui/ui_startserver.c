@@ -620,7 +620,7 @@ typedef struct
 	menuradiobutton_s	friendlyfire;
 	menufield_s		hostname;
 	menuradiobutton_s	pure;
-	menulist_s		botSkill;
+	menulist_s		botskill;
 
 	menutext_s		player0;
 	menulist_s		playerType[PLAYER_SLOTS];
@@ -723,7 +723,7 @@ ServerOptions_Start(void)
 	dedicated = s_serveroptions.dedicated.curvalue;
 	friendlyfire = s_serveroptions.friendlyfire.curvalue;
 	pure = s_serveroptions.pure.curvalue;
-	skill = s_serveroptions.botSkill.curvalue + 1;
+	skill = s_serveroptions.botskill.curvalue + 1;
 
 	//set maxclients
 	for(n = 0, maxclients = 0; n < PLAYER_SLOTS; n++){
@@ -1299,13 +1299,13 @@ ServerOptions_MenuInit(qboolean multiplayer)
 	s_serveroptions.punkbuster.itemnames = punkbuster_items;
 
 	y = 80;
-	s_serveroptions.botSkill.generic.type = MTYPE_SPINCONTROL;
-	s_serveroptions.botSkill.generic.flags = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	s_serveroptions.botSkill.generic.name = "Bot Skill:";
-	s_serveroptions.botSkill.generic.x = 32 + (strlen(s_serveroptions.botSkill.generic.name) + 2) * SMALLCHAR_WIDTH;
-	s_serveroptions.botSkill.generic.y = y;
-	s_serveroptions.botSkill.itemnames = botSkill_list;
-	s_serveroptions.botSkill.curvalue = 1;
+	s_serveroptions.botskill.generic.type = MTYPE_SPINCONTROL;
+	s_serveroptions.botskill.generic.flags = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
+	s_serveroptions.botskill.generic.name = "Bot Skill:";
+	s_serveroptions.botskill.generic.x = 32 + (strlen(s_serveroptions.botskill.generic.name) + 2) * SMALLCHAR_WIDTH;
+	s_serveroptions.botskill.generic.y = y;
+	s_serveroptions.botskill.itemnames = botSkill_list;
+	s_serveroptions.botskill.curvalue = 1;
 
 	y += (2 * SMALLCHAR_HEIGHT);
 	s_serveroptions.player0.generic.type = MTYPE_TEXT;
@@ -1387,7 +1387,7 @@ ServerOptions_MenuInit(qboolean multiplayer)
 	Menu_AddItem(&s_serveroptions.menu, &s_serveroptions.mappic);
 	Menu_AddItem(&s_serveroptions.menu, &s_serveroptions.picframe);
 
-	Menu_AddItem(&s_serveroptions.menu, &s_serveroptions.botSkill);
+	Menu_AddItem(&s_serveroptions.menu, &s_serveroptions.botskill);
 	Menu_AddItem(&s_serveroptions.menu, &s_serveroptions.player0);
 	for(n = 0; n < PLAYER_SLOTS; n++){
 		if(n != 0)

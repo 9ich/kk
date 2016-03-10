@@ -25,8 +25,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 void
 InitTrigger(gentity_t *self)
 {
-	if(!VectorCompare(self->s.angles, vec3_origin))
-		G_SetMovedir(self->s.angles, self->movedir);
+	if(!veccmp(self->s.angles, vec3_origin))
+		setmovedir(self->s.angles, self->movedir);
 
 	trap_SetBrushModel(self, self->model);
 	self->r.contents = CONTENTS_TRIGGER;	// replaces the -1 from trap_SetBrushModel
@@ -52,14 +52,14 @@ multi_trigger(gentity_t *ent, gentity_t *activator)
 
 	if(activator->client){
 		if((ent->spawnflags & 1) &&
-		   activator->client->sess.sessionTeam != TEAM_RED)
+		   activator->client->sess.team != TEAM_RED)
 			return;
 		if((ent->spawnflags & 2) &&
-		   activator->client->sess.sessionTeam != TEAM_BLUE)
+		   activator->client->sess.team != TEAM_BLUE)
 			return;
 	}
 
-	G_UseTargets(ent, ent->activator);
+	usetargets(ent, ent->activator);
 
 	if(ent->wait > 0){
 		ent->think = multi_wait;
@@ -69,7 +69,7 @@ multi_trigger(gentity_t *ent, gentity_t *activator)
 		// called while looping through area links...
 		ent->touch = 0;
 		ent->nextthink = level.time + FRAMETIME;
-		ent->think = G_FreeEntity;
+		ent->think = entfree;
 	}
 }
 
@@ -97,12 +97,12 @@ so, the basic time between firing is a random time between
 void
 SP_trigger_multiple(gentity_t *ent)
 {
-	G_SpawnFloat("wait", "0.5", &ent->wait);
-	G_SpawnFloat("random", "0", &ent->random);
+	spawnfloat("wait", "0.5", &ent->wait);
+	spawnfloat("random", "0", &ent->random);
 
 	if(ent->random >= ent->wait && ent->wait >= 0){
 		ent->random = ent->wait - FRAMETIME;
-		G_Printf("trigger_multiple has random >= wait\n");
+		gprintf("trigger_multiple has random >= wait\n");
 	}
 
 	ent->touch = Touch_Multi;
@@ -123,8 +123,8 @@ trigger_always
 void
 trigger_always_think(gentity_t *ent)
 {
-	G_UseTargets(ent, ent);
-	G_FreeEntity(ent);
+	usetargets(ent, ent);
+	entfree(ent);
 }
 
 /*QUAKED trigger_always (.5 .5 .5) (-8 -8 -8) (8 8 8)
@@ -152,7 +152,7 @@ trigger_push_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 	if(!other->client)
 		return;
 
-	BG_TouchJumpPad(&other->client->ps, &self->s);
+	touchjumppad(&other->client->ps, &self->s);
 }
 
 static void
@@ -160,7 +160,7 @@ trigger_gravity_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 {
 	if(other->client == nil)
 		return;
-	BG_TouchTriggerGravity(&other->client->ps, &self->s, level.time - level.previousTime);
+	BG_TouchTriggerGravity(&other->client->ps, &self->s, level.time - level.prevtime);
 }
 
 /*
@@ -178,12 +178,12 @@ AimAtTarget(gentity_t *self)
 	float height, gravity, time, forward;
 	float dist;
 
-	VectorAdd(self->r.absmin, self->r.absmax, origin);
-	VectorScale(origin, 0.5, origin);
+	vecadd(self->r.absmin, self->r.absmax, origin);
+	vecmul(origin, 0.5, origin);
 
-	ent = G_PickTarget(self->target);
+	ent = picktarget(self->target);
 	if(!ent){
-		G_FreeEntity(self);
+		entfree(self);
 		return;
 	}
 
@@ -191,17 +191,17 @@ AimAtTarget(gentity_t *self)
 	gravity = g_gravity.value;
 	time = sqrt(height / (.5 * gravity));
 	if(!time){
-		G_FreeEntity(self);
+		entfree(self);
 		return;
 	}
 
 	// set s.origin2 to the push velocity
-	VectorSubtract(ent->s.origin, origin, self->s.origin2);
+	vecsub(ent->s.origin, origin, self->s.origin2);
 	self->s.origin2[2] = 0;
-	dist = VectorNormalize(self->s.origin2);
+	dist = vecnorm(self->s.origin2);
 
 	forward = dist / time;
-	VectorScale(self->s.origin2, forward, self->s.origin2);
+	vecmul(self->s.origin2, forward, self->s.origin2);
 
 	self->s.origin2[2] = time * gravity;
 }
@@ -216,17 +216,17 @@ aimgravity(gentity_t *self)
 	vec3_t dir;
 
 	if(self->target == nil){
-		G_Printf("trigger_gravity with null target\n");
+		gprintf("trigger_gravity with null target\n");
 		return;
 	}
 	targ = nil;
-	targ = G_Find(targ, FOFS(targetname), self->target);
+	targ = findent(targ, FOFS(targetname), self->target);
 	if(self->target == nil){
-		G_Printf("trigger_gravity with unfound target\n");
+		gprintf("trigger_gravity with unfound target\n");
 		return;
 	}
-	AngleVectors(targ->s.angles, dir, nil, nil);
-	VectorScale(dir, self->speed, self->s.origin2);
+	anglevecs(targ->s.angles, dir, nil, nil);
+	vecmul(dir, self->speed, self->s.origin2);
 }
 
 /*QUAKED trigger_push (.5 .5 .5) ?
@@ -242,7 +242,7 @@ SP_trigger_push(gentity_t *self)
 	self->r.svFlags &= ~SVF_NOCLIENT;
 
 	// make sure the client precaches this sound
-	G_SoundIndex("sound/world/jumppad.wav");
+	getsoundindex("sound/world/jumppad.wav");
 
 	self->s.eType = ET_PUSH_TRIGGER;
 	self->touch = trigger_push_touch;
@@ -286,12 +286,12 @@ Use_target_push(gentity_t *self, gentity_t *other, gentity_t *activator)
 	if(activator->client->ps.powerups[PW_FLIGHT])
 		return;
 
-	VectorCopy(self->s.origin2, activator->client->ps.velocity);
+	veccpy(self->s.origin2, activator->client->ps.velocity);
 
 	// play fly sound every 1.5 seconds
-	if(activator->fly_sound_debounce_time < level.time){
-		activator->fly_sound_debounce_time = level.time + 1500;
-		G_Sound(activator, CHAN_AUTO, self->noise_index);
+	if(activator->flysounddebouncetime < level.time){
+		activator->flysounddebouncetime = level.time + 1500;
+		mksound(activator, CHAN_AUTO, self->noiseindex);
 	}
 }
 
@@ -305,16 +305,16 @@ SP_target_push(gentity_t *self)
 {
 	if(!self->speed)
 		self->speed = 1000;
-	G_SetMovedir(self->s.angles, self->s.origin2);
-	VectorScale(self->s.origin2, self->speed, self->s.origin2);
+	setmovedir(self->s.angles, self->s.origin2);
+	vecmul(self->s.origin2, self->speed, self->s.origin2);
 
 	if(self->spawnflags & 1)
-		self->noise_index = G_SoundIndex("sound/world/jumppad.wav");
+		self->noiseindex = getsoundindex("sound/world/jumppad.wav");
 	else
-		self->noise_index = G_SoundIndex("sound/misc/windfly.wav");
+		self->noiseindex = getsoundindex("sound/misc/windfly.wav");
 	if(self->target){
-		VectorCopy(self->s.origin, self->r.absmin);
-		VectorCopy(self->s.origin, self->r.absmax);
+		veccpy(self->s.origin, self->r.absmin);
+		veccpy(self->s.origin, self->r.absmax);
 		self->think = AimAtTarget;
 		self->nextthink = level.time + FRAMETIME;
 	}
@@ -340,17 +340,17 @@ trigger_teleporter_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 		return;
 	// Spectators only?
 	if((self->spawnflags & 1) &&
-	   other->client->sess.sessionTeam != TEAM_SPECTATOR)
+	   other->client->sess.team != TEAM_SPECTATOR)
 		return;
 
 
-	dest = G_PickTarget(self->target);
+	dest = picktarget(self->target);
 	if(!dest){
-		G_Printf("Couldn't find teleporter destination\n");
+		gprintf("Couldn't find teleporter destination\n");
 		return;
 	}
 
-	TeleportPlayer(other, dest->s.origin, dest->s.angles);
+	teleportentity(other, dest->s.origin, dest->s.angles);
 }
 
 /*QUAKED trigger_teleport (.5 .5 .5) ? SPECTATOR
@@ -374,7 +374,7 @@ SP_trigger_teleport(gentity_t *self)
 		self->r.svFlags &= ~SVF_NOCLIENT;
 
 	// make sure the client precaches this sound
-	G_SoundIndex("sound/world/jumppad.wav");
+	getsoundindex("sound/world/jumppad.wav");
 
 	self->s.eType = ET_TELEPORT_TRIGGER;
 	self->touch = trigger_teleporter_touch;
@@ -416,7 +416,7 @@ hurt_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 {
 	int dflags;
 
-	if(!other->takedamage)
+	if(!other->takedmg)
 		return;
 
 	if(self->timestamp > level.time)
@@ -429,13 +429,13 @@ hurt_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 
 	// play sound
 	if(!(self->spawnflags & 4))
-		G_Sound(other, CHAN_AUTO, self->noise_index);
+		mksound(other, CHAN_AUTO, self->noiseindex);
 
 	if(self->spawnflags & 8)
 		dflags = DAMAGE_NO_PROTECTION;
 	else
 		dflags = 0;
-	G_Damage(other, self, self, nil, nil, self->damage, dflags, MOD_TRIGGER_HURT);
+	entdamage(other, self, self, nil, nil, self->damage, dflags, MOD_TRIGGER_HURT);
 }
 
 void
@@ -443,7 +443,7 @@ SP_trigger_hurt(gentity_t *self)
 {
 	InitTrigger(self);
 
-	self->noise_index = G_SoundIndex("sound/world/electro.wav");
+	self->noiseindex = getsoundindex("sound/world/electro.wav");
 	self->touch = hurt_touch;
 
 	if(!self->damage)
@@ -480,7 +480,7 @@ so, the basic time between firing is a random time between
 void
 func_timer_think(gentity_t *self)
 {
-	G_UseTargets(self, self->activator);
+	usetargets(self, self->activator);
 	// set time before next firing
 	self->nextthink = level.time + 1000 * (self->wait + crandom() * self->random);
 }
@@ -503,15 +503,15 @@ func_timer_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 void
 SP_func_timer(gentity_t *self)
 {
-	G_SpawnFloat("random", "1", &self->random);
-	G_SpawnFloat("wait", "1", &self->wait);
+	spawnfloat("random", "1", &self->random);
+	spawnfloat("wait", "1", &self->wait);
 
 	self->use = func_timer_use;
 	self->think = func_timer_think;
 
 	if(self->random >= self->wait){
 		self->random = self->wait - FRAMETIME;
-		G_Printf("func_timer at %s has random >= wait\n", vtos(self->s.origin));
+		gprintf("func_timer at %s has random >= wait\n", vtos(self->s.origin));
 	}
 
 	if(self->spawnflags & 1){

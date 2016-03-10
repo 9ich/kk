@@ -44,14 +44,14 @@ typedef struct
 	int		msec;
 
 	qboolean	walking;
-	qboolean	groundPlane;
-	trace_t		groundTrace;
+	qboolean	groundplane;
+	trace_t		groundtrace;
 
-	float		impactSpeed;
+	float		impactspeed;
 
-	vec3_t		previous_origin;
-	vec3_t		previous_velocity;
-	int		previous_waterlevel;
+	vec3_t		prevorigin;
+	vec3_t		prevvelocity;
+	int		prevwaterlevel;
 } pml_t;
 
 extern pmove_t *pm;
@@ -73,9 +73,9 @@ extern float pm_flightfriction;
 
 extern int c_pmove;
 
-void		PM_ClipVelocity(vec3_t in, vec3_t normal, vec3_t out, float overbounce);
-void		PM_AddTouchEnt(int entityNum);
-void		PM_AddEvent(int newEvent);
+void		pmclipvel(vec3_t in, vec3_t normal, vec3_t out, float overbounce);
+void		pmaddtouchent(int entityNum);
+void		pmaddevent(int newEvent);
 
-qboolean	PM_SlideMove(qboolean gravity);
-void		PM_StepSlideMove(qboolean gravity);
+qboolean	pmslidemode(qboolean gravity);
+void		pmstepslidemove(qboolean gravity);

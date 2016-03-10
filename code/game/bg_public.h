@@ -168,9 +168,9 @@ typedef struct
 	// command (in)
 	usercmd_t	cmd;
 	int		tracemask;	// collide against these types of surfaces
-	int		debugLevel;	// if set, diagnostic output will be printed
-	qboolean	noFootsteps;	// if the game is setup for no footsteps by the server
-	qboolean	gauntletHit;	// true if a gauntlet attack would actually hit something
+	int		debuglevel;	// if set, diagnostic output will be printed
+	qboolean	nofootsteps;	// if the game is setup for no footsteps by the server
+	qboolean	gauntlethit;	// true if a gauntlet attack would actually hit something
 
 	int		framecount;
 
@@ -530,11 +530,11 @@ typedef enum
 
 typedef struct animation_s
 {
-	int	firstFrame;
-	int	numFrames;
-	int	loopFrames;	// 0 to numFrames
-	int	frameLerp;	// msec between frames
-	int	initialLerp;	// msec to get to first frame
+	int	firstframe;
+	int	nframes;
+	int	loopframes;	// 0 to nframes
+	int	framelerp;	// msec between frames
+	int	initiallerp;	// msec to get to first frame
 	int	reversed;	// true if animation is reversed
 	int	flipflop;	// true if animation should flipflop back to base
 } animation_t;
@@ -631,16 +631,16 @@ typedef enum
 typedef struct gitem_s
 {
 	char		*classname;	// spawning name
-	char		*pickup_sound;
-	char		*world_model[MAX_ITEM_MODELS];
+	char		*pickupsound;
+	char		*model[MAX_ITEM_MODELS];
 
 	char		*icon;
-	char		*pickup_name;	// for printing on pickup
+	char		*pickupname;	// for printing on pickup
 
 	int		quantity;	// for ammo how much, or duration of powerup
-	itemType_t	giType;		// IT_* flags
+	itemType_t	type;		// IT_* flags
 
-	int		giTag;
+	int		tag;
 
 	char		*precaches;	// string of all models and images this item will use
 	char		*sounds;	// string of all sounds this item will use
@@ -648,15 +648,15 @@ typedef struct gitem_s
 
 // included in both the game dll and the client
 extern gitem_t bg_itemlist[];
-extern int bg_numItems;
+extern int bg_nitems;
 
-gitem_t *	BG_FindItem(const char *pickupName);
-gitem_t *	BG_FindItemForWeapon(weapon_t weapon);
-gitem_t *	BG_FindItemForPowerup(powerup_t pw);
-gitem_t *	BG_FindItemForHoldable(holdable_t pw);
+gitem_t *	finditem(const char *pickupName);
+gitem_t *	finditemforweapon(weapon_t weapon);
+gitem_t *	finditemforpowerup(powerup_t pw);
+gitem_t *	finditemforholdable(holdable_t pw);
 #define ITEM_INDEX(x) ((x)-bg_itemlist)
 
-qboolean	BG_CanItemBeGrabbed(int gametype, const entityState_t *ent, const playerState_t *ps);
+qboolean	cangrabitem(int gametype, const entityState_t *ent, const playerState_t *ps);
 
 // g_dmflags->integer flags
 #define DF_NO_FALLING		8
@@ -697,18 +697,18 @@ typedef enum
 	// this avoids having to set eFlags and eventNum
 } entityType_t;
 
-void		BG_EvaluateTrajectory(const trajectory_t *tr, int atTime, vec3_t result);
-void		BG_EvaluateTrajectoryDelta(const trajectory_t *tr, int atTime, vec3_t result);
+void		evaltrajectory(const trajectory_t *tr, int atTime, vec3_t result);
+void		evaltrajectorydelta(const trajectory_t *tr, int atTime, vec3_t result);
 
-void		BG_AddPredictableEventToPlayerstate(int newEvent, int eventParm, playerState_t *ps);
+void		bgaddpredictableevent(int newEvent, int eventParm, playerState_t *ps);
 
-void		BG_TouchJumpPad(playerState_t *ps, entityState_t *jumppad);
+void		touchjumppad(playerState_t *ps, entityState_t *jumppad);
 void		BG_TouchTriggerGravity(playerState_t *ps, entityState_t *zone, float framedur);
 
-void		BG_PlayerStateToEntityState(playerState_t *ps, entityState_t *s, qboolean snap);
-void		BG_PlayerStateToEntityStateExtraPolate(playerState_t *ps, entityState_t *s, int time, qboolean snap);
+void		playerstate2entstate(playerState_t *ps, entityState_t *s, qboolean snap);
+void		playerstate2entstatexerp(playerState_t *ps, entityState_t *s, int time, qboolean snap);
 
-qboolean	BG_PlayerTouchesItem(playerState_t *ps, entityState_t *item, int atTime);
+qboolean	playertouchingitem(playerState_t *ps, entityState_t *item, int atTime);
 
 #define ARENAS_PER_TIER 4
 #define MAX_ARENAS	1024

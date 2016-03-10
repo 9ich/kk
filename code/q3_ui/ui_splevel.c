@@ -335,10 +335,10 @@ UI_SPLevelMenu_ResetEvent
 static void
 UI_SPLevelMenu_ResetDraw(void)
 {
-	UI_DrawProportionalString(SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 0, "WARNING: This resets all of the", UI_CENTER|UI_SMALLFONT, color_yellow);
-	UI_DrawProportionalString(SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 1, "single player game variables.", UI_CENTER|UI_SMALLFONT, color_yellow);
-	UI_DrawProportionalString(SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 2, "Do this only if you want to", UI_CENTER|UI_SMALLFONT, color_yellow);
-	UI_DrawProportionalString(SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 3, "start over from the beginning.", UI_CENTER|UI_SMALLFONT, color_yellow);
+	drawpropstr(SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 0, "WARNING: This resets all of the", UI_CENTER|UI_SMALLFONT, color_yellow);
+	drawpropstr(SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 1, "single player game variables.", UI_CENTER|UI_SMALLFONT, color_yellow);
+	drawpropstr(SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 2, "Do this only if you want to", UI_CENTER|UI_SMALLFONT, color_yellow);
+	drawpropstr(SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 3, "start over from the beginning.", UI_CENTER|UI_SMALLFONT, color_yellow);
 }
 
 static void
@@ -535,7 +535,7 @@ UI_SPLevelMenu_MenuDraw(void)
 	// draw player name
 	trap_Cvar_VariableStringBuffer("name", string, 32);
 	Q_CleanStr(string);
-	UI_DrawProportionalString(320, PLAYER_Y, string, UI_CENTER|UI_SMALLFONT, color_orange);
+	drawpropstr(320, PLAYER_Y, string, UI_CENTER|UI_SMALLFONT, color_orange);
 
 	// check for model changes
 	trap_Cvar_VariableStringBuffer("model", buf, sizeof(buf));
@@ -574,7 +574,7 @@ UI_SPLevelMenu_MenuDraw(void)
 		}
 	}
 
-	UI_DrawProportionalString(18, 38, va("Tier %i", selectedArenaSet + 1), UI_LEFT|UI_SMALLFONT, color_orange);
+	drawpropstr(18, 38, va("Tier %i", selectedArenaSet + 1), UI_LEFT|UI_SMALLFONT, color_orange);
 
 	for(n = 0; n < levelMenuInfo.numMaps; n++){
 		x = levelMenuInfo.item_maps[n].generic.x;
@@ -583,7 +583,7 @@ UI_SPLevelMenu_MenuDraw(void)
 	}
 
 	if(selectedArenaSet > currentSet){
-		UI_DrawProportionalString(320, 216, "ACCESS DENIED", UI_CENTER|UI_BIGFONT, color_red);
+		drawpropstr(320, 216, "ACCESS DENIED", UI_CENTER|UI_BIGFONT, color_red);
 		return;
 	}
 
@@ -616,7 +616,7 @@ UI_SPLevelMenu_MenuDraw(void)
 	Q_strncpyz(buf, Info_ValueForKey(levelMenuInfo.selectedArenaInfo, "map"), 20);
 	Q_strupr(buf);
 	Com_sprintf(string, sizeof(string), "%s: %s", buf, Info_ValueForKey(levelMenuInfo.selectedArenaInfo, "longname"));
-	UI_DrawProportionalString(320, y, string, UI_CENTER|UI_SMALLFONT, color_orange);
+	drawpropstr(320, y, string, UI_CENTER|UI_SMALLFONT, color_orange);
 
 //	fraglimit = atoi( Info_ValueForKey( levelMenuInfo.selectedArenaInfo, "fraglimit" ) );
 //	UI_DrawString( 18, 212, va("Frags %i", fraglimit) , UI_LEFT|UI_SMALLFONT, color_orange );
@@ -630,7 +630,7 @@ UI_SPLevelMenu_MenuDraw(void)
 			UI_DrawHandlePic(x, y, 64, 64, levelMenuInfo.botPics[n]);
 		else{
 			UI_FillRect(x, y, 64, 64, color_black);
-			UI_DrawProportionalString(x+22, y+18, "?", UI_BIGFONT, color_orange);
+			drawpropstr(x+22, y+18, "?", UI_BIGFONT, color_orange);
 		}
 		UI_DrawString(x, y + 64, levelMenuInfo.botNames[n], UI_SMALLFONT|UI_LEFT, color_orange);
 	}

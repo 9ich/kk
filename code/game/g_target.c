@@ -41,10 +41,10 @@ Use_Target_Give(gentity_t *ent, gentity_t *other, gentity_t *activator)
 
 	memset(&trace, 0, sizeof(trace));
 	t = nil;
-	while((t = G_Find(t, FOFS(targetname), ent->target)) != nil){
+	while((t = findent(t, FOFS(targetname), ent->target)) != nil){
 		if(!t->item)
 			continue;
-		Touch_Item(t, activator, &trace);
+		item_touch(t, activator, &trace);
 
 		// make sure it isn't going to respawn or show any events
 		t->nextthink = 0;
@@ -71,11 +71,11 @@ Use_target_remove_powerups(gentity_t *ent, gentity_t *other, gentity_t *activato
 		return;
 
 	if(activator->client->ps.powerups[PW_REDFLAG])
-		Team_ReturnFlag(TEAM_RED);
+		teamreturnflag(TEAM_RED);
 	else if(activator->client->ps.powerups[PW_BLUEFLAG])
-		Team_ReturnFlag(TEAM_BLUE);
+		teamreturnflag(TEAM_BLUE);
 	else if(activator->client->ps.powerups[PW_NEUTRALFLAG])
-		Team_ReturnFlag(TEAM_FREE);
+		teamreturnflag(TEAM_FREE);
 
 	memset(activator->client->ps.powerups, 0, sizeof(activator->client->ps.powerups));
 }
@@ -95,7 +95,7 @@ SP_target_remove_powerups(gentity_t *ent)
 void
 Think_Target_Delay(gentity_t *ent)
 {
-	G_UseTargets(ent, ent->activator);
+	usetargets(ent, ent->activator);
 }
 
 void
@@ -110,8 +110,8 @@ void
 SP_target_delay(gentity_t *ent)
 {
 	// check delay for backwards compatability
-	if(!G_SpawnFloat("delay", "0", &ent->wait))
-		G_SpawnFloat("wait", "1", &ent->wait);
+	if(!spawnfloat("delay", "0", &ent->wait))
+		spawnfloat("wait", "1", &ent->wait);
 
 	if(!ent->wait)
 		ent->wait = 1;
@@ -128,7 +128,7 @@ The activator is given this many points.
 void
 Use_Target_Score(gentity_t *ent, gentity_t *other, gentity_t *activator)
 {
-	AddScore(activator, ent->r.currentOrigin, ent->count);
+	addscore(activator, ent->r.currentOrigin, ent->count);
 }
 
 void
@@ -155,9 +155,9 @@ Use_Target_Print(gentity_t *ent, gentity_t *other, gentity_t *activator)
 
 	if(ent->spawnflags & 3){
 		if(ent->spawnflags & 1)
-			G_TeamCommand(TEAM_RED, va("cp \"%s\"", ent->message));
+			teamcmd(TEAM_RED, va("cp \"%s\"", ent->message));
 		if(ent->spawnflags & 2)
-			G_TeamCommand(TEAM_BLUE, va("cp \"%s\"", ent->message));
+			teamcmd(TEAM_BLUE, va("cp \"%s\"", ent->message));
 		return;
 	}
 
@@ -191,14 +191,14 @@ Use_Target_Speaker(gentity_t *ent, gentity_t *other, gentity_t *activator)
 		if(ent->s.loopSound)
 			ent->s.loopSound = 0;			// turn it off
 		else
-			ent->s.loopSound = ent->noise_index;	// start it
+			ent->s.loopSound = ent->noiseindex;	// start it
 	}else{							// normal sound
 		if(ent->spawnflags & 8)
-			G_AddEvent(activator, EV_GENERAL_SOUND, ent->noise_index);
+			addevent(activator, EV_GENERAL_SOUND, ent->noiseindex);
 		else if(ent->spawnflags & 4)
-			G_AddEvent(ent, EV_GLOBAL_SOUND, ent->noise_index);
+			addevent(ent, EV_GLOBAL_SOUND, ent->noiseindex);
 		else
-			G_AddEvent(ent, EV_GENERAL_SOUND, ent->noise_index);
+			addevent(ent, EV_GENERAL_SOUND, ent->noiseindex);
 	}
 }
 
@@ -208,11 +208,11 @@ SP_target_speaker(gentity_t *ent)
 	char buffer[MAX_QPATH];
 	char *s;
 
-	G_SpawnFloat("wait", "0", &ent->wait);
-	G_SpawnFloat("random", "0", &ent->random);
+	spawnfloat("wait", "0", &ent->wait);
+	spawnfloat("random", "0", &ent->random);
 
-	if(!G_SpawnString("noise", "NOSOUND", &s))
-		G_Error("target_speaker without a noise key at %s", vtos(ent->s.origin));
+	if(!spawnstr("noise", "NOSOUND", &s))
+		errorf("target_speaker without a noise key at %s", vtos(ent->s.origin));
 
 	// force all client relative sounds to be "activator" speakers that
 	// play on the entity that activates it
@@ -223,24 +223,24 @@ SP_target_speaker(gentity_t *ent)
 		Com_sprintf(buffer, sizeof(buffer), "%s.wav", s);
 	else
 		Q_strncpyz(buffer, s, sizeof(buffer));
-	ent->noise_index = G_SoundIndex(buffer);
+	ent->noiseindex = getsoundindex(buffer);
 
 	// a repeating speaker can be done completely client side
 	ent->s.eType = ET_SPEAKER;
-	ent->s.eventParm = ent->noise_index;
+	ent->s.eventParm = ent->noiseindex;
 	ent->s.frame = ent->wait * 10;
 	ent->s.clientNum = ent->random * 10;
 
 	// check for prestarted looping sound
 	if(ent->spawnflags & 1)
-		ent->s.loopSound = ent->noise_index;
+		ent->s.loopSound = ent->noiseindex;
 
 	ent->use = Use_Target_Speaker;
 
 	if(ent->spawnflags & 4)
 		ent->r.svFlags |= SVF_BROADCAST;
 
-	VectorCopy(ent->s.origin, ent->s.pos.trBase);
+	veccpy(ent->s.origin, ent->s.pos.trBase);
 
 	// must link the entity so we get areas and clusters so
 	// the server can determine who to send updates to
@@ -261,23 +261,23 @@ target_laser_think(gentity_t *self)
 
 	// if pointed at another entity, set movedir to point at it
 	if(self->enemy){
-		VectorMA(self->enemy->s.origin, 0.5, self->enemy->r.mins, point);
-		VectorMA(point, 0.5, self->enemy->r.maxs, point);
-		VectorSubtract(point, self->s.origin, self->movedir);
-		VectorNormalize(self->movedir);
+		vecmad(self->enemy->s.origin, 0.5, self->enemy->r.mins, point);
+		vecmad(point, 0.5, self->enemy->r.maxs, point);
+		vecsub(point, self->s.origin, self->movedir);
+		vecnorm(self->movedir);
 	}
 
 	// fire forward and see what we hit
-	VectorMA(self->s.origin, 2048, self->movedir, end);
+	vecmad(self->s.origin, 2048, self->movedir, end);
 
 	trap_Trace(&tr, self->s.origin, nil, nil, end, self->s.number, CONTENTS_SOLID|CONTENTS_BODY|CONTENTS_CORPSE);
 
 	if(tr.entityNum)
 		// hurt it if we can
-		G_Damage(&g_entities[tr.entityNum], self, self->activator, self->movedir,
+		entdamage(&g_entities[tr.entityNum], self, self->activator, self->movedir,
 			 tr.endpos, self->damage, DAMAGE_NO_KNOCKBACK, MOD_TARGET_LASER);
 
-	VectorCopy(tr.endpos, self->s.origin2);
+	veccpy(tr.endpos, self->s.origin2);
 
 	trap_LinkEntity(self);
 	self->nextthink = level.time + FRAMETIME;
@@ -316,12 +316,12 @@ target_laser_start(gentity_t *self)
 	self->s.eType = ET_BEAM;
 
 	if(self->target){
-		ent = G_Find(nil, FOFS(targetname), self->target);
+		ent = findent(nil, FOFS(targetname), self->target);
 		if(!ent)
-			G_Printf("%s at %s: %s is a bad target\n", self->classname, vtos(self->s.origin), self->target);
+			gprintf("%s at %s: %s is a bad target\n", self->classname, vtos(self->s.origin), self->target);
 		self->enemy = ent;
 	}else
-		G_SetMovedir(self->s.angles, self->movedir);
+		setmovedir(self->s.angles, self->movedir);
 
 	self->use = target_laser_use;
 	self->think = target_laser_think;
@@ -352,13 +352,13 @@ target_teleporter_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 
 	if(!activator->client)
 		return;
-	dest = G_PickTarget(self->target);
+	dest = picktarget(self->target);
 	if(!dest){
-		G_Printf("Couldn't find teleporter destination\n");
+		gprintf("Couldn't find teleporter destination\n");
 		return;
 	}
 
-	TeleportPlayer(activator, dest->s.origin, dest->s.angles);
+	teleportentity(activator, dest->s.origin, dest->s.angles);
 }
 
 /*QUAKED target_teleporter (1 0 0) (-8 -8 -8) (8 8 8)
@@ -368,7 +368,7 @@ void
 SP_target_teleporter(gentity_t *self)
 {
 	if(!self->targetname)
-		G_Printf("untargeted %s at %s\n", self->classname, vtos(self->s.origin));
+		gprintf("untargeted %s at %s\n", self->classname, vtos(self->s.origin));
 
 	self->use = target_teleporter_use;
 }
@@ -384,20 +384,20 @@ void
 target_relay_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 {
 	if((self->spawnflags & 1) && activator->client
-	   && activator->client->sess.sessionTeam != TEAM_RED)
+	   && activator->client->sess.team != TEAM_RED)
 		return;
 	if((self->spawnflags & 2) && activator->client
-	   && activator->client->sess.sessionTeam != TEAM_BLUE)
+	   && activator->client->sess.team != TEAM_BLUE)
 		return;
 	if(self->spawnflags & 4){
 		gentity_t *ent;
 
-		ent = G_PickTarget(self->target);
+		ent = picktarget(self->target);
 		if(ent && ent->use)
 			ent->use(ent, self, activator);
 		return;
 	}
-	G_UseTargets(self, activator);
+	usetargets(self, activator);
 }
 
 void
@@ -414,7 +414,7 @@ Kills the activator.
 void
 target_kill_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 {
-	G_Damage(activator, nil, nil, nil, nil, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
+	entdamage(activator, nil, nil, nil, nil, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
 }
 
 void
@@ -429,7 +429,7 @@ Used as a positional target for in-game calculation, like jumppad targets.
 void
 SP_target_position(gentity_t *self)
 {
-	G_SetOrigin(self, self->s.origin);
+	setorigin(self, self->s.origin);
 }
 
 static void
@@ -438,25 +438,25 @@ target_location_linkup(gentity_t *ent)
 	int i;
 	int n;
 
-	if(level.locationLinked)
+	if(level.loclinked)
 		return;
 
-	level.locationLinked = qtrue;
+	level.loclinked = qtrue;
 
-	level.locationHead = nil;
+	level.lochead = nil;
 
 	trap_SetConfigstring(CS_LOCATIONS, "unknown");
 
 	for(i = 0, ent = g_entities, n = 1;
-	    i < level.num_entities;
+	    i < level.nentities;
 	    i++, ent++)
 		if(ent->classname && !Q_stricmp(ent->classname, "target_location")){
 			// lets overload some variables!
 			ent->health = n;// use for location marking
 			trap_SetConfigstring(CS_LOCATIONS + n, ent->message);
 			n++;
-			ent->nextTrain = level.locationHead;
-			level.locationHead = ent;
+			ent->nexttrain = level.lochead;
+			level.lochead = ent;
 		}
 
 	// All linked together now
@@ -476,5 +476,5 @@ SP_target_location(gentity_t *self)
 	self->think = target_location_linkup;
 	self->nextthink = level.time + 200;	// Let them all spawn first
 
-	G_SetOrigin(self, self->s.origin);
+	setorigin(self, self->s.origin);
 }

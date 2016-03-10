@@ -32,15 +32,15 @@ static char memoryPool[POOLSIZE];
 static int allocPoint;
 
 void *
-G_Alloc(int size)
+alloc(int size)
 {
 	char *p;
 
 	if(g_debugAlloc.integer)
-		G_Printf("G_Alloc of %i bytes (%i left)\n", size, POOLSIZE - allocPoint - ((size + 31) & ~31));
+		gprintf("alloc of %i bytes (%i left)\n", size, POOLSIZE - allocPoint - ((size + 31) & ~31));
 
 	if(allocPoint + size > POOLSIZE){
-		G_Error("G_Alloc: failed on allocation of %i bytes", size);
+		errorf("alloc: failed on allocation of %i bytes", size);
 		return nil;
 	}
 
@@ -52,7 +52,7 @@ G_Alloc(int size)
 }
 
 void
-G_InitMemory(void)
+initmem(void)
 {
 	allocPoint = 0;
 }
@@ -60,5 +60,5 @@ G_InitMemory(void)
 void
 Svcmd_GameMem_f(void)
 {
-	G_Printf("Game memory status: %i out of %i bytes allocated\n", allocPoint, POOLSIZE);
+	gprintf("Game memory status: %i out of %i bytes allocated\n", allocPoint, POOLSIZE);
 }

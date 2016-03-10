@@ -128,7 +128,7 @@ PlayerSettings_DrawName(void *self)
 		color = text_color_highlight;
 	}
 
-	UI_DrawProportionalString(basex, y, "Name", style, color);
+	drawpropstr(basex, y, "Name", style, color);
 
 	// draw the actual name
 	basex += 64;
@@ -166,7 +166,7 @@ PlayerSettings_DrawName(void *self)
 	// draw at bottom also using proportional font
 	Q_strncpyz(name, f->field.buffer, sizeof(name));
 	Q_CleanStr(name);
-	UI_DrawProportionalString(320, 440, name, UI_CENTER|UI_BIGFONT, text_color_normal);
+	drawpropstr(320, 440, name, UI_CENTER|UI_BIGFONT, text_color_normal);
 }
 
 /*
@@ -192,8 +192,8 @@ PlayerSettings_DrawHandicap(void *self)
 		color = text_color_highlight;
 	}
 
-	UI_DrawProportionalString(item->generic.x, item->generic.y, "Handicap", style, color);
-	UI_DrawProportionalString(item->generic.x + 64, item->generic.y + PROP_HEIGHT, handicap_items[item->curvalue], style, color);
+	drawpropstr(item->generic.x, item->generic.y, "Handicap", style, color);
+	drawpropstr(item->generic.x + 64, item->generic.y + PROP_HEIGHT, handicap_items[item->curvalue], style, color);
 }
 
 /*
@@ -219,7 +219,7 @@ PlayerSettings_DrawEffects(void *self)
 		color = text_color_highlight;
 	}
 
-	UI_DrawProportionalString(item->generic.x, item->generic.y, "Effects", style, color);
+	drawpropstr(item->generic.x, item->generic.y, "Effects", style, color);
 
 	UI_DrawHandlePic(item->generic.x + 64, item->generic.y + PROP_HEIGHT + 8, 128, 8, s_playersettings.fxBasePic);
 	UI_DrawHandlePic(item->generic.x + 64 + item->curvalue * 16 + 8, item->generic.y + PROP_HEIGHT + 6, 16, 12, s_playersettings.fxPic[item->curvalue]);

@@ -239,7 +239,7 @@ UI_SPPostgameMenu_DrawAwardsPresentation(int timer)
 
 	color[0] = color[1] = color[2] = 1.0f;
 	color[3] = (float)(AWARD_PRESENTATION_TIME - atimer) / (float)AWARD_PRESENTATION_TIME;
-	UI_DrawProportionalString(320, 64, ui_medalNames[postgameMenuInfo.awardsEarned[awardNum]], UI_CENTER, color);
+	drawpropstr(320, 64, ui_medalNames[postgameMenuInfo.awardsEarned[awardNum]], UI_CENTER, color);
 
 	UI_SPPostgameMenu_DrawAwardsMedals(awardNum + 1);
 
@@ -301,9 +301,9 @@ UI_SPPostgameMenu_MenuDraw(void)
 
 	// phase 1
 	if(postgameMenuInfo.numClients > 2)
-		UI_DrawProportionalString(510, 480 - 64 - PROP_HEIGHT, postgameMenuInfo.placeNames[2], UI_CENTER, color_white);
-	UI_DrawProportionalString(130, 480 - 64 - PROP_HEIGHT, postgameMenuInfo.placeNames[1], UI_CENTER, color_white);
-	UI_DrawProportionalString(320, 480 - 64 - 2 * PROP_HEIGHT, postgameMenuInfo.placeNames[0], UI_CENTER, color_white);
+		drawpropstr(510, 480 - 64 - PROP_HEIGHT, postgameMenuInfo.placeNames[2], UI_CENTER, color_white);
+	drawpropstr(130, 480 - 64 - PROP_HEIGHT, postgameMenuInfo.placeNames[1], UI_CENTER, color_white);
+	drawpropstr(320, 480 - 64 - 2 * PROP_HEIGHT, postgameMenuInfo.placeNames[0], UI_CENTER, color_white);
 
 	if(postgameMenuInfo.phase == 1){
 		timer = uis.realtime - postgameMenuInfo.starttime;

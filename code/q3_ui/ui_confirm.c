@@ -121,7 +121,7 @@ MessageMenu_Draw(void)
 
 	y = 188;
 	for(i = 0; s_confirm.lines[i]; i++){
-		UI_DrawProportionalString(320, y, s_confirm.lines[i], s_confirm.style, color_red);
+		drawpropstr(320, y, s_confirm.lines[i], s_confirm.style, color_red);
 		y += 18;
 	}
 
@@ -140,8 +140,8 @@ static void
 ConfirmMenu_Draw(void)
 {
 	UI_DrawNamedPic(142, 118, 359, 256, ART_CONFIRM_FRAME);
-	UI_DrawProportionalString(320, 204, s_confirm.question, s_confirm.style, color_red);
-	UI_DrawProportionalString(s_confirm.slashX, 265, "/", UI_LEFT|UI_INVERSE, color_red);
+	drawpropstr(320, 204, s_confirm.question, s_confirm.style, color_red);
+	drawpropstr(s_confirm.slashX, 265, "/", UI_LEFT|UI_INVERSE, color_red);
 
 	Menu_Draw(&s_confirm.menu);
 

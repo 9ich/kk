@@ -46,13 +46,13 @@ G_WriteClientSessionData(gclient_t *client)
 	const char *var;
 
 	s = va("%i %i %i %i %i %i %i",
-	       client->sess.sessionTeam,
-	       client->sess.spectatorNum,
-	       client->sess.spectatorState,
-	       client->sess.spectatorClient,
+	       client->sess.team,
+	       client->sess.specnum,
+	       client->sess.specstate,
+	       client->sess.specclient,
 	       client->sess.wins,
 	       client->sess.losses,
-	       client->sess.teamLeader
+	       client->sess.teamleader
 	       );
 
 	var = va("session%i", (int)(client - level.clients));
@@ -62,47 +62,47 @@ G_WriteClientSessionData(gclient_t *client)
 
 /*
 ================
-G_ReadSessionData
+sessread
 
 Called on a reconnect
 ================
 */
 void
-G_ReadSessionData(gclient_t *client)
+sessread(gclient_t *client)
 {
 	char s[MAX_STRING_CHARS];
 	const char *var;
-	int teamLeader;
-	int spectatorState;
-	int sessionTeam;
+	int teamleader;
+	int specstate;
+	int team;
 
 	var = va("session%i", (int)(client - level.clients));
 	trap_Cvar_VariableStringBuffer(var, s, sizeof(s));
 
 	sscanf(s, "%i %i %i %i %i %i %i",
-	       &sessionTeam,
-	       &client->sess.spectatorNum,
-	       &spectatorState,
-	       &client->sess.spectatorClient,
+	       &team,
+	       &client->sess.specnum,
+	       &specstate,
+	       &client->sess.specclient,
 	       &client->sess.wins,
 	       &client->sess.losses,
-	       &teamLeader
+	       &teamleader
 	       );
 
-	client->sess.sessionTeam = (team_t)sessionTeam;
-	client->sess.spectatorState = (spectatorState_t)spectatorState;
-	client->sess.teamLeader = (qboolean)teamLeader;
+	client->sess.team = (team_t)team;
+	client->sess.specstate = (spectatorState_t)specstate;
+	client->sess.teamleader = (qboolean)teamleader;
 }
 
 /*
 ================
-G_InitSessionData
+sessinit
 
 Called on a first-time connect
 ================
 */
 void
-G_InitSessionData(gclient_t *client, char *userinfo)
+sessinit(gclient_t *client, char *userinfo)
 {
 	clientSession_t *sess;
 	const char *value;
@@ -112,52 +112,52 @@ G_InitSessionData(gclient_t *client, char *userinfo)
 	// initial team determination
 	if(g_gametype.integer >= GT_TEAM){
 		if(g_teamAutoJoin.integer && !(g_entities[client - level.clients].r.svFlags & SVF_BOT)){
-			sess->sessionTeam = PickTeam(-1);
-			BroadcastTeamChange(client, -1);
+			sess->team = pickteam(-1);
+			broadcastteamchange(client, -1);
 		}else
 			// always spawn as spectator in team games
-			sess->sessionTeam = TEAM_SPECTATOR;
+			sess->team = TEAM_SPECTATOR;
 	}else{
 		value = Info_ValueForKey(userinfo, "team");
 		if(value[0] == 's')
 			// a willing spectator, not a waiting-in-line
-			sess->sessionTeam = TEAM_SPECTATOR;
+			sess->team = TEAM_SPECTATOR;
 		else{
 			switch(g_gametype.integer){
 			default:
 			case GT_FFA:
 			case GT_SINGLE_PLAYER:
 				if(g_maxGameClients.integer > 0 &&
-				   level.numNonSpectatorClients >= g_maxGameClients.integer)
-					sess->sessionTeam = TEAM_SPECTATOR;
+				   level.nnonspecclients >= g_maxGameClients.integer)
+					sess->team = TEAM_SPECTATOR;
 				else
-					sess->sessionTeam = TEAM_FREE;
+					sess->team = TEAM_FREE;
 				break;
 			case GT_TOURNAMENT:
 				// if the game is full, go into a waiting mode
-				if(level.numNonSpectatorClients >= 2)
-					sess->sessionTeam = TEAM_SPECTATOR;
+				if(level.nnonspecclients >= 2)
+					sess->team = TEAM_SPECTATOR;
 				else
-					sess->sessionTeam = TEAM_FREE;
+					sess->team = TEAM_FREE;
 				break;
 			}
 		}
 	}
 
-	sess->spectatorState = SPECTATOR_FREE;
-	AddTournamentQueue(client);
+	sess->specstate = SPECTATOR_FREE;
+	addtourneyqueue(client);
 
 	G_WriteClientSessionData(client);
 }
 
 /*
 ==================
-G_InitWorldSession
+worldsessinit
 
 ==================
 */
 void
-G_InitWorldSession(void)
+worldsessinit(void)
 {
 	char s[MAX_STRING_CHARS];
 	int gt;
@@ -168,19 +168,19 @@ G_InitWorldSession(void)
 	// if the gametype changed since the last session, don't use any
 	// client sessions
 	if(g_gametype.integer != gt){
-		level.newSession = qtrue;
-		G_Printf("Gametype changed, clearing session data.\n");
+		level.newsess = qtrue;
+		gprintf("Gametype changed, clearing session data.\n");
 	}
 }
 
 /*
 ==================
-G_WriteSessionData
+sesswrite
 
 ==================
 */
 void
-G_WriteSessionData(void)
+sesswrite(void)
 {
 	int i;
 

@@ -102,27 +102,27 @@ BotAI_Print(int type, char *fmt, ...)
 
 	switch(type){
 	case PRT_MESSAGE: {
-		G_Printf("%s", str);
+		gprintf("%s", str);
 		break;
 	}
 	case PRT_WARNING: {
-		G_Printf(S_COLOR_YELLOW "Warning: %s", str);
+		gprintf(S_COLOR_YELLOW "Warning: %s", str);
 		break;
 	}
 	case PRT_ERROR: {
-		G_Printf(S_COLOR_RED "Error: %s", str);
+		gprintf(S_COLOR_RED "Error: %s", str);
 		break;
 	}
 	case PRT_FATAL: {
-		G_Printf(S_COLOR_RED "Fatal: %s", str);
+		gprintf(S_COLOR_RED "Fatal: %s", str);
 		break;
 	}
 	case PRT_EXIT: {
-		G_Error(S_COLOR_RED "Exit: %s", str);
+		errorf(S_COLOR_RED "Exit: %s", str);
 		break;
 	}
 	default: {
-		G_Printf("unknown print type\n");
+		gprintf("unknown print type\n");
 		break;
 	}
 	}
@@ -143,9 +143,9 @@ BotAI_Trace(bsp_trace_t *bsptrace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_
 	bsptrace->allsolid = trace.allsolid;
 	bsptrace->startsolid = trace.startsolid;
 	bsptrace->fraction = trace.fraction;
-	VectorCopy(trace.endpos, bsptrace->endpos);
+	veccpy(trace.endpos, bsptrace->endpos);
 	bsptrace->plane.dist = trace.plane.dist;
-	VectorCopy(trace.plane.normal, bsptrace->plane.normal);
+	veccpy(trace.plane.normal, bsptrace->plane.normal);
 	bsptrace->plane.signbits = trace.plane.signbits;
 	bsptrace->plane.type = trace.plane.type;
 	bsptrace->surface.value = 0;
@@ -628,13 +628,13 @@ BotWriteInterbreeded(char *filename)
 
 /*
 ==============
-BotInterbreedEndMatch
+botinterbreed
 
 add link back into ExitLevel?
 ==============
 */
 void
-BotInterbreedEndMatch(void)
+botinterbreed(void)
 {
 	if(!bot_interbreed) return;
 	bot_interbreedmatchcount++;
@@ -879,12 +879,12 @@ BotInputToUserCommand(bot_input_t *bi, usercmd_t *ucmd, int delta_angles[3], int
 	else angles[PITCH] = 0;
 	angles[YAW] = bi->viewangles[YAW];
 	angles[ROLL] = 0;
-	AngleVectors(angles, forward, right, nil);
+	anglevecs(angles, forward, right, nil);
 	//bot input speed is in the range [0, 400]
 	bi->speed = bi->speed * 127 / 400;
 	//set the view independent movement
-	f = DotProduct(forward, bi->dir);
-	r = DotProduct(right, bi->dir);
+	f = vecdot(forward, bi->dir);
+	r = vecdot(right, bi->dir);
 	u = abs(forward[2]) * bi->dir[2];
 	m = fabs(f);
 
@@ -1051,9 +1051,9 @@ BotAI(int client, float thinktime)
 	//
 	bs->thinktime = thinktime;
 	//origin of the bot
-	VectorCopy(bs->cur_ps.origin, bs->origin);
+	veccpy(bs->cur_ps.origin, bs->origin);
 	//eye coordinates of the bot
-	VectorCopy(bs->cur_ps.origin, bs->eye);
+	veccpy(bs->cur_ps.origin, bs->eye);
 	bs->eye[2] += bs->cur_ps.viewheight;
 	//get the area the bot is in
 	bs->areanum = BotPointAreaNum(bs->origin);
@@ -1184,7 +1184,7 @@ BotAISetupClient(int client, struct bot_settings_s *settings, qboolean restart)
 	bot_state_t *bs;
 	int errnum;
 
-	if(!botstates[client]) botstates[client] = G_Alloc(sizeof(bot_state_t));
+	if(!botstates[client]) botstates[client] = alloc(sizeof(bot_state_t));
 	bs = botstates[client];
 
 	if(!bs)
@@ -1418,7 +1418,7 @@ BotAIStartFrame(int time)
 	static int botlib_residual;
 	static int lastbotthink_time;
 
-	G_CheckBotSpawn();
+	chkbotspawn();
 
 	trap_Cvar_Update(&bot_rocketjump);
 	trap_Cvar_Update(&bot_grapple);
@@ -1525,14 +1525,14 @@ BotAIStartFrame(int time)
 			//
 			memset(&state, 0, sizeof(bot_entitystate_t));
 			//
-			VectorCopy(ent->r.currentOrigin, state.origin);
+			veccpy(ent->r.currentOrigin, state.origin);
 			if(i < MAX_CLIENTS)
-				VectorCopy(ent->s.apos.trBase, state.angles);
+				veccpy(ent->s.apos.trBase, state.angles);
 			else
-				VectorCopy(ent->r.currentAngles, state.angles);
-			VectorCopy(ent->s.origin2, state.old_origin);
-			VectorCopy(ent->r.mins, state.mins);
-			VectorCopy(ent->r.maxs, state.maxs);
+				veccpy(ent->r.currentAngles, state.angles);
+			veccpy(ent->s.origin2, state.old_origin);
+			veccpy(ent->r.mins, state.mins);
+			veccpy(ent->r.maxs, state.maxs);
 			state.type = ent->s.eType;
 			state.flags = ent->s.eFlags;
 			if(ent->r.bmodel) state.solid = SOLID_BSP;

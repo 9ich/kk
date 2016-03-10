@@ -201,13 +201,13 @@ Main_MenuDraw(void)
 	memset(&ent, 0, sizeof(ent));
 
 	adjust = 5.0 * sin((float)uis.realtime / 5000);
-	VectorSet(angles, 0, 180 + adjust, 0);
+	vecset(angles, 0, 180 + adjust, 0);
 	AnglesToAxis(angles, ent.axis);
 	ent.hModel = s_main.bannerModel;
-	VectorCopy(origin, ent.origin);
-	VectorCopy(origin, ent.lightingOrigin);
+	veccpy(origin, ent.origin);
+	veccpy(origin, ent.lightingOrigin);
 	ent.renderfx = RF_LIGHTING_ORIGIN | RF_NOSHADOW;
-	VectorCopy(ent.origin, ent.oldorigin);
+	veccpy(ent.origin, ent.oldorigin);
 
 	trap_R_AddRefEntityToScene(&ent);
 
@@ -220,7 +220,7 @@ Main_MenuDraw(void)
 		Menu_Draw(&s_main.menu);
 
 	if(uis.demoversion){
-		UI_DrawProportionalString(320, 372, "DEMO      FOR MATURE AUDIENCES      DEMO", UI_CENTER|UI_SMALLFONT, color);
+		drawpropstr(320, 372, "DEMO      FOR MATURE AUDIENCES      DEMO", UI_CENTER|UI_SMALLFONT, color);
 		UI_DrawString(320, 400, "Quake III Arena(c) 1999-2000, Id Software, Inc.  All Rights Reserved", UI_CENTER|UI_SMALLFONT, color);
 	}else
 		UI_DrawString(320, 450, "Quake III Arena(c) 1999-2000, Id Software, Inc.  All Rights Reserved", UI_CENTER|UI_SMALLFONT, color);

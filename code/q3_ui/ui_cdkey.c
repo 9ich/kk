@@ -165,11 +165,11 @@ UI_CDKeyMenu_DrawKey(void *self)
 
 	val = UI_CDKeyMenu_PreValidateKey(f->field.buffer);
 	if(val == 1)
-		UI_DrawProportionalString(320, 376, "Please enter your CD Key", UI_CENTER|UI_SMALLFONT, color_yellow);
+		drawpropstr(320, 376, "Please enter your CD Key", UI_CENTER|UI_SMALLFONT, color_yellow);
 	else if(val == 0)
-		UI_DrawProportionalString(320, 376, "The CD Key appears to be valid, thank you", UI_CENTER|UI_SMALLFONT, color_white);
+		drawpropstr(320, 376, "The CD Key appears to be valid, thank you", UI_CENTER|UI_SMALLFONT, color_white);
 	else
-		UI_DrawProportionalString(320, 376, "The CD Key is not valid", UI_CENTER|UI_SMALLFONT, color_red);
+		drawpropstr(320, 376, "The CD Key is not valid", UI_CENTER|UI_SMALLFONT, color_red);
 }
 
 /*

@@ -505,11 +505,11 @@ UI_ProportionalSizeScale(int style)
 
 /*
 =================
-UI_DrawProportionalString
+drawpropstr
 =================
 */
 void
-UI_DrawProportionalString(int x, int y, const char* str, int style, vec4_t color)
+drawpropstr(int x, int y, const char* str, int style, vec4_t color)
 {
 	vec4_t drawcolor;
 	int width;
@@ -601,7 +601,7 @@ UI_DrawProportionalString_AutoWrapped(int x, int y, int xmax, int ystep, const c
 				// fuck, don't have a clean cut, we'll overflow
 				s2 = s3;
 			*s2 = '\0';
-			UI_DrawProportionalString(x, y, s1, style, color);
+			drawpropstr(x, y, s1, style, color);
 			y += ystep;
 			if(c_bcp == '\0'){
 				// that was the last word
@@ -610,7 +610,7 @@ UI_DrawProportionalString_AutoWrapped(int x, int y, int xmax, int ystep, const c
 				// so just print it now if needed
 				s2++;
 				if(*s2 != '\0')	// if we are printing an overflowing line we have s2 == s3
-					UI_DrawProportionalString(x, y, s2, style, color);
+					drawpropstr(x, y, s2, style, color);
 				break;
 			}
 			s2++;
@@ -619,7 +619,7 @@ UI_DrawProportionalString_AutoWrapped(int x, int y, int xmax, int ystep, const c
 		}else{
 			s2 = s3;
 			if(c_bcp == '\0'){	// we reached the end
-				UI_DrawProportionalString(x, y, s1, style, color);
+				drawpropstr(x, y, s1, style, color);
 				break;
 			}
 		}

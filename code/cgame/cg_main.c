@@ -31,8 +31,8 @@ displayContextDef_t cgDC;
 
 int forceModelModificationCount = -1;
 
-void	CG_Init(int serverMessageNum, int serverCommandSequence, int clientNum);
-void	CG_Shutdown(void);
+void	cginit(int serverMessageNum, int serverCommandSequence, int clientNum);
+void	cgshutdown(void);
 
 /*
 ================
@@ -47,35 +47,35 @@ vmMain(int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, 
 {
 	switch(command){
 	case CG_INIT:
-		CG_Init(arg0, arg1, arg2);
+		cginit(arg0, arg1, arg2);
 		return 0;
 	case CG_SHUTDOWN:
-		CG_Shutdown();
+		cgshutdown();
 		return 0;
 	case CG_CONSOLE_COMMAND:
-		return CG_ConsoleCommand();
+		return consolecmd();
 	case CG_DRAW_ACTIVE_FRAME:
-		CG_DrawActiveFrame(arg0, arg1, arg2);
+		drawframe(arg0, arg1, arg2);
 		return 0;
 	case CG_CROSSHAIR_PLAYER:
-		return CG_CrosshairPlayer();
+		return xhairplayer();
 	case CG_LAST_ATTACKER:
-		return CG_LastAttacker();
+		return getlastattacker();
 	case CG_KEY_EVENT:
-		CG_KeyEvent(arg0, arg1);
+		keyevent(arg0, arg1);
 		return 0;
 	case CG_MOUSE_EVENT:
 #ifdef MISSIONPACK
-		cgDC.cursorx = cgs.cursorX;
-		cgDC.cursory = cgs.cursorY;
+		cgDC.cursorx = cgs.cursorx;
+		cgDC.cursory = cgs.cursory;
 #endif
-		CG_MouseEvent(arg0, arg1);
+		mouseevent(arg0, arg1);
 		return 0;
 	case CG_EVENT_HANDLING:
-		CG_EventHandling(arg0);
+		eventhandling(arg0);
 		return 0;
 	default:
-		CG_Error("vmMain: unknown command %i", command);
+		cgerrorf("vmMain: unknown command %i", command);
 		break;
 	}
 	return -1;
@@ -323,11 +323,11 @@ static int cvarTableSize = ARRAY_LEN(cvarTable);
 
 /*
 =================
-CG_RegisterCvars
+registercvars
 =================
 */
 void
-CG_RegisterCvars(void)
+registercvars(void)
 {
 	int i;
 	cvarTable_t *cv;
@@ -339,7 +339,7 @@ CG_RegisterCvars(void)
 
 	// see if we are also running the server on this machine
 	trap_Cvar_VariableStringBuffer("sv_running", var, sizeof(var));
-	cgs.localServer = atoi(var);
+	cgs.srvislocal = atoi(var);
 
 	forceModelModificationCount = cg_forceModel.modificationCount;
 
@@ -362,20 +362,20 @@ CG_ForceModelChange(void)
 	for(i = 0; i<MAX_CLIENTS; i++){
 		const char *clientInfo;
 
-		clientInfo = CG_ConfigString(CS_PLAYERS+i);
+		clientInfo = getconfigstr(CS_PLAYERS+i);
 		if(!clientInfo[0])
 			continue;
-		CG_NewClientInfo(i);
+		newclientinfo(i);
 	}
 }
 
 /*
 =================
-CG_UpdateCvars
+updatecvars
 =================
 */
 void
-CG_UpdateCvars(void)
+updatecvars(void)
 {
 	int i;
 	cvarTable_t *cv;
@@ -404,23 +404,23 @@ CG_UpdateCvars(void)
 }
 
 int
-CG_CrosshairPlayer(void)
+xhairplayer(void)
 {
-	if(cg.time > (cg.crosshairClientTime + 1000))
+	if(cg.time > (cg.xhairclienttime + 1000))
 		return -1;
-	return cg.crosshairClientNum;
+	return cg.xhairclientnum;
 }
 
 int
-CG_LastAttacker(void)
+getlastattacker(void)
 {
-	if(!cg.attackerTime)
+	if(!cg.attackertime)
 		return -1;
 	return cg.snap->ps.persistant[PERS_ATTACKER];
 }
 
 void QDECL
-CG_Printf(const char *msg, ...)
+cgprintf(const char *msg, ...)
 {
 	va_list argptr;
 	char text[1024];
@@ -433,7 +433,7 @@ CG_Printf(const char *msg, ...)
 }
 
 void QDECL
-CG_Error(const char *msg, ...)
+cgerrorf(const char *msg, ...)
 {
 	va_list argptr;
 	char text[1024];
@@ -473,11 +473,11 @@ Com_Printf(const char *msg, ...)
 
 /*
 ================
-CG_Argv
+cgargv
 ================
 */
 const char *
-CG_Argv(int arg)
+cgargv(int arg)
 {
 	static char buffer[MAX_STRING_CHARS];
 
@@ -505,8 +505,8 @@ CG_RegisterItemSounds(int itemNum)
 
 	item = &bg_itemlist[itemNum];
 
-	if(item->pickup_sound)
-		trap_S_RegisterSound(item->pickup_sound, qfalse);
+	if(item->pickupsound)
+		trap_S_RegisterSound(item->pickupsound, qfalse);
 
 	// parse the space seperated precache string for other media
 	s = item->sounds;
@@ -520,7 +520,7 @@ CG_RegisterItemSounds(int itemNum)
 
 		len = s-start;
 		if(len >= MAX_QPATH || len < 5){
-			CG_Error("PrecacheItem: %s has bad precache string",
+			cgerrorf("PrecacheItem: %s has bad precache string",
 				 item->classname);
 			return;
 		}
@@ -710,20 +710,20 @@ CG_RegisterSounds(void)
 	}
 
 	// only register the items that the server says we need
-	Q_strncpyz(items, CG_ConfigString(CS_ITEMS), sizeof(items));
+	Q_strncpyz(items, getconfigstr(CS_ITEMS), sizeof(items));
 
-	for(i = 1; i < bg_numItems; i++)
+	for(i = 1; i < bg_nitems; i++)
 //		if ( items[ i ] == '1' || cg_buildScript.integer ) {
 		CG_RegisterItemSounds(i);
 //		}
 
 	for(i = 1; i < MAX_SOUNDS; i++){
-		soundName = CG_ConfigString(CS_SOUNDS+i);
+		soundName = getconfigstr(CS_SOUNDS+i);
 		if(!soundName[0])
 			break;
 		if(soundName[0] == '*')
 			continue;	// custom sound
-		cgs.gameSounds[i] = trap_S_RegisterSound(soundName, qfalse);
+		cgs.gamesounds[i] = trap_S_RegisterSound(soundName, qfalse);
 	}
 
 	// FIXME: only needed with item
@@ -824,12 +824,12 @@ CG_RegisterGraphics(void)
 	memset(&cg.refdef, 0, sizeof(cg.refdef));
 	trap_R_ClearScene();
 
-	CG_LoadingString(cgs.mapname);
+	loadingstr(cgs.mapname);
 
 	trap_R_LoadWorldMap(cgs.mapname);
 
 	// precache status bar pics
-	CG_LoadingString("game media");
+	loadingstr("game media");
 
 	for(i = 0; i<11; i++)
 		cgs.media.numberShaders[i] = trap_R_RegisterShader(sb_nums[i]);
@@ -1011,12 +1011,12 @@ CG_RegisterGraphics(void)
 	memset(cg_weapons, 0, sizeof(cg_weapons));
 
 	// only register the items that the server says we need
-	Q_strncpyz(items, CG_ConfigString(CS_ITEMS), sizeof(items));
+	Q_strncpyz(items, getconfigstr(CS_ITEMS), sizeof(items));
 
-	for(i = 1; i < bg_numItems; i++)
+	for(i = 1; i < bg_nitems; i++)
 		if(items[i] == '1' || cg_buildScript.integer){
-			CG_LoadingItem(i);
-			CG_RegisterItemVisuals(i);
+			loadingitem(i);
+			registeritemgfx(i);
 		}
 
 	// wall marks
@@ -1029,27 +1029,27 @@ CG_RegisterGraphics(void)
 	cgs.media.bloodMarkShader = trap_R_RegisterShader("bloodMark");
 
 	// register the inline models
-	cgs.numInlineModels = trap_CM_NumInlineModels();
-	for(i = 1; i < cgs.numInlineModels; i++){
+	cgs.ninlinemodels = trap_CM_NumInlineModels();
+	for(i = 1; i < cgs.ninlinemodels; i++){
 		char name[10];
 		vec3_t mins, maxs;
 		int j;
 
 		Com_sprintf(name, sizeof(name), "*%i", i);
-		cgs.inlineDrawModel[i] = trap_R_RegisterModel(name);
-		trap_R_ModelBounds(cgs.inlineDrawModel[i], mins, maxs);
+		cgs.inlinedrawmodel[i] = trap_R_RegisterModel(name);
+		trap_R_ModelBounds(cgs.inlinedrawmodel[i], mins, maxs);
 		for(j = 0; j < 3; j++)
-			cgs.inlineModelMidpoints[i][j] = mins[j] + 0.5 * (maxs[j] - mins[j]);
+			cgs.inlinemodelmidpoints[i][j] = mins[j] + 0.5 * (maxs[j] - mins[j]);
 	}
 
 	// register all the server specified models
 	for(i = 1; i<MAX_MODELS; i++){
-		const char *modelName;
+		const char *modelname;
 
-		modelName = CG_ConfigString(CS_MODELS+i);
-		if(!modelName[0])
+		modelname = getconfigstr(CS_MODELS+i);
+		if(!modelname[0])
 			break;
-		cgs.gameModels[i] = trap_R_RegisterModel(modelName);
+		cgs.gamemodels[i] = trap_R_RegisterModel(modelname);
 	}
 
 #ifdef MISSIONPACK
@@ -1094,22 +1094,22 @@ CG_RegisterGraphics(void)
 
 /*
 =======================
-CG_BuildSpectatorString
+mkspecstr
 
 =======================
 */
 void
-CG_BuildSpectatorString(void)
+mkspecstr(void)
 {
 	int i;
-	cg.spectatorList[0] = 0;
+	cg.speclist[0] = 0;
 	for(i = 0; i < MAX_CLIENTS; i++)
-		if(cgs.clientinfo[i].infoValid && cgs.clientinfo[i].team == TEAM_SPECTATOR)
-			Q_strcat(cg.spectatorList, sizeof(cg.spectatorList), va("%s     ", cgs.clientinfo[i].name));
-	i = strlen(cg.spectatorList);
-	if(i != cg.spectatorLen){
-		cg.spectatorLen = i;
-		cg.spectatorWidth = -1;
+		if(cgs.clientinfo[i].infovalid && cgs.clientinfo[i].team == TEAM_SPECTATOR)
+			Q_strcat(cg.speclist, sizeof(cg.speclist), va("%s     ", cgs.clientinfo[i].name));
+	i = strlen(cg.speclist);
+	if(i != cg.speclen){
+		cg.speclen = i;
+		cg.specwidth = -1;
 	}
 }
 
@@ -1123,8 +1123,8 @@ CG_RegisterClients(void)
 {
 	int i;
 
-	CG_LoadingClient(cg.clientNum);
-	CG_NewClientInfo(cg.clientNum);
+	loadingclient(cg.clientNum);
+	newclientinfo(cg.clientNum);
 
 	for(i = 0; i<MAX_CLIENTS; i++){
 		const char *clientInfo;
@@ -1132,27 +1132,27 @@ CG_RegisterClients(void)
 		if(cg.clientNum == i)
 			continue;
 
-		clientInfo = CG_ConfigString(CS_PLAYERS+i);
+		clientInfo = getconfigstr(CS_PLAYERS+i);
 		if(!clientInfo[0])
 			continue;
-		CG_LoadingClient(i);
-		CG_NewClientInfo(i);
+		loadingclient(i);
+		newclientinfo(i);
 	}
-	CG_BuildSpectatorString();
+	mkspecstr();
 }
 
 //===========================================================================
 
 /*
 =================
-CG_ConfigString
+getconfigstr
 =================
 */
 const char *
-CG_ConfigString(int index)
+getconfigstr(int index)
 {
 	if(index < 0 || index >= MAX_CONFIGSTRINGS)
-		CG_Error("CG_ConfigString: bad index: %i", index);
+		cgerrorf("getconfigstr: bad index: %i", index);
 	return cgs.gameState.stringData + cgs.gameState.stringOffsets[index];
 }
 
@@ -1160,18 +1160,18 @@ CG_ConfigString(int index)
 
 /*
 ======================
-CG_StartMusic
+startmusic
 
 ======================
 */
 void
-CG_StartMusic(void)
+startmusic(void)
 {
 	char *s;
 	char parm1[MAX_QPATH], parm2[MAX_QPATH];
 
 	// start the background music
-	s = (char*)CG_ConfigString(CS_MUSIC);
+	s = (char*)getconfigstr(CS_MUSIC);
 	Q_strncpyz(parm1, COM_Parse(&s), sizeof(parm1));
 	Q_strncpyz(parm2, COM_Parse(&s), sizeof(parm2));
 
@@ -1424,12 +1424,12 @@ CG_LoadMenus(const char *menuFile)
 		Com_Printf(S_COLOR_YELLOW "menu file not found: %s, using default\n", menuFile);
 		len = trap_FS_FOpenFile("ui/hud.txt", &f, FS_READ);
 		if(!f)
-			CG_Error(S_COLOR_RED "default menu file not found: ui/hud.txt, unable to continue!");
+			cgerrorf(S_COLOR_RED "default menu file not found: ui/hud.txt, unable to continue!");
 	}
 
 	if(len >= MAX_MENUDEFFILE){
 		trap_FS_FCloseFile(f);
-		CG_Error(S_COLOR_RED "menu file too large: %s is %i, max allowed is %i", menuFile, len, MAX_MENUDEFFILE);
+		cgerrorf(S_COLOR_RED "menu file too large: %s is %i, max allowed is %i", menuFile, len, MAX_MENUDEFFILE);
 		return;
 	}
 
@@ -1484,32 +1484,32 @@ CG_FeederCount(float feederID)
 	int i, count;
 	count = 0;
 	if(feederID == FEEDER_REDTEAM_LIST){
-		for(i = 0; i < cg.numScores; i++)
+		for(i = 0; i < cg.nscores; i++)
 			if(cg.scores[i].team == TEAM_RED)
 				count++;
 	}else if(feederID == FEEDER_BLUETEAM_LIST){
-		for(i = 0; i < cg.numScores; i++)
+		for(i = 0; i < cg.nscores; i++)
 			if(cg.scores[i].team == TEAM_BLUE)
 				count++;
 	}else if(feederID == FEEDER_SCOREBOARD)
-		return cg.numScores;
+		return cg.nscores;
 	return count;
 }
 
 void
-CG_SetScoreSelection(void *p)
+setscoresel(void *p)
 {
 	menuDef_t *menu = (menuDef_t*)p;
 	playerState_t *ps = &cg.snap->ps;
 	int i, red, blue;
 	red = blue = 0;
-	for(i = 0; i < cg.numScores; i++){
+	for(i = 0; i < cg.nscores; i++){
 		if(cg.scores[i].team == TEAM_RED)
 			red++;
 		else if(cg.scores[i].team == TEAM_BLUE)
 			blue++;
 		if(ps->clientNum == cg.scores[i].client)
-			cg.selectedScore = i;
+			cg.selscore = i;
 	}
 
 	if(menu == nil)
@@ -1519,13 +1519,13 @@ CG_SetScoreSelection(void *p)
 	if(cgs.gametype >= GT_TEAM){
 		int feeder = FEEDER_REDTEAM_LIST;
 		i = red;
-		if(cg.scores[cg.selectedScore].team == TEAM_BLUE){
+		if(cg.scores[cg.selscore].team == TEAM_BLUE){
 			feeder = FEEDER_BLUETEAM_LIST;
 			i = blue;
 		}
 		Menu_SetFeederSelection(menu, feeder, i, nil);
 	}else
-		Menu_SetFeederSelection(menu, FEEDER_SCOREBOARD, cg.selectedScore, nil);
+		Menu_SetFeederSelection(menu, FEEDER_SCOREBOARD, cg.selscore, nil);
 }
 
 // FIXME: might need to cache this info
@@ -1535,7 +1535,7 @@ CG_InfoFromScoreIndex(int index, int team, int *scoreIndex)
 	int i, count;
 	if(cgs.gametype >= GT_TEAM){
 		count = 0;
-		for(i = 0; i < cg.numScores; i++)
+		for(i = 0; i < cg.nscores; i++)
 			if(cg.scores[i].team == team){
 				if(count == index){
 					*scoreIndex = i;
@@ -1567,21 +1567,21 @@ CG_FeederItemText(float feederID, int index, int column, qhandle_t *handle)
 	info = CG_InfoFromScoreIndex(index, team, &scoreIndex);
 	sp = &cg.scores[scoreIndex];
 
-	if(info && info->infoValid){
+	if(info && info->infovalid){
 		switch(column){
 		case 0:
 			if(info->powerups & (1 << PW_NEUTRALFLAG)){
-				item = BG_FindItemForPowerup(PW_NEUTRALFLAG);
+				item = finditemforpowerup(PW_NEUTRALFLAG);
 				*handle = cg_items[ITEM_INDEX(item)].icon;
 			}else if(info->powerups & (1 << PW_REDFLAG)){
-				item = BG_FindItemForPowerup(PW_REDFLAG);
+				item = finditemforpowerup(PW_REDFLAG);
 				*handle = cg_items[ITEM_INDEX(item)].icon;
 			}else if(info->powerups & (1 << PW_BLUEFLAG)){
-				item = BG_FindItemForPowerup(PW_BLUEFLAG);
+				item = finditemforpowerup(PW_BLUEFLAG);
 				*handle = cg_items[ITEM_INDEX(item)].icon;
 			}else{
-				if(info->botSkill > 0 && info->botSkill <= 5)
-					*handle = cgs.media.botSkillShaders[info->botSkill - 1];
+				if(info->botskill > 0 && info->botskill <= 5)
+					*handle = cgs.media.botSkillShaders[info->botskill - 1];
 				else if(info->handicap < 100)
 					return va("%i", info->handicap);
 			}
@@ -1590,7 +1590,7 @@ CG_FeederItemText(float feederID, int index, int column, qhandle_t *handle)
 			if(team == -1)
 				return "";
 			else
-				*handle = CG_StatusHandle(info->teamTask);
+				*handle = CG_StatusHandle(info->teamtask);
 			break;
 		case 2:
 			if(cg.snap->ps.stats[STAT_CLIENTS_READY] & (1 << sp->client))
@@ -1598,11 +1598,11 @@ CG_FeederItemText(float feederID, int index, int column, qhandle_t *handle)
 			if(team == -1){
 				if(cgs.gametype == GT_TOURNAMENT)
 					return va("%i/%i", info->wins, info->losses);
-				else if(info->infoValid && info->team == TEAM_SPECTATOR)
+				else if(info->infovalid && info->team == TEAM_SPECTATOR)
 					return "Spectator";
 				else
 					return "";
-			}else  if(info->teamLeader)
+			}else  if(info->teamleader)
 				return "Leader";
 
 			break;
@@ -1639,14 +1639,14 @@ CG_FeederSelection(float feederID, int index)
 		int i, count;
 		int team = (feederID == FEEDER_REDTEAM_LIST) ? TEAM_RED : TEAM_BLUE;
 		count = 0;
-		for(i = 0; i < cg.numScores; i++)
+		for(i = 0; i < cg.nscores; i++)
 			if(cg.scores[i].team == team){
 				if(index == count)
-					cg.selectedScore = i;
+					cg.selscore = i;
 				count++;
 			}
 	}else
-		cg.selectedScore = index;
+		cg.selscore = index;
 }
 
 #endif
@@ -1731,24 +1731,24 @@ CG_LoadHudMenu(void)
 
 	cgDC.registerShaderNoMip = &trap_R_RegisterShaderNoMip;
 	cgDC.setColor = &trap_R_SetColor;
-	cgDC.drawHandlePic = &CG_DrawPic;
+	cgDC.drawHandlePic = &drawpic;
 	cgDC.drawStretchPic = &trap_R_DrawStretchPic;
 	cgDC.drawText = &CG_Text_Paint;
 	cgDC.textWidth = &CG_Text_Width;
 	cgDC.textHeight = &CG_Text_Height;
 	cgDC.registerModel = &trap_R_RegisterModel;
 	cgDC.modelBounds = &trap_R_ModelBounds;
-	cgDC.fillRect = &CG_FillRect;
-	cgDC.drawRect = &CG_DrawRect;
-	cgDC.drawSides = &CG_DrawSides;
-	cgDC.drawTopBottom = &CG_DrawTopBottom;
+	cgDC.fillRect = &fillrect;
+	cgDC.drawRect = &drawrect;
+	cgDC.drawSides = &drawsides;
+	cgDC.drawTopBottom = &drawtopbottom;
 	cgDC.clearScene = &trap_R_ClearScene;
 	cgDC.addRefEntityToScene = &trap_R_AddRefEntityToScene;
 	cgDC.renderScene = &trap_R_RenderScene;
 	cgDC.registerFont = &trap_R_RegisterFont;
-	cgDC.ownerDrawItem = &CG_OwnerDraw;
+	cgDC.ownerDrawItem = &ownerdraw;
 	cgDC.getValue = &CG_GetValue;
-	cgDC.ownerDrawVisible = &CG_OwnerDrawVisible;
+	cgDC.ownerDrawVisible = &ownerdrawvisible;
 	cgDC.runScript = &CG_RunMenuScript;
 	cgDC.getTeamColor = &CG_GetTeamColor;
 	cgDC.setCVar = trap_Cvar_Set;
@@ -1821,14 +1821,14 @@ CG_AssetCache(void)
 #endif
 /*
 =================
-CG_Init
+cginit
 
 Called after every level change or subsystem restart
 Will perform callbacks to make the loading info screen update.
 =================
 */
 void
-CG_Init(int serverMessageNum, int serverCommandSequence, int clientNum)
+cginit(int serverMessageNum, int serverCommandSequence, int clientNum)
 {
 	const char *s;
 
@@ -1841,7 +1841,7 @@ CG_Init(int serverMessageNum, int serverCommandSequence, int clientNum)
 
 	cg.clientNum = clientNum;
 
-	cgs.processedSnapshotNum = serverMessageNum;
+	cgs.nprocessedsnaps = serverMessageNum;
 	cgs.serverCommandSequence = serverCommandSequence;
 
 	// load a few needed things before we do any screen updates
@@ -1851,11 +1851,11 @@ CG_Init(int serverMessageNum, int serverCommandSequence, int clientNum)
 	cgs.media.charsetPropGlow = trap_R_RegisterShaderNoMip("menu/art/font1_prop_glo.tga");
 	cgs.media.charsetPropB = trap_R_RegisterShaderNoMip("menu/art/font2_prop.tga");
 
-	CG_RegisterCvars();
+	registercvars();
 
-	CG_InitConsoleCommands();
+	initconsolesmds();
 
-	cg.weaponSelect = WP_MACHINEGUN;
+	cg.weapsel = WP_MACHINEGUN;
 
 	cgs.redflag = cgs.blueflag = -1;// For compatibily, default to unset for
 	cgs.flagStatus = -1;
@@ -1863,24 +1863,24 @@ CG_Init(int serverMessageNum, int serverCommandSequence, int clientNum)
 
 	// get the rendering configuration from the client system
 	trap_GetGlconfig(&cgs.glconfig);
-	cgs.screenXScale = cgs.glconfig.vidWidth / 640.0;
-	cgs.screenYScale = cgs.glconfig.vidHeight / 480.0;
+	cgs.scrnxscale = cgs.glconfig.vidWidth / 640.0;
+	cgs.scrnyscale = cgs.glconfig.vidHeight / 480.0;
 
 	// get the gamestate from the client system
 	trap_GetGameState(&cgs.gameState);
 
 	// check version
-	s = CG_ConfigString(CS_GAME_VERSION);
+	s = getconfigstr(CS_GAME_VERSION);
 	if(strcmp(s, GAME_VERSION))
-		CG_Error("Client/Server game mismatch: %s/%s", GAME_VERSION, s);
+		cgerrorf("Client/Server game mismatch: %s/%s", GAME_VERSION, s);
 
-	s = CG_ConfigString(CS_LEVEL_START_TIME);
+	s = getconfigstr(CS_LEVEL_START_TIME);
 	cgs.levelStartTime = atoi(s);
 
-	CG_ParseServerinfo();
+	parsesrvinfo();
 
 	// load the new map
-	CG_LoadingString("collision map");
+	loadingstr("collision map");
 
 	trap_CM_LoadMap(cgs.mapname);
 
@@ -1890,15 +1890,15 @@ CG_Init(int serverMessageNum, int serverCommandSequence, int clientNum)
 
 	cg.loading = qtrue;	// force players to load instead of defer
 
-	CG_LoadingString("sounds");
+	loadingstr("sounds");
 
 	CG_RegisterSounds();
 
-	CG_LoadingString("graphics");
+	loadingstr("graphics");
 
 	CG_RegisterGraphics();
 
-	CG_LoadingString("clients");
+	loadingstr("clients");
 
 	CG_RegisterClients();	// if low on memory, some clients will be deferred
 
@@ -1909,38 +1909,38 @@ CG_Init(int serverMessageNum, int serverCommandSequence, int clientNum)
 
 	cg.loading = qfalse;	// future players will be deferred
 
-	CG_InitLocalEntities();
+	initlocalents();
 
-	CG_InitMarkPolys();
+	initmarkpolys();
 
 	// remove the last loading update
-	cg.infoScreenText[0] = 0;
+	cg.infoscreentext[0] = 0;
 
 	// Make sure we have update values (scores)
-	CG_SetConfigValues();
+	setconfigvals();
 
-	CG_StartMusic();
+	startmusic();
 
-	CG_LoadingString("");
+	loadingstr("");
 
 #ifdef MISSIONPACK
 	CG_InitTeamChat();
 #endif
 
-	CG_ShaderStateChanged();
+	shaderstatechanged();
 
 	trap_S_ClearLoopingSounds(qtrue);
 }
 
 /*
 =================
-CG_Shutdown
+cgshutdown
 
 Called before every level change or subsystem restart
 =================
 */
 void
-CG_Shutdown(void)
+cgshutdown(void)
 {
 	// some mods may need to do cleanup work here,
 	// like closing files or archiving session data
@@ -1948,7 +1948,7 @@ CG_Shutdown(void)
 
 /*
 ==================
-CG_EventHandling
+eventhandling
 ==================
  type 0 - no event handling
       1 - team menu
@@ -1957,17 +1957,17 @@ CG_EventHandling
 */
 #ifndef MISSIONPACK
 void
-CG_EventHandling(int type)
+eventhandling(int type)
 {
 }
 
 void
-CG_KeyEvent(int key, qboolean down)
+keyevent(int key, qboolean down)
 {
 }
 
 void
-CG_MouseEvent(int x, int y)
+mouseevent(int x, int y)
 {
 }
 

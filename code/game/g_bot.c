@@ -38,7 +38,7 @@ static char *g_arenaInfos[MAX_ARENAS];
 typedef struct
 {
 	int	clientNum;
-	int	spawnTime;
+	int	spawntime;
 } botSpawnQueue_t;
 
 static botSpawnQueue_t botSpawnQueue[BOT_SPAWN_QUEUE_DEPTH];
@@ -104,7 +104,7 @@ G_ParseInfos(char *buf, int max, char *infos[])
 			Info_SetValueForKey(info, key, token);
 		}
 		//NOTE: extra space for arena number
-		infos[count] = G_Alloc(strlen(info) + strlen("\\num\\") + strlen(va("%d", MAX_ARENAS)) + 1);
+		infos[count] = alloc(strlen(info) + strlen("\\num\\") + strlen(va("%d", MAX_ARENAS)) + 1);
 		if(infos[count]){
 			strcpy(infos[count], info);
 			count++;
@@ -246,7 +246,7 @@ G_AddRandomBot(int team)
 				continue;
 			if(!(g_entities[i].r.svFlags & SVF_BOT))
 				continue;
-			if(team >= 0 && cl->sess.sessionTeam != team)
+			if(team >= 0 && cl->sess.team != team)
 				continue;
 			if(!Q_stricmp(value, cl->pers.netname))
 				break;
@@ -264,7 +264,7 @@ G_AddRandomBot(int team)
 				continue;
 			if(!(g_entities[i].r.svFlags & SVF_BOT))
 				continue;
-			if(team >= 0 && cl->sess.sessionTeam != team)
+			if(team >= 0 && cl->sess.team != team)
 				continue;
 			if(!Q_stricmp(value, cl->pers.netname))
 				break;
@@ -302,7 +302,7 @@ G_RemoveRandomBot(int team)
 			continue;
 		if(!(g_entities[i].r.svFlags & SVF_BOT))
 			continue;
-		if(team >= 0 && cl->sess.sessionTeam != team)
+		if(team >= 0 && cl->sess.team != team)
 			continue;
 		trap_SendConsoleCommand(EXEC_INSERT, va("clientkick %d\n", i));
 		return qtrue;
@@ -328,7 +328,7 @@ G_CountHumanPlayers(int team)
 			continue;
 		if(g_entities[i].r.svFlags & SVF_BOT)
 			continue;
-		if(team >= 0 && cl->sess.sessionTeam != team)
+		if(team >= 0 && cl->sess.team != team)
 			continue;
 		num++;
 	}
@@ -353,14 +353,14 @@ G_CountBotPlayers(int team)
 			continue;
 		if(!(g_entities[i].r.svFlags & SVF_BOT))
 			continue;
-		if(team >= 0 && cl->sess.sessionTeam != team)
+		if(team >= 0 && cl->sess.team != team)
 			continue;
 		num++;
 	}
 	for(n = 0; n < BOT_SPAWN_QUEUE_DEPTH; n++){
-		if(!botSpawnQueue[n].spawnTime)
+		if(!botSpawnQueue[n].spawntime)
 			continue;
-		if(botSpawnQueue[n].spawnTime > level.time)
+		if(botSpawnQueue[n].spawntime > level.time)
 			continue;
 		num++;
 	}
@@ -435,11 +435,11 @@ G_CheckMinimumPlayers(void)
 
 /*
 ===============
-G_CheckBotSpawn
+chkbotspawn
 ===============
 */
 void
-G_CheckBotSpawn(void)
+chkbotspawn(void)
 {
 	int n;
 	char userinfo[MAX_INFO_VALUE];
@@ -447,12 +447,12 @@ G_CheckBotSpawn(void)
 	G_CheckMinimumPlayers();
 
 	for(n = 0; n < BOT_SPAWN_QUEUE_DEPTH; n++){
-		if(!botSpawnQueue[n].spawnTime)
+		if(!botSpawnQueue[n].spawntime)
 			continue;
-		if(botSpawnQueue[n].spawnTime > level.time)
+		if(botSpawnQueue[n].spawntime > level.time)
 			continue;
-		ClientBegin(botSpawnQueue[n].clientNum);
-		botSpawnQueue[n].spawnTime = 0;
+		clientbegin(botSpawnQueue[n].clientNum);
+		botSpawnQueue[n].spawntime = 0;
 
 		if(g_gametype.integer == GT_SINGLE_PLAYER){
 			trap_GetUserinfo(botSpawnQueue[n].clientNum, userinfo, sizeof(userinfo));
@@ -472,43 +472,43 @@ AddBotToSpawnQueue(int clientNum, int delay)
 	int n;
 
 	for(n = 0; n < BOT_SPAWN_QUEUE_DEPTH; n++)
-		if(!botSpawnQueue[n].spawnTime){
-			botSpawnQueue[n].spawnTime = level.time + delay;
+		if(!botSpawnQueue[n].spawntime){
+			botSpawnQueue[n].spawntime = level.time + delay;
 			botSpawnQueue[n].clientNum = clientNum;
 			return;
 		}
 
-	G_Printf(S_COLOR_YELLOW "Unable to delay spawn\n");
-	ClientBegin(clientNum);
+	gprintf(S_COLOR_YELLOW "Unable to delay spawn\n");
+	clientbegin(clientNum);
 }
 
 /*
 ===============
-G_RemoveQueuedBotBegin
+dequeuebotbegin
 
 Called on client disconnect to make sure the delayed spawn
 doesn't happen on a freed index
 ===============
 */
 void
-G_RemoveQueuedBotBegin(int clientNum)
+dequeuebotbegin(int clientNum)
 {
 	int n;
 
 	for(n = 0; n < BOT_SPAWN_QUEUE_DEPTH; n++)
 		if(botSpawnQueue[n].clientNum == clientNum){
-			botSpawnQueue[n].spawnTime = 0;
+			botSpawnQueue[n].spawntime = 0;
 			return;
 		}
 }
 
 /*
 ===============
-G_BotConnect
+botconnect
 ===============
 */
 qboolean
-G_BotConnect(int clientNum, qboolean restart)
+botconnect(int clientNum, qboolean restart)
 {
 	bot_settings_t settings;
 	char userinfo[MAX_INFO_STRING];
@@ -547,15 +547,15 @@ G_AddBot(const char *name, float skill, const char *team, int delay, char *altna
 	// have the server allocate a client slot
 	clientNum = trap_BotAllocateClient();
 	if(clientNum == -1){
-		G_Printf(S_COLOR_RED "Unable to add bot. All player slots are in use.\n");
-		G_Printf(S_COLOR_RED "Start server with more 'open' slots (or check setting of sv_maxclients cvar).\n");
+		gprintf(S_COLOR_RED "Unable to add bot. All player slots are in use.\n");
+		gprintf(S_COLOR_RED "Start server with more 'open' slots (or check setting of sv_maxclients cvar).\n");
 		return;
 	}
 
 	// get the botinfo from bots.txt
-	botinfo = G_GetBotInfoByName(name);
+	botinfo = botinfobyname(name);
 	if(!botinfo){
-		G_Printf(S_COLOR_RED "Error: Bot '%s' not defined\n", name);
+		gprintf(S_COLOR_RED "Error: Bot '%s' not defined\n", name);
 		trap_BotFreeClient(clientNum);
 		return;
 	}
@@ -625,7 +625,7 @@ G_AddBot(const char *name, float skill, const char *team, int delay, char *altna
 
 	if(!team || !*team){
 		if(g_gametype.integer >= GT_TEAM){
-			if(PickTeam(clientNum) == TEAM_RED)
+			if(pickteam(clientNum) == TEAM_RED)
 				team = "red";
 			else
 				team = "blue";
@@ -638,11 +638,11 @@ G_AddBot(const char *name, float skill, const char *team, int delay, char *altna
 	trap_SetUserinfo(clientNum, userinfo);
 
 	// have it connect to the game as a normal client
-	if(ClientConnect(clientNum, qtrue, qtrue))
+	if(clientconnect(clientNum, qtrue, qtrue))
 		return;
 
 	if(delay == 0){
-		ClientBegin(clientNum);
+		clientbegin(clientNum);
 		return;
 	}
 
@@ -699,7 +699,7 @@ Svcmd_AddBot_f(void)
 
 	// if this was issued during gameplay and we are playing locally,
 	// go ahead and load the bot's media immediately
-	if(level.time - level.startTime > 1000 &&
+	if(level.time - level.starttime > 1000 &&
 	   trap_Cvar_VariableIntegerValue("cl_running"))
 		trap_SendServerCommand(-1, "loaddefered\n");	// FIXME: spelled wrong, but not changing for demo
 }
@@ -861,11 +861,11 @@ G_LoadBots(void)
 
 /*
 ===============
-G_GetBotInfoByNumber
+botinfo
 ===============
 */
 char *
-G_GetBotInfoByNumber(int num)
+botinfo(int num)
 {
 	if(num < 0 || num >= g_numBots){
 		trap_Print(va(S_COLOR_RED "Invalid bot number: %i\n", num));
@@ -876,11 +876,11 @@ G_GetBotInfoByNumber(int num)
 
 /*
 ===============
-G_GetBotInfoByName
+botinfobyname
 ===============
 */
 char *
-G_GetBotInfoByName(const char *name)
+botinfobyname(const char *name)
 {
 	int n;
 	char *value;
@@ -896,11 +896,11 @@ G_GetBotInfoByName(const char *name)
 
 /*
 ===============
-G_InitBots
+initbots
 ===============
 */
 void
-G_InitBots(qboolean restart)
+initbots(qboolean restart)
 {
 	int fragLimit;
 	int timeLimit;

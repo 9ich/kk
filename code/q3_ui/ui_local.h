@@ -454,48 +454,48 @@ extern void	DriverInfo_Cache(void);
 //FIXME ripped from cg_local.h
 typedef struct
 {
-	int		oldFrame;
-	int		oldFrameTime;	// time when ->oldFrame was exactly on
+	int		oldframe;
+	int		oldframetime;	// time when ->oldframe was exactly on
 
 	int		frame;
-	int		frameTime;	// time when ->frame will be exactly on
+	int		frametime;	// time when ->frame will be exactly on
 
 	float		backlerp;
 
-	float		yawAngle;
+	float		yaw;
 	qboolean	yawing;
-	float		pitchAngle;
+	float		pitch;
 	qboolean	pitching;
 
-	int		animationNumber;	// may include ANIM_TOGGLEBIT
+	int		animnum;	// may include ANIM_TOGGLEBIT
 	animation_t	*animation;
-	int		animationTime;		// time when the first frame of the animation will be exact
+	int		animtime;		// time when the first frame of the animation will be exact
 } lerpFrame_t;
 
 typedef struct
 {
 	// model info
-	qhandle_t	legsModel;
-	qhandle_t	legsSkin;
+	qhandle_t	legsmodel;
+	qhandle_t	legsskin;
 	lerpFrame_t	legs;
 
-	qhandle_t	torsoModel;
-	qhandle_t	torsoSkin;
+	qhandle_t	torsomodel;
+	qhandle_t	torsoskin;
 	lerpFrame_t	torso;
 
-	qhandle_t	headModel;
-	qhandle_t	headSkin;
+	qhandle_t	headmodel;
+	qhandle_t	headskin;
 
 	animation_t	animations[MAX_ANIMATIONS];
 
-	qhandle_t	weaponModel;
-	qhandle_t	barrelModel;
-	qhandle_t	flashModel;
-	vec3_t		flashDlightColor;
-	int		muzzleFlashTime;
+	qhandle_t	model;
+	qhandle_t	barrelmodel;
+	qhandle_t	flashmodel;
+	vec3_t		flashcolor;
+	int		muzzleflashtime;
 
 	vec3_t		color1;
-	byte		c1RGBA[4];
+	byte		c1rgba[4];
 
 	// currently in use drawing parms
 	vec3_t		viewAngles;
@@ -518,9 +518,9 @@ typedef struct
 	qboolean	chat;
 	qboolean	newModel;
 
-	qboolean	barrelSpinning;
-	float		barrelAngle;
-	int		barrelTime;
+	qboolean	barrelspin;
+	float		barrelangle;
+	int		barreltime;
 
 	int		realWeapon;
 } playerInfo_t;
@@ -577,7 +577,7 @@ extern void	UI_SetColor(const float *rgba);
 extern void	UI_LerpColor(vec4_t a, vec4_t b, vec4_t c, float t);
 extern void	UI_DrawBannerString(int x, int y, const char* str, int style, vec4_t color);
 extern float	UI_ProportionalSizeScale(int style);
-extern void	UI_DrawProportionalString(int x, int y, const char* str, int style, vec4_t color);
+extern void	drawpropstr(int x, int y, const char* str, int style, vec4_t color);
 extern void	UI_DrawProportionalString_AutoWrapped(int x, int ystart, int xmax, int ystep, const char* str, int style, vec4_t color);
 extern int	UI_ProportionalStringWidth(const char* str);
 extern void	UI_DrawString(int x, int y, const char* str, int style, vec4_t color);

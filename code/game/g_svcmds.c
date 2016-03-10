@@ -97,7 +97,7 @@ StringToFilter(char *s, ipFilter_t *f)
 				s++;
 				continue;
 			}
-			G_Printf("Bad filter address: %s\n", s);
+			gprintf("Bad filter address: %s\n", s);
 			return qfalse;
 		}
 
@@ -161,11 +161,11 @@ UpdateIPBans(void)
 
 /*
 =================
-G_FilterPacket
+filterpacket
 =================
 */
 qboolean
-G_FilterPacket(char *from)
+filterpacket(char *from)
 {
 	int i;
 	uint in;
@@ -209,7 +209,7 @@ AddIP(char *str)
 			break;	// free spot
 	if(i == numIPFilters){
 		if(numIPFilters == MAX_IPFILTERS){
-			G_Printf("IP filter list is full\n");
+			gprintf("IP filter list is full\n");
 			return;
 		}
 		numIPFilters++;
@@ -223,11 +223,11 @@ AddIP(char *str)
 
 /*
 =================
-G_ProcessIPBans
+processipbans
 =================
 */
 void
-G_ProcessIPBans(void)
+processipbans(void)
 {
 	char *s, *t;
 	char str[MAX_CVAR_VALUE_STRING];
@@ -257,7 +257,7 @@ Svcmd_AddIP_f(void)
 	char str[MAX_TOKEN_CHARS];
 
 	if(trap_Argc() < 2){
-		G_Printf("Usage: addip <ip-mask>\n");
+		gprintf("Usage: addip <ip-mask>\n");
 		return;
 	}
 
@@ -279,7 +279,7 @@ Svcmd_RemoveIP_f(void)
 	char str[MAX_TOKEN_CHARS];
 
 	if(trap_Argc() < 2){
-		G_Printf("Usage: removeip <ip-mask>\n");
+		gprintf("Usage: removeip <ip-mask>\n");
 		return;
 	}
 
@@ -292,13 +292,13 @@ Svcmd_RemoveIP_f(void)
 		if(ipFilters[i].mask == f.mask &&
 		   ipFilters[i].compare == f.compare){
 			ipFilters[i].compare = 0xffffffffu;
-			G_Printf("Removed.\n");
+			gprintf("Removed.\n");
 
 			UpdateIPBans();
 			return;
 		}
 
-	G_Printf("Didn't find %s.\n", str);
+	gprintf("Didn't find %s.\n", str);
 }
 
 /*
@@ -313,58 +313,58 @@ Svcmd_EntityList_f(void)
 	gentity_t *check;
 
 	check = g_entities+1;
-	for(e = 1; e < level.num_entities; e++, check++){
+	for(e = 1; e < level.nentities; e++, check++){
 		if(!check->inuse)
 			continue;
-		G_Printf("%3i:", e);
+		gprintf("%3i:", e);
 		switch(check->s.eType){
 		case ET_GENERAL:
-			G_Printf("ET_GENERAL          ");
+			gprintf("ET_GENERAL          ");
 			break;
 		case ET_PLAYER:
-			G_Printf("ET_PLAYER           ");
+			gprintf("ET_PLAYER           ");
 			break;
 		case ET_ITEM:
-			G_Printf("ET_ITEM             ");
+			gprintf("ET_ITEM             ");
 			break;
 		case ET_MISSILE:
-			G_Printf("ET_MISSILE          ");
+			gprintf("ET_MISSILE          ");
 			break;
 		case ET_MOVER:
-			G_Printf("ET_MOVER            ");
+			gprintf("ET_MOVER            ");
 			break;
 		case ET_BEAM:
-			G_Printf("ET_BEAM             ");
+			gprintf("ET_BEAM             ");
 			break;
 		case ET_PORTAL:
-			G_Printf("ET_PORTAL           ");
+			gprintf("ET_PORTAL           ");
 			break;
 		case ET_SPEAKER:
-			G_Printf("ET_SPEAKER          ");
+			gprintf("ET_SPEAKER          ");
 			break;
 		case ET_PUSH_TRIGGER:
-			G_Printf("ET_PUSH_TRIGGER     ");
+			gprintf("ET_PUSH_TRIGGER     ");
 			break;
 		case ET_TRIGGER_GRAVITY:
-			G_Printf("ET_TRIGGER_GRAVITY     ");
+			gprintf("ET_TRIGGER_GRAVITY     ");
 			break;
 		case ET_TELEPORT_TRIGGER:
-			G_Printf("ET_TELEPORT_TRIGGER ");
+			gprintf("ET_TELEPORT_TRIGGER ");
 			break;
 		case ET_INVISIBLE:
-			G_Printf("ET_INVISIBLE        ");
+			gprintf("ET_INVISIBLE        ");
 			break;
 		case ET_GRAPPLE:
-			G_Printf("ET_GRAPPLE          ");
+			gprintf("ET_GRAPPLE          ");
 			break;
 		default:
-			G_Printf("%3i                 ", check->s.eType);
+			gprintf("%3i                 ", check->s.eType);
 			break;
 		}
 
 		if(check->classname)
-			G_Printf("%s", check->classname);
-		G_Printf("\n");
+			gprintf("%s", check->classname);
+		gprintf("\n");
 	}
 }
 
@@ -385,7 +385,7 @@ ClientForString(const char *s)
 
 		cl = &level.clients[idnum];
 		if(cl->pers.connected == CON_DISCONNECTED){
-			G_Printf("Client %i is not connected\n", idnum);
+			gprintf("Client %i is not connected\n", idnum);
 			return nil;
 		}
 		return cl;
@@ -400,7 +400,7 @@ ClientForString(const char *s)
 			return cl;
 	}
 
-	G_Printf("User %s is not on the server\n", s);
+	gprintf("User %s is not on the server\n", s);
 
 	return nil;
 }
@@ -419,7 +419,7 @@ Svcmd_ForceTeam_f(void)
 	char str[MAX_TOKEN_CHARS];
 
 	if(trap_Argc() < 3){
-		G_Printf("Usage: forceteam <player> <team>\n");
+		gprintf("Usage: forceteam <player> <team>\n");
 		return;
 	}
 
@@ -431,19 +431,19 @@ Svcmd_ForceTeam_f(void)
 
 	// set the team
 	trap_Argv(2, str, sizeof(str));
-	SetTeam(&g_entities[cl - level.clients], str);
+	setteam(&g_entities[cl - level.clients], str);
 }
 
 char *ConcatArgs(int start);
 
 /*
 =================
-ConsoleCommand
+consolecmd
 
 =================
 */
 qboolean
-ConsoleCommand(void)
+consolecmd(void)
 {
 	char cmd[MAX_TOKEN_CHARS];
 

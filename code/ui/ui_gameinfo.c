@@ -171,7 +171,7 @@ UI_LoadArenas(void)
 		uiInfo.mapList[uiInfo.mapCount].cinematic = -1;
 		uiInfo.mapList[uiInfo.mapCount].mapLoadName = String_Alloc(Info_ValueForKey(ui_arenaInfos[n], "map"));
 		uiInfo.mapList[uiInfo.mapCount].mapName = String_Alloc(Info_ValueForKey(ui_arenaInfos[n], "longname"));
-		uiInfo.mapList[uiInfo.mapCount].levelShot = -1;
+		uiInfo.mapList[uiInfo.mapCount].levelshot = -1;
 		uiInfo.mapList[uiInfo.mapCount].imageName = String_Alloc(va("levelshots/%s", uiInfo.mapList[uiInfo.mapCount].mapLoadName));
 		uiInfo.mapList[uiInfo.mapCount].typeBits = 0;
 

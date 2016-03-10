@@ -35,7 +35,7 @@ CG_TargetCommand_f(void)
 	int targetNum;
 	char test[4];
 
-	targetNum = CG_CrosshairPlayer();
+	targetNum = xhairplayer();
 	if(targetNum == -1)
 		return;
 
@@ -79,41 +79,41 @@ Debugging command to print the current position
 static void
 CG_Viewpos_f(void)
 {
-	CG_Printf("(%i %i %i) : %i\n", (int)cg.refdef.vieworg[0],
+	cgprintf("(%i %i %i) : %i\n", (int)cg.refdef.vieworg[0],
 		  (int)cg.refdef.vieworg[1], (int)cg.refdef.vieworg[2],
-		  (int)cg.refdefViewAngles[YAW]);
+		  (int)cg.refdefviewangles[YAW]);
 }
 
 static void
 CG_ScoresDown_f(void)
 {
 #ifdef MISSIONPACK
-	CG_BuildSpectatorString();
+	mkspecstr();
 #endif
-	if(cg.scoresRequestTime + 2000 < cg.time){
+	if(cg.scoresreqtime + 2000 < cg.time){
 		// the scores are more than two seconds out of data,
 		// so request new ones
-		cg.scoresRequestTime = cg.time;
+		cg.scoresreqtime = cg.time;
 		trap_SendClientCommand("score");
 
 		// leave the current scores up if they were already
 		// displayed, but if this is the first hit, clear them out
-		if(!cg.showScores){
-			cg.showScores = qtrue;
-			cg.numScores = 0;
+		if(!cg.showscores){
+			cg.showscores = qtrue;
+			cg.nscores = 0;
 		}
 	}else
 		// show the cached contents even if they just pressed if it
 		// is within two seconds
-		cg.showScores = qtrue;
+		cg.showscores = qtrue;
 }
 
 static void
 CG_ScoresUp_f(void)
 {
-	if(cg.showScores){
-		cg.showScores = qfalse;
-		cg.scoreFadeTime = cg.time;
+	if(cg.showscores){
+		cg.showscores = qfalse;
+		cg.scorefadetime = cg.time;
 	}
 }
 
@@ -143,7 +143,7 @@ CG_LoadHud_f(void)
 static void
 CG_scrollScoresDown_f(void)
 {
-	if(menuScoreboard && cg.scoreBoardShowing){
+	if(menuScoreboard && cg.scoreboardshown){
 		Menu_ScrollFeeder(menuScoreboard, FEEDER_SCOREBOARD, qtrue);
 		Menu_ScrollFeeder(menuScoreboard, FEEDER_REDTEAM_LIST, qtrue);
 		Menu_ScrollFeeder(menuScoreboard, FEEDER_BLUETEAM_LIST, qtrue);
@@ -153,7 +153,7 @@ CG_scrollScoresDown_f(void)
 static void
 CG_scrollScoresUp_f(void)
 {
-	if(menuScoreboard && cg.scoreBoardShowing){
+	if(menuScoreboard && cg.scoreboardshown){
 		Menu_ScrollFeeder(menuScoreboard, FEEDER_SCOREBOARD, qfalse);
 		Menu_ScrollFeeder(menuScoreboard, FEEDER_REDTEAM_LIST, qfalse);
 		Menu_ScrollFeeder(menuScoreboard, FEEDER_BLUETEAM_LIST, qfalse);
@@ -168,9 +168,9 @@ CG_spWin_f(void)
 	trap_Cvar_Set("cg_thirdPerson", "1");
 	trap_Cvar_Set("cg_thirdPersonAngle", "0");
 	trap_Cvar_Set("cg_thirdPersonRange", "100");
-	CG_AddBufferedSound(cgs.media.winnerSound);
+	addbufferedsound(cgs.media.winnerSound);
 	//trap_S_StartLocalSound(cgs.media.winnerSound, CHAN_ANNOUNCER);
-	CG_CenterPrint("YOU WIN!", SCREEN_HEIGHT * .30, 0);
+	centerprint("YOU WIN!", SCREEN_HEIGHT * .30, 0);
 }
 
 static void
@@ -181,9 +181,9 @@ CG_spLose_f(void)
 	trap_Cvar_Set("cg_thirdPerson", "1");
 	trap_Cvar_Set("cg_thirdPersonAngle", "0");
 	trap_Cvar_Set("cg_thirdPersonRange", "100");
-	CG_AddBufferedSound(cgs.media.loserSound);
+	addbufferedsound(cgs.media.loserSound);
 	//trap_S_StartLocalSound(cgs.media.loserSound, CHAN_ANNOUNCER);
-	CG_CenterPrint("YOU LOSE...", SCREEN_HEIGHT * .30, 0);
+	centerprint("YOU LOSE...", SCREEN_HEIGHT * .30, 0);
 }
 
 #endif
@@ -195,7 +195,7 @@ CG_TellTarget_f(void)
 	char command[128];
 	char message[128];
 
-	clientNum = CG_CrosshairPlayer();
+	clientNum = xhairplayer();
 	if(clientNum == -1)
 		return;
 
@@ -211,7 +211,7 @@ CG_TellAttacker_f(void)
 	char command[128];
 	char message[128];
 
-	clientNum = CG_LastAttacker();
+	clientNum = getlastattacker();
 	if(clientNum == -1)
 		return;
 
@@ -228,7 +228,7 @@ CG_VoiceTellTarget_f(void)
 	char command[128];
 	char message[128];
 
-	clientNum = CG_CrosshairPlayer();
+	clientNum = xhairplayer();
 	if(clientNum == -1)
 		return;
 
@@ -244,7 +244,7 @@ CG_VoiceTellAttacker_f(void)
 	char command[128];
 	char message[128];
 
-	clientNum = CG_LastAttacker();
+	clientNum = getlastattacker();
 	if(clientNum == -1)
 		return;
 
@@ -272,7 +272,7 @@ CG_NextOrder_f(void)
 {
 	clientInfo_t *ci = cgs.clientinfo + cg.snap->ps.clientNum;
 	if(ci)
-		if(!ci->teamLeader && sortedTeamPlayers[cg_currentSelectedPlayer.integer] != cg.snap->ps.clientNum)
+		if(!ci->teamleader && sortedteamplayers[cg_currentSelectedPlayer.integer] != cg.snap->ps.clientNum)
 			return;
 	if(cgs.currentOrder < TEAMTASK_CAMP){
 		cgs.currentOrder++;
@@ -405,7 +405,7 @@ CG_TaskSuicide_f(void)
 	int clientNum;
 	char command[128];
 
-	clientNum = CG_CrosshairPlayer();
+	clientNum = xhairplayer();
 	if(clientNum == -1)
 		return;
 
@@ -421,10 +421,10 @@ CG_TeamMenu_f
 /*
 static void CG_TeamMenu_f( void ) {
   if (trap_Key_GetCatcher() & KEYCATCH_CGAME) {
-    CG_EventHandling(CGAME_EVENT_NONE);
+    eventhandling(CGAME_EVENT_NONE);
     trap_Key_SetCatcher(0);
   } else {
-    CG_EventHandling(CGAME_EVENT_TEAMMENU);
+    eventhandling(CGAME_EVENT_TEAMMENU);
     //trap_Key_SetCatcher(KEYCATCH_CGAME);
   }
 }
@@ -474,10 +474,10 @@ static void CG_Camera_f( void ) {
         char name[1024];
         trap_Argv( 1, name, sizeof(name));
         if (trap_loadCamera(name)) {
-                cg.cameraMode = qtrue;
+                cg.cameramode = qtrue;
                 trap_startCamera(cg.time);
         } else {
-                CG_Printf ("Unable to load camera %s\n",name);
+                cgprintf ("Unable to load camera %s\n",name);
         }
 }
 */
@@ -538,24 +538,24 @@ static consoleCommand_t commands[] = {
 #endif
 	{"startOrbit", CG_StartOrbit_f},
 	//{ "camera", CG_Camera_f },
-	{"loaddeferred", CG_LoadDeferredPlayers}
+	{"loaddeferred", loaddeferred}
 };
 
 /*
 =================
-CG_ConsoleCommand
+consolecmd
 
 The string has been tokenized and can be retrieved with
 Cmd_Argc() / Cmd_Argv()
 =================
 */
 qboolean
-CG_ConsoleCommand(void)
+consolecmd(void)
 {
 	const char *cmd;
 	int i;
 
-	cmd = CG_Argv(0);
+	cmd = cgargv(0);
 
 	for(i = 0; i < ARRAY_LEN(commands); i++)
 		if(!Q_stricmp(cmd, commands[i].cmd)){
@@ -568,14 +568,14 @@ CG_ConsoleCommand(void)
 
 /*
 =================
-CG_InitConsoleCommands
+initconsolesmds
 
 Let the client system know about all of our commands
 so it can perform tab completion
 =================
 */
 void
-CG_InitConsoleCommands(void)
+initconsolesmds(void)
 {
 	int i;
 

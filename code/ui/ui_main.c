@@ -585,7 +585,7 @@ UI_DrawCenteredPic(qhandle_t image, int w, int h)
 }
 
 int frameCount = 0;
-int startTime;
+int starttime;
 
 #define UI_FPS_FRAMES 4
 void
@@ -598,10 +598,10 @@ _UI_Refresh(int realtime)
 	//	return;
 	//}
 
-	uiInfo.uiDC.frameTime = realtime - uiInfo.uiDC.realTime;
+	uiInfo.uiDC.frametime = realtime - uiInfo.uiDC.realTime;
 	uiInfo.uiDC.realTime = realtime;
 
-	previousTimes[index % UI_FPS_FRAMES] = uiInfo.uiDC.frameTime;
+	previousTimes[index % UI_FPS_FRAMES] = uiInfo.uiDC.frametime;
 	index++;
 	if(index > UI_FPS_FRAMES){
 		int i, total;
@@ -1193,11 +1193,11 @@ UI_DrawMapPreview(rectDef_t *rect, float scale, vec4_t color, qboolean net)
 		map = 0;
 	}
 
-	if(uiInfo.mapList[map].levelShot == -1)
-		uiInfo.mapList[map].levelShot = trap_R_RegisterShaderNoMip(uiInfo.mapList[map].imageName);
+	if(uiInfo.mapList[map].levelshot == -1)
+		uiInfo.mapList[map].levelshot = trap_R_RegisterShaderNoMip(uiInfo.mapList[map].imageName);
 
-	if(uiInfo.mapList[map].levelShot > 0)
-		UI_DrawHandlePic(rect->x, rect->y, rect->w, rect->h, uiInfo.mapList[map].levelShot);
+	if(uiInfo.mapList[map].levelshot > 0)
+		UI_DrawHandlePic(rect->x, rect->y, rect->w, rect->h, uiInfo.mapList[map].levelshot);
 	else
 		UI_DrawHandlePic(rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("menu/art/unknownmap"));
 }
@@ -1282,7 +1282,7 @@ UI_DrawPlayerModel(rectDef_t *rect)
 		viewangles[YAW] = 180 - 10;
 		viewangles[PITCH] = 0;
 		viewangles[ROLL] = 0;
-		VectorClear(moveangles);
+		vecclear(moveangles);
 		UI_PlayerInfo_SetModel(&info, model, head, team);
 		UI_PlayerInfo_SetInfo(&info, LEGS_IDLE, TORSO_STAND, viewangles, vec3_origin, WP_MACHINEGUN, qfalse);
 //		UI_RegisterClientModelname( &info, model, head, team);
@@ -1485,7 +1485,7 @@ UI_DrawOpponent(rectDef_t *rect)
 		viewangles[YAW] = 180 - 10;
 		viewangles[PITCH] = 0;
 		viewangles[ROLL] = 0;
-		VectorClear(moveangles);
+		vecclear(moveangles);
 		UI_PlayerInfo_SetModel(&info2, model, headmodel, "");
 		UI_PlayerInfo_SetInfo(&info2, LEGS_IDLE, TORSO_STAND, viewangles, vec3_origin, WP_MACHINEGUN, qfalse);
 		UI_RegisterClientModelname(&info2, model, headmodel, team);
@@ -1797,7 +1797,7 @@ UI_BuildPlayerList(void)
 	trap_GetClientState(&cs);
 	trap_GetConfigString(CS_PLAYERS + cs.clientNum, info, MAX_INFO_STRING);
 	uiInfo.playerNumber = cs.clientNum;
-	uiInfo.teamLeader = atoi(Info_ValueForKey(info, "tl"));
+	uiInfo.teamleader = atoi(Info_ValueForKey(info, "tl"));
 	team = atoi(Info_ValueForKey(info, "t"));
 	trap_GetConfigString(CS_SERVERINFO, info, sizeof(info));
 	count = atoi(Info_ValueForKey(info, "sv_maxclients"));
@@ -1823,7 +1823,7 @@ UI_BuildPlayerList(void)
 		}
 	}
 
-	if(!uiInfo.teamLeader)
+	if(!uiInfo.teamleader)
 		trap_Cvar_Set("cg_selectedPlayer", va("%d", playerTeamNumber));
 
 	n = trap_Cvar_VariableValue("cg_selectedPlayer");
@@ -1840,7 +1840,7 @@ UI_DrawSelectedPlayer(rectDef_t *rect, float scale, vec4_t color, int textStyle)
 		uiInfo.playerRefresh = uiInfo.uiDC.realTime + 3000;
 		UI_BuildPlayerList();
 	}
-	Text_Paint(rect->x, rect->y, scale, color, (uiInfo.teamLeader) ? UI_Cvar_VariableString("cg_selectedPlayerName") : UI_Cvar_VariableString("name"), 0, 0, textStyle);
+	Text_Paint(rect->x, rect->y, scale, color, (uiInfo.teamleader) ? UI_Cvar_VariableString("cg_selectedPlayerName") : UI_Cvar_VariableString("name"), 0, 0, textStyle);
 }
 
 static void
@@ -2161,7 +2161,7 @@ UI_OwnerDrawVisible(int flags)
 
 		if(flags & UI_SHOW_LEADER){
 			// these need to show when this client can give orders to a player or a group
-			if(!uiInfo.teamLeader)
+			if(!uiInfo.teamleader)
 				vis = qfalse;
 			else
 			// if showing yourself
@@ -2172,7 +2172,7 @@ UI_OwnerDrawVisible(int flags)
 		}
 		if(flags & UI_SHOW_NOTLEADER){
 			// these need to show when this client is assigning their own status or they are NOT the leader
-			if(uiInfo.teamLeader)
+			if(uiInfo.teamleader)
 				// if not showing yourself
 				if(!(ui_selectedPlayer.integer < uiInfo.myTeamCount && uiInfo.teamClientNums[ui_selectedPlayer.integer] == uiInfo.playerNumber))
 					vis = qfalse;
@@ -2621,7 +2621,7 @@ UI_SelectedPlayer_HandleKey(int flags, float *special, int key)
 		int selected;
 
 		UI_BuildPlayerList();
-		if(!uiInfo.teamLeader)
+		if(!uiInfo.teamleader)
 			return qfalse;
 		selected = trap_Cvar_VariableValue("cg_selectedPlayer");
 
@@ -4060,7 +4060,7 @@ UI_BuildFindPlayerList(qboolean force)
 			}
 		// if empty pending slot or timed out
 		if(!uiInfo.pendingServerStatus.server[i].valid ||
-		   uiInfo.pendingServerStatus.server[i].startTime < uiInfo.uiDC.realTime - ui_serverStatusTimeOut.integer){
+		   uiInfo.pendingServerStatus.server[i].starttime < uiInfo.uiDC.realTime - ui_serverStatusTimeOut.integer){
 			if(uiInfo.pendingServerStatus.server[i].valid)
 				numTimeOuts++;
 			// reset server status request for this address
@@ -4069,7 +4069,7 @@ UI_BuildFindPlayerList(qboolean force)
 			uiInfo.pendingServerStatus.server[i].valid = qfalse;
 			// if we didn't try to get the status of all servers in the main browser yet
 			if(uiInfo.pendingServerStatus.num < uiInfo.serverStatus.numDisplayServers){
-				uiInfo.pendingServerStatus.server[i].startTime = uiInfo.uiDC.realTime;
+				uiInfo.pendingServerStatus.server[i].starttime = uiInfo.uiDC.realTime;
 				lanSource = UI_SourceForLAN();
 				trap_LAN_GetServerAddressString(lanSource, uiInfo.serverStatus.displayServers[uiInfo.pendingServerStatus.num],
 								uiInfo.pendingServerStatus.server[i].adrstr, sizeof(uiInfo.pendingServerStatus.server[i].adrstr));
@@ -4352,9 +4352,9 @@ UI_FeederItemImage(float feederID, int index)
 		UI_SelectedMap(index, &actual);
 		index = actual;
 		if(index >= 0 && index < uiInfo.mapCount){
-			if(uiInfo.mapList[index].levelShot == -1)
-				uiInfo.mapList[index].levelShot = trap_R_RegisterShaderNoMip(uiInfo.mapList[index].imageName);
-			return uiInfo.mapList[index].levelShot;
+			if(uiInfo.mapList[index].levelshot == -1)
+				uiInfo.mapList[index].levelshot = trap_R_RegisterShaderNoMip(uiInfo.mapList[index].imageName);
+			return uiInfo.mapList[index].levelshot;
 		}
 	}
 	return 0;
@@ -4733,7 +4733,7 @@ MapList_Parse(char **p)
 			//  uiInfo.mapList[uiInfo.mapCount].cinematic = trap_CIN_PlayCinematic(va("%s.roq",uiInfo.mapList[uiInfo.mapCount].mapLoadName), qfalse, qfalse, qtrue, 0, 0, 0, 0);
 			//}
 			uiInfo.mapList[uiInfo.mapCount].cinematic = -1;
-			uiInfo.mapList[uiInfo.mapCount].levelShot = trap_R_RegisterShaderNoMip(va("levelshots/%s_small", uiInfo.mapList[uiInfo.mapCount].mapLoadName));
+			uiInfo.mapList[uiInfo.mapCount].levelshot = trap_R_RegisterShaderNoMip(va("levelshots/%s_small", uiInfo.mapList[uiInfo.mapCount].mapLoadName));
 
 			if(uiInfo.mapCount < MAX_MAPS)
 				uiInfo.mapCount++;

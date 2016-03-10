@@ -407,16 +407,16 @@ BotValidChatPosition(bot_state_t *bs)
 	//must be on the ground
 	//if (bs->cur_ps.groundEntityNum != ENTITYNUM_NONE) return qfalse;
 	//do not chat if in lava or slime
-	VectorCopy(bs->origin, point);
+	veccpy(bs->origin, point);
 	point[2] -= 24;
 	if(trap_PointContents(point, bs->entitynum) & (CONTENTS_LAVA|CONTENTS_SLIME)) return qfalse;
 	//do not chat if under water
-	VectorCopy(bs->origin, point);
+	veccpy(bs->origin, point);
 	point[2] += 32;
 	if(trap_PointContents(point, bs->entitynum) & MASK_WATER) return qfalse;
 	//must be standing on the world entity
-	VectorCopy(bs->origin, start);
-	VectorCopy(bs->origin, end);
+	veccpy(bs->origin, start);
+	veccpy(bs->origin, end);
 	start[2] += 1;
 	end[2] -= 10;
 	trap_AAS_PresenceTypeBoundingBox(PRESENCE_CROUCH, mins, maxs);
@@ -792,17 +792,17 @@ int
 BotChat_HitTalking(bot_state_t *bs)
 {
 	char name[32], *weap;
-	int lasthurt_client;
+	int lasthurtclient;
 	float rnd;
 
 	if(bot_nochat.integer) return qfalse;
 	if(bs->lastchat_time > FloatTime() - TIME_BETWEENCHATTING) return qfalse;
 	if(BotNumActivePlayers() <= 1) return qfalse;
-	lasthurt_client = g_entities[bs->client].client->lasthurt_client;
-	if(!lasthurt_client) return qfalse;
-	if(lasthurt_client == bs->client) return qfalse;
+	lasthurtclient = g_entities[bs->client].client->lasthurtclient;
+	if(!lasthurtclient) return qfalse;
+	if(lasthurtclient == bs->client) return qfalse;
 	//
-	if(lasthurt_client < 0 || lasthurt_client >= MAX_CLIENTS) return qfalse;
+	if(lasthurtclient < 0 || lasthurtclient >= MAX_CLIENTS) return qfalse;
 	//
 	rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_HITTALKING, 0, 1);
 	//don't chat in teamplay
@@ -814,7 +814,7 @@ BotChat_HitTalking(bot_state_t *bs)
 		if(random() > rnd * 0.5) return qfalse;
 	if(!BotValidChatPosition(bs)) return qfalse;
 	//
-	ClientName(g_entities[bs->client].client->lasthurt_client, name, sizeof(name));
+	ClientName(g_entities[bs->client].client->lasthurtclient, name, sizeof(name));
 	weap = BotWeaponNameForMeansOfDeath(g_entities[bs->client].client->lasthurt_mod);
 	//
 	BotAI_BotInitialChat(bs, "hit_talking", name, weap, nil);
@@ -833,14 +833,14 @@ BotChat_HitNoDeath(bot_state_t *bs)
 {
 	char name[32], *weap;
 	float rnd;
-	int lasthurt_client;
+	int lasthurtclient;
 	aas_entityinfo_t entinfo;
 
-	lasthurt_client = g_entities[bs->client].client->lasthurt_client;
-	if(!lasthurt_client) return qfalse;
-	if(lasthurt_client == bs->client) return qfalse;
+	lasthurtclient = g_entities[bs->client].client->lasthurtclient;
+	if(!lasthurtclient) return qfalse;
+	if(lasthurtclient == bs->client) return qfalse;
 	//
-	if(lasthurt_client < 0 || lasthurt_client >= MAX_CLIENTS) return qfalse;
+	if(lasthurtclient < 0 || lasthurtclient >= MAX_CLIENTS) return qfalse;
 	//
 	if(bot_nochat.integer) return qfalse;
 	if(bs->lastchat_time > FloatTime() - TIME_BETWEENCHATTING) return qfalse;
@@ -860,7 +860,7 @@ BotChat_HitNoDeath(bot_state_t *bs)
 	BotEntityInfo(bs->enemy, &entinfo);
 	if(EntityIsShooting(&entinfo)) return qfalse;
 	//
-	ClientName(lasthurt_client, name, sizeof(name));
+	ClientName(lasthurtclient, name, sizeof(name));
 	weap = BotWeaponNameForMeansOfDeath(g_entities[bs->client].client->lasthurt_mod);
 	//
 	BotAI_BotInitialChat(bs, "hit_nodeath", name, weap, nil);
@@ -1170,8 +1170,8 @@ BotChatTest(bot_state_t *bs)
 		BotAI_BotInitialChat(bs, "enemy_suicide", name, nil);
 		trap_BotEnterChat(bs->cs, 0, CHAT_ALL);
 	}
-	ClientName(g_entities[bs->client].client->lasthurt_client, name, sizeof(name));
-	weap = BotWeaponNameForMeansOfDeath(g_entities[bs->client].client->lasthurt_client);
+	ClientName(g_entities[bs->client].client->lasthurtclient, name, sizeof(name));
+	weap = BotWeaponNameForMeansOfDeath(g_entities[bs->client].client->lasthurtclient);
 	num = trap_BotNumInitialChats(bs->cs, "hit_talking");
 	for(i = 0; i < num; i++){
 		BotAI_BotInitialChat(bs, "hit_talking", name, weap, nil);

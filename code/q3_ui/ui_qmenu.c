@@ -232,7 +232,7 @@ PText_Draw(menutext_s *t)
 			style |= UI_INVERSE;
 	}
 
-	UI_DrawProportionalString(x, y, t->string, style, color);
+	drawpropstr(x, y, t->string, style, color);
 }
 
 /*

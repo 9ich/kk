@@ -3483,7 +3483,7 @@ Item_Model_Paint(itemDef_t *item)
 
 	//adjust = 5.0 * sin( (float)uis.realtime / 500 );
 	//adjust = 360 % (int)((float)uis.realtime / 1000);
-	//VectorSet( angles, 0, 0, 1 );
+	//vecset( angles, 0, 0, 1 );
 
 	// use item storage to track
 	if(modelPtr->rotationSpeed)
@@ -3491,14 +3491,14 @@ Item_Model_Paint(itemDef_t *item)
 			item->window.nextTime = DC->realTime + modelPtr->rotationSpeed;
 			modelPtr->angle = (int)(modelPtr->angle + 1) % 360;
 		}
-	VectorSet(angles, 0, modelPtr->angle, 0);
+	vecset(angles, 0, modelPtr->angle, 0);
 	AnglesToAxis(angles, ent.axis);
 
 	ent.hModel = item->asset;
-	VectorCopy(origin, ent.origin);
-	VectorCopy(origin, ent.lightingOrigin);
+	veccpy(origin, ent.origin);
+	veccpy(origin, ent.lightingOrigin);
 	ent.renderfx = RF_LIGHTING_ORIGIN | RF_NOSHADOW;
-	VectorCopy(ent.origin, ent.oldorigin);
+	veccpy(ent.origin, ent.oldorigin);
 
 	DC->addRefEntityToScene(&ent);
 	DC->renderScene(&refdef);
@@ -5482,7 +5482,7 @@ keywordHash_t menuParseKeywords[] = {
 	{"ownerdraw", MenuParse_ownerdraw, nil},
 	{"ownerdrawFlag", MenuParse_ownerdrawFlag, nil},
 	{"outOfBoundsClick", MenuParse_outOfBounds, nil},
-	{"soundLoop", MenuParse_soundLoop, nil},
+	{"soundloop", MenuParse_soundLoop, nil},
 	{"itemDef", MenuParse_itemDef, nil},
 	{"cinematic", MenuParse_cinematic, nil},
 	{"popup", MenuParse_popup, nil},

@@ -34,7 +34,7 @@ Used as a positional target for calculations in the utilities (spotlights, etc),
 void
 SP_info_camp(gentity_t *self)
 {
-	G_SetOrigin(self, self->s.origin);
+	setorigin(self, self->s.origin);
 }
 
 /*QUAKED info_null (0 0.5 0) (-4 -4 -4) (4 4 4)
@@ -43,7 +43,7 @@ Used as a positional target for calculations in the utilities (spotlights, etc),
 void
 SP_info_null(gentity_t *self)
 {
-	G_FreeEntity(self);
+	entfree(self);
 }
 
 /*QUAKED info_notnull (0 0.5 0) (-4 -4 -4) (4 4 4)
@@ -53,7 +53,7 @@ target_position does the same thing
 void
 SP_info_notnull(gentity_t *self)
 {
-	G_SetOrigin(self, self->s.origin);
+	setorigin(self, self->s.origin);
 }
 
 /*QUAKED light (0 1 0) (-8 -8 -8) (8 8 8) linear
@@ -66,7 +66,7 @@ Lights pointed at a target will be spotlights.
 void
 SP_light(gentity_t *self)
 {
-	G_FreeEntity(self);
+	entfree(self);
 }
 
 /*
@@ -78,7 +78,7 @@ TELEPORTERS
 */
 
 void
-TeleportPlayer(gentity_t *player, vec3_t origin, vec3_t angles)
+teleportentity(gentity_t *player, vec3_t origin, vec3_t angles)
 {
 	gentity_t *tent;
 	qboolean noAngles;
@@ -86,41 +86,41 @@ TeleportPlayer(gentity_t *player, vec3_t origin, vec3_t angles)
 	noAngles = (angles[0] > 999999.0);
 	// use temp events at source and destination to prevent the effect
 	// from getting dropped by a second player event
-	if(player->client->sess.sessionTeam != TEAM_SPECTATOR){
-		tent = G_TempEntity(player->client->ps.origin, EV_PLAYER_TELEPORT_OUT);
+	if(player->client->sess.team != TEAM_SPECTATOR){
+		tent = enttemp(player->client->ps.origin, EV_PLAYER_TELEPORT_OUT);
 		tent->s.clientNum = player->s.clientNum;
 
-		tent = G_TempEntity(origin, EV_PLAYER_TELEPORT_IN);
+		tent = enttemp(origin, EV_PLAYER_TELEPORT_IN);
 		tent->s.clientNum = player->s.clientNum;
 	}
 
-	// unlink to make sure it can't possibly interfere with G_KillBox
+	// unlink to make sure it can't possibly interfere with killbox
 	trap_UnlinkEntity(player);
 
-	VectorCopy(origin, player->client->ps.origin);
+	veccpy(origin, player->client->ps.origin);
 	player->client->ps.origin[2] += 1;
 	if(!noAngles){
 		// spit the player out
-		AngleVectors(angles, player->client->ps.velocity, nil, nil);
-		VectorScale(player->client->ps.velocity, 400, player->client->ps.velocity);
+		anglevecs(angles, player->client->ps.velocity, nil, nil);
+		vecmul(player->client->ps.velocity, 400, player->client->ps.velocity);
 		player->client->ps.pm_time = 160;	// hold time
 		player->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 		// set angles
-		SetClientViewAngle(player, angles);
+		setviewangles(player, angles);
 	}
 	// toggle the teleport bit so the client knows to not lerp
 	player->client->ps.eFlags ^= EF_TELEPORT_BIT;
 	// kill anything at the destination
-	if(player->client->sess.sessionTeam != TEAM_SPECTATOR)
-		G_KillBox(player);
+	if(player->client->sess.team != TEAM_SPECTATOR)
+		killbox(player);
 
 	// save results of pmove
-	BG_PlayerStateToEntityState(&player->client->ps, &player->s, qtrue);
+	playerstate2entstate(&player->client->ps, &player->s, qtrue);
 
 	// use the precise origin for linking
-	VectorCopy(player->client->ps.origin, player->r.currentOrigin);
+	veccpy(player->client->ps.origin, player->r.currentOrigin);
 
-	if(player->client->sess.sessionTeam != TEAM_SPECTATOR)
+	if(player->client->sess.team != TEAM_SPECTATOR)
 		trap_LinkEntity(player);
 }
 
@@ -143,15 +143,15 @@ void
 SP_misc_model(gentity_t *ent)
 {
 #if 0
-	ent->s.modelindex = G_ModelIndex(ent->model);
-	VectorSet(ent->mins, -16, -16, -16);
-	VectorSet(ent->maxs, 16, 16, 16);
+	ent->s.modelindex = getmodelindex(ent->model);
+	vecset(ent->mins, -16, -16, -16);
+	vecset(ent->maxs, 16, 16, 16);
 	trap_LinkEntity(ent);
 
-	G_SetOrigin(ent, ent->s.origin);
-	VectorCopy(ent->s.angles, ent->s.apos.trBase);
+	setorigin(ent, ent->s.origin);
+	veccpy(ent->s.angles, ent->s.apos.trBase);
 #else
-	G_FreeEntity(ent);
+	entfree(ent);
 #endif
 }
 
@@ -164,10 +164,10 @@ locateCamera(gentity_t *ent)
 	gentity_t *target;
 	gentity_t *owner;
 
-	owner = G_PickTarget(ent->target);
+	owner = picktarget(ent->target);
 	if(!owner){
-		G_Printf("Couldn't find target for misc_partal_surface\n");
-		G_FreeEntity(ent);
+		gprintf("Couldn't find target for misc_partal_surface\n");
+		entfree(ent);
 		return;
 	}
 	ent->r.ownerNum = owner->s.number;
@@ -188,15 +188,15 @@ locateCamera(gentity_t *ent)
 	// clientNum holds the rotate offset
 	ent->s.clientNum = owner->s.clientNum;
 
-	VectorCopy(owner->s.origin, ent->s.origin2);
+	veccpy(owner->s.origin, ent->s.origin2);
 
 	// see if the portal_camera has a target
-	target = G_PickTarget(owner->target);
+	target = picktarget(owner->target);
 	if(target){
-		VectorSubtract(target->s.origin, owner->s.origin, dir);
-		VectorNormalize(dir);
+		vecsub(target->s.origin, owner->s.origin, dir);
+		vecnorm(dir);
 	}else
-		G_SetMovedir(owner->s.angles, dir);
+		setmovedir(owner->s.angles, dir);
 
 	ent->s.eventParm = DirToByte(dir);
 }
@@ -208,15 +208,15 @@ This must be within 64 world units of the surface!
 void
 SP_misc_portal_surface(gentity_t *ent)
 {
-	VectorClear(ent->r.mins);
-	VectorClear(ent->r.maxs);
+	vecclear(ent->r.mins);
+	vecclear(ent->r.maxs);
 	trap_LinkEntity(ent);
 
 	ent->r.svFlags = SVF_PORTAL;
 	ent->s.eType = ET_PORTAL;
 
 	if(!ent->target)
-		VectorCopy(ent->s.origin, ent->s.origin2);
+		veccpy(ent->s.origin, ent->s.origin2);
 	else{
 		ent->think = locateCamera;
 		ent->nextthink = level.time + 100;
@@ -232,11 +232,11 @@ SP_misc_portal_camera(gentity_t *ent)
 {
 	float roll;
 
-	VectorClear(ent->r.mins);
-	VectorClear(ent->r.maxs);
+	vecclear(ent->r.mins);
+	vecclear(ent->r.maxs);
 	trap_LinkEntity(ent);
 
-	G_SpawnFloat("roll", "0", &roll);
+	spawnfloat("roll", "0", &roll);
 
 	ent->s.clientNum = roll/360.0 * 256;
 }
@@ -258,22 +258,22 @@ Use_Shooter(gentity_t *ent, gentity_t *other, gentity_t *activator)
 
 	// see if we have a target
 	if(ent->enemy){
-		VectorSubtract(ent->enemy->r.currentOrigin, ent->s.origin, dir);
-		VectorNormalize(dir);
+		vecsub(ent->enemy->r.currentOrigin, ent->s.origin, dir);
+		vecnorm(dir);
 	}else
-		VectorCopy(ent->movedir, dir);
+		veccpy(ent->movedir, dir);
 
 	// randomize a bit
-	PerpendicularVector(up, dir);
-	CrossProduct(up, dir, right);
+	vecperp(up, dir);
+	veccross(up, dir, right);
 
 	deg = crandom() * ent->random;
-	VectorMA(dir, deg, up, dir);
+	vecmad(dir, deg, up, dir);
 
 	deg = crandom() * ent->random;
-	VectorMA(dir, deg, right, dir);
+	vecmad(dir, deg, right, dir);
 
-	VectorNormalize(dir);
+	vecnorm(dir);
 
 	switch(ent->s.weapon){
 	case WP_GRENADE_LAUNCHER:
@@ -287,13 +287,13 @@ Use_Shooter(gentity_t *ent, gentity_t *other, gentity_t *activator)
 		break;
 	}
 
-	G_AddEvent(ent, EV_FIRE_WEAPON, 0);
+	addevent(ent, EV_FIRE_WEAPON, 0);
 }
 
 static void
 InitShooter_Finish(gentity_t *ent)
 {
-	ent->enemy = G_PickTarget(ent->target);
+	ent->enemy = picktarget(ent->target);
 	ent->think = 0;
 	ent->nextthink = 0;
 }
@@ -304,9 +304,9 @@ InitShooter(gentity_t *ent, int weapon)
 	ent->use = Use_Shooter;
 	ent->s.weapon = weapon;
 
-	RegisterItem(BG_FindItemForWeapon(weapon));
+	registeritem(finditemforweapon(weapon));
 
-	G_SetMovedir(ent->s.angles, ent->movedir);
+	setmovedir(ent->s.angles, ent->movedir);
 
 	if(!ent->random)
 		ent->random = 1.0;
@@ -353,7 +353,7 @@ SP_shooter_grenade(gentity_t *ent)
 static void
 PortalDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod)
 {
-	G_FreeEntity(self);
+	entfree(self);
 	//FIXME do something more interesting
 }
 
@@ -364,26 +364,26 @@ DropPortalDestination(gentity_t *player)
 	vec3_t snapped;
 
 	// create the portal destination
-	ent = G_Spawn();
-	ent->s.modelindex = G_ModelIndex("models/powerups/teleporter/tele_exit.md3");
+	ent = entspawn();
+	ent->s.modelindex = getmodelindex("models/powerups/teleporter/tele_exit.md3");
 
-	VectorCopy(player->s.pos.trBase, snapped);
+	veccpy(player->s.pos.trBase, snapped);
 	SnapVector(snapped);
-	G_SetOrigin(ent, snapped);
-	VectorCopy(player->r.mins, ent->r.mins);
-	VectorCopy(player->r.maxs, ent->r.maxs);
+	setorigin(ent, snapped);
+	veccpy(player->r.mins, ent->r.mins);
+	veccpy(player->r.maxs, ent->r.maxs);
 
 	ent->classname = "hi_portal destination";
 	ent->s.pos.trType = TR_STATIONARY;
 
 	ent->r.contents = CONTENTS_CORPSE;
-	ent->takedamage = qtrue;
+	ent->takedmg = qtrue;
 	ent->health = 200;
 	ent->die = PortalDie;
 
-	VectorCopy(player->s.apos.trBase, ent->s.angles);
+	veccpy(player->s.apos.trBase, ent->s.angles);
 
-	ent->think = G_FreeEntity;
+	ent->think = entfree;
 	ent->nextthink = level.time + 2 * 60 * 1000;
 
 	trap_LinkEntity(ent);
@@ -392,7 +392,7 @@ DropPortalDestination(gentity_t *player)
 	ent->count = player->client->portalID;
 
 	// give the item back so they can drop the source now
-	player->client->ps.stats[STAT_HOLDABLE_ITEM] = BG_FindItem("Portal") - bg_itemlist;
+	player->client->ps.stats[STAT_HOLDABLE_ITEM] = finditem("Portal") - bg_itemlist;
 }
 
 static void
@@ -410,38 +410,38 @@ PortalTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 //	}
 
 	if(other->client->ps.powerups[PW_NEUTRALFLAG]){	// only happens in One Flag CTF
-		Drop_Item(other, BG_FindItemForPowerup(PW_NEUTRALFLAG), 0);
+		itemdrop(other, finditemforpowerup(PW_NEUTRALFLAG), 0);
 		other->client->ps.powerups[PW_NEUTRALFLAG] = 0;
 	}else if(other->client->ps.powerups[PW_REDFLAG]){	// only happens in standard CTF
-		Drop_Item(other, BG_FindItemForPowerup(PW_REDFLAG), 0);
+		itemdrop(other, finditemforpowerup(PW_REDFLAG), 0);
 		other->client->ps.powerups[PW_REDFLAG] = 0;
 	}else if(other->client->ps.powerups[PW_BLUEFLAG]){	// only happens in standard CTF
-		Drop_Item(other, BG_FindItemForPowerup(PW_BLUEFLAG), 0);
+		itemdrop(other, finditemforpowerup(PW_BLUEFLAG), 0);
 		other->client->ps.powerups[PW_BLUEFLAG] = 0;
 	}
 
 	// find the destination
 	destination = nil;
-	while((destination = G_Find(destination, FOFS(classname), "hi_portal destination")) != nil)
+	while((destination = findent(destination, FOFS(classname), "hi_portal destination")) != nil)
 		if(destination->count == self->count)
 			break;
 
 	// if there is not one, die!
 	if(!destination){
 		if(self->pos1[0] || self->pos1[1] || self->pos1[2])
-			TeleportPlayer(other, self->pos1, self->s.angles);
-		G_Damage(other, other, other, nil, nil, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
+			teleportentity(other, self->pos1, self->s.angles);
+		entdamage(other, other, other, nil, nil, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
 		return;
 	}
 
-	TeleportPlayer(other, destination->s.pos.trBase, destination->s.angles);
+	teleportentity(other, destination->s.pos.trBase, destination->s.angles);
 }
 
 static void
 PortalEnable(gentity_t *self)
 {
 	self->touch = PortalTouch;
-	self->think = G_FreeEntity;
+	self->think = entfree;
 	self->nextthink = level.time + 2 * 60 * 1000;
 }
 
@@ -453,20 +453,20 @@ DropPortalSource(gentity_t *player)
 	vec3_t snapped;
 
 	// create the portal source
-	ent = G_Spawn();
-	ent->s.modelindex = G_ModelIndex("models/powerups/teleporter/tele_enter.md3");
+	ent = entspawn();
+	ent->s.modelindex = getmodelindex("models/powerups/teleporter/tele_enter.md3");
 
-	VectorCopy(player->s.pos.trBase, snapped);
+	veccpy(player->s.pos.trBase, snapped);
 	SnapVector(snapped);
-	G_SetOrigin(ent, snapped);
-	VectorCopy(player->r.mins, ent->r.mins);
-	VectorCopy(player->r.maxs, ent->r.maxs);
+	setorigin(ent, snapped);
+	veccpy(player->r.mins, ent->r.mins);
+	veccpy(player->r.maxs, ent->r.maxs);
 
 	ent->classname = "hi_portal source";
 	ent->s.pos.trType = TR_STATIONARY;
 
 	ent->r.contents = CONTENTS_CORPSE | CONTENTS_TRIGGER;
-	ent->takedamage = qtrue;
+	ent->takedmg = qtrue;
 	ent->health = 200;
 	ent->die = PortalDie;
 
@@ -482,9 +482,9 @@ DropPortalSource(gentity_t *player)
 
 	// find the destination
 	destination = nil;
-	while((destination = G_Find(destination, FOFS(classname), "hi_portal destination")) != nil)
+	while((destination = findent(destination, FOFS(classname), "hi_portal destination")) != nil)
 		if(destination->count == ent->count){
-			VectorCopy(destination->s.pos.trBase, ent->pos1);
+			veccpy(destination->s.pos.trBase, ent->pos1);
 			break;
 		}
 

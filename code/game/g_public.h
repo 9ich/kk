@@ -123,7 +123,7 @@ typedef enum
 	G_CVAR_VARIABLE_STRING_BUFFER,	// ( const char *var_name, char *buffer, int bufsize );
 
 	G_ARGC,				// ( void );
-	// ClientCommand and ServerCommand parameter access
+	// clientcmd and ServerCommand parameter access
 
 	G_ARGV,			// ( int n, char *buffer, int bufferLength );
 
@@ -140,7 +140,7 @@ typedef enum
 
 	G_LOCATE_GAME_DATA,	// ( gentity_t *gEnts, int numGEntities, int sizeofGEntity_t,
 	//							playerState_t *clients, int sizeofGameClient );
-	// the game needs to let the server system know where and how big the gentities
+	// the game needs to let the server system know where and how big the entities
 	// are, so it can look at them directly without going through an interface
 
 	G_DROP_CLIENT,	// ( int clientNum, const char *reason );
@@ -392,7 +392,7 @@ typedef enum
 	GAME_INIT,	// ( int levelTime, int randomSeed, int restart );
 	// init and shutdown will be called every single level
 	// The game should call G_GET_ENTITY_TOKEN to parse through all the
-	// entity configuration text and spawn gentities.
+	// entity configuration text and spawn entities.
 
 	GAME_SHUTDOWN,		// (void);
 
@@ -413,7 +413,7 @@ typedef enum
 	GAME_RUN_FRAME,			// ( int levelTime );
 
 	GAME_CONSOLE_COMMAND,		// ( void );
-	// ConsoleCommand will be called when a command has been issued
+	// consolecmd will be called when a command has been issued
 	// that is not recognized as a builtin function.
 	// The game can issue trap_argc() / trap_argv() commands to get the command
 	// and parameters.  Return qfalse if the game doesn't recognize it as a command.

@@ -233,7 +233,7 @@ UI_TeamOrdersMenu_ListDraw(void *self)
 		}else
 			color = color_orange;
 
-		UI_DrawProportionalString(x, y, l->itemnames[i], style, color);
+		drawpropstr(x, y, l->itemnames[i], style, color);
 		y += PROP_HEIGHT;
 	}
 }

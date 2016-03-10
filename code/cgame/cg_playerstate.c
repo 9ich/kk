@@ -86,7 +86,7 @@ CG_DamageFeedback
 ==============
 */
 void
-CG_DamageFeedback(int yawByte, int pitchByte, int damage)
+CG_DamageFeedback(int yawbyte, int pitchbyte, int damage)
 {
 	float left, front, up;
 	float kick;
@@ -98,7 +98,7 @@ CG_DamageFeedback(int yawByte, int pitchByte, int damage)
 	float yaw, pitch;
 
 	// show the attacking player's head and name in corner
-	cg.attackerTime = cg.time;
+	cg.attackertime = cg.time;
 
 	// the lower on health you are, the greater the view kick will be
 	health = cg.snap->ps.stats[STAT_HEALTH];
@@ -114,81 +114,81 @@ CG_DamageFeedback(int yawByte, int pitchByte, int damage)
 		kick = 10;
 
 	// if yaw and pitch are both 255, make the damage always centered (falling, etc)
-	if(yawByte == 255 && pitchByte == 255){
-		cg.damageX = 0;
-		cg.damageY = 0;
-		cg.v_dmg_roll = 0;
-		cg.v_dmg_pitch = -kick;
+	if(yawbyte == 255 && pitchbyte == 255){
+		cg.dmgx = 0;
+		cg.dmgy = 0;
+		cg.vdmgroll = 0;
+		cg.vdmgpitch = -kick;
 	}else{
 		// positional
-		pitch = pitchByte / 255.0 * 360;
-		yaw = yawByte / 255.0 * 360;
+		pitch = pitchbyte / 255.0 * 360;
+		yaw = yawbyte / 255.0 * 360;
 
 		angles[PITCH] = pitch;
 		angles[YAW] = yaw;
 		angles[ROLL] = 0;
 
-		AngleVectors(angles, dir, nil, nil);
-		VectorSubtract(vec3_origin, dir, dir);
+		anglevecs(angles, dir, nil, nil);
+		vecsub(vec3_origin, dir, dir);
 
-		front = DotProduct(dir, cg.refdef.viewaxis[0]);
-		left = DotProduct(dir, cg.refdef.viewaxis[1]);
-		up = DotProduct(dir, cg.refdef.viewaxis[2]);
+		front = vecdot(dir, cg.refdef.viewaxis[0]);
+		left = vecdot(dir, cg.refdef.viewaxis[1]);
+		up = vecdot(dir, cg.refdef.viewaxis[2]);
 
 		dir[0] = front;
 		dir[1] = left;
 		dir[2] = 0;
-		dist = VectorLength(dir);
+		dist = veclen(dir);
 		if(dist < 0.1)
 			dist = 0.1f;
 
-		cg.v_dmg_roll = kick * left;
+		cg.vdmgroll = kick * left;
 
-		cg.v_dmg_pitch = -kick * front;
+		cg.vdmgpitch = -kick * front;
 
 		if(front <= 0.1)
 			front = 0.1f;
-		cg.damageX = -left / front;
-		cg.damageY = up / dist;
+		cg.dmgx = -left / front;
+		cg.dmgy = up / dist;
 	}
 
 	// clamp the position
-	if(cg.damageX > 1.0)
-		cg.damageX = 1.0;
-	if(cg.damageX < -1.0)
-		cg.damageX = -1.0;
+	if(cg.dmgx > 1.0)
+		cg.dmgx = 1.0;
+	if(cg.dmgx < -1.0)
+		cg.dmgx = -1.0;
 
-	if(cg.damageY > 1.0)
-		cg.damageY = 1.0;
-	if(cg.damageY < -1.0)
-		cg.damageY = -1.0;
+	if(cg.dmgy > 1.0)
+		cg.dmgy = 1.0;
+	if(cg.dmgy < -1.0)
+		cg.dmgy = -1.0;
 
 	// don't let the screen flashes vary as much
 	if(kick > 10)
 		kick = 10;
-	cg.damageValue = kick;
-	cg.v_dmg_time = cg.time + DAMAGE_TIME;
-	cg.damageTime = cg.snap->serverTime;
+	cg.dmgval = kick;
+	cg.vdmgtime = cg.time + DAMAGE_TIME;
+	cg.dmgtime = cg.snap->serverTime;
 }
 
 /*
 ================
-CG_Respawn
+respawn
 
 A respawn happened this snapshot
 ================
 */
 void
-CG_Respawn(void)
+respawn(void)
 {
 	// no error decay on player movement
-	cg.thisFrameTeleport = qtrue;
+	cg.teleportthisframe = qtrue;
 
 	// display weapons available
-	cg.weaponSelectTime = cg.time;
+	cg.weapseltime = cg.time;
 
 	// select the weapon the server says we are using
-	cg.weaponSelect = cg.snap->ps.weapon;
+	cg.weapsel = cg.snap->ps.weapon;
 }
 
 extern char *eventnames[];
@@ -207,12 +207,12 @@ CG_CheckPlayerstateEvents(playerState_t *ps, playerState_t *ops)
 
 	if(ps->externalEvent && ps->externalEvent != ops->externalEvent){
 		cent = &cg_entities[ps->clientNum];
-		cent->currentState.event = ps->externalEvent;
-		cent->currentState.eventParm = ps->externalEventParm;
-		CG_EntityEvent(cent, cent->lerpOrigin);
+		cent->currstate.event = ps->externalEvent;
+		cent->currstate.eventParm = ps->externalEventParm;
+		entevent(cent, cent->lerporigin);
 	}
 
-	cent = &cg.predictedPlayerEntity;	// cg_entities[ ps->clientNum ];
+	cent = &cg.pplayerent;	// cg_entities[ ps->clientNum ];
 	// go through the predictable events buffer
 	for(i = ps->eventSequence - MAX_PS_EVENTS; i < ps->eventSequence; i++)
 		// if we have a new predictable event
@@ -221,11 +221,11 @@ CG_CheckPlayerstateEvents(playerState_t *ps, playerState_t *ops)
 			// or something the server told us changed our prediction causing a different event
 		   || (i > ops->eventSequence - MAX_PS_EVENTS && ps->events[i & (MAX_PS_EVENTS-1)] != ops->events[i & (MAX_PS_EVENTS-1)])){
 			event = ps->events[i & (MAX_PS_EVENTS-1)];
-			cent->currentState.event = event;
-			cent->currentState.eventParm = ps->eventParms[i & (MAX_PS_EVENTS-1)];
-			CG_EntityEvent(cent, cent->lerpOrigin);
+			cent->currstate.event = event;
+			cent->currstate.eventParm = ps->eventParms[i & (MAX_PS_EVENTS-1)];
+			entevent(cent, cent->lerporigin);
 
-			cg.predictableEvents[i & (MAX_PREDICTED_EVENTS-1)] = event;
+			cg.pevents[i & (MAX_PREDICTED_EVENTS-1)] = event;
 
 			cg.eventSequence++;
 		}
@@ -233,17 +233,17 @@ CG_CheckPlayerstateEvents(playerState_t *ps, playerState_t *ops)
 
 /*
 ==================
-CG_CheckChangedPredictableEvents
+chkpredictableevents
 ==================
 */
 void
-CG_CheckChangedPredictableEvents(playerState_t *ps)
+chkpredictableevents(playerState_t *ps)
 {
 	int i;
 	int event;
 	centity_t *cent;
 
-	cent = &cg.predictedPlayerEntity;
+	cent = &cg.pplayerent;
 	for(i = ps->eventSequence - MAX_PS_EVENTS; i < ps->eventSequence; i++){
 		//
 		if(i >= cg.eventSequence)
@@ -251,33 +251,33 @@ CG_CheckChangedPredictableEvents(playerState_t *ps)
 		// if this event is not further back in than the maximum predictable events we remember
 		if(i > cg.eventSequence - MAX_PREDICTED_EVENTS)
 			// if the new playerstate event is different from a previously predicted one
-			if(ps->events[i & (MAX_PS_EVENTS-1)] != cg.predictableEvents[i & (MAX_PREDICTED_EVENTS-1)]){
+			if(ps->events[i & (MAX_PS_EVENTS-1)] != cg.pevents[i & (MAX_PREDICTED_EVENTS-1)]){
 				event = ps->events[i & (MAX_PS_EVENTS-1)];
-				cent->currentState.event = event;
-				cent->currentState.eventParm = ps->eventParms[i & (MAX_PS_EVENTS-1)];
-				CG_EntityEvent(cent, cent->lerpOrigin);
+				cent->currstate.event = event;
+				cent->currstate.eventParm = ps->eventParms[i & (MAX_PS_EVENTS-1)];
+				entevent(cent, cent->lerporigin);
 
-				cg.predictableEvents[i & (MAX_PREDICTED_EVENTS-1)] = event;
+				cg.pevents[i & (MAX_PREDICTED_EVENTS-1)] = event;
 
 				if(cg_showmiss.integer)
-					CG_Printf("WARNING: changed predicted event\n");
+					cgprintf("WARNING: changed predicted event\n");
 			}
 	}
 }
 
 /*
 ==================
-pushReward
+pushreward
 ==================
 */
 static void
-pushReward(sfxHandle_t sfx, qhandle_t shader, int rewardCount)
+pushreward(sfxHandle_t sfx, qhandle_t shader, int nrewards)
 {
-	if(cg.rewardStack < (MAX_REWARDSTACK-1)){
-		cg.rewardStack++;
-		cg.rewardSound[cg.rewardStack] = sfx;
-		cg.rewardShader[cg.rewardStack] = shader;
-		cg.rewardCount[cg.rewardStack] = rewardCount;
+	if(cg.rewardstack < (MAX_REWARDSTACK-1)){
+		cg.rewardstack++;
+		cg.rewardsounds[cg.rewardstack] = sfx;
+		cg.rewardshaders[cg.rewardstack] = shader;
+		cg.nrewards[cg.rewardstack] = nrewards;
 	}
 }
 
@@ -320,17 +320,17 @@ CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops)
 	// health changes of more than -1 should make pain sounds
 	if(ps->stats[STAT_HEALTH] < ops->stats[STAT_HEALTH] - 1)
 		if(ps->stats[STAT_HEALTH] > 0)
-			CG_PainEvent(&cg.predictedPlayerEntity, ps->stats[STAT_HEALTH]);
+			painevent(&cg.pplayerent, ps->stats[STAT_HEALTH]);
 
 
 	// if we are going into the intermission, don't start any voices
-	if(cg.intermissionStarted)
+	if(cg.intermissionstarted)
 		return;
 
 	// reward sounds
 	reward = qfalse;
 	if(ps->persistant[PERS_CAPTURES] != ops->persistant[PERS_CAPTURES]){
-		pushReward(cgs.media.captureAwardSound, cgs.media.medalCapture, ps->persistant[PERS_CAPTURES]);
+		pushreward(cgs.media.captureAwardSound, cgs.media.medalCapture, ps->persistant[PERS_CAPTURES]);
 		reward = qtrue;
 		//Com_Printf("capture\n");
 	}
@@ -344,7 +344,7 @@ CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops)
 #else
 		sfx = cgs.media.impressiveSound;
 #endif
-		pushReward(sfx, cgs.media.medalImpressive, ps->persistant[PERS_IMPRESSIVE_COUNT]);
+		pushreward(sfx, cgs.media.medalImpressive, ps->persistant[PERS_IMPRESSIVE_COUNT]);
 		reward = qtrue;
 		//Com_Printf("impressive\n");
 	}
@@ -358,7 +358,7 @@ CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops)
 #else
 		sfx = cgs.media.excellentSound;
 #endif
-		pushReward(sfx, cgs.media.medalExcellent, ps->persistant[PERS_EXCELLENT_COUNT]);
+		pushreward(sfx, cgs.media.medalExcellent, ps->persistant[PERS_EXCELLENT_COUNT]);
 		reward = qtrue;
 		//Com_Printf("excellent\n");
 	}
@@ -372,17 +372,17 @@ CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops)
 #else
 		sfx = cgs.media.humiliationSound;
 #endif
-		pushReward(sfx, cgs.media.medalGauntlet, ps->persistant[PERS_GAUNTLET_FRAG_COUNT]);
+		pushreward(sfx, cgs.media.medalGauntlet, ps->persistant[PERS_GAUNTLET_FRAG_COUNT]);
 		reward = qtrue;
 		//Com_Printf("gauntlet frag\n");
 	}
 	if(ps->persistant[PERS_DEFEND_COUNT] != ops->persistant[PERS_DEFEND_COUNT]){
-		pushReward(cgs.media.defendSound, cgs.media.medalDefend, ps->persistant[PERS_DEFEND_COUNT]);
+		pushreward(cgs.media.defendSound, cgs.media.medalDefend, ps->persistant[PERS_DEFEND_COUNT]);
 		reward = qtrue;
 		//Com_Printf("defend\n");
 	}
 	if(ps->persistant[PERS_ASSIST_COUNT] != ops->persistant[PERS_ASSIST_COUNT]){
-		pushReward(cgs.media.assistSound, cgs.media.medalAssist, ps->persistant[PERS_ASSIST_COUNT]);
+		pushreward(cgs.media.assistSound, cgs.media.medalAssist, ps->persistant[PERS_ASSIST_COUNT]);
 		reward = qtrue;
 		//Com_Printf("assist\n");
 	}
@@ -415,11 +415,11 @@ CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops)
 			if(ps->persistant[PERS_RANK] != ops->persistant[PERS_RANK])
 				if(cgs.gametype < GT_TEAM){
 					if(ps->persistant[PERS_RANK] == 0)
-						CG_AddBufferedSound(cgs.media.takenLeadSound);
+						addbufferedsound(cgs.media.takenLeadSound);
 					else if(ps->persistant[PERS_RANK] == RANK_TIED_FLAG)
-						CG_AddBufferedSound(cgs.media.tiedLeadSound);
+						addbufferedsound(cgs.media.tiedLeadSound);
 					else if((ops->persistant[PERS_RANK] & ~RANK_TIED_FLAG) == 0)
-						CG_AddBufferedSound(cgs.media.lostLeadSound);
+						addbufferedsound(cgs.media.lostLeadSound);
 				}
 		}
 
@@ -428,14 +428,14 @@ CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops)
 		int msec;
 
 		msec = cg.time - cgs.levelStartTime;
-		if(!(cg.timelimitWarnings & 4) && msec > (cgs.timelimit * 60 + 2) * 1000){
-			cg.timelimitWarnings |= 1 | 2 | 4;
+		if(!(cg.timelimitwarnings & 4) && msec > (cgs.timelimit * 60 + 2) * 1000){
+			cg.timelimitwarnings |= 1 | 2 | 4;
 			trap_S_StartLocalSound(cgs.media.suddenDeathSound, CHAN_ANNOUNCER);
-		}else if(!(cg.timelimitWarnings & 2) && msec > (cgs.timelimit - 1) * 60 * 1000){
-			cg.timelimitWarnings |= 1 | 2;
+		}else if(!(cg.timelimitwarnings & 2) && msec > (cgs.timelimit - 1) * 60 * 1000){
+			cg.timelimitwarnings |= 1 | 2;
 			trap_S_StartLocalSound(cgs.media.oneMinuteSound, CHAN_ANNOUNCER);
-		}else if(cgs.timelimit > 5 && !(cg.timelimitWarnings & 1) && msec > (cgs.timelimit - 5) * 60 * 1000){
-			cg.timelimitWarnings |= 1;
+		}else if(cgs.timelimit > 5 && !(cg.timelimitwarnings & 1) && msec > (cgs.timelimit - 5) * 60 * 1000){
+			cg.timelimitwarnings |= 1;
 			trap_S_StartLocalSound(cgs.media.fiveMinuteSound, CHAN_ANNOUNCER);
 		}
 	}
@@ -447,31 +447,31 @@ CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops)
 		if(cgs.gametype == GT_TEAM && cgs.scores2 > highScore)
 			highScore = cgs.scores2;
 
-		if(!(cg.fraglimitWarnings & 4) && highScore == (cgs.fraglimit - 1)){
-			cg.fraglimitWarnings |= 1 | 2 | 4;
-			CG_AddBufferedSound(cgs.media.oneFragSound);
-		}else if(cgs.fraglimit > 2 && !(cg.fraglimitWarnings & 2) && highScore == (cgs.fraglimit - 2)){
-			cg.fraglimitWarnings |= 1 | 2;
-			CG_AddBufferedSound(cgs.media.twoFragSound);
-		}else if(cgs.fraglimit > 3 && !(cg.fraglimitWarnings & 1) && highScore == (cgs.fraglimit - 3)){
-			cg.fraglimitWarnings |= 1;
-			CG_AddBufferedSound(cgs.media.threeFragSound);
+		if(!(cg.fraglimitwarnings & 4) && highScore == (cgs.fraglimit - 1)){
+			cg.fraglimitwarnings |= 1 | 2 | 4;
+			addbufferedsound(cgs.media.oneFragSound);
+		}else if(cgs.fraglimit > 2 && !(cg.fraglimitwarnings & 2) && highScore == (cgs.fraglimit - 2)){
+			cg.fraglimitwarnings |= 1 | 2;
+			addbufferedsound(cgs.media.twoFragSound);
+		}else if(cgs.fraglimit > 3 && !(cg.fraglimitwarnings & 1) && highScore == (cgs.fraglimit - 3)){
+			cg.fraglimitwarnings |= 1;
+			addbufferedsound(cgs.media.threeFragSound);
 		}
 	}
 }
 
 /*
 ===============
-CG_TransitionPlayerState
+pstransition
 
 ===============
 */
 void
-CG_TransitionPlayerState(playerState_t *ps, playerState_t *ops)
+pstransition(playerState_t *ps, playerState_t *ops)
 {
 	// check for changing follow mode
 	if(ps->clientNum != ops->clientNum){
-		cg.thisFrameTeleport = qtrue;
+		cg.teleportthisframe = qtrue;
 		// make sure we don't get any unwanted transition effects
 		*ops = *ps;
 	}
@@ -482,11 +482,11 @@ CG_TransitionPlayerState(playerState_t *ps, playerState_t *ops)
 
 	// respawning
 	if(ps->persistant[PERS_SPAWN_COUNT] != ops->persistant[PERS_SPAWN_COUNT])
-		CG_Respawn();
+		respawn();
 
-	if(cg.mapRestart){
-		CG_Respawn();
-		cg.mapRestart = qfalse;
+	if(cg.maprestart){
+		respawn();
+		cg.maprestart = qfalse;
 	}
 
 	if(cg.snap->ps.pm_type != PM_INTERMISSION
@@ -501,7 +501,7 @@ CG_TransitionPlayerState(playerState_t *ps, playerState_t *ops)
 
 	// smooth the ducking viewheight change
 	if(ps->viewheight != ops->viewheight){
-		cg.duckChange = ps->viewheight - ops->viewheight;
-		cg.duckTime = cg.time;
+		cg.duckchange = ps->viewheight - ops->viewheight;
+		cg.ducktime = cg.time;
 	}
 }

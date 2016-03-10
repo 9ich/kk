@@ -428,8 +428,8 @@ Controls_UpdateModel
 static void
 Controls_UpdateModel(int anim)
 {
-	VectorClear(s_controls.playerViewangles);
-	VectorClear(s_controls.playerMoveangles);
+	vecclear(s_controls.playerViewangles);
+	vecclear(s_controls.playerMoveangles);
 	s_controls.playerViewangles[YAW] = 180 - 30;
 	s_controls.playerMoveangles[YAW] = s_controls.playerViewangles[YAW];
 	s_controls.playerLegs = LEGS_IDLE;
@@ -1008,8 +1008,8 @@ Controls_ResetDefaults_Draw
 static void
 Controls_ResetDefaults_Draw(void)
 {
-	UI_DrawProportionalString(SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 0, "WARNING: This will reset all", UI_CENTER|UI_SMALLFONT, color_yellow);
-	UI_DrawProportionalString(SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 1, "controls to their default values.", UI_CENTER|UI_SMALLFONT, color_yellow);
+	drawpropstr(SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 0, "WARNING: This will reset all", UI_CENTER|UI_SMALLFONT, color_yellow);
+	drawpropstr(SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 1, "controls to their default values.", UI_CENTER|UI_SMALLFONT, color_yellow);
 }
 
 /*
@@ -1132,9 +1132,9 @@ Controls_InitWeapons(void)
 	gitem_t * item;
 
 	for(item = bg_itemlist + 1; item->classname; item++){
-		if(item->giType != IT_WEAPON)
+		if(item->type != IT_WEAPON)
 			continue;
-		trap_R_RegisterModel(item->world_model[0]);
+		trap_R_RegisterModel(item->model[0]);
 	}
 }
 

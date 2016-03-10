@@ -72,11 +72,11 @@ UI_CreditMenu_Draw_ioq3(void)
 	// Center text vertically on the screen
 	y = (SCREEN_HEIGHT - ARRAY_LEN(names) * (1.42 * PROP_HEIGHT * PROP_SMALL_SIZE_SCALE)) / 2;
 
-	UI_DrawProportionalString(320, y, "ioquake3 contributors:", UI_CENTER|UI_SMALLFONT, color_white);
+	drawpropstr(320, y, "ioquake3 contributors:", UI_CENTER|UI_SMALLFONT, color_white);
 	y += 1.42 * PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
 
 	for(i = 0; names[i]; i++){
-		UI_DrawProportionalString(320, y, names[i], UI_CENTER|UI_SMALLFONT, color_white);
+		drawpropstr(320, y, names[i], UI_CENTER|UI_SMALLFONT, color_white);
 		y += 1.42 * PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
 	}
 
@@ -113,49 +113,49 @@ UI_CreditMenu_Draw(void)
 	int y;
 
 	y = 12;
-	UI_DrawProportionalString(320, y, "id Software is:", UI_CENTER|UI_SMALLFONT, color_white);
+	drawpropstr(320, y, "id Software is:", UI_CENTER|UI_SMALLFONT, color_white);
 
 	y += 1.42 * PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
-	UI_DrawProportionalString(320, y, "Programming", UI_CENTER|UI_SMALLFONT, color_white);
+	drawpropstr(320, y, "Programming", UI_CENTER|UI_SMALLFONT, color_white);
 	y += PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
-	UI_DrawProportionalString(320, y, "John Carmack, Robert A. Duffy, Jim Dose'", UI_CENTER|UI_SMALLFONT, color_white);
+	drawpropstr(320, y, "John Carmack, Robert A. Duffy, Jim Dose'", UI_CENTER|UI_SMALLFONT, color_white);
 
 	y += 1.42 * PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
-	UI_DrawProportionalString(320, y, "Art", UI_CENTER|UI_SMALLFONT, color_white);
+	drawpropstr(320, y, "Art", UI_CENTER|UI_SMALLFONT, color_white);
 	y += PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
-	UI_DrawProportionalString(320, y, "Adrian Carmack, Kevin Cloud,", UI_CENTER|UI_SMALLFONT, color_white);
+	drawpropstr(320, y, "Adrian Carmack, Kevin Cloud,", UI_CENTER|UI_SMALLFONT, color_white);
 	y += PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
-	UI_DrawProportionalString(320, y, "Kenneth Scott, Seneca Menard, Fred Nilsson", UI_CENTER|UI_SMALLFONT, color_white);
+	drawpropstr(320, y, "Kenneth Scott, Seneca Menard, Fred Nilsson", UI_CENTER|UI_SMALLFONT, color_white);
 
 	y += 1.42 * PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
-	UI_DrawProportionalString(320, y, "Game Designer", UI_CENTER|UI_SMALLFONT, color_white);
+	drawpropstr(320, y, "Game Designer", UI_CENTER|UI_SMALLFONT, color_white);
 	y += PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
-	UI_DrawProportionalString(320, y, "Graeme Devine", UI_CENTER|UI_SMALLFONT, color_white);
+	drawpropstr(320, y, "Graeme Devine", UI_CENTER|UI_SMALLFONT, color_white);
 
 	y += 1.42 * PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
-	UI_DrawProportionalString(320, y, "Level Design", UI_CENTER|UI_SMALLFONT, color_white);
+	drawpropstr(320, y, "Level Design", UI_CENTER|UI_SMALLFONT, color_white);
 	y += PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
-	UI_DrawProportionalString(320, y, "Tim Willits, Christian Antkow, Paul Jaquays", UI_CENTER|UI_SMALLFONT, color_white);
+	drawpropstr(320, y, "Tim Willits, Christian Antkow, Paul Jaquays", UI_CENTER|UI_SMALLFONT, color_white);
 
 	y += 1.42 * PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
-	UI_DrawProportionalString(320, y, "CEO", UI_CENTER|UI_SMALLFONT, color_white);
+	drawpropstr(320, y, "CEO", UI_CENTER|UI_SMALLFONT, color_white);
 	y += PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
-	UI_DrawProportionalString(320, y, "Todd Hollenshead", UI_CENTER|UI_SMALLFONT, color_white);
+	drawpropstr(320, y, "Todd Hollenshead", UI_CENTER|UI_SMALLFONT, color_white);
 
 	y += 1.42 * PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
-	UI_DrawProportionalString(320, y, "Director of Business Development", UI_CENTER|UI_SMALLFONT, color_white);
+	drawpropstr(320, y, "Director of Business Development", UI_CENTER|UI_SMALLFONT, color_white);
 	y += PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
-	UI_DrawProportionalString(320, y, "Marty Stratton", UI_CENTER|UI_SMALLFONT, color_white);
+	drawpropstr(320, y, "Marty Stratton", UI_CENTER|UI_SMALLFONT, color_white);
 
 	y += 1.42 * PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
-	UI_DrawProportionalString(320, y, "Biz Assist and id Mom", UI_CENTER|UI_SMALLFONT, color_white);
+	drawpropstr(320, y, "Biz Assist and id Mom", UI_CENTER|UI_SMALLFONT, color_white);
 	y += PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
-	UI_DrawProportionalString(320, y, "Donna Jackson", UI_CENTER|UI_SMALLFONT, color_white);
+	drawpropstr(320, y, "Donna Jackson", UI_CENTER|UI_SMALLFONT, color_white);
 
 	y += 1.42 * PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
-	UI_DrawProportionalString(320, y, "Development Assistance", UI_CENTER|UI_SMALLFONT, color_white);
+	drawpropstr(320, y, "Development Assistance", UI_CENTER|UI_SMALLFONT, color_white);
 	y += PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
-	UI_DrawProportionalString(320, y, "Eric Webb", UI_CENTER|UI_SMALLFONT, color_white);
+	drawpropstr(320, y, "Eric Webb", UI_CENTER|UI_SMALLFONT, color_white);
 
 	y += 1.35 * PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
 	UI_DrawString(320, y, "To order: 1-800-idgames     www.quake3arena.com     www.idsoftware.com", UI_CENTER|UI_SMALLFONT, color_red);
