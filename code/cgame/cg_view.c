@@ -294,19 +294,6 @@ CG_OffsetThirdPersonView(void)
 	cg.refdefviewangles[YAW] -= cg_thirdPersonAngle.value;
 }
 
-// this causes a compiler bug on mac MrC compiler
-static void
-CG_StepOffset(void)
-{
-	int timeDelta;
-
-	// smooth out stair climbing
-	timeDelta = cg.time - cg.steptime;
-	if(timeDelta < STEP_TIME)
-		cg.refdef.vieworg[2] -= cg.stepchange
-					* (STEP_TIME - timeDelta) / STEP_TIME;
-}
-
 /*
 ===============
 CG_OffsetFirstPersonView
@@ -418,9 +405,6 @@ CG_OffsetFirstPersonView(void)
 		f = 1.0 - (delta / LAND_RETURN_TIME);
 		cg.refdef.vieworg[2] += cg.landchange * f;
 	}
-
-	// add step offset
-	CG_StepOffset();
 
 	// pivot the eye based on a neck length
 #if 0
