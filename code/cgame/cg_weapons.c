@@ -563,11 +563,9 @@ grappletrail(centity_t *ent, const weaponInfo_t *wi)
 	ent->trailtime = cg.time;
 
 	memset(&beam, 0, sizeof(beam));
-	//FIXME adjust for muzzle position
 	veccpy(cg_entities[ent->currstate.otherEntityNum].lerporigin, beam.origin);
-	beam.origin[2] += 26;
 	anglevecs(cg_entities[ent->currstate.otherEntityNum].lerpangles, forward, nil, up);
-	vecmad(beam.origin, -6, up, beam.origin);
+	vecmad(beam.origin, -15, up, beam.origin);
 	veccpy(origin, beam.oldorigin);
 
 	if(vecdist(beam.origin, beam.oldorigin) < 64)
