@@ -237,8 +237,6 @@ CG_OffsetThirdPersonView(void)
 	float focusDist;
 	float forwardScale, sideScale;
 
-	cg.refdef.vieworg[2] += cg.pps.viewheight;
-
 	veccpy(cg.refdefviewangles, focusAngles);
 
 	// if dead, look at killer
@@ -246,41 +244,22 @@ CG_OffsetThirdPersonView(void)
 		focusAngles[YAW] = cg.pps.stats[STAT_DEAD_YAW];
 		cg.refdefviewangles[YAW] = cg.pps.stats[STAT_DEAD_YAW];
 	}
-
-	if(focusAngles[PITCH] > 45)
-		focusAngles[PITCH] = 45;	// don't go too far overhead
 	anglevecs(focusAngles, forward, nil, nil);
 
 	vecmad(cg.refdef.vieworg, FOCUS_DISTANCE, forward, focusPoint);
 
 	veccpy(cg.refdef.vieworg, view);
 
-	view[2] += 8;
-
-	cg.refdefviewangles[PITCH] *= 0.5;
-
 	anglevecs(cg.refdefviewangles, forward, right, up);
 
-	forwardScale = cos(cg_thirdPersonAngle.value / 180 * M_PI);
-	sideScale = sin(cg_thirdPersonAngle.value / 180 * M_PI);
-	vecmad(view, -cg_thirdPersonRange.value * forwardScale, forward, view);
-	vecmad(view, -cg_thirdPersonRange.value * sideScale, right, view);
+	vecmad(view, -cg_thirdPersonRange.value, forward, view);
 
 	// trace a ray from the origin to the viewpoint to make sure the view isn't
 	// in a solid block.  Use an 8 by 8 block to prevent the view from near clipping anything
 
 	if(!cg_cameraMode.integer){
 		cgtrace(&trace, cg.refdef.vieworg, mins, maxs, view, cg.pps.clientNum, MASK_SOLID);
-
-		if(trace.fraction != 1.0){
-			veccpy(trace.endpos, view);
-			view[2] += (1.0 - trace.fraction) * 32;
-			// try another trace to this position, because a tunnel may have the ceiling
-			// close enough that this is poking out
-
-			cgtrace(&trace, cg.refdef.vieworg, mins, maxs, view, cg.pps.clientNum, MASK_SOLID);
-			veccpy(trace.endpos, view);
-		}
+		veccpy(trace.endpos, view);
 	}
 
 	veccpy(view, cg.refdef.vieworg);
