@@ -330,6 +330,21 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
+/*QUAKED weapon_hominglauncher (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+*/	{
+		"weapon_hominglauncher",
+		"sound/misc/w_pkup.wav",
+		{"models/weapons2/homing/homing.md3",
+		 nil, nil, nil},
+		"icons/iconw_homing",
+		"Homing launcher",
+		10,
+		IT_WEAPON,
+		WP_HOMING_LAUNCHER,
+		"",						// precache
+		"",						// sounds
+	},
+
 /*QUAKED weapon_grapplinghook (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{

@@ -1212,6 +1212,8 @@ clientspawn(gentity_t *ent)
 	if(ent->client->sess.specstate != SPECTATOR_FOLLOW)
 		clientendframe(ent);
 
+	client->ps.lockontarget = ENTITYNUM_NONE;
+
 	// clear entity state values
 	playerstate2entstate(&client->ps, &ent->s, qtrue);
 }

@@ -671,6 +671,67 @@ fire_rocket(gentity_t *self, vec3_t start, vec3_t dir)
 	return bolt;
 }
 
+void
+homingrocket_think(gentity_t *ent)
+{
+	vec3_t olddir, dir;
+	gentity_t *targ;
+
+	targ = &g_entities[ent->homingtarget];
+
+	evaltrajectory(&ent->s.pos, level.time, ent->r.currentOrigin);
+	veccpy(ent->s.pos.trDelta, olddir);
+	vecnorm(olddir);
+
+	vecsub(targ->r.currentOrigin, ent->r.currentOrigin, dir);
+	vecnorm(dir);
+	if(vecdot(olddir, dir) >= 0.8f){
+		veccpy(ent->r.currentOrigin, ent->s.pos.trBase);
+		vecmul(dir, 200, ent->s.pos.trDelta);
+		ent->s.pos.trType = TR_LINEAR;
+		ent->s.pos.trTime = level.time;
+		ent->s.pos.trDuration = 100;
+	}
+
+	ent->think = homingrocket_think;
+	ent->nextthink = level.time + 100;
+}
+
+gentity_t *
+fire_homingrocket(gentity_t *self, vec3_t start, vec3_t dir)
+{
+	gentity_t *bolt;
+
+	vecnorm(dir);
+
+	bolt = entspawn();
+	bolt->classname = "homingrocket";
+	bolt->think = homingrocket_think;
+	bolt->nextthink = level.time + 100;
+	bolt->s.eType = ET_MISSILE;
+	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+	bolt->s.weapon = WP_HOMING_LAUNCHER;
+	bolt->r.ownerNum = self->s.number;
+	bolt->parent = self;
+	bolt->damage = 100;
+	bolt->splashdmg = 100;
+	bolt->splashradius = 120;
+	bolt->meansofdeath = MOD_ROCKET;
+	bolt->splashmeansofdeath = MOD_ROCKET_SPLASH;
+	bolt->clipmask = MASK_SHOT;
+	bolt->homingtarget = self->client->ps.lockontarget;
+
+	veccpy(start, bolt->s.pos.trBase);
+	vecmul(dir, 100, bolt->s.pos.trDelta);
+	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
+	bolt->s.pos.trType = TR_LINEAR;
+	bolt->s.pos.trTime = level.time;
+	bolt->s.pos.trDuration = 100;
+	veccpy(start, bolt->r.currentOrigin);
+
+	return bolt;
+}
+
 /*
 =================
 fire_grapple

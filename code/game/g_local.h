@@ -176,6 +176,8 @@ struct gentity_s
 	float		random;
 
 	gitem_t		*item;	// for bonus items
+
+	int		homingtarget;	// hominglauncher
 };
 
 typedef enum
@@ -522,6 +524,7 @@ void		runmissile(gentity_t *ent);
 gentity_t *	fire_plasma(gentity_t *self, vec3_t start, vec3_t aimdir);
 gentity_t *	fire_grenade(gentity_t *self, vec3_t start, vec3_t aimdir);
 gentity_t *	fire_rocket(gentity_t *self, vec3_t start, vec3_t dir);
+gentity_t *	fire_homingrocket(gentity_t *self, vec3_t start, vec3_t dir);
 gentity_t *	fire_bfg(gentity_t *self, vec3_t start, vec3_t dir);
 gentity_t *	fire_grapple(gentity_t *self, vec3_t start, vec3_t dir);
 #ifdef MISSIONPACK
@@ -558,6 +561,7 @@ void		snapvectortowards(vec3_t v, vec3_t to);
 qboolean	chkgauntletattack(gentity_t *ent);
 void		weapon_hook_free(gentity_t *ent);
 void		weapon_hook_think(gentity_t *ent);
+void		homing_scan(gentity_t *ent);
 
 //
 // g_client.c

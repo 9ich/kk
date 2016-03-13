@@ -328,6 +328,7 @@ typedef enum
 	WP_PROX_LAUNCHER,
 	WP_CHAINGUN,
 #endif
+	WP_HOMING_LAUNCHER,
 
 	WP_NUM_WEAPONS
 } weapon_t;
@@ -743,3 +744,7 @@ qboolean	playertouchingitem(playerState_t *ps, entityState_t *item, int atTime);
 #define KAMI_SHOCKWAVE_MAXRADIUS	1320
 #define KAMI_BOOMSPHERE_MAXRADIUS	720
 #define KAMI_SHOCKWAVE2_MAXRADIUS	704
+
+// hominglauncher
+#define HOMING_SCANRANGE	1600
+#define HOMING_SCANWAIT		1500

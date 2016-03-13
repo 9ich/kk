@@ -1250,6 +1250,11 @@ typedef struct playerState_s {
 	int			pmove_framecount;
 	int			jumppad_frame;
 	int			entityEventSequence;
+
+	// hominglauncher
+	int			lockontarget;
+	int			lockontime;
+	int			lockonstarttime;
 } playerState_t;
 
 

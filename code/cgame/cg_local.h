@@ -783,6 +783,10 @@ typedef struct
 	qhandle_t	bfgExplosionShader;
 	qhandle_t	bloodExplosionShader;
 
+	// hominglauncher
+	qhandle_t	lockingOnShader;
+	qhandle_t	lockedOnShader;
+
 	// special effects models
 	qhandle_t	teleportEffectModel;
 	qhandle_t	teleportEffectShader;
@@ -817,7 +821,10 @@ typedef struct
 	qhandle_t	medalAssist;
 	qhandle_t	medalCapture;
 
+	//
 	// sounds
+	//
+
 	sfxHandle_t	quadSound;
 	sfxHandle_t	tracerSound;
 	sfxHandle_t	selectSound;
@@ -946,6 +953,10 @@ typedef struct
 	sfxHandle_t	count1Sound;
 	sfxHandle_t	countFightSound;
 	sfxHandle_t	countPrepareSound;
+
+	// hominglauncher
+	sfxHandle_t	lockingOnSound;
+	sfxHandle_t	lockedOnSound;
 
 #ifdef MISSIONPACK
 	// new stuff

@@ -411,6 +411,26 @@ Weapon_RocketLauncher_Fire(gentity_t *ent)
 /*
 ======================================================================
 
+HOMINGLAUNCHER
+
+======================================================================
+*/
+
+void
+Weapon_HomingLauncher_Fire(gentity_t *ent)
+{
+	gentity_t       *m;
+
+	m = fire_homingrocket(ent, muzzle, forward);
+	m->damage *= s_quadFactor;
+	m->splashdmg *= s_quadFactor;
+	ent->client->ps.lockontarget = ENTITYNUM_NONE;
+
+//	vecadd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
+}
+/*
+======================================================================
+
 PLASMA GUN
 
 ======================================================================
@@ -861,6 +881,9 @@ fireweapon(gentity_t *ent)
 	case WP_ROCKET_LAUNCHER:
 		Weapon_RocketLauncher_Fire(ent);
 		break;
+	case WP_HOMING_LAUNCHER:
+		Weapon_HomingLauncher_Fire(ent);
+		break;
 	case WP_PLASMAGUN:
 		Weapon_Plasmagun_Fire(ent);
 		break;
@@ -1135,3 +1158,51 @@ G_StartKamikaze(gentity_t *ent)
 }
 
 #endif
+
+void
+homing_scan(gentity_t *ent)
+{
+	vec3_t mins, maxs, start, end;
+	trace_t tr;
+	playerState_t *ps;
+
+	if(ent->client == nil)
+		return;
+
+	ps = &ent->client->ps;
+
+	if(ps->weapon != WP_HOMING_LAUNCHER){
+		ps->lockontarget = ENTITYNUM_NONE;
+		return;
+	}
+
+	vecset(mins, -30, -30, -30);
+	vecset(maxs, 30, 30, 30);
+	anglevecs(ps->viewangles, forward, nil, nil);
+
+	veccpy(ps->origin, start);
+	vecmad(ps->origin, HOMING_SCANRANGE, forward, end);
+	
+	trap_Trace(&tr, start, mins, maxs, end, ent->s.number, MASK_SHOT);
+
+	if(tr.allsolid || tr.fraction == 1.0f ||
+	   tr.entityNum == ENTITYNUM_NONE ||
+	   tr.entityNum >= level.maxclients ||
+	   onsameteam(ent, &g_entities[tr.entityNum])
+	   || !g_entities[tr.entityNum].inuse){
+	   	// nothing to lock on to
+		ps->lockontarget = ENTITYNUM_NONE;
+		ps->lockontime = 0;
+		ps->lockonstarttime = 0;
+		return;
+	}
+
+	if(ps->lockontarget != tr.entityNum){
+		ps->lockontarget = tr.entityNum;
+		ps->lockontime = level.time;
+		ps->lockonstarttime = level.time;
+		return;
+	}
+	// still locking on
+	ps->lockontime = level.time;
+}

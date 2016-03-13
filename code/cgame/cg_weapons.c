@@ -723,6 +723,7 @@ registerweap(int weaponNum)
 		break;
 
 	case WP_ROCKET_LAUNCHER:
+	case WP_HOMING_LAUNCHER:
 		weapinfo->missilemodel = trap_R_RegisterModel("models/ammo/rocket/rocket.md3");
 		weapinfo->missilesound = trap_S_RegisterSound("sound/weapons/rocket/rockfly.wav", qfalse);
 		weapinfo->missileTrailFunc = CG_RocketTrail;
@@ -1757,6 +1758,7 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		isSprite = qtrue;
 		break;
 	case WP_ROCKET_LAUNCHER:
+	case WP_HOMING_LAUNCHER:
 		mod = cgs.media.dishFlashModel;
 		shader = cgs.media.rocketExplosionShader;
 		sfx = cgs.media.sfx_rockexp;
@@ -1890,6 +1892,7 @@ missilehitplayer(int weapon, vec3_t origin, vec3_t dir, int entityNum)
 	switch(weapon){
 	case WP_GRENADE_LAUNCHER:
 	case WP_ROCKET_LAUNCHER:
+	case WP_HOMING_LAUNCHER:
 	case WP_PLASMAGUN:
 	case WP_BFG:
 #ifdef MISSIONPACK

@@ -700,6 +700,49 @@ CG_PlayBufferedSounds(void)
 
 //=========================================================================
 
+static void
+drawlockon(void)
+{
+	qhandle_t shader;
+	refEntity_t ent;
+	centity_t *enemy;
+
+	if(cg.snap->ps.lockontarget == ENTITYNUM_NONE)
+		return;
+
+	enemy = &cg_entities[cg.snap->ps.lockontarget];
+	
+	memset(&ent, 0, sizeof(ent));
+	veccpy(enemy->lerporigin, ent.origin);
+
+	ent.reType = RT_SPRITE;
+	ent.renderfx = 0;
+	ent.shaderRGBA[0] = 255;
+	ent.shaderRGBA[1] = 255;
+	ent.shaderRGBA[2] = 255;
+	ent.shaderRGBA[3] = 255;
+
+	if(cg.snap->ps.lockontime - cg.snap->ps.lockonstarttime < HOMING_SCANWAIT){
+		// acquiring
+		ent.customShader = cgs.media.lockingOnShader;
+		ent.radius = 42.4264068712f;
+		trap_R_AddRefEntityToScene(&ent);
+
+		ent.radius = 30;
+		ent.rotation = 0.05f * cg.time;
+		trap_R_AddRefEntityToScene(&ent);
+
+		trap_S_StartLocalSound(cgs.media.lockingOnSound, CHAN_ANNOUNCER);
+	}else{
+		// locked on	
+		ent.customShader = cgs.media.lockedOnShader;
+		ent.radius = 52;
+		trap_R_AddRefEntityToScene(&ent);
+
+		trap_S_StartLocalSound(cgs.media.lockedOnSound, CHAN_ANNOUNCER);
+	}
+}
+
 /*
 =================
 drawframe
@@ -811,6 +854,8 @@ drawframe(int serverTime, stereoFrame_t stereoview, qboolean demoplayback)
 		if(cg_timescaleFadeSpeed.value)
 			trap_Cvar_Set("timescale", va("%f", cg_timescale.value));
 	}
+
+	drawlockon();
 
 	// actually issue the rendering calls
 	drawactive(stereoview);

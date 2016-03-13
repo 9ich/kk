@@ -1239,6 +1239,11 @@ PM_Weapon(void)
 	}else
 		PM_StartTorsoAnim(TORSO_ATTACK);
 
+	if(pm->ps->weapon == WP_HOMING_LAUNCHER &&
+	   (pm->ps->lockontarget == ENTITYNUM_NONE ||
+	   pm->ps->lockontime - pm->ps->lockonstarttime < HOMING_SCANWAIT))
+		return;
+
 	pm->ps->weaponstate = WEAPON_FIRING;
 
 	// check for out of ammo
@@ -1298,6 +1303,9 @@ PM_Weapon(void)
 		addTime = 30;
 		break;
 #endif
+	case WP_HOMING_LAUNCHER:
+		addTime = 500;
+		break;
 	}
 
 #ifdef MISSIONPACK

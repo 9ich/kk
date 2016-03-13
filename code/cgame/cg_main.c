@@ -565,6 +565,8 @@ CG_RegisterSounds(void)
 	cgs.media.count1Sound = trap_S_RegisterSound("sound/feedback/one.wav", qtrue);
 	cgs.media.countFightSound = trap_S_RegisterSound("sound/feedback/fight.wav", qtrue);
 	cgs.media.countPrepareSound = trap_S_RegisterSound("sound/feedback/prepare.wav", qtrue);
+	cgs.media.lockingOnSound = trap_S_RegisterSound("sound/feedback/lockingon.wav", qtrue);
+	cgs.media.lockedOnSound = trap_S_RegisterSound("sound/feedback/lockedon.wav", qtrue);
 #ifdef MISSIONPACK
 	cgs.media.countPrepareTeamSound = trap_S_RegisterSound("sound/feedback/prepare_team.wav", qtrue);
 #endif
@@ -974,6 +976,9 @@ CG_RegisterGraphics(void)
 	cgs.media.balloonShader = trap_R_RegisterShader("sprites/balloon3");
 
 	cgs.media.bloodExplosionShader = trap_R_RegisterShader("bloodExplosion");
+
+	cgs.media.lockingOnShader = trap_R_RegisterShader("gfx/2d/lockingon.png");
+	cgs.media.lockedOnShader = trap_R_RegisterShader("gfx/2d/lockedon.png");
 
 	cgs.media.bulletFlashModel = trap_R_RegisterModel("models/weaphits/bullet.md3");
 	cgs.media.ringFlashModel = trap_R_RegisterModel("models/weaphits/ring02.md3");

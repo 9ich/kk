@@ -853,6 +853,8 @@ ClientThink_real(gentity_t *ent)
 
 	veccpy(client->ps.origin, client->oldorigin);
 
+	homing_scan(ent);
+
 #ifdef MISSIONPACK
 	if(level.intermissionqueued != 0 && g_singlePlayer.integer)
 		if(level.time - level.intermissionqueued >= 1000){
