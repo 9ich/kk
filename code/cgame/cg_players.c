@@ -362,7 +362,7 @@ CG_RegisterClientSkin(clientInfo_t *ci, const char *teamName, const char *modeln
 {
 	char filename[MAX_QPATH];
 
-	if(CG_FindClientModelFile(filename, sizeof(filename), ci, teamName, modelname, skinname, "upper", "skin"))
+	if(CG_FindClientModelFile(filename, sizeof(filename), ci, teamName, modelname, skinname, "hull", "skin"))
 		ci->torsoskin = trap_R_RegisterSkin(filename);
 	if(!ci->torsoskin)
 		Com_Printf("Torso skin load failure: %s\n", filename);
@@ -384,7 +384,7 @@ CG_RegisterClientModelname(clientInfo_t *ci, const char *modelname, const char *
 	char filename[MAX_QPATH];
 	char newTeamName[MAX_QPATH];
 
-	Com_sprintf(filename, sizeof(filename), "models/players/%s/upper.md3", modelname);
+	Com_sprintf(filename, sizeof(filename), "models/players/%s/hull", modelname);
 	ci->torsomodel = trap_R_RegisterModel(filename);
 	if(!ci->torsomodel){
 		Com_Printf("Failed to load model file %s\n", filename);

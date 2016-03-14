@@ -1073,14 +1073,10 @@ CG_RegisterGraphics(void)
 	cgs.media.flagShaders[0] = trap_R_RegisterShaderNoMip("ui/assets/statusbar/flag_in_base.tga");
 	cgs.media.flagShaders[1] = trap_R_RegisterShaderNoMip("ui/assets/statusbar/flag_capture.tga");
 	cgs.media.flagShaders[2] = trap_R_RegisterShaderNoMip("ui/assets/statusbar/flag_missing.tga");
+;
+	trap_R_RegisterModel("models/players/james/hull.md3");
 
-	trap_R_RegisterModel("models/players/james/lower.md3");
-	trap_R_RegisterModel("models/players/james/upper.md3");
-	trap_R_RegisterModel("models/players/heads/james/james.md3");
-
-	trap_R_RegisterModel("models/players/janet/lower.md3");
-	trap_R_RegisterModel("models/players/janet/upper.md3");
-	trap_R_RegisterModel("models/players/heads/janet/janet.md3");
+	trap_R_RegisterModel("models/players/janet/hull.md3");
 #endif
 	CG_ClearParticles();
 /*
