@@ -676,6 +676,7 @@ homingrocket_think(gentity_t *ent)
 {
 	vec3_t olddir, dir;
 	gentity_t *targ;
+	float dot;
 
 	targ = &g_entities[ent->homingtarget];
 
@@ -685,12 +686,25 @@ homingrocket_think(gentity_t *ent)
 
 	vecsub(targ->r.currentOrigin, ent->r.currentOrigin, dir);
 	vecnorm(dir);
-	if(vecdot(olddir, dir) >= 0.8f){
+	dot = vecdot(olddir, dir);
+	if(dot >= 0.707f){
+		float t;
+
+		t = 0.66f;
 		veccpy(ent->r.currentOrigin, ent->s.pos.trBase);
+		dir[0] = (1-t)*olddir[0] + t*dir[0];
+		dir[1] = (1-t)*olddir[1] + t*dir[1];
+		dir[2] = (1-t)*olddir[2] + t*dir[2];
 		vecmul(dir, 200, ent->s.pos.trDelta);
 		ent->s.pos.trType = TR_LINEAR;
 		ent->s.pos.trTime = level.time;
-		ent->s.pos.trDuration = 100;
+	}else{
+		// lost track
+		ent->nextthink = 0;
+		ent->think = nil;
+		veccpy(ent->r.currentOrigin, ent->s.pos.trBase);
+		vecmul(olddir, 200, ent->s.pos.trDelta);
+		ent->s.pos.trTime = level.time;
 	}
 
 	ent->think = homingrocket_think;
@@ -726,7 +740,6 @@ fire_homingrocket(gentity_t *self, vec3_t start, vec3_t dir)
 	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time;
-	bolt->s.pos.trDuration = 100;
 	veccpy(start, bolt->r.currentOrigin);
 
 	return bolt;
