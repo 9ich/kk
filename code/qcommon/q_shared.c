@@ -1047,6 +1047,22 @@ void Com_TruncateLongString( char *buffer, const char *s )
 	}
 }
 
+char*
+vtos(const vec3_t v)
+{
+	static int i;
+	static char str[8][64];
+	char *s;
+
+	// use an array so that multiple vtos won't collide
+	s = str[i];
+	i = (i + 1)&7;
+
+	Com_sprintf(s, 64, "(%.2f %.2f %.2f)", v[0], v[1], v[2]);
+
+	return s;
+}
+
 /*
 =====================================================================
 

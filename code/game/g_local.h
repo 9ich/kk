@@ -483,7 +483,6 @@ qboolean	nentsfree(void);
 void		touchtriggers(gentity_t *ent);
 
 float *		tv(float x, float y, float z);
-char *		vtos(const vec3_t v);
 
 float		vectoyaw(const vec3_t vec);
 
