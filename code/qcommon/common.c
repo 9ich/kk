@@ -2772,7 +2772,7 @@ void Com_Init( char *commandLine ) {
 
 	Sys_Init();
 
-	if( Sys_WritePIDFile( ) ) {
+	if( 0 && Sys_WritePIDFile( ) ) {
 #ifndef DEDICATED
 		const char *message = "The last time " CLIENT_WINDOW_TITLE " ran, "
 			"it didn't exit properly. This may be due to inappropriate video "
