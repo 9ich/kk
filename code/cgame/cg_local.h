@@ -192,6 +192,8 @@ typedef struct centity_s
 	// exact interpolated position of entity on this frame
 	vec3_t		lerporigin;
 	vec3_t		lerpangles;
+
+	int		lastplume;	// last thruster plume time
 } centity_t;
 
 //======================================================================

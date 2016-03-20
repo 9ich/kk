@@ -1495,6 +1495,11 @@ playerstate2entstate(playerState_t *ps, entityState_t *s, qboolean snap)
 	if(snap)
 		SnapVector(s->apos.trBase);
 
+	s->forwardmove = ps->forwardmove;
+	s->rightmove = ps->rightmove;
+	s->upmove = ps->upmove;
+
+
 	s->angles2[YAW] = ps->movementDir;
 	s->legsAnim = ps->legsAnim;
 	s->torsoAnim = ps->torsoAnim;
@@ -1569,6 +1574,10 @@ playerstate2entstatexerp(playerState_t *ps, entityState_t *s, int time, qboolean
 	veccpy(ps->viewangles, s->apos.trBase);
 	if(snap)
 		SnapVector(s->apos.trBase);
+
+	s->forwardmove = ps->forwardmove;
+	s->rightmove = ps->rightmove;
+	s->upmove = ps->upmove;
 
 	s->angles2[YAW] = ps->movementDir;
 	s->legsAnim = ps->legsAnim;

@@ -1366,6 +1366,99 @@ CG_PlayerFlag(centity_t *cent, qhandle_t hSkin, refEntity_t *torso)
 	trap_R_AddRefEntityToScene(&flag);
 }
 
+static char *rearthrusttags[] = {
+	"tag_thrustTL",
+	"tag_thrustTR",
+	"tag_thrustBL",
+	"tag_thrustBR"
+};
+static char *frontthrusttags[] = {
+	"tag_thrustFTL",
+	"tag_thrustFTR",
+	"tag_thrustFBL",
+	"tag_thrustFBR"
+};
+
+#define PLUME_TIME	(1000/40)
+
+static void
+CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
+{
+	refEntity_t flame;
+	int i;
+	vec3_t plumevel;
+	float forwardmove, rightmove, upmove;
+	float r, g, b, a;
+
+	// show the flag flame model
+	memset(&flame, 0, sizeof(flame));
+	flame.hModel = cgs.media.dishFlashModel;
+	flame.customShader = cgs.media.rocketExplosionShader;
+	veccpy(ship->lightingOrigin, flame.lightingOrigin);
+	flame.nonNormalizedAxes = qtrue;
+
+	forwardmove = cent->currstate.forwardmove / 127.0f;
+	rightmove = cent->currstate.rightmove / 127.0f;
+	upmove = cent->currstate.upmove / 127.0f;
+
+	r = 0.9f;
+	g = 0.4f;
+	b = 0.0f;
+	a = 0.1f;
+
+	//
+	// rear thrusters
+	//
+
+	for(i = 0; i < ARRAY_LEN(rearthrusttags); i++){
+		if(forwardmove <= 0)
+			break;
+		AxisClear(flame.axis);
+		rotentontag(&flame, ship, ship->hModel, rearthrusttags[i]);
+		vecmul(flame.axis[0], forwardmove, flame.axis[0]);
+		vecmul(flame.axis[1], forwardmove, flame.axis[1]);
+		vecmul(flame.axis[2], forwardmove, flame.axis[2]);
+		trap_R_AddRefEntityToScene(&flame);
+		trap_R_AddLightToScene(flame.origin, 40, r, g, b);
+		if(cent->lastplume + PLUME_TIME < cg.time){
+			vecset(plumevel, crandom(), crandom(), crandom());
+			vecmul(plumevel, 4, plumevel);
+			smokepuff(flame.origin, plumevel, 16, r, g, b, a*forwardmove,
+			   2000, cg.time, 0, 0, cgs.media.smokePuffShader);
+		}
+	}
+
+	//
+	// forward thrusters
+	//
+
+	forwardmove = -forwardmove;
+	
+	if(cent->currstate.number == cg.snap->ps.clientNum && !cg_thirdPerson.integer)
+		flame.renderfx = RF_THIRD_PERSON;	// only show in mirrors
+
+	for(i = 0; i < ARRAY_LEN(frontthrusttags); i++){
+		if(forwardmove <= 0)
+			break;
+		AxisClear(flame.axis);
+		rotentontag(&flame, ship, ship->hModel, frontthrusttags[i]);
+		vecmul(flame.axis[0], forwardmove, flame.axis[0]);
+		vecmul(flame.axis[1], forwardmove, flame.axis[1]);
+		vecmul(flame.axis[2], forwardmove, flame.axis[2]);
+		trap_R_AddRefEntityToScene(&flame);
+		trap_R_AddLightToScene(flame.origin, 40, r, g, b);
+		if(cent->lastplume + PLUME_TIME < cg.time){
+			vecset(plumevel, crandom(), crandom(), crandom());
+			vecmul(plumevel, 4, plumevel);
+			smokepuff(flame.origin, plumevel, 16, r, g, b, a*forwardmove,
+			   2000, cg.time, 0, 0, cgs.media.smokePuffShader);
+		}
+	}
+
+	if(cent->lastplume + PLUME_TIME < cg.time)
+		cent->lastplume = cg.time;
+}
+
 #ifdef MISSIONPACK
 /*
 ===============
@@ -1999,6 +2092,8 @@ doplayer(centity_t *cent)
 
 	// add powerups floating behind the player
 	CG_PlayerPowerups(cent, &torso);
+
+	CG_PlayerThrusters(cent, &torso);
 }
 
 //=====================================================================

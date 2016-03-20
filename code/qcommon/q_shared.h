@@ -1207,6 +1207,12 @@ typedef struct playerState_s {
 
 	vec3_t		origin;
 	vec3_t		velocity;
+
+	// copied from usercmds by pmove. just for thrust animations.
+	int		forwardmove;
+	int		rightmove;
+	int		upmove;
+
 	int			weaponTime;
 	int			gravity;
 	int			speed;
@@ -1347,9 +1353,14 @@ typedef struct entityState_s {
 
 	trajectory_t	pos;	// for calculating position
 	trajectory_t	apos;	// for calculating angles
+	
+	// copied from playerState_t. just for thrust animations.
+	int		forwardmove;
+	int		rightmove;
+	int		upmove;
 
 	int		time;
-	int		time2;
+	int		time2;	
 
 	vec3_t	origin;
 	vec3_t	origin2;

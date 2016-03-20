@@ -1645,5 +1645,8 @@ Pmove(pmove_t *pmove)
 			pmove->cmd.upmove = 20;
 	}
 
+	pm->ps->forwardmove = pm->cmd.forwardmove;
+	pm->ps->rightmove = pm->cmd.rightmove;
+	pm->ps->upmove = pm->cmd.upmove;
 	//PM_CheckStuck();
 }
