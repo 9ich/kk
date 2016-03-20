@@ -626,9 +626,6 @@ typedef struct
 	float	vdmgroll;
 
 	// temp working variables for player view
-	float	bobfracsin;
-	int	bobcycle;
-	float	xyspeed;
 	int	nextorbittime;
 
 	//qboolean cameramode;		// if rendering from a loaded camera

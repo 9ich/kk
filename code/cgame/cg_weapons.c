@@ -885,58 +885,6 @@ CG_MapTorsoToWeaponFrame(clientInfo_t *ci, int frame)
 }
 
 /*
-==============
-CG_CalculateWeaponPosition
-==============
-*/
-static void
-CG_CalculateWeaponPosition(vec3_t origin, vec3_t angles)
-{
-	float scale;
-	int delta;
-	float fracsin;
-
-	veccpy(cg.refdef.vieworg, origin);
-	veccpy(cg.refdefviewangles, angles);
-
-	// on odd legs, invert some angles
-	if(cg.bobcycle & 1)
-		scale = -cg.xyspeed;
-	else
-		scale = cg.xyspeed;
-
-	// gun angles from bobbing
-	angles[ROLL] += scale * cg.bobfracsin * 0.005;
-	angles[YAW] += scale * cg.bobfracsin * 0.01;
-	angles[PITCH] += cg.xyspeed * cg.bobfracsin * 0.005;
-
-	// drop the weapon when landing
-	delta = cg.time - cg.landtime;
-	if(delta < LAND_DEFLECT_TIME)
-		origin[2] += cg.landchange*0.25 * delta / LAND_DEFLECT_TIME;
-	else if(delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME)
-		origin[2] += cg.landchange*0.25 *
-			     (LAND_DEFLECT_TIME + LAND_RETURN_TIME - delta) / LAND_RETURN_TIME;
-
-#if 0
-	// drop the weapon when stair climbing
-	delta = cg.time - cg.steptime;
-	if(delta < STEP_TIME/2)
-		origin[2] -= cg.stepchange*0.25 * delta / (STEP_TIME/2);
-	else if(delta < STEP_TIME)
-		origin[2] -= cg.stepchange*0.25 * (STEP_TIME - delta) / (STEP_TIME/2);
-
-#endif
-
-	// idle drift
-	scale = cg.xyspeed + 40;
-	fracsin = sin(cg.time * 0.001);
-	angles[ROLL] += scale * fracsin * 0.01;
-	angles[YAW] += scale * fracsin * 0.01;
-	angles[PITCH] += scale * fracsin * 0.01;
-}
-
-/*
 ===============
 CG_LightningBolt
 
@@ -1378,7 +1326,8 @@ addviewweap(playerState_t *ps)
 	memset(&hand, 0, sizeof(hand));
 
 	// set up gun position
-	CG_CalculateWeaponPosition(hand.origin, angles);
+	veccpy(cg.refdef.vieworg, hand.origin);
+	veccpy(cg.refdefviewangles, angles);
 
 	vecmad(hand.origin, cg_gun_x.value, cg.refdef.viewaxis[0], hand.origin);
 	vecmad(hand.origin, cg_gun_y.value, cg.refdef.viewaxis[1], hand.origin);
