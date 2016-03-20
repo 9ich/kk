@@ -284,12 +284,10 @@ CG_OffsetFirstPersonView(void)
 {
 	float *origin;
 	float *angles;
-	float bob;
 	float ratio;
 	float delta;
 	float speed;
 	float f;
-	vec3_t predictedvel;
 	int timeDelta;
 
 	if(cg.snap->ps.pm_type == PM_INTERMISSION)
@@ -323,39 +321,6 @@ CG_OffsetFirstPersonView(void)
 		}
 	}
 
-	// add pitch based on fall kick
-#if 0
-	ratio = (cg.time - cg.landtime) / FALL_TIME;
-	if(ratio < 0)
-		ratio = 0;
-	angles[PITCH] += ratio * cg.fall_value;
-#endif
-
-	// add angles based on velocity
-	veccpy(cg.pps.velocity, predictedvel);
-
-	delta = vecdot(predictedvel, cg.refdef.viewaxis[0]);
-	angles[PITCH] += delta * cg_runpitch.value;
-
-	delta = vecdot(predictedvel, cg.refdef.viewaxis[1]);
-	angles[ROLL] -= delta * cg_runroll.value;
-
-	// add angles based on bob
-
-	// make sure the bob is visible even at low speeds
-	speed = cg.xyspeed > 200 ? cg.xyspeed : 200;
-
-	delta = cg.bobfracsin * cg_bobpitch.value * speed;
-	if(cg.pps.pm_flags & PMF_DUCKED)
-		delta *= 3;	// crouching
-	angles[PITCH] += delta;
-	delta = cg.bobfracsin * cg_bobroll.value * speed;
-	if(cg.pps.pm_flags & PMF_DUCKED)
-		delta *= 3;	// crouching accentuates roll
-	if(cg.bobcycle & 1)
-		delta = -delta;
-	angles[ROLL] += delta;
-
 //===================================
 
 	// add view height
@@ -366,13 +331,6 @@ CG_OffsetFirstPersonView(void)
 	if(timeDelta < DUCK_TIME)
 		cg.refdef.vieworg[2] -= cg.duckchange
 					* (DUCK_TIME - timeDelta) / DUCK_TIME;
-
-	// add bob height
-	bob = cg.bobfracsin * cg.xyspeed * cg_bobup.value;
-	if(bob > 6)
-		bob = 6;
-
-	origin[2] += bob;
 
 	// add fall height
 	delta = cg.time - cg.landtime;
