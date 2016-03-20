@@ -1278,17 +1278,6 @@ evaltrajectorydelta(const trajectory_t *tr, int atTime, vec3_t result)
 char *eventnames[] = {
 	"EV_NONE",
 
-	"EV_FOOTSTEP",
-	"EV_FOOTSTEP_METAL",
-	"EV_FOOTSPLASH",
-	"EV_FOOTWADE",
-	"EV_SWIM",
-
-	"EV_STEP_4",
-	"EV_STEP_8",
-	"EV_STEP_12",
-	"EV_STEP_16",
-
 	"EV_FALL_SHORT",
 	"EV_FALL_MEDIUM",
 	"EV_FALL_FAR",

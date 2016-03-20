@@ -288,16 +288,6 @@ pmstepslidemove(qboolean gravity)
 		float delta;
 
 		delta = pm->ps->origin[2] - start_o[2];
-		if(delta > 2){
-			if(delta < 7)
-				pmaddevent(EV_STEP_4);
-			else if(delta < 11)
-				pmaddevent(EV_STEP_8);
-			else if(delta < 15)
-				pmaddevent(EV_STEP_12);
-			else
-				pmaddevent(EV_STEP_16);
-		}
 		if(pm->debuglevel)
 			Com_Printf("%i:stepped\n", c_pmove);
 	}

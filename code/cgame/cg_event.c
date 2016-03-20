@@ -543,37 +543,6 @@ entevent(centity_t *cent, vec3_t position)
 	//
 	// movement generated events
 	//
-	case EV_FOOTSTEP:
-		DEBUGNAME("EV_FOOTSTEP");
-		if(cg_footsteps.integer)
-			trap_S_StartSound(nil, es->number, CHAN_BODY,
-					  cgs.media.footsteps[ci->footsteps][rand()&3]);
-		break;
-	case EV_FOOTSTEP_METAL:
-		DEBUGNAME("EV_FOOTSTEP_METAL");
-		if(cg_footsteps.integer)
-			trap_S_StartSound(nil, es->number, CHAN_BODY,
-					  cgs.media.footsteps[FOOTSTEP_METAL][rand()&3]);
-		break;
-	case EV_FOOTSPLASH:
-		DEBUGNAME("EV_FOOTSPLASH");
-		if(cg_footsteps.integer)
-			trap_S_StartSound(nil, es->number, CHAN_BODY,
-					  cgs.media.footsteps[FOOTSTEP_SPLASH][rand()&3]);
-		break;
-	case EV_FOOTWADE:
-		DEBUGNAME("EV_FOOTWADE");
-		if(cg_footsteps.integer)
-			trap_S_StartSound(nil, es->number, CHAN_BODY,
-					  cgs.media.footsteps[FOOTSTEP_SPLASH][rand()&3]);
-		break;
-	case EV_SWIM:
-		DEBUGNAME("EV_SWIM");
-		if(cg_footsteps.integer)
-			trap_S_StartSound(nil, es->number, CHAN_BODY,
-					  cgs.media.footsteps[FOOTSTEP_SPLASH][rand()&3]);
-		break;
-
 	case EV_FALL_SHORT:
 		DEBUGNAME("EV_FALL_SHORT");
 		trap_S_StartSound(nil, es->number, CHAN_AUTO, cgs.media.landSound);
@@ -603,38 +572,6 @@ entevent(centity_t *cent, vec3_t position)
 			cg.landtime = cg.time;
 		}
 		break;
-
-	case EV_STEP_4:
-	case EV_STEP_8:
-	case EV_STEP_12:
-	case EV_STEP_16:	// smooth out step up transitions
-		DEBUGNAME("EV_STEP");
-		{
-			float oldStep;
-			int delta;
-			int step;
-
-			if(clientNum != cg.pps.clientNum)
-				break;
-			// if we are interpolating, we don't need to smooth steps
-			if(cg.demoplayback || (cg.snap->ps.pm_flags & PMF_FOLLOW) ||
-			   cg_nopredict.integer || cg_synchronousClients.integer)
-				break;
-			// check for stepping up before a previous step is completed
-			delta = cg.time - cg.steptime;
-			if(delta < STEP_TIME)
-				oldStep = cg.stepchange * (STEP_TIME - delta) / STEP_TIME;
-			else
-				oldStep = 0;
-
-			// add this amount
-			step = 4 * (event - EV_STEP_4 + 1);
-			cg.stepchange = oldStep + step;
-			if(cg.stepchange > MAX_STEP_CHANGE)
-				cg.stepchange = MAX_STEP_CHANGE;
-			cg.steptime = cg.time;
-			break;
-		}
 
 	case EV_JUMP_PAD:
 		DEBUGNAME("EV_JUMP_PAD");

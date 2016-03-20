@@ -814,23 +814,6 @@ PM_NoclipMove(void)
 //============================================================================
 
 /*
-================
-PM_FootstepForSurface
-
-Returns an event number apropriate for the groundsurface
-================
-*/
-static int
-PM_FootstepForSurface(void)
-{
-	if(pml.groundtrace.surfaceFlags & SURF_NOSTEPS)
-		return 0;
-	if(pml.groundtrace.surfaceFlags & SURF_METALSTEPS)
-		return EV_FOOTSTEP_METAL;
-	return EV_FOOTSTEP;
-}
-
-/*
 =================
 PM_CrashLand
 
@@ -901,8 +884,6 @@ PM_CrashLand(void)
 				pmaddevent(EV_FALL_MEDIUM);
 		}else if(delta > 7)
 			pmaddevent(EV_FALL_SHORT);
-		else
-			pmaddevent(PM_FootstepForSurface());
 	}
 
 	// start footstep cycle over
@@ -960,95 +941,6 @@ setplayerbounds(void)
 }
 
 //===================================================================
-
-/*
-===============
-PM_Footsteps
-===============
-*/
-static void
-PM_Footsteps(void)
-{
-	float bobmove;
-	int old;
-	qboolean footstep;
-
-	//
-	// calculate speed and cycle to be used for
-	// all cyclic walking effects
-	//
-	pm->xyspeed = sqrt(pm->ps->velocity[0] * pm->ps->velocity[0]
-			   +  pm->ps->velocity[1] * pm->ps->velocity[1]);
-
-	// if not trying to move
-	if(!pm->cmd.forwardmove && !pm->cmd.rightmove){
-		if(pm->xyspeed < 5){
-			pm->ps->bobCycle = 0;	// start at beginning of cycle again
-			if(pm->ps->pm_flags & PMF_DUCKED)
-				PM_ContinueLegsAnim(LEGS_IDLECR);
-			else
-				PM_ContinueLegsAnim(LEGS_IDLE);
-		}
-		return;
-	}
-
-	footstep = qfalse;
-
-	if(pm->ps->pm_flags & PMF_DUCKED){
-		bobmove = 0.5;	// ducked characters bob much faster
-		if(pm->ps->pm_flags & PMF_BACKWARDS_RUN)
-			PM_ContinueLegsAnim(LEGS_BACKCR);
-		else
-			PM_ContinueLegsAnim(LEGS_WALKCR);
-		// ducked characters never play footsteps
-		/*
-		} else  if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN ) {
-		        if ( !( pm->cmd.buttons & BUTTON_WALKING ) ) {
-		                bobmove = 0.4;	// faster speeds bob faster
-		                footstep = qtrue;
-		        } else {
-		                bobmove = 0.3;
-		        }
-		        PM_ContinueLegsAnim( LEGS_BACK );
-		*/
-	}else{
-		if(!(pm->cmd.buttons & BUTTON_WALKING)){
-			bobmove = 0.4f;	// faster speeds bob faster
-			if(pm->ps->pm_flags & PMF_BACKWARDS_RUN)
-				PM_ContinueLegsAnim(LEGS_BACK);
-			else
-				PM_ContinueLegsAnim(LEGS_RUN);
-			footstep = qtrue;
-		}else{
-			bobmove = 0.3f;	// walking bobs slow
-			if(pm->ps->pm_flags & PMF_BACKWARDS_RUN)
-				PM_ContinueLegsAnim(LEGS_BACKWALK);
-			else
-				PM_ContinueLegsAnim(LEGS_WALK);
-		}
-	}
-
-	// check for footstep / splash sounds
-	old = pm->ps->bobCycle;
-	pm->ps->bobCycle = (int)(old + bobmove * pml.msec) & 255;
-
-	// if we just crossed a cycle boundary, play an apropriate footstep event
-	if(((old + 64) ^ (pm->ps->bobCycle + 64)) & 128){
-		if(pm->waterlevel == 0){
-			// on ground will only play sounds if running
-			if(footstep && !pm->nofootsteps)
-				pmaddevent(PM_FootstepForSurface());
-		}else if(pm->waterlevel == 1)
-			// splashing
-			pmaddevent(EV_FOOTSPLASH);
-		else if(pm->waterlevel == 2)
-			// wading / swimming at surface
-			pmaddevent(EV_SWIM);
-		else if(pm->waterlevel == 3){
-			// no sound when completely underwater
-		}
-	}
-}
 
 /*
 ==============
@@ -1592,9 +1484,6 @@ PmoveSingle(pmove_t *pmove)
 
 	// torso animation
 	PM_TorsoAnimation();
-
-	// footstep events / legs animations
-	PM_Footsteps();
 
 	// entering / leaving water splashes
 	PM_WaterEvents();

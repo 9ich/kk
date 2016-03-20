@@ -4900,18 +4900,9 @@ BotCheckEvents(bot_state_t *bs, entityState_t *state)
 		}
 		break;
 	}
-	case EV_FOOTSTEP:
-	case EV_FOOTSTEP_METAL:
-	case EV_FOOTSPLASH:
-	case EV_FOOTWADE:
-	case EV_SWIM:
 	case EV_FALL_SHORT:
 	case EV_FALL_MEDIUM:
 	case EV_FALL_FAR:
-	case EV_STEP_4:
-	case EV_STEP_8:
-	case EV_STEP_12:
-	case EV_STEP_16:
 	case EV_JUMP_PAD:
 	case EV_JUMP:
 	case EV_TAUNT:
