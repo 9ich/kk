@@ -747,6 +747,19 @@ drawfps(float y)
 	return y + BIGCHAR_HEIGHT + 4;
 }
 
+static void
+drawspeedometer(void)
+{
+	float speed;
+	char *s;
+	int w;
+
+	speed = veclen(cg.pps.velocity);
+	s = va("%iu/s", (int)speed);
+	w = drawstrlen(s) * BIGCHAR_WIDTH;
+	drawbigstr(0.5f*SCREEN_WIDTH - 0.5f*w, 330, s, 1.0f);
+}
+
 /*
 =================
 drawtimer
@@ -2523,6 +2536,8 @@ draw2d(stereoFrame_t stereoFrame)
 	drawteamvote();
 
 	drawlagometer();
+	if(cg_drawSpeedometer.integer)
+		drawspeedometer();
 
 #ifdef MISSIONPACK
 	if(!cg_paused.integer)
