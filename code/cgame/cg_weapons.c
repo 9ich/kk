@@ -709,9 +709,6 @@ registerweap(int weaponNum)
 	case WP_MACHINEGUN:
 		MAKERGB(weapinfo->flashcolor, 1, 1, 0);
 		weapinfo->flashsnd[0] = trap_S_RegisterSound("sound/weapons/machinegun/machgf1b.wav", qfalse);
-		weapinfo->flashsnd[1] = trap_S_RegisterSound("sound/weapons/machinegun/machgf2b.wav", qfalse);
-		weapinfo->flashsnd[2] = trap_S_RegisterSound("sound/weapons/machinegun/machgf3b.wav", qfalse);
-		weapinfo->flashsnd[3] = trap_S_RegisterSound("sound/weapons/machinegun/machgf4b.wav", qfalse);
 		weapinfo->ejectbrass = CG_MachineGunEjectBrass;
 		cgs.media.bulletExplosionShader = trap_R_RegisterShader("bulletExplosion");
 		break;

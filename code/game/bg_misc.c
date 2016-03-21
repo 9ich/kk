@@ -390,7 +390,7 @@ gitem_t bg_itemlist[] =
 		 nil, nil, nil},
 /* icon */ "icons/icona_machinegun",
 /* pickup */ "Bullets",
-		50,
+		100,
 		IT_AMMO,
 		WP_MACHINEGUN,
 /* precache */ "",

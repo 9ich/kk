@@ -1159,7 +1159,7 @@ PM_Weapon(void)
 		addTime = 1000;
 		break;
 	case WP_MACHINEGUN:
-		addTime = 100;
+		addTime = 50;
 		break;
 	case WP_GRENADE_LAUNCHER:
 		addTime = 800;
