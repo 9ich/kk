@@ -1524,9 +1524,6 @@ Pmove(pmove_t *pmove)
 
 		pmove->cmd.serverTime = pmove->ps->commandTime + msec;
 		PmoveSingle(pmove);
-
-		if(pmove->ps->pm_flags & PMF_JUMP_HELD)
-			pmove->cmd.upmove = 20;
 	}
 
 	pm->ps->forwardmove = pm->cmd.forwardmove;
