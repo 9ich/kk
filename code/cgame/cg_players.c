@@ -1455,6 +1455,21 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 		}
 	}
 
+
+	if(cent->currstate.forwardmove < 0){
+		trap_S_AddLoopingSound(cent->currstate.number, cent->lerporigin,
+		   vec3_origin, cgs.media.thrustBackSound);
+	}else if(cent->currstate.rightmove != 0 || cent->currstate.upmove != 0){
+		trap_S_AddLoopingSound(cent->currstate.number, cent->lerporigin,
+		   vec3_origin, cgs.media.thrustBackSound);
+	}else if(cent->currstate.forwardmove > 0){
+		trap_S_AddLoopingSound(cent->currstate.number, cent->lerporigin,
+		   vec3_origin, cgs.media.thrustSound);
+	}else{
+		trap_S_AddLoopingSound(cent->currstate.number, cent->lerporigin,
+	 	  vec3_origin, cgs.media.thrustIdleSound);
+	}
+
 	if(cent->lastplume + PLUME_TIME < cg.time)
 		cent->lastplume = cg.time;
 }

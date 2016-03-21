@@ -957,6 +957,11 @@ typedef struct
 	sfxHandle_t	lockingOnSound;
 	sfxHandle_t	lockedOnSound;
 
+	// thrust
+	sfxHandle_t	thrustSound;
+	sfxHandle_t	thrustBackSound;
+	sfxHandle_t	thrustIdleSound;
+
 #ifdef MISSIONPACK
 	// new stuff
 	qhandle_t	patrolShader;
