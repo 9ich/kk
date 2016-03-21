@@ -36,7 +36,7 @@ float pm_duckScale = 0.25f;
 float pm_swimScale = 0.50f;
 
 float pm_accelerate = 10.0f;
-float pm_airaccelerate = 1.0f;
+float pm_airaccelerate = 3.2f;
 float pm_wateraccelerate = 4.0f;
 float pm_flyaccelerate = 8.0f;
 
@@ -673,11 +673,6 @@ PM_WalkMove(void)
 	veccpy(wishvel, wishdir);
 	wishspeed = vecnorm(wishdir);
 	wishspeed *= scale;
-
-	// clamp the speed lower if ducking
-	if(pm->ps->pm_flags & PMF_DUCKED)
-		if(wishspeed > pm->ps->speed * pm_duckScale)
-			wishspeed = pm->ps->speed * pm_duckScale;
 
 	// clamp the speed lower if wading or walking on the bottom
 	if(pm->waterlevel){
