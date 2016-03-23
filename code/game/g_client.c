@@ -511,6 +511,8 @@ setviewangles(gentity_t *ent, vec3_t angle)
 {
 	int i;
 
+	return;
+
 	// set the delta angle
 	for(i = 0; i<3; i++){
 		int cmdAngle;
