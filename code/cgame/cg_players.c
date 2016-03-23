@@ -1381,30 +1381,69 @@ static char *frontthrusttags[] = {
 
 #define PLUME_TIME	(1000/40)
 
-static void
-CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
+enum
 {
+	XUL	= (1<<0),	// diagonal thrust flags
+	XUR	= (1<<1),
+	XDL	= (1<<2),
+	XDR	= (1<<3)
+};
+
+static void
+addthrustflame(centity_t *cent, refEntity_t *ship, float factor, char *tag, qboolean nothirdperson)
+{
+	vec3_t angles, plumevel;
 	refEntity_t flame;
-	int i;
-	vec3_t plumevel;
-	float forwardmove, rightmove, upmove;
 	float r, g, b, a;
 
-	// show the flag flame model
 	memset(&flame, 0, sizeof(flame));
-	flame.hModel = cgs.media.dishFlashModel;
-	flame.customShader = cgs.media.rocketExplosionShader;
+	flame.hModel = trap_R_RegisterModel("models/players/sarge/thrust.md3");
+	flame.customShader = trap_R_RegisterShader("thrustcone");
 	veccpy(ship->lightingOrigin, flame.lightingOrigin);
 	flame.nonNormalizedAxes = qtrue;
 
-	forwardmove = cent->currstate.forwardmove / 127.0f;
-	rightmove = cent->currstate.rightmove / 127.0f;
-	upmove = cent->currstate.upmove / 127.0f;
+	if(nothirdperson  && !cg_thirdPerson.integer &&
+	   cent->currstate.number == cg.snap->ps.clientNum)
+		flame.renderfx = RF_THIRD_PERSON;	// only show in mirrors
 
 	r = 0.9f;
 	g = 0.4f;
 	b = 0.0f;
 	a = 0.1f;
+
+	vecclear(angles);
+	angles[ROLL] = crandom() * 7777;
+	AnglesToAxis(angles, flame.axis);
+	rotentontag(&flame, ship, ship->hModel, tag);
+	vecmul(flame.axis[0], factor, flame.axis[0]);
+	vecmul(flame.axis[1], factor, flame.axis[1]);
+	vecmul(flame.axis[2], factor, flame.axis[2]);
+	trap_R_AddRefEntityToScene(&flame);
+	trap_R_AddLightToScene(flame.origin, 100, r, g, b);
+
+	if(nothirdperson  && !cg_thirdPerson.integer &&
+	   cent->currstate.number == cg.snap->ps.clientNum)
+		return;
+
+	if(cent->lastplume + PLUME_TIME < cg.time){
+		vecset(plumevel, crandom(), crandom(), crandom());
+		vecmul(plumevel, 4, plumevel);
+		smokepuff(flame.origin, plumevel, 16, r, g, b, a*factor,
+		   2000, cg.time, 0, 0, cgs.media.smokePuffShader);
+	}
+}
+
+static void
+CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
+{
+	int i;
+	vec3_t plumevel, angles;
+	float forwardmove, rightmove, upmove;
+	int dirs;
+
+	forwardmove = cent->currstate.forwardmove / 127.0f;
+	rightmove = cent->currstate.rightmove / 127.0f;
+	upmove = cent->currstate.upmove / 127.0f;
 
 	//
 	// rear thrusters
@@ -1413,19 +1452,7 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 	for(i = 0; i < ARRAY_LEN(rearthrusttags); i++){
 		if(forwardmove <= 0)
 			break;
-		AxisClear(flame.axis);
-		rotentontag(&flame, ship, ship->hModel, rearthrusttags[i]);
-		vecmul(flame.axis[0], forwardmove, flame.axis[0]);
-		vecmul(flame.axis[1], forwardmove, flame.axis[1]);
-		vecmul(flame.axis[2], forwardmove, flame.axis[2]);
-		trap_R_AddRefEntityToScene(&flame);
-		trap_R_AddLightToScene(flame.origin, 40, r, g, b);
-		if(cent->lastplume + PLUME_TIME < cg.time){
-			vecset(plumevel, crandom(), crandom(), crandom());
-			vecmul(plumevel, 4, plumevel);
-			smokepuff(flame.origin, plumevel, 16, r, g, b, a*forwardmove,
-			   2000, cg.time, 0, 0, cgs.media.smokePuffShader);
-		}
+		addthrustflame(cent, ship, forwardmove, rearthrusttags[i], qfalse);
 	}
 
 	//
@@ -1433,27 +1460,42 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 	//
 
 	forwardmove = -forwardmove;
-	
-	if(cent->currstate.number == cg.snap->ps.clientNum && !cg_thirdPerson.integer)
-		flame.renderfx = RF_THIRD_PERSON;	// only show in mirrors
 
 	for(i = 0; i < ARRAY_LEN(frontthrusttags); i++){
 		if(forwardmove <= 0)
 			break;
-		AxisClear(flame.axis);
-		rotentontag(&flame, ship, ship->hModel, frontthrusttags[i]);
-		vecmul(flame.axis[0], forwardmove, flame.axis[0]);
-		vecmul(flame.axis[1], forwardmove, flame.axis[1]);
-		vecmul(flame.axis[2], forwardmove, flame.axis[2]);
-		trap_R_AddRefEntityToScene(&flame);
-		trap_R_AddLightToScene(flame.origin, 40, r, g, b);
-		if(cent->lastplume + PLUME_TIME < cg.time){
-			vecset(plumevel, crandom(), crandom(), crandom());
-			vecmul(plumevel, 4, plumevel);
-			smokepuff(flame.origin, plumevel, 16, r, g, b, a*forwardmove,
-			   2000, cg.time, 0, 0, cgs.media.smokePuffShader);
-		}
+		addthrustflame(cent, ship, forwardmove, frontthrusttags[i], qtrue);
 	}
+
+	dirs = 0;
+	if(cent->currstate.rightmove < 0 && cent->currstate.upmove < 0)
+		dirs |= XUR;
+	else if(cent->currstate.rightmove < 0 && cent->currstate.upmove > 0)
+		dirs |= XDR;
+	else if(cent->currstate.rightmove > 0 && cent->currstate.upmove < 0)
+		dirs |= XUL;
+	else if(cent->currstate.rightmove > 0 && cent->currstate.upmove > 0)
+		dirs |= XDL;
+	else{
+		if(cent->currstate.rightmove < 0)
+			dirs |= (XUR | XDR);
+		if(cent->currstate.rightmove > 0)
+			dirs |= (XUL | XDL);
+		if(cent->currstate.upmove < 0)
+			dirs |= (XUL | XUR);
+		if(cent->currstate.upmove > 0)
+			dirs |= (XDL | XDR);
+	}
+
+	if(dirs & XUL)
+		addthrustflame(cent, ship, 1.0f, "tag_thrustXUL", qfalse);
+	if(dirs & XDL)
+		addthrustflame(cent, ship, 1.0f, "tag_thrustXDL", qfalse);
+	if(dirs & XUR)
+		addthrustflame(cent, ship, 1.0f, "tag_thrustXUR", qfalse);
+	if(dirs & XDR)
+		addthrustflame(cent, ship, 1.0f, "tag_thrustXDR", qfalse);
+	
 
 
 	if(cent->currstate.forwardmove < 0){
