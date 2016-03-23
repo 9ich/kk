@@ -2041,6 +2041,25 @@ drawspec(void)
 		drawbigstr(320 - 39 * 8, 460, "press ESC and use the JOIN menu to play", 1.0F);
 }
 
+static void
+drawlockonwarning(void)
+{
+	int i;
+	entityState_t *es;
+
+	for(i = 0; i < cgs.maxclients; i++){
+		es = &cg_entities[i].currstate;
+		if(!cgs.clientinfo[i].infovalid || es->lockontarget != cg.snap->ps.clientNum)
+			continue;
+
+		if(es->lockontime - es->lockonstarttime > HOMING_SCANWAIT)
+			drawbigstr(10, 200, "ENEMY LOCK", 1.0f);
+		else
+			drawbigstr(10, 200, "WARNING", 1.0f);
+		break;
+	}
+}
+
 /*
 =================
 drawvote
@@ -2531,6 +2550,8 @@ draw2d(stereoFrame_t stereoFrame)
 #endif
 		}
 	}
+
+	drawlockonwarning();
 
 	drawvote();
 	drawteamvote();

@@ -1393,6 +1393,11 @@ typedef struct entityState_s {
 	int		torsoAnim;		// mask off ANIM_TOGGLEBIT
 
 	int		generic1;
+
+	// hominglauncher (so cgame can warn if other player is locked on)
+	int			lockontarget;
+	int			lockontime;
+	int			lockonstarttime;
 } entityState_t;
 
 typedef enum {

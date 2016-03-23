@@ -831,7 +831,10 @@ netField_t	entityStateFields[] =
 { NETF(angles2[0]), 0 },
 { NETF(angles2[2]), 0 },
 { NETF(constantLight), 32 },
-{ NETF(frame), 16 }
+{ NETF(frame), 16 },
+{ NETF(lockontarget), GENTITYNUM_BITS },
+{ NETF(lockontime), 32 },
+{ NETF(lockonstarttime), 32 }
 };
 
 
@@ -1150,8 +1153,8 @@ netField_t	playerStateFields[] =
 { PSF(jumppad_ent), GENTITYNUM_BITS },
 { PSF(loopSound), 16 },
 { PSF(lockontarget), GENTITYNUM_BITS },
-{ PSF(lockontime), 16 },
-{ PSF(lockonstarttime), 16 }
+{ PSF(lockontime), 32 },
+{ PSF(lockonstarttime), 32 }
 };
 
 /*

@@ -1524,6 +1524,10 @@ playerstate2entstate(playerState_t *ps, entityState_t *s, qboolean snap)
 
 	s->loopSound = ps->loopSound;
 	s->generic1 = ps->generic1;
+
+	s->lockontarget = ps->lockontarget;
+	s->lockonstarttime = ps->lockonstarttime;
+	s->lockontime = ps->lockontime;
 }
 
 /*
@@ -1603,4 +1607,8 @@ playerstate2entstatexerp(playerState_t *ps, entityState_t *s, int time, qboolean
 
 	s->loopSound = ps->loopSound;
 	s->generic1 = ps->generic1;
+
+	s->lockontarget = ps->lockontarget;
+	s->lockonstarttime = ps->lockonstarttime;
+	s->lockontime = ps->lockontime;
 }
