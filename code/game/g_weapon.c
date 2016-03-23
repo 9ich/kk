@@ -1162,9 +1162,11 @@ G_StartKamikaze(gentity_t *ent)
 void
 homing_scan(gentity_t *ent)
 {
-	vec3_t mins, maxs, start, end;
+	vec3_t mins, maxs;
 	trace_t tr;
 	playerState_t *ps;
+	float bestdist;
+	int i, best;
 
 	if(ent->client == nil)
 		return;
@@ -1173,23 +1175,44 @@ homing_scan(gentity_t *ent)
 
 	if(ps->weapon != WP_HOMING_LAUNCHER){
 		ps->lockontarget = ENTITYNUM_NONE;
+		ps->lockontime = 0;
+		ps->lockonstarttime = 0;
 		return;
 	}
 
-	vecset(mins, -30, -30, -30);
-	vecset(maxs, 30, 30, 30);
+	vecset(mins, -1, -1, -1);
+	vecset(maxs, 1, 1, 1);
 	anglevecs(ps->viewangles, forward, nil, nil);
 
-	veccpy(ps->origin, start);
-	vecmad(ps->origin, HOMING_SCANRANGE, forward, end);
-	
-	trap_Trace(&tr, start, mins, maxs, end, ent->s.number, MASK_SHOT);
+	best = ENTITYNUM_NONE;
+	bestdist = 99999;
 
-	if(tr.allsolid || tr.fraction == 1.0f ||
-	   tr.entityNum == ENTITYNUM_NONE ||
-	   tr.entityNum >= level.maxclients ||
-	   onsameteam(ent, &g_entities[tr.entityNum])
-	   || !g_entities[tr.entityNum].inuse){
+	for(i = 0; i < level.maxclients; i++){
+		vec3_t entpos, dir;
+		float dist;
+
+		if(!g_entities[i].inuse)
+			continue;
+		veccpy(g_entities[i].r.currentOrigin, entpos);
+		vecsub(entpos, ps->origin, dir);
+		vecnorm(dir);
+		if(vecdot(forward, dir) < 0.95f)
+			continue;
+		dist = vecdist(ps->origin, entpos);
+		if(dist > HOMING_SCANRANGE)
+			continue;
+		if(dist > bestdist)
+			continue;
+		trap_Trace(&tr, ps->origin, mins, maxs, entpos,
+		   ent->s.number, MASK_SHOT);
+		if(tr.entityNum != i)
+			continue;
+		best = i;
+		bestdist = dist;
+	}
+
+	if(best == ENTITYNUM_NONE || onsameteam(ent, &g_entities[best]) ||
+	   !g_entities[best].inuse){
 	   	// nothing to lock on to
 		ps->lockontarget = ENTITYNUM_NONE;
 		ps->lockontime = 0;
@@ -1197,12 +1220,12 @@ homing_scan(gentity_t *ent)
 		return;
 	}
 
-	if(ps->lockontarget != tr.entityNum){
-		ps->lockontarget = tr.entityNum;
+	if(ps->lockontarget != best){
+		ps->lockontarget = best;
 		ps->lockontime = level.time;
 		ps->lockonstarttime = level.time;
 		return;
 	}
-	// still locking on
+	// continue locking on
 	ps->lockontime = level.time;
 }
