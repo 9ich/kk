@@ -773,7 +773,9 @@ registerweap(int weaponNum)
 //		weapinfo->missilemodel = cgs.media.invulnerabilityPowerupModel;
 		weapinfo->missileTrailFunc = CG_PlasmaTrail;
 		weapinfo->missilesound = trap_S_RegisterSound("sound/weapons/plasma/lasfly.wav", qfalse);
+		weapinfo->missilelight = 160;
 		MAKERGB(weapinfo->flashcolor, 0.6f, 0.6f, 1.0f);
+		MAKERGB(weapinfo->missilelightcolor, 0.6f, 0.6f, 1.0f);
 		weapinfo->flashsnd[0] = trap_S_RegisterSound("sound/weapons/plasma/hyprbf1a.wav", qfalse);
 		cgs.media.plasmaExplosionShader = trap_R_RegisterShader("plasmaExplosion");
 		cgs.media.railRingsShader = trap_R_RegisterShader("railDisc");
