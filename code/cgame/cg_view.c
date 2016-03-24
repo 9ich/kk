@@ -58,6 +58,17 @@ console doesn't pause the game.
 =============================================================================
 */
 
+enum { MAX_TESTLIGHTS = 32 };
+
+static struct 
+{
+	vec3_t	pt;
+	float	intensity;
+	float	r, g, b;
+} testlights[MAX_TESTLIGHTS];
+static int ntestlights;
+static int testlightsi;
+
 /*
 =================
 CG_TestModel_f
@@ -143,6 +154,29 @@ CG_TestModelPrevSkin_f(void)
 	if(cg.testmodelent.skinNum < 0)
 		cg.testmodelent.skinNum = 0;
 	cgprintf("skin %i\n", cg.testmodelent.skinNum);
+}
+
+void
+CG_TestLight_f(void)
+{
+	char s[32];
+
+	if(trap_Argc() < 5){
+		cgprintf("usage: testlight intensity r g b");
+		return;
+	}
+	if(ntestlights < MAX_TESTLIGHTS)
+		ntestlights++;
+	veccpy(cg.snap->ps.origin, testlights[testlightsi].pt);
+	trap_Argv(1, s, sizeof s);
+	testlights[testlightsi].intensity = atof(s);
+	trap_Argv(2, s, sizeof s);
+	testlights[testlightsi].r = atof(s);
+	trap_Argv(3, s, sizeof s);
+	testlights[testlightsi].g = atof(s);
+	trap_Argv(4, s, sizeof s);
+	testlights[testlightsi].b = atof(s);
+	testlightsi = (testlightsi+1) % MAX_TESTLIGHTS;
 }
 
 static void
@@ -695,6 +729,17 @@ drawlockon(void)
 	}
 }
 
+static void
+drawtestlights(void)
+{
+	int i;
+
+	for(i = 0; i < ntestlights; i++){
+		trap_R_AddLightToScene(testlights[i].pt, testlights[i].intensity,
+		   testlights[i].r, testlights[i].g, testlights[i].b);
+	}
+}
+
 /*
 =================
 drawframe
@@ -808,6 +853,8 @@ drawframe(int serverTime, stereoFrame_t stereoview, qboolean demoplayback)
 	}
 
 	drawlockon();
+
+	drawtestlights();
 
 	// actually issue the rendering calls
 	drawactive(stereoview);
