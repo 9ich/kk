@@ -42,7 +42,7 @@ float pm_flyaccelerate = 8.0f;
 
 float pm_friction = 6.0f;
 float pm_waterfriction = 1.0f;
-float pm_flightfriction = 3.0f;
+float pm_flightfriction = 0.5f;
 float pm_spectatorfriction = 5.0f;
 
 int c_pmove = 0;
@@ -185,10 +185,10 @@ PM_Friction(void)
 		vec[2] = 0;	// ignore slope movement
 
 	speed = veclen(vec);
-	if(speed < 1){
+	if(speed < 0.01f){
 		vel[0] = 0;
-		vel[1] = 0;	// allow sinking underwater
-		// FIXME: still have z friction underwater?
+		vel[1] = 0;
+		vec[2] = 0;
 		return;
 	}
 
@@ -209,8 +209,7 @@ PM_Friction(void)
 		drop += speed*pm_waterfriction*pm->waterlevel*pml.frametime;
 
 	// apply flying friction
-	if(pm->ps->powerups[PW_FLIGHT])
-		drop += speed*pm_flightfriction*pml.frametime;
+	drop += speed*pm_flightfriction*pml.frametime;
 
 	if(pm->ps->pm_type == PM_SPECTATOR)
 		drop += speed*pm_spectatorfriction*pml.frametime;
@@ -237,18 +236,10 @@ static void
 PM_Accelerate(vec3_t wishdir, float wishspeed, float accel)
 {
 #if 1
-	// q2 style
 	int i;
 	float addspeed, accelspeed, currentspeed;
 
-	currentspeed = vecdot(pm->ps->velocity, wishdir);
-	addspeed = wishspeed - currentspeed;
-	if(addspeed <= 0)
-		return;
 	accelspeed = accel*pml.frametime*wishspeed;
-	if(accelspeed > addspeed)
-		accelspeed = addspeed;
-
 	for(i = 0; i<3; i++)
 		pm->ps->velocity[i] += accelspeed*wishdir[i];
 
@@ -1323,8 +1314,6 @@ PmoveSingle
 
 ================
 */
-void trap_SnapVector(float *v);
-
 void
 PmoveSingle(pmove_t *pmove)
 {
@@ -1482,9 +1471,6 @@ PmoveSingle(pmove_t *pmove)
 
 	// entering / leaving water splashes
 	PM_WaterEvents();
-
-	// snap some parts of playerstate to save network bandwidth
-	trap_SnapVector(pm->ps->velocity);
 }
 
 /*
