@@ -267,7 +267,7 @@ PM_CmdScale(usercmd_t *cmd)
 	float scale;
 
 	// max achievable scale with the old code
-	scale = 127.0f / 127.0f*127.0f;
+	scale = 127.0f / (127.0f*127.0f);
 	return (float)pm->ps->speed * scale;
 }
 
