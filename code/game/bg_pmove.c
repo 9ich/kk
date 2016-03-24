@@ -261,35 +261,14 @@ PM_Accelerate(vec3_t wishdir, float wishspeed, float accel)
 #endif
 }
 
-/*
-============
-PM_CmdScale
-
-Returns the scale factor to apply to cmd movements
-This allows the clients to use axial -127 to 127 values for all directions
-without getting a sqrt(2) distortion in speed.
-============
-*/
 static float
 PM_CmdScale(usercmd_t *cmd)
 {
-	int max;
-	float total;
 	float scale;
 
-	max = abs(cmd->forwardmove);
-	if(abs(cmd->rightmove) > max)
-		max = abs(cmd->rightmove);
-	if(abs(cmd->upmove) > max)
-		max = abs(cmd->upmove);
-	if(!max)
-		return 0;
-
-	total = sqrt(cmd->forwardmove * cmd->forwardmove
-		     + cmd->rightmove * cmd->rightmove + cmd->upmove * cmd->upmove);
-	scale = (float)pm->ps->speed * max / (127.0 * total);
-
-	return scale;
+	// max achievable scale with the old code
+	scale = 127.0f / 127.0f*127.0f;
+	return (float)pm->ps->speed * scale;
 }
 
 /*
