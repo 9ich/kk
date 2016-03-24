@@ -561,6 +561,9 @@ CG_RegisterSounds(void)
 	cgs.media.thrustSound = trap_S_RegisterSound("sound/player/thrust.wav", qfalse);
 	cgs.media.thrustBackSound = trap_S_RegisterSound("sound/player/thrustback.wav", qfalse);
 	cgs.media.thrustIdleSound = trap_S_RegisterSound("sound/player/idle.wav", qfalse);
+	cgs.media.thrustOtherSound = trap_S_RegisterSound("sound/player/thrustother.wav", qfalse);
+	cgs.media.thrustOtherBackSound = trap_S_RegisterSound("sound/player/thrustbackother.wav", qfalse);
+	cgs.media.thrustOtherIdleSound = trap_S_RegisterSound("sound/player/idleother.wav", qfalse);
 #ifdef MISSIONPACK
 	cgs.media.countPrepareTeamSound = trap_S_RegisterSound("sound/feedback/prepare_team.wav", qtrue);
 #endif

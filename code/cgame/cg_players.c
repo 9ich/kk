@@ -1435,6 +1435,7 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 	vec3_t plumevel, angles;
 	float forwardmove, rightmove, upmove;
 	int dirs;
+	sfxHandle_t thrustsound, thrustbacksound, idlesound;
 
 	forwardmove = cent->currstate.forwardmove / 127.0f;
 	rightmove = cent->currstate.rightmove / 127.0f;
@@ -1486,21 +1487,29 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 		addthrustflame(cent, ship, 1.0f, "tag_thrustXUR", qfalse);
 	if(dirs & XDR)
 		addthrustflame(cent, ship, 1.0f, "tag_thrustXDR", qfalse);
-	
 
+	if(cent->currstate.number == cg.snap->ps.clientNum){
+		thrustsound = cgs.media.thrustSound;
+		thrustbacksound = cgs.media.thrustBackSound;
+		idlesound = cgs.media.thrustIdleSound;
+	}else{
+		thrustsound = cgs.media.thrustOtherSound;
+		thrustbacksound = cgs.media.thrustOtherBackSound;
+		idlesound = cgs.media.thrustOtherIdleSound;
+	}
 
 	if(cent->currstate.forwardmove < 0){
 		trap_S_AddLoopingSound(cent->currstate.number, cent->lerporigin,
-		   vec3_origin, cgs.media.thrustBackSound);
+		   vec3_origin, thrustbacksound);
 	}else if(cent->currstate.rightmove != 0 || cent->currstate.upmove != 0){
 		trap_S_AddLoopingSound(cent->currstate.number, cent->lerporigin,
-		   vec3_origin, cgs.media.thrustBackSound);
+		   vec3_origin, thrustbacksound);
 	}else if(cent->currstate.forwardmove > 0){
 		trap_S_AddLoopingSound(cent->currstate.number, cent->lerporigin,
-		   vec3_origin, cgs.media.thrustSound);
+		   vec3_origin, thrustsound);
 	}else{
 		trap_S_AddLoopingSound(cent->currstate.number, cent->lerporigin,
-	 	  vec3_origin, cgs.media.thrustIdleSound);
+		   vec3_origin, idlesound);
 	}
 
 	if(cent->lastplume + PLUME_TIME < cg.time)

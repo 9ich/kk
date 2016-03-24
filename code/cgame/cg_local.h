@@ -954,10 +954,14 @@ typedef struct
 	sfxHandle_t	lockingOnSound;
 	sfxHandle_t	lockedOnSound;
 
-	// thrust
+	// thrust sounds
 	sfxHandle_t	thrustSound;
 	sfxHandle_t	thrustBackSound;
 	sfxHandle_t	thrustIdleSound;
+	// thrust sounds on other players
+	sfxHandle_t	thrustOtherSound;
+	sfxHandle_t	thrustOtherBackSound;
+	sfxHandle_t	thrustOtherIdleSound;
 
 #ifdef MISSIONPACK
 	// new stuff
