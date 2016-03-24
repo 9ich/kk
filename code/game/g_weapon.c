@@ -31,6 +31,21 @@ static vec3_t muzzle;
 
 #define NUM_NAILSHOTS 15
 
+static void
+inheritvel(gentity_t *ent, gentity_t *m)
+{
+	float speed, d;
+	vec3_t dir;
+	
+	veccpy(ent->client->ps.velocity, dir);
+	vecnorm(dir);
+	d = vecdot(forward, dir);
+	if(d > 0.0f){
+		speed = veclen(ent->client->ps.velocity);
+		vecmad(m->s.pos.trDelta, d*speed, forward, m->s.pos.trDelta);
+	}
+}
+
 /*
 ================
 G_BounceProjectile
@@ -250,7 +265,7 @@ BFG_Fire(gentity_t *ent)
 	m->damage *= s_quadFactor;
 	m->splashdmg *= s_quadFactor;
 
-//	vecadd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
+	inheritvel(ent, m);
 }
 
 /*
@@ -383,7 +398,7 @@ weapon_grenadelauncher_fire(gentity_t *ent)
 	m->damage *= s_quadFactor;
 	m->splashdmg *= s_quadFactor;
 
-//	vecadd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
+	inheritvel(ent, m);
 }
 
 /*
@@ -403,7 +418,7 @@ Weapon_RocketLauncher_Fire(gentity_t *ent)
 	m->damage *= s_quadFactor;
 	m->splashdmg *= s_quadFactor;
 
-//	vecadd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
+	inheritvel(ent, m);
 }
 
 /*
@@ -424,7 +439,7 @@ Weapon_HomingLauncher_Fire(gentity_t *ent)
 	m->splashdmg *= s_quadFactor;
 	ent->client->ps.lockontarget = ENTITYNUM_NONE;
 
-//	vecadd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
+	inheritvel(ent, m);
 }
 /*
 ======================================================================
@@ -443,7 +458,7 @@ Weapon_Plasmagun_Fire(gentity_t *ent)
 	m->damage *= s_quadFactor;
 	m->splashdmg *= s_quadFactor;
 
-//	vecadd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
+	inheritvel(ent, m);
 }
 
 /*
@@ -725,7 +740,7 @@ Weapon_Nailgun_Fire(gentity_t *ent)
 		m->splashdmg *= s_quadFactor;
 	}
 
-//	vecadd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
+	inheritvel(ent, m);
 }
 
 /*
@@ -749,7 +764,7 @@ weapon_proxlauncher_fire(gentity_t *ent)
 	m->damage *= s_quadFactor;
 	m->splashdmg *= s_quadFactor;
 
-//	vecadd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
+	inheritvel(ent, m);
 }
 
 #endif
