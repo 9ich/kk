@@ -367,7 +367,6 @@ DropPortalDestination(gentity_t *player)
 	ent->s.modelindex = getmodelindex("models/powerups/teleporter/tele_exit.md3");
 
 	veccpy(player->s.pos.trBase, snapped);
-	SnapVector(snapped);
 	setorigin(ent, snapped);
 	veccpy(player->r.mins, ent->r.mins);
 	veccpy(player->r.maxs, ent->r.maxs);
@@ -456,7 +455,6 @@ DropPortalSource(gentity_t *player)
 	ent->s.modelindex = getmodelindex("models/powerups/teleporter/tele_enter.md3");
 
 	veccpy(player->s.pos.trBase, snapped);
-	SnapVector(snapped);
 	setorigin(ent, snapped);
 	veccpy(player->r.mins, ent->r.mins);
 	veccpy(player->r.maxs, ent->r.maxs);

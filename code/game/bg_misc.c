@@ -1459,15 +1459,11 @@ playerstate2entstate(playerState_t *ps, entityState_t *s, qboolean snap)
 
 	s->pos.trType = TR_INTERPOLATE;
 	veccpy(ps->origin, s->pos.trBase);
-	if(snap)
-		SnapVector(s->pos.trBase);
 	// set the trDelta for flag direction
 	veccpy(ps->velocity, s->pos.trDelta);
 
 	s->apos.trType = TR_INTERPOLATE;
 	veccpy(ps->viewangles, s->apos.trBase);
-	if(snap)
-		SnapVector(s->apos.trBase);
 
 	s->forwardmove = ps->forwardmove;
 	s->rightmove = ps->rightmove;
@@ -1539,8 +1535,6 @@ playerstate2entstatexerp(playerState_t *ps, entityState_t *s, int time, qboolean
 
 	s->pos.trType = TR_LINEAR_STOP;
 	veccpy(ps->origin, s->pos.trBase);
-	if(snap)
-		SnapVector(s->pos.trBase);
 	// set the trDelta for flag direction and linear prediction
 	veccpy(ps->velocity, s->pos.trDelta);
 	// set the time for linear prediction
@@ -1550,8 +1544,6 @@ playerstate2entstatexerp(playerState_t *ps, entityState_t *s, int time, qboolean
 
 	s->apos.trType = TR_INTERPOLATE;
 	veccpy(ps->viewangles, s->apos.trBase);
-	if(snap)
-		SnapVector(s->apos.trBase);
 
 	s->forwardmove = ps->forwardmove;
 	s->rightmove = ps->rightmove;
