@@ -2076,9 +2076,9 @@ CG_CalcMuzzlePoint(int entityNum, vec3_t muzzle)
 	if(!cent->currvalid)
 		return qfalse;
 
-	veccpy(cent->currstate.pos.trBase, muzzle);
+	veccpy(cent->lerporigin, muzzle);
 
-	anglevecs(cent->currstate.apos.trBase, forward, nil, nil);
+	anglevecs(cent->lerpangles, forward, nil, nil);
 	anim = cent->currstate.legsAnim & ~ANIM_TOGGLEBIT;
 	if(anim == LEGS_WALKCR || anim == LEGS_IDLECR)
 		muzzle[2] += CROUCH_VIEWHEIGHT;
