@@ -35,7 +35,7 @@ float pm_duckScale = 0.25f;
 float pm_swimScale = 0.50f;
 
 float pm_accelerate = 10.0f;
-float pm_airaccelerate = 3.2f;
+float pm_airaccelerate = 2.0f;
 float pm_wateraccelerate = 4.0f;
 float pm_flyaccelerate = 8.0f;
 
