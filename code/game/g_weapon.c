@@ -377,8 +377,6 @@ weapon_grenadelauncher_fire(gentity_t *ent)
 {
 	gentity_t       *m;
 
-	// extra vertical velocity
-	forward[2] += 0.2f;
 	vecnorm(forward);
 
 	m = fire_grenade(ent, muzzle, forward);

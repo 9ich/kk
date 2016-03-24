@@ -562,7 +562,7 @@ fire_grenade(gentity_t *self, vec3_t start, vec3_t dir)
 
 	bolt = entspawn();
 	bolt->classname = "grenade";
-	bolt->nextthink = level.time + 2500;
+	bolt->nextthink = level.time + 3500;
 	bolt->think = G_ExplodeMissile;
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
