@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 // cg_ents.c -- present snapshot entities, happens every single frame
 
 #include "cg_local.h"
@@ -818,7 +817,6 @@ doteambase(centity_t *cent)
 			model.shaderRGBA[1] = c;
 			model.shaderRGBA[2] = c;
 			model.shaderRGBA[3] = 0xff;
-			//
 			model.hModel = cgs.media.overloadEnergyModel;
 			trap_R_AddRefEntityToScene(&model);
 		}
@@ -828,7 +826,6 @@ doteambase(centity_t *cent)
 				cent->misctime = cg.time;
 			t = cg.time - cent->misctime;
 			h = (cg_obeliskRespawnDelay.integer - 5) * 1000;
-			//
 			if(t > h){
 				c = (float)(t - h) / h;
 				if(c > 1)
@@ -837,7 +834,6 @@ doteambase(centity_t *cent)
 				c = 0;
 			// show the lights
 			AnglesToAxis(cent->currstate.angles, model.axis);
-			//
 			model.shaderRGBA[0] = c * 0xff;
 			model.shaderRGBA[1] = c * 0xff;
 			model.shaderRGBA[2] = c * 0xff;
@@ -863,7 +859,6 @@ doteambase(centity_t *cent)
 				model.shaderRGBA[1] = 0xff;
 				model.shaderRGBA[2] = 0xff;
 				model.shaderRGBA[3] = 0xff;
-				//
 				model.origin[2] += 56;
 				model.hModel = cgs.media.overloadTargetModel;
 				trap_R_AddRefEntityToScene(&model);

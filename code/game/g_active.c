@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 
 #include "g_local.h"
 
@@ -76,9 +75,7 @@ P_DamageFeedback(gentity_t *player)
 
 	client->ps.damageCount = count;
 
-	//
 	// clear totals
-	//
 	client->dmgblood = 0;
 	client->dmgarmor = 0;
 	client->dmgknockback = 0;
@@ -106,9 +103,7 @@ P_WorldEffects(gentity_t *ent)
 
 	envirosuit = ent->client->ps.powerups[PW_BATTLESUIT] > level.time;
 
-	//
 	// check for drowning
-	//
 	if(waterlevel == 3){
 		// envirosuit give air
 		if(envirosuit)
@@ -136,9 +131,7 @@ P_WorldEffects(gentity_t *ent)
 		ent->damage = 2;
 	}
 
-	//
 	// check for sizzle damage (move to pmove?)
-	//
 	if(waterlevel &&
 	   (ent->watertype&(CONTENTS_LAVA|CONTENTS_SLIME)))
 		if(ent->health > 0
@@ -430,7 +423,6 @@ ClientTimerActions(gentity_t *ent, int msec)
 		int w, max, inc, t, i;
 		int weapList[] = {WP_MACHINEGUN, WP_SHOTGUN, WP_GRENADE_LAUNCHER, WP_ROCKET_LAUNCHER, WP_LIGHTNING, WP_RAILGUN, WP_PLASMAGUN, WP_BFG, WP_NAILGUN, WP_PROX_LAUNCHER, WP_CHAINGUN};
 		int weapCount = ARRAY_LEN(weapList);
-		//
 		for(i = 0; i < weapCount; i++){
 			w = weapList[i];
 
@@ -631,7 +623,6 @@ StuckInOtherClient(gentity_t *ent)
 			continue;
 		if(ent2->health <= 0)
 			continue;
-		//
 		if(ent2->r.absmin[0] > ent->r.absmax[0])
 			continue;
 		if(ent2->r.absmin[1] > ent->r.absmax[1])
@@ -744,9 +735,7 @@ ClientThink_real(gentity_t *ent)
 		//if (ucmd->serverTime - client->ps.commandTime <= 0)
 		//	return;
 
-	//
 	// check for exiting intermission
-	//
 	if(level.intermissiontime){
 		ClientIntermissionThink(client);
 		return;
@@ -1064,10 +1053,8 @@ clientendframe(gentity_t *ent)
 
 #endif
 
-	//
 	// If the end of unit layout is displayed, don't give
 	// the player any normal movement attributes
-	//
 	if(level.intermissiontime)
 		return;
 

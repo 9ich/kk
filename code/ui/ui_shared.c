@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 // string allocation/managment
 
 #include "ui_shared.h"
@@ -558,7 +557,6 @@ PC_Script_Parse(int handle, const char **out)
 }
 
 // display, window, menu, item code
-//
 
 /*
 ==================
@@ -2012,9 +2010,7 @@ Item_TextField_HandleKey(itemDef_t *item, int key)
 				return qtrue;
 			}
 
-			//
 			// ignore any non printable chars
-			//
 			if(key < 32 || !item->cvar)
 				return qtrue;
 
@@ -2141,7 +2137,6 @@ Scroll_ListBox_ThumbFunc(void *p)
 		r.h = SCROLLBAR_SIZE;
 		r.w = si->item->window.rect.w - (SCROLLBAR_SIZE*2) - 2;
 		max = Item_ListBox_MaxScroll(si->item);
-		//
 		pos = (DC->cursorx - r.x - SCROLLBAR_SIZE/2) * max / (r.w - SCROLLBAR_SIZE);
 		if(pos < 0)
 			pos = 0;
@@ -2155,7 +2150,6 @@ Scroll_ListBox_ThumbFunc(void *p)
 		r.h = si->item->window.rect.h - (SCROLLBAR_SIZE*2) - 2;
 		r.w = SCROLLBAR_SIZE;
 		max = Item_ListBox_MaxScroll(si->item);
-		//
 		pos = (DC->cursory - r.y - SCROLLBAR_SIZE/2) * max / (r.h - SCROLLBAR_SIZE);
 		if(pos < 0)
 			pos = 0;
@@ -2791,13 +2785,11 @@ Item_Text_AutoWrapped_Paint(itemDef_t *item)
 					item->textRect.x = item->textalignx - newLineWidth / 2;
 				item->textRect.y = y;
 				ToWindowCoords(&item->textRect.x, &item->textRect.y, &item->window);
-				//
 				buff[newLine] = '\0';
 				DC->drawText(item->textRect.x, item->textRect.y, item->textscale, color, buff, 0, 0, item->textStyle);
 			}
 			if(*p == '\0')
 				break;
-			//
 			y += height + 5;
 			p = newLinePtr;
 			len = 0;
@@ -3543,7 +3535,6 @@ Item_ListBox_Paint(itemDef_t *item)
 		if(thumb > x - SCROLLBAR_SIZE - 1)
 			thumb = x - SCROLLBAR_SIZE - 1;
 		DC->drawHandlePic(thumb, y, SCROLLBAR_SIZE, SCROLLBAR_SIZE, DC->Assets.scrollBarThumb);
-		//
 		listPtr->endPos = listPtr->startPos;
 		size = item->window.rect.w - 2;
 		// items
@@ -3572,7 +3563,6 @@ Item_ListBox_Paint(itemDef_t *item)
 				// fit++;
 			}
 		}else{
-			//
 		}
 	}else{
 		// draw scrollbar to right side of the window

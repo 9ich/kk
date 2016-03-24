@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 // cg_event.c -- handle entity events at snapshot or playerstate transitions
 
 #include "cg_local.h"
@@ -437,9 +436,7 @@ CG_WaterLevel(centity_t *cent)
 	else
 		viewheight = DEFAULT_VIEWHEIGHT;
 
-	//
 	// get waterlevel, accounting for ducking
-	//
 	waterlevel = 0;
 
 	point[0] = cent->lerporigin[0];
@@ -540,9 +537,7 @@ entevent(centity_t *cent, vec3_t position)
 	ci = &cgs.clientinfo[clientNum];
 
 	switch(event){
-	//
 	// movement generated events
-	//
 	case EV_FALL_SHORT:
 		DEBUGNAME("EV_FALL_SHORT");
 		trap_S_StartSound(nil, es->number, CHAN_AUTO, cgs.media.landSound);
@@ -707,9 +702,7 @@ entevent(centity_t *cent, vec3_t position)
 		}
 		break;
 
-	//
 	// weapon events
-	//
 	case EV_NOAMMO:
 		DEBUGNAME("EV_NOAMMO");
 //		trap_S_StartSound (nil, es->number, CHAN_AUTO, cgs.media.noAmmoSound );
@@ -792,9 +785,7 @@ entevent(centity_t *cent, vec3_t position)
 
 	//=================================================================
 
-	//
 	// other events
-	//
 	case EV_PLAYER_TELEPORT_IN:
 		DEBUGNAME("EV_PLAYER_TELEPORT_IN");
 		trap_S_StartSound(nil, es->number, CHAN_AUTO, cgs.media.teleInSound);
@@ -870,9 +861,7 @@ entevent(centity_t *cent, vec3_t position)
 		scoreplum(cent->currstate.otherEntityNum, cent->lerporigin, cent->currstate.time);
 		break;
 
-	//
 	// missile impacts
-	//
 	case EV_MISSILE_HIT:
 		DEBUGNAME("EV_MISSILE_HIT");
 		ByteToDir(es->eventParm, dir);
@@ -968,7 +957,6 @@ entevent(centity_t *cent, vec3_t position)
 				addbufferedsound(cgs.media.returnYourTeamSound);
 			else
 				addbufferedsound(cgs.media.returnOpponentSound);
-			//
 			addbufferedsound(cgs.media.blueFlagReturnedSound);
 			break;
 		case GTS_BLUE_RETURN:			// CTF red flag returned, 1FCTF: neutral flag returned
@@ -976,7 +964,6 @@ entevent(centity_t *cent, vec3_t position)
 				addbufferedsound(cgs.media.returnYourTeamSound);
 			else
 				addbufferedsound(cgs.media.returnOpponentSound);
-			//
 			addbufferedsound(cgs.media.redFlagReturnedSound);
 			break;
 
@@ -1084,9 +1071,7 @@ entevent(centity_t *cent, vec3_t position)
 		CG_Obituary(es);
 		break;
 
-	//
 	// powerup events
-	//
 	case EV_POWERUP_QUAD:
 		DEBUGNAME("EV_POWERUP_QUAD");
 		if(es->number == cg.snap->ps.clientNum){

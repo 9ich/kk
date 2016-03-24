@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 // ui_players.c
 
 #include "ui_local.h"
@@ -737,9 +736,7 @@ UI_DrawPlayer(float x, float y, float w, float h, playerInfo_t *pi, int time)
 
 	renderfx = RF_LIGHTING_ORIGIN | RF_NOSHADOW;
 
-	//
 	// add the legs
-	//
 	legs.hModel = pi->legsmodel;
 	legs.customSkin = pi->legsskin;
 
@@ -754,9 +751,7 @@ UI_DrawPlayer(float x, float y, float w, float h, playerInfo_t *pi, int time)
 	if(!legs.hModel)
 		return;
 
-	//
 	// add the torso
-	//
 	torso.hModel = pi->torsomodel;
 	if(!torso.hModel)
 		return;
@@ -771,9 +766,7 @@ UI_DrawPlayer(float x, float y, float w, float h, playerInfo_t *pi, int time)
 
 	trap_R_AddRefEntityToScene(&torso);
 
-	//
 	// add the head
-	//
 	head.hModel = pi->headmodel;
 	if(!head.hModel)
 		return;
@@ -787,9 +780,7 @@ UI_DrawPlayer(float x, float y, float w, float h, playerInfo_t *pi, int time)
 
 	trap_R_AddRefEntityToScene(&head);
 
-	//
 	// add the gun
-	//
 	if(pi->currentWeapon != WP_NONE){
 		memset(&gun, 0, sizeof(gun));
 		gun.hModel = pi->model;
@@ -799,9 +790,7 @@ UI_DrawPlayer(float x, float y, float w, float h, playerInfo_t *pi, int time)
 		trap_R_AddRefEntityToScene(&gun);
 	}
 
-	//
 	// add the spinning barrel
-	//
 	if(pi->realWeapon == WP_MACHINEGUN || pi->realWeapon == WP_GAUNTLET || pi->realWeapon == WP_BFG){
 		vec3_t angles;
 
@@ -820,9 +809,7 @@ UI_DrawPlayer(float x, float y, float w, float h, playerInfo_t *pi, int time)
 		trap_R_AddRefEntityToScene(&barrel);
 	}
 
-	//
 	// add muzzle flash
-	//
 	if(dp_realtime <= pi->muzzleflashtime){
 		if(pi->flashmodel){
 			memset(&flash, 0, sizeof(flash));
@@ -839,15 +826,11 @@ UI_DrawPlayer(float x, float y, float w, float h, playerInfo_t *pi, int time)
 					       pi->flashcolor[1], pi->flashcolor[2]);
 	}
 
-	//
 	// add the chat icon
-	//
 	if(pi->chat)
 		UI_PlayerFloatSprite(pi, origin, trap_R_RegisterShaderNoMip("sprites/balloon3"));
 
-	//
 	// add an accent light
-	//
 	origin[0] -= 100;	// + = behind, - = in front
 	origin[1] += 100;	// + = left, - = right
 	origin[2] += 100;	// + = above, - = below

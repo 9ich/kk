@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 
 /*****************************************************************************
  * name:		ai_dmq3.h
@@ -146,7 +145,6 @@ void			BotRememberLastOrderedTask(bot_state_t *bs);
 void			BotCTFSeekGoals(bot_state_t *bs);
 //set ctf goals (defend base, get enemy flag) during retreat
 void			BotCTFRetreatGoals(bot_state_t *bs);
-//
 #ifdef MISSIONPACK
 int			Bot1FCTFCarryingFlag(bot_state_t *bs);
 int			BotHarvesterCarryingCubes(bot_state_t *bs);
@@ -173,9 +171,7 @@ char *			stristr(char *str, char *charset);
 //returns the number of the client with the given name
 int			ClientFromName(char *name);
 int			ClientOnSameTeamFromName(bot_state_t *bs, char *name);
-//
 int			BotPointAreaNum(vec3_t origin);
-//
 void			BotMapScripts(bot_state_t *bs);
 
 //ctf flags

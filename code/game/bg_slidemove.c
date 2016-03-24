@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 // bg_slidemove.c -- part of bg_pmove functionality
 
 #include "../qcommon/q_shared.h"
@@ -119,11 +118,9 @@ pmslidemode(qboolean gravity)
 			return qtrue;
 		}
 
-		//
 		// if this is the same plane we hit before, nudge velocity
 		// out along it, which fixes some epsilon issues with
 		// non-axial planes
-		//
 		for(i = 0; i < numplanes; i++)
 			if(vecdot(trace.plane.normal, planes[i]) > 0.99){
 				vecadd(trace.plane.normal, pm->ps->velocity, pm->ps->velocity);
@@ -134,9 +131,7 @@ pmslidemode(qboolean gravity)
 		veccpy(trace.plane.normal, planes[numplanes]);
 		numplanes++;
 
-		//
 		// modify velocity so it parallels all of the clip planes
-		//
 
 		// find a plane that it enters
 		for(i = 0; i < numplanes; i++){

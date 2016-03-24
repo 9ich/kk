@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 // cg_draw.c -- draw all of the graphical elements during
 // active (after loading) gameplay
 
@@ -555,9 +554,7 @@ drawstatusbar(void)
 		drawmodel(370 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE,
 			       cgs.media.armorModel, 0, origin, angles);
 	}
-	//
 	// ammo
-	//
 	if(cent->currstate.weapon){
 		value = ps->ammo[cent->currstate.weapon];
 		if(value > -1){
@@ -587,9 +584,7 @@ drawstatusbar(void)
 		}
 	}
 
-	//
 	// health
-	//
 	value = ps->stats[STAT_HEALTH];
 	if(value > 100)
 		trap_R_SetColor(colors[3]);	// white
@@ -606,9 +601,7 @@ drawstatusbar(void)
 	colorforhealth(hcolor);
 	trap_R_SetColor(hcolor);
 
-	//
 	// armor
-	//
 	value = ps->stats[STAT_ARMOR];
 	if(value > 0){
 		trap_R_SetColor(colors[0]);
@@ -1620,9 +1613,7 @@ drawlagometer(void)
 		return;
 	}
 
-	//
 	// draw the graph
-	//
 #ifdef MISSIONPACK
 	x = 640 - 48;
 	y = 480 - 144;

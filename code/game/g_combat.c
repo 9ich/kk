@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 // g_combat.c
 
 #include "g_local.h"
@@ -38,7 +37,6 @@ ScorePlum(gentity_t *ent, vec3_t origin, int score)
 	// only send this temp entity to a single client
 	plum->r.svFlags |= SVF_SINGLECLIENT;
 	plum->r.singleClient = ent->s.number;
-	//
 	plum->s.otherEntityNum = ent->s.number;
 	plum->s.time = score;
 }
@@ -60,7 +58,6 @@ addscore(gentity_t *ent, vec3_t origin, int score)
 		return;
 	// show score plum
 	ScorePlum(ent, origin, score);
-	//
 	ent->client->ps.persistant[PERS_SCORE] += score;
 	if(g_gametype.integer == GT_TEAM)
 		level.teamscores[ent->client->ps.persistant[PERS_TEAM]] += score;

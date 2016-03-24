@@ -58,10 +58,6 @@ int *clusterareas;
 int numclusterareas;
 
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void AAS_AltRoutingFloodCluster_r(int areanum)
 {
@@ -86,15 +82,10 @@ void AAS_AltRoutingFloodCluster_r(int areanum)
 		if (!otherareanum) continue;
 		//if the other area is not a midrange area
 		if (!midrangeareas[otherareanum].valid) continue;
-		//
 		AAS_AltRoutingFloodCluster_r(otherareanum);
-	} //end for
-} //end of the function AAS_AltRoutingFloodCluster_r
+	}
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 int AAS_AlternativeRouteGoals(vec3_t start, int startareanum, vec3_t goal, int goalareanum, int travelflags,
 										 aas_altroutegoal_t *altroutegoals, int maxaltroutegoals,
@@ -121,12 +112,9 @@ int AAS_AlternativeRouteGoals(vec3_t start, int startareanum, vec3_t goal, int g
 	//clear the midrange areas
 	Com_Memset(midrangeareas, 0, aasworld.numareas * sizeof(midrangearea_t));
 	numaltroutegoals = 0;
-	//
 	nummidrangeareas = 0;
-	//
 	for (i = 1; i < aasworld.numareas; i++)
 	{
-		//
 		if (!(type & ALTROUTEGOAL_ALL))
 		{
 			if (!(type & ALTROUTEGOAL_CLUSTERPORTALS && (aasworld.areasettings[i].contents & AREACONTENTS_CLUSTERPORTAL)))
@@ -134,9 +122,9 @@ int AAS_AlternativeRouteGoals(vec3_t start, int startareanum, vec3_t goal, int g
 				if (!(type & ALTROUTEGOAL_VIEWPORTALS && (aasworld.areasettings[i].contents & AREACONTENTS_VIEWPORTAL)))
 				{
 					continue;
-				} //end if
-			} //end if
-		} //end if
+				}
+			}
+		}
 		//if the area has no reachabilities
 		if (!AAS_AreaReachability(i)) continue;
 		//tavel time from the area to the start area
@@ -155,8 +143,7 @@ int AAS_AlternativeRouteGoals(vec3_t start, int startareanum, vec3_t goal, int g
 		midrangeareas[i].goaltime = goaltime;
 		Log_Write("%d midrange area %d", nummidrangeareas, i);
 		nummidrangeareas++;
-	} //end for
-	//
+	}
 	for (i = 1; i < aasworld.numareas; i++)
 	{
 		if (!midrangeareas[i].valid) continue;
@@ -169,7 +156,7 @@ int AAS_AlternativeRouteGoals(vec3_t start, int startareanum, vec3_t goal, int g
 		for (j = 0; j < numclusterareas; j++)
 		{
 			VectorAdd(mid, aasworld.areas[clusterareas[j]].center, mid);
-		} //end for
+		}
 		VectorScale(mid, 1.0 / numclusterareas, mid);
 		//get the area closest to the center of the cluster
 		bestdist = 999999;
@@ -182,8 +169,8 @@ int AAS_AlternativeRouteGoals(vec3_t start, int startareanum, vec3_t goal, int g
 			{
 				bestdist = dist;
 				bestareanum = clusterareas[j];
-			} //end if
-		} //end for
+			}
+		}
 		//now we've got an area for an alternative route
 		//FIXME: add alternative goal origin
 		VectorCopy(aasworld.areas[bestareanum].center, altroutegoals[numaltroutegoals].origin);
@@ -194,24 +181,19 @@ int AAS_AlternativeRouteGoals(vec3_t start, int startareanum, vec3_t goal, int g
 					(midrangeareas[bestareanum].starttime + midrangeareas[bestareanum].goaltime) -
 								goaltraveltime;
 		numaltroutegoals++;
-		//
 #ifdef ALTROUTE_DEBUG
 		AAS_ShowAreaPolygons(bestareanum, 1, qtrue);
 #endif
 		//don't return more than the maximum alternative route goals
 		if (numaltroutegoals >= maxaltroutegoals) break;
-	} //end for
+	}
 #ifdef ALTROUTE_DEBUG
 	botimport.Print(PRT_MESSAGE, "alternative route goals in %d msec\n", Sys_MilliSeconds() - startmillisecs);
 #endif
 	return numaltroutegoals;
 #endif
-} //end of the function AAS_AlternativeRouteGoals
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void AAS_InitAlternativeRouting(void)
 {
@@ -221,12 +203,8 @@ void AAS_InitAlternativeRouting(void)
 	if (clusterareas) FreeMemory(clusterareas);
 	clusterareas = (int *) GetMemory(aasworld.numareas * sizeof(int));
 #endif
-} //end of the function AAS_InitAlternativeRouting
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void AAS_ShutdownAlternativeRouting(void)
 {
@@ -237,4 +215,4 @@ void AAS_ShutdownAlternativeRouting(void)
 	clusterareas = NULL;
 	numclusterareas = 0;
 #endif
-} //end of the function AAS_ShutdownAlternativeRouting
+}

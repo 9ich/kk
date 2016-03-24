@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 #include "../qcommon/q_shared.h"
 #include "../renderercommon/tr_types.h"
 #include "../game/bg_public.h"
@@ -820,9 +819,7 @@ typedef struct
 	qhandle_t	medalAssist;
 	qhandle_t	medalCapture;
 
-	//
 	// sounds
-	//
 
 	sfxHandle_t	quadSound;
 	sfxHandle_t	tracerSound;
@@ -1045,9 +1042,7 @@ typedef struct
 
 	qboolean	newHud;
 
-	//
 	// locally derived information from gamestate
-	//
 	qhandle_t	gamemodels[MAX_MODELS];
 	sfxHandle_t	gamesounds[MAX_SOUNDS];
 
@@ -1196,9 +1191,7 @@ extern vmCvar_t cg_recordSPDemoName;
 extern vmCvar_t cg_obeliskRespawnDelay;
 #endif
 
-//
 // cg_main.c
-//
 const char *	getconfigstr(int index);
 const char *	cgargv(int arg);
 
@@ -1220,9 +1213,7 @@ void		setscoresel(void *menu);
 score_t *	getselscore(void);
 void		mkspecstr(void);
 
-//
 // cg_view.c
-//
 void	CG_TestModel_f(void);
 void	CG_TestGun_f(void);
 void	CG_TestModelNextFrame_f(void);
@@ -1235,9 +1226,7 @@ void	addbufferedsound(sfxHandle_t sfx);
 
 void	drawframe(int serverTime, stereoFrame_t stereoview, qboolean demoplayback);
 
-//
 // cg_drawtools.c
-//
 void	adjustcoords(float *x, float *y, float *w, float *h);
 void	fillrect(float x, float y, float width, float height, const float *color);
 void	drawpic(float x, float y, float width, float height, qhandle_t hShader);
@@ -1264,9 +1253,7 @@ void	drawrect(float x, float y, float width, float height, float size, const flo
 void	drawsides(float x, float y, float w, float h, float size);
 void	drawtopbottom(float x, float y, float w, float h, float size);
 
-//
 // cg_draw.c, cg_newDraw.c
-//
 extern int sortedteamplayers[TEAM_MAXOVERLAY];
 extern int nsortedteamplayers;
 extern int drawTeamOverlayModificationCount;
@@ -1304,18 +1291,14 @@ qboolean	CG_YourTeamHasFlag(void);
 qboolean	CG_OtherTeamHasFlag(void);
 qhandle_t	CG_StatusHandle(int task);
 
-//
 // cg_player.c
-//
 void		doplayer(centity_t *cent);
 void		resetplayerent(centity_t *cent);
 void		addrefentitywithpowerups(refEntity_t *ent, entityState_t *state, int team);
 void		newclientinfo(int clientNum);
 sfxHandle_t	customsound(int clientNum, const char *soundName);
 
-//
 // cg_predict.c
-//
 void	mksolidlist(void);
 int	pointcontents(const vec3_t point, int passEntityNum);
 void	cgtrace(trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
@@ -1323,17 +1306,13 @@ void	cgtrace(trace_t *result, const vec3_t start, const vec3_t mins, const vec3_
 void	predictplayerstate(void);
 void	loaddeferred(void);
 
-//
 // cg_events.c
-//
 void		chkevents(centity_t *cent);
 const char *	placestr(int rank);
 void		entevent(centity_t *cent, vec3_t position);
 void		painevent(centity_t *cent, int health);
 
-//
 // cg_ents.c
-//
 void	setentsoundpos(centity_t *cent);
 void	addpacketents(void);
 void	drawbeam(centity_t *cent);
@@ -1344,9 +1323,7 @@ void	entontag(refEntity_t *entity, const refEntity_t *parent,
 void	rotentontag(refEntity_t *entity, const refEntity_t *parent,
 				      qhandle_t parentModel, char *tagName);
 
-//
 // cg_weapons.c
-//
 void	CG_NextWeapon_f(void);
 void	CG_PrevWeapon_f(void);
 void	CG_Weapon_f(void);
@@ -1368,9 +1345,7 @@ void	drawweapsel(void);
 
 void	outofammochange(void);	// should this be in pmove?
 
-//
 // cg_marks.c
-//
 void	initmarkpolys(void);
 void	addmarks(void);
 void	impactmark(qhandle_t shader,
@@ -1380,16 +1355,12 @@ void	impactmark(qhandle_t shader,
 		      qboolean alphafade,
 		      float radius, qboolean temporary);
 
-//
 // cg_localents.c
-//
 void		initlocalents(void);
 localEntity_t * alloclocalent(void);
 void		addlocalents(void);
 
-//
 // cg_effects.c
-//
 localEntity_t *smokepuff(const vec3_t p,
 			    const vec3_t vel,
 			    float radius,
@@ -1420,34 +1391,24 @@ localEntity_t * explosion(vec3_t origin, vec3_t dir,
 				 qhandle_t hModel, qhandle_t shader, int msec,
 				 qboolean isSprite);
 
-//
 // cg_snapshot.c
-//
 void processsnaps(void);
 
-//
 // cg_info.c
-//
 void	loadingstr(const char *s);
 void	loadingitem(int itemNum);
 void	loadingclient(int clientNum);
 void	drawinfo(void);
 
-//
 // cg_scoreboard.c
-//
 qboolean	drawoldscoreboard(void);
 void		CG_DrawOldTourneyScoreboard(void);
 
-//
 // cg_consolecmds.c
-//
 qboolean	consolecmd(void);
 void		initconsolesmds(void);
 
-//
 // cg_servercmds.c
-//
 void	execnewsrvcmds(int latestSequence);
 void	parsesrvinfo(void);
 void	setconfigvals(void);
@@ -1458,19 +1419,15 @@ void	CG_VoiceChatLocal(int mode, qboolean voiceOnly, int clientNum, int color, c
 void	CG_PlayBufferedVoiceChats(void);
 #endif
 
-//
 // cg_playerstate.c
-//
 void	respawn(void);
 void	pstransition(playerState_t *ps, playerState_t *ops);
 void	chkpredictableevents(playerState_t *ps);
 
 //===============================================
 
-//
 // system traps
 // These functions are how the cgame communicates with the main game system
-//
 
 // print message on the local console
 void	trap_Print(const char *fmt);

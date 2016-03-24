@@ -51,10 +51,6 @@ typedef struct logfile_s
 static logfile_t logfile;
 
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void Log_Open(char *filename)
 {
@@ -63,26 +59,22 @@ void Log_Open(char *filename)
 	{
 		botimport.Print(PRT_MESSAGE, "openlog <filename>\n");
 		return;
-	} //end if
+	}
 	if (logfile.fp)
 	{
 		botimport.Print(PRT_ERROR, "log file %s is already opened\n", logfile.filename);
 		return;
-	} //end if
+	}
 	logfile.fp = fopen(filename, "wb");
 	if (!logfile.fp)
 	{
 		botimport.Print(PRT_ERROR, "can't open the log file %s\n", filename);
 		return;
-	} //end if
+	}
 	strncpy(logfile.filename, filename, MAX_LOGFILENAMESIZE);
 	botimport.Print(PRT_MESSAGE, "Opened log %s\n", logfile.filename);
-} //end of the function Log_Create
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void Log_Close(void)
 {
@@ -91,25 +83,17 @@ void Log_Close(void)
 	{
 		botimport.Print(PRT_ERROR, "can't close log file %s\n", logfile.filename);
 		return;
-	} //end if
+	}
 	logfile.fp = NULL;
 	botimport.Print(PRT_MESSAGE, "Closed log %s\n", logfile.filename);
-} //end of the function Log_Close
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void Log_Shutdown(void)
 {
 	if (logfile.fp) Log_Close();
-} //end of the function Log_Shutdown
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void QDECL Log_Write(char *fmt, ...)
 {
@@ -121,12 +105,8 @@ void QDECL Log_Write(char *fmt, ...)
 	va_end(ap);
 	//fprintf(logfile.fp, "\r\n");
 	fflush(logfile.fp);
-} //end of the function Log_Write
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void QDECL Log_WriteTimeStamped(char *fmt, ...)
 {
@@ -146,25 +126,17 @@ void QDECL Log_WriteTimeStamped(char *fmt, ...)
 	fprintf(logfile.fp, "\r\n");
 	logfile.numwrites++;
 	fflush(logfile.fp);
-} //end of the function Log_Write
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 FILE *Log_FilePointer(void)
 {
 	return logfile.fp;
-} //end of the function Log_FilePointer
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void Log_Flush(void)
 {
 	if (logfile.fp) fflush(logfile.fp);
-} //end of the function Log_Flush
+}
 

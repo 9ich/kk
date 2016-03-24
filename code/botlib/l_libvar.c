@@ -37,10 +37,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 libvar_t *libvarlist = NULL;
 
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 float LibVarStringValue(char *string)
 {
@@ -54,31 +50,27 @@ float LibVarStringValue(char *string)
 			if (dotfound || *string != '.')
 			{
 				return 0;
-			} //end if
+			}
 			else
 			{
 				dotfound = 10;
 				string++;
-			} //end if
-		} //end if
+			}
+		}
 		if (dotfound)
 		{
 			value = value + (float) (*string - '0') / (float) dotfound;
 			dotfound *= 10;
-		} //end if
+		}
 		else
 		{
 			value = value * 10.0 + (float) (*string - '0');
-		} //end else
+		}
 		string++;
-	} //end while
+	}
 	return value;
-} //end of the function LibVarStringValue
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 libvar_t *LibVarAlloc(char *var_name)
 {
@@ -92,24 +84,16 @@ libvar_t *LibVarAlloc(char *var_name)
 	v->next = libvarlist;
 	libvarlist = v;
 	return v;
-} //end of the function LibVarAlloc
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void LibVarDeAlloc(libvar_t *v)
 {
 	if (v->string) FreeMemory(v->string);
 	FreeMemory(v->name);
 	FreeMemory(v);
-} //end of the function LibVarDeAlloc
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void LibVarDeAllocAll(void)
 {
@@ -119,14 +103,10 @@ void LibVarDeAllocAll(void)
 	{
 		libvarlist = libvarlist->next;
 		LibVarDeAlloc(v);
-	} //end for
+	}
 	libvarlist = NULL;
-} //end of the function LibVarDeAllocAll
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 libvar_t *LibVarGet(char *var_name)
 {
@@ -137,15 +117,11 @@ libvar_t *LibVarGet(char *var_name)
 		if (!Q_stricmp(v->name, var_name))
 		{
 			return v;
-		} //end if
-	} //end for
+		}
+	}
 	return NULL;
-} //end of the function LibVarGet
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 char *LibVarGetString(char *var_name)
 {
@@ -155,17 +131,13 @@ char *LibVarGetString(char *var_name)
 	if (v)
 	{
 		return v->string;
-	} //end if
+	}
 	else
 	{
 		return "";
-	} //end else
-} //end of the function LibVarGetString
+	}
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 float LibVarGetValue(char *var_name)
 {
@@ -175,17 +147,13 @@ float LibVarGetValue(char *var_name)
 	if (v)
 	{
 		return v->value;
-	} //end if
+	}
 	else
 	{
 		return 0;
-	} //end else
-} //end of the function LibVarGetValue
+	}
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 libvar_t *LibVar(char *var_name, char *value)
 {
@@ -201,14 +169,9 @@ libvar_t *LibVar(char *var_name, char *value)
 	v->value = LibVarStringValue(v->string);
 	//variable is modified
 	v->modified = qtrue;
-	//
 	return v;
-} //end of the function LibVar
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 char *LibVarString(char *var_name, char *value)
 {
@@ -216,12 +179,8 @@ char *LibVarString(char *var_name, char *value)
 
 	v = LibVar(var_name, value);
 	return v->string;
-} //end of the function LibVarString
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 float LibVarValue(char *var_name, char *value)
 {
@@ -229,12 +188,8 @@ float LibVarValue(char *var_name, char *value)
 
 	v = LibVar(var_name, value);
 	return v->value;
-} //end of the function LibVarValue
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void LibVarSet(char *var_name, char *value)
 {
@@ -244,11 +199,11 @@ void LibVarSet(char *var_name, char *value)
 	if (v)
 	{
 		FreeMemory(v->string);
-	} //end if
+	}
 	else
 	{
 		v = LibVarAlloc(var_name);
-	} //end else
+	}
 	//variable string
 	v->string = (char *) GetMemory(strlen(value) + 1);
 	strcpy(v->string, value);
@@ -256,12 +211,8 @@ void LibVarSet(char *var_name, char *value)
 	v->value = LibVarStringValue(v->string);
 	//variable is modified
 	v->modified = qtrue;
-} //end of the function LibVarSet
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 qboolean LibVarChanged(char *var_name)
 {
@@ -271,17 +222,13 @@ qboolean LibVarChanged(char *var_name)
 	if (v)
 	{
 		return v->modified;
-	} //end if
+	}
 	else
 	{
 		return qfalse;
-	} //end else
-} //end of the function LibVarChanged
+	}
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void LibVarSetNotModified(char *var_name)
 {
@@ -291,5 +238,5 @@ void LibVarSetNotModified(char *var_name)
 	if (v)
 	{
 		v->modified = qfalse;
-	} //end if
-} //end of the function LibVarSetNotModified
+	}
+}

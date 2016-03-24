@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 /*****************************************************************************
  * name:		botlib.h
  *
@@ -181,7 +180,6 @@ typedef struct botlib_import_s
 	int			(*inPVS)(vec3_t p1, vec3_t p2);
 	//retrieve the BSP entity data lump
 	char		*(*BSPEntityData)(void);
-	//
 	void		(*BSPModelMinsMaxsOrigin)(int modelnum, vec3_t angles, vec3_t mins, vec3_t maxs, vec3_t origin);
 	//send a bot client command
 	void		(*BotClientCommand)(int client, char *command);
@@ -200,7 +198,6 @@ typedef struct botlib_import_s
 	int			(*DebugLineCreate)(void);
 	void		(*DebugLineDelete)(int line);
 	void		(*DebugLineShow)(int line, vec3_t start, vec3_t end, int color);
-	//
 	int			(*DebugPolygonCreate)(int color, int numPoints, vec3_t *points);
 	void		(*DebugPolygonDelete)(int id);
 } botlib_import_t;
@@ -271,7 +268,6 @@ typedef struct ea_export_s
 	void	(*EA_Command)(int client, char *command );
 	void	(*EA_Say)(int client, char *str);
 	void	(*EA_SayTeam)(int client, char *str);
-	//
 	void	(*EA_Action)(int client, int action);
 	void	(*EA_Gesture)(int client);
 	void	(*EA_Talk)(int client);

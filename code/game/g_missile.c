@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 #include "g_local.h"
 
 #define MISSILE_PRESTEP_TIME 0
@@ -294,7 +293,6 @@ G_MissileImpact(gentity_t *ent, trace_t *trace)
 	if(other->takedmg){
 		if(ent->s.weapon != WP_PROX_LAUNCHER)
 			if(other->client && other->client->invulnerabilityTime > level.time){
-				//
 				veccpy(ent->s.pos.trDelta, forward);
 				vecnorm(forward);
 				if(G_InvulnerabilityEffect(other, forward, ent->s.pos.trBase, impactpoint, bouncedir)){

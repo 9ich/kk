@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 
 #include "g_local.h"
 
@@ -75,9 +74,7 @@ spawnvec(const char *key, const char *defaultString, float *out)
 	return present;
 }
 
-//
 // fields are needed for spawning from the entity string
-//
 typedef enum
 {
 	F_INT,

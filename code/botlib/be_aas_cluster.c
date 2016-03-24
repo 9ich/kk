@@ -49,17 +49,12 @@ extern botlib_import_t botimport;
 #define AAS_MAX_PORTALS					65536
 #define AAS_MAX_PORTALINDEXSIZE			65536
 #define AAS_MAX_CLUSTERS				65536
-//
 #define MAX_PORTALAREAS			1024
 
 // do not flood through area faces, only use reachabilities
 int nofaceflood = qtrue;
 
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void AAS_RemoveClusterAreas(void)
 {
@@ -68,13 +63,9 @@ void AAS_RemoveClusterAreas(void)
 	for (i = 1; i < aasworld.numareas; i++)
 	{
 		aasworld.areasettings[i].cluster = 0;
-	} //end for
-} //end of the function AAS_RemoveClusterAreas
+	}
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void AAS_ClearCluster(int clusternum)
 {
@@ -85,14 +76,10 @@ void AAS_ClearCluster(int clusternum)
 		if (aasworld.areasettings[i].cluster == clusternum)
 		{
 			aasworld.areasettings[i].cluster = 0;
-		} //end if
-	} //end for
-} //end of the function AAS_ClearCluster
+		}
+	}
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void AAS_RemovePortalsClusterReference(int clusternum)
 {
@@ -103,18 +90,14 @@ void AAS_RemovePortalsClusterReference(int clusternum)
 		if (aasworld.portals[portalnum].frontcluster == clusternum)
 		{
 			aasworld.portals[portalnum].frontcluster = 0;
-		} //end if
+		}
 		if (aasworld.portals[portalnum].backcluster == clusternum)
 		{
 			aasworld.portals[portalnum].backcluster = 0;
-		} //end if
-	} //end for
-} //end of the function AAS_RemovePortalsClusterReference
+		}
+	}
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 int AAS_UpdatePortal(int areanum, int clusternum)
 {
@@ -126,14 +109,12 @@ int AAS_UpdatePortal(int areanum, int clusternum)
 	for (portalnum = 1; portalnum < aasworld.numportals; portalnum++)
 	{
 		if (aasworld.portals[portalnum].areanum == areanum) break;
-	} //end for
-	//
+	}
 	if (portalnum == aasworld.numportals)
 	{
 		AAS_Error("no portal of area %d\n", areanum);
 		return qtrue;
-	} //end if
-	//
+	}
 	portal = &aasworld.portals[portalnum];
 	//if the portal is already fully updated
 	if (portal->frontcluster == clusternum) return qtrue;
@@ -142,24 +123,24 @@ int AAS_UpdatePortal(int areanum, int clusternum)
 	if (!portal->frontcluster)
 	{
 		portal->frontcluster = clusternum;
-	} //end if
+	}
 	//if the portal has no back cluster yet
 	else if (!portal->backcluster)
 	{
 		portal->backcluster = clusternum;
-	} //end else if
+	}
 	else
 	{
 		//remove the cluster portal flag contents
 		aasworld.areasettings[areanum].contents &= ~AREACONTENTS_CLUSTERPORTAL;
 		Log_Write("portal area %d is seperating more than two clusters\r\n", areanum);
 		return qfalse;
-	} //end else
+	}
 	if (aasworld.portalindexsize >= AAS_MAX_PORTALINDEXSIZE)
 	{
 		AAS_Error("AAS_MAX_PORTALINDEXSIZE\n");
 		return qtrue;
-	} //end if
+	}
 	//set the area cluster number to the negative portal number
 	aasworld.areasettings[areanum].cluster = -portalnum;
 	//add the portal to the cluster using the portal index
@@ -168,12 +149,8 @@ int AAS_UpdatePortal(int areanum, int clusternum)
 	aasworld.portalindexsize++;
 	cluster->numportals++;
 	return qtrue;
-} //end of the function AAS_UpdatePortal
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 int AAS_FloodClusterAreas_r(int areanum, int clusternum)
 {
@@ -181,28 +158,25 @@ int AAS_FloodClusterAreas_r(int areanum, int clusternum)
 	aas_face_t *face;
 	int facenum, i;
 
-	//
 	if (areanum <= 0 || areanum >= aasworld.numareas)
 	{
 		AAS_Error("AAS_FloodClusterAreas_r: areanum out of range\n");
 		return qfalse;
-	} //end if
+	}
 	//if the area is already part of a cluster
 	if (aasworld.areasettings[areanum].cluster > 0)
 	{
 		if (aasworld.areasettings[areanum].cluster == clusternum) return qtrue;
-		//
 		//there's a reachability going from one cluster to another only in one direction
-		//
 		AAS_Error("cluster %d touched cluster %d at area %d\n",
 				clusternum, aasworld.areasettings[areanum].cluster, areanum);
 		return qfalse;
-	} //end if
+	}
 	//don't add the cluster portal areas to the clusters
 	if (aasworld.areasettings[areanum].contents & AREACONTENTS_CLUSTERPORTAL)
 	{
 		return AAS_UpdatePortal(areanum, clusternum);
-	} //end if
+	}
 	//set the area cluster number
 	aasworld.areasettings[areanum].cluster = clusternum;
 	aasworld.areasettings[areanum].clusterareanum =
@@ -221,13 +195,13 @@ int AAS_FloodClusterAreas_r(int areanum, int clusternum)
 			if (face->frontarea == areanum)
 			{
 				if (face->backarea) if (!AAS_FloodClusterAreas_r(face->backarea, clusternum)) return qfalse;
-			} //end if
+			}
 			else
 			{
 				if (face->frontarea) if (!AAS_FloodClusterAreas_r(face->frontarea, clusternum)) return qfalse;
-			} //end else
-		} //end for
-	} //end if
+			}
+		}
+	}
 	//use the reachabilities to flood into other areas
 	for (i = 0; i < aasworld.areasettings[areanum].numreachableareas; i++)
 	{
@@ -235,18 +209,14 @@ int AAS_FloodClusterAreas_r(int areanum, int clusternum)
 					aasworld.areasettings[areanum].firstreachablearea + i].areanum)
 		{
 			continue;
-		} //end if
+		}
 		if (!AAS_FloodClusterAreas_r(aasworld.reachability[
 				aasworld.areasettings[areanum].firstreachablearea + i].areanum, clusternum)) return qfalse;
-	} //end for
+	}
 	return qtrue;
-} //end of the function AAS_FloodClusterAreas_r
+}
 //===========================================================================
 // try to flood from all areas without cluster into areas with a cluster set
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 int AAS_FloodClusterAreasUsingReachabilities(int clusternum)
 {
@@ -275,16 +245,12 @@ int AAS_FloodClusterAreasUsingReachabilities(int clusternum)
 					return qfalse;
 				i = 0;
 				break;
-			} //end if
-		} //end for
-	} //end for
+			}
+		}
+	}
 	return qtrue;
-} //end of the function AAS_FloodClusterAreasUsingReachabilities
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void AAS_NumberClusterPortals(int clusternum)
 {
@@ -300,18 +266,14 @@ void AAS_NumberClusterPortals(int clusternum)
 		if (portal->frontcluster == clusternum)
 		{
 			portal->clusterareanum[0] = cluster->numareas++;
-		} //end if
+		}
 		else
 		{
 			portal->clusterareanum[1] = cluster->numareas++;
-		} //end else
-	} //end for
-} //end of the function AAS_NumberClusterPortals
+		}
+	}
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void AAS_NumberClusterAreas(int clusternum)
 {
@@ -324,16 +286,13 @@ void AAS_NumberClusterAreas(int clusternum)
 	//number all areas in this cluster WITH reachabilities
 	for (i = 1; i < aasworld.numareas; i++)
 	{
-		//
 		if (aasworld.areasettings[i].cluster != clusternum) continue;
-		//
 		if (!AAS_AreaReachability(i)) continue;
-		//
 		aasworld.areasettings[i].clusterareanum = aasworld.clusters[clusternum].numareas;
 		//the cluster has an extra area
 		aasworld.clusters[clusternum].numareas++;
 		aasworld.clusters[clusternum].numreachabilityareas++;
-	} //end for
+	}
 	//number all portals in this cluster WITH reachabilities
 	cluster = &aasworld.clusters[clusternum];
 	for (i = 0; i < cluster->numportals; i++)
@@ -345,25 +304,22 @@ void AAS_NumberClusterAreas(int clusternum)
 		{
 			portal->clusterareanum[0] = cluster->numareas++;
 			aasworld.clusters[clusternum].numreachabilityareas++;
-		} //end if
+		}
 		else
 		{
 			portal->clusterareanum[1] = cluster->numareas++;
 			aasworld.clusters[clusternum].numreachabilityareas++;
-		} //end else
-	} //end for
+		}
+	}
 	//number all areas in this cluster WITHOUT reachabilities
 	for (i = 1; i < aasworld.numareas; i++)
 	{
-		//
 		if (aasworld.areasettings[i].cluster != clusternum) continue;
-		//
 		if (AAS_AreaReachability(i)) continue;
-		//
 		aasworld.areasettings[i].clusterareanum = aasworld.clusters[clusternum].numareas;
 		//the cluster has an extra area
 		aasworld.clusters[clusternum].numareas++;
-	} //end for
+	}
 	//number all portals in this cluster WITHOUT reachabilities
 	cluster = &aasworld.clusters[clusternum];
 	for (i = 0; i < cluster->numportals; i++)
@@ -374,18 +330,14 @@ void AAS_NumberClusterAreas(int clusternum)
 		if (portal->frontcluster == clusternum)
 		{
 			portal->clusterareanum[0] = cluster->numareas++;
-		} //end if
+		}
 		else
 		{
 			portal->clusterareanum[1] = cluster->numareas++;
-		} //end else
-	} //end for
-} //end of the function AAS_NumberClusterAreas
+		}
+	}
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 int AAS_FindClusters(void)
 {
@@ -393,7 +345,6 @@ int AAS_FindClusters(void)
 	aas_cluster_t *cluster;
 
 	AAS_RemoveClusterAreas();
-	//
 	for (i = 1; i < aasworld.numareas; i++)
 	{
 		//if the area is already part of a cluster
@@ -404,7 +355,7 @@ int AAS_FindClusters(void)
 		{
 			if (!aasworld.areasettings[i].numreachableareas)
 				continue;
-		} //end if
+		}
 		//if the area is a cluster portal
 		if (aasworld.areasettings[i].contents & AREACONTENTS_CLUSTERPORTAL)
 			continue;
@@ -412,7 +363,7 @@ int AAS_FindClusters(void)
 		{
 			AAS_Error("AAS_MAX_CLUSTERS\n");
 			return qfalse;
-		} //end if
+		}
 		cluster = &aasworld.clusters[aasworld.numclusters];
 		cluster->numareas = 0;
 		cluster->numreachabilityareas = 0;
@@ -428,14 +379,10 @@ int AAS_FindClusters(void)
 		AAS_NumberClusterAreas(aasworld.numclusters);
 		//Log_Write("cluster %d has %d areas\r\n", aasworld.numclusters, cluster->numareas);
 		aasworld.numclusters++;
-	} //end for
+	}
 	return qtrue;
-} //end of the function AAS_FindClusters
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void AAS_CreatePortals(void)
 {
@@ -451,21 +398,17 @@ void AAS_CreatePortals(void)
 			{
 				AAS_Error("AAS_MAX_PORTALS\n");
 				return;
-			} //end if
+			}
 			portal = &aasworld.portals[aasworld.numportals];
 			portal->areanum = i;
 			portal->frontcluster = 0;
 			portal->backcluster = 0;
 			aasworld.numportals++;
-		} //end if
-	} //end for
-} //end of the function AAS_CreatePortals
+		}
+	}
+}
 /*
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 int AAS_MapContainsTeleporters(void)
 {
@@ -481,15 +424,11 @@ int AAS_MapContainsTeleporters(void)
 		{
 			AAS_FreeBSPEntities(entities);
 			return qtrue;
-		} //end if
-	} //end for
+		}
+	}
 	return qfalse;
-} //end of the function AAS_MapContainsTeleporters
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 int AAS_NonConvexFaces(aas_face_t *face1, aas_face_t *face2, int side1, int side2)
 {
@@ -510,8 +449,8 @@ int AAS_NonConvexFaces(aas_face_t *face1, aas_face_t *face2, int side1, int side
 		{
 			if (DotProduct(plane2->normal, aasworld.vertexes[edge->v[j]]) -
 							plane2->dist < -0.01) return qtrue;
-		} //end for
-	} //end for
+		}
+	}
 	for (i = 0; i < face2->numedges; i++)
 	{
 		edgenum = abs(aasworld.edgeindex[face2->firstedge + i]);
@@ -520,16 +459,12 @@ int AAS_NonConvexFaces(aas_face_t *face1, aas_face_t *face2, int side1, int side
 		{
 			if (DotProduct(plane1->normal, aasworld.vertexes[edge->v[j]]) -
 							plane1->dist < -0.01) return qtrue;
-		} //end for
-	} //end for
+		}
+	}
 
 	return qfalse;
-} //end of the function AAS_NonConvexFaces
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 qboolean AAS_CanMergeAreas(int *areanums, int numareas)
 {
@@ -550,10 +485,9 @@ qboolean AAS_CanMergeAreas(int *areanums, int numareas)
 			{
 				if (s == i) continue;
 				if (face1->frontarea == s || face1->backarea == s) break;
-			} //end for
+			}
 			//if the face was a shared one
 			if (s != numareas) continue;
-			//
 			for (j = 0; j < numareas; j++)
 			{
 				if (j == i) continue;
@@ -568,22 +502,17 @@ qboolean AAS_CanMergeAreas(int *areanums, int numareas)
 					{
 						if (s == j) continue;
 						if (face2->frontarea == s || face2->backarea == s) break;
-					} //end for
+					}
 					//if the face was a shared one
 					if (s != numareas) continue;
-					//
 					if (AAS_NonConvexFaces(face1, face2, side1, side2)) return qfalse;
-				} //end for
-			} //end for
-		} //end for
-	} //end for
+				}
+			}
+		}
+	}
 	return qtrue;
-} //end of the function AAS_CanMergeAreas
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 qboolean AAS_NonConvexEdges(aas_edge_t *edge1, aas_edge_t *edge2, int side1, int side2, int planenum)
 {
@@ -597,7 +526,6 @@ qboolean AAS_NonConvexEdges(aas_edge_t *edge1, aas_edge_t *edge2, int side1, int
 	VectorSubtract(aasworld.vertexes[edge2->v[1]], aasworld.vertexes[edge2->v[0]], edgevec2);
 	if (side1) VectorInverse(edgevec1);
 	if (side2) VectorInverse(edgevec2);
-	//
 	CrossProduct(edgevec1, plane->normal, normal1);
 	dist1 = DotProduct(normal1, aasworld.vertexes[edge1->v[0]]);
 	CrossProduct(edgevec2, plane->normal, normal2);
@@ -606,18 +534,14 @@ qboolean AAS_NonConvexEdges(aas_edge_t *edge1, aas_edge_t *edge2, int side1, int
 	for (i = 0; i < 2; i++)
 	{
 		if (DotProduct(aasworld.vertexes[edge1->v[i]], normal2) - dist2 < -0.01) return qfalse;
-	} //end for
+	}
 	for (i = 0; i < 2; i++)
 	{
 		if (DotProduct(aasworld.vertexes[edge2->v[i]], normal1) - dist1 < -0.01) return qfalse;
-	} //end for
+	}
 	return qtrue;
-} //end of the function AAS_NonConvexEdges
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 qboolean AAS_CanMergeFaces(int *facenums, int numfaces, int planenum)
 {
@@ -642,12 +566,11 @@ qboolean AAS_CanMergeFaces(int *facenums, int numfaces, int planenum)
 				for (ens = 0; ens < otherface->numedges; ens++)
 				{
 					if (edgenum1 == abs(aasworld.edgeindex[otherface->firstedge + ens])) break;
-				} //end for
+				}
 				if (ens != otherface->numedges) break;
-			} //end for
+			}
 			//if the edge was shared
 			if (s != numfaces) continue;
-			//
 			for (j = 0; j < numfaces; j++)
 			{
 				if (j == i) continue;
@@ -666,24 +589,19 @@ qboolean AAS_CanMergeFaces(int *facenums, int numfaces, int planenum)
 						for (ens = 0; ens < otherface->numedges; ens++)
 						{
 							if (edgenum2 == abs(aasworld.edgeindex[otherface->firstedge + ens])) break;
-						} //end for
+						}
 						if (ens != otherface->numedges) break;
-					} //end for
+					}
 					//if the edge was shared
 					if (s != numfaces) continue;
-					//
 					if (AAS_NonConvexEdges(edge1, edge2, side1, side2, planenum)) return qfalse;
-				} //end for
-			} //end for
-		} //end for
-	} //end for
+				}
+			}
+		}
+	}
 	return qtrue;
-} //end of the function AAS_CanMergeFaces*/
+} // */
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void AAS_ConnectedAreas_r(int *areanums, int numareas, int *connectedareas, int curarea)
 {
@@ -706,20 +624,16 @@ void AAS_ConnectedAreas_r(int *areanums, int numareas, int *connectedareas, int 
 		for (j = 0; j < numareas; j++)
 		{
 			if (areanums[j] == otherareanum) break;
-		} //end for
+		}
 		//if the face isn't leading to one of the other areas
 		if (j == numareas) continue;
 		//if the other area is already connected
 		if (connectedareas[j]) continue;
 		//recursively proceed with the other area
 		AAS_ConnectedAreas_r(areanums, numareas, connectedareas, j);
-	} //end for
-} //end of the function AAS_ConnectedAreas_r
+	}
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 qboolean AAS_ConnectedAreas(int *areanums, int numareas)
 {
@@ -732,15 +646,11 @@ qboolean AAS_ConnectedAreas(int *areanums, int numareas)
 	for (i = 0; i < numareas; i++)
 	{
 		if (!connectedareas[i]) return qfalse;
-	} //end for
+	}
 	return qtrue;
-} //end of the function AAS_ConnectedAreas
+}
 //===========================================================================
 // gets adjacent areas with less presence types recursively
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 int AAS_GetAdjacentAreasWithLessPresenceTypes_r(int *areanums, int numareas, int curareanum)
 {
@@ -760,7 +670,6 @@ int AAS_GetAdjacentAreasWithLessPresenceTypes_r(int *areanums, int numareas, int
 		//the area at the other side of the face
 		if (face->frontarea != curareanum) otherareanum = face->frontarea;
 		else otherareanum = face->backarea;
-		//
 		otherpresencetype = aasworld.areasettings[otherareanum].presencetype;
 		//if the other area has less presence types
 		if ((presencetype & ~otherpresencetype) &&
@@ -770,7 +679,7 @@ int AAS_GetAdjacentAreasWithLessPresenceTypes_r(int *areanums, int numareas, int
 			for (j = 0; j < numareas; j++)
 			{
 				if (otherareanum == areanums[j]) break;
-			} //end for
+			}
 			//if the other area isn't already in the list
 			if (j == numareas)
 			{
@@ -778,18 +687,14 @@ int AAS_GetAdjacentAreasWithLessPresenceTypes_r(int *areanums, int numareas, int
 				{
 					AAS_Error("MAX_PORTALAREAS\n");
 					return numareas;
-				} //end if
+				}
 				numareas = AAS_GetAdjacentAreasWithLessPresenceTypes_r(areanums, numareas, otherareanum);
-			} //end if
-		} //end if
-	} //end for
+			}
+		}
+	}
 	return numareas;
-} //end of the function AAS_GetAdjacentAreasWithLessPresenceTypes_r
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 int AAS_CheckAreaForPossiblePortals(int areanum)
 {
@@ -808,7 +713,6 @@ int AAS_CheckAreaForPossiblePortals(int areanum)
 	if (aasworld.areasettings[areanum].contents & AREACONTENTS_CLUSTERPORTAL) return 0;
 	//it must be a grounded area
 	if (!(aasworld.areasettings[areanum].areaflags & AREA_GROUNDED)) return 0;
-	//
 	Com_Memset(numareafrontfaces, 0, sizeof(numareafrontfaces));
 	Com_Memset(numareabackfaces, 0, sizeof(numareabackfaces));
 	numfrontfaces = numbackfaces = 0;
@@ -816,7 +720,6 @@ int AAS_CheckAreaForPossiblePortals(int areanum)
 	frontplanenum = backplanenum = -1;
 	//add any adjacent areas with less presence types
 	numareas = AAS_GetAdjacentAreasWithLessPresenceTypes_r(areanums, 0, areanum);
-	//
 	for (i = 0; i < numareas; i++)
 	{
 		area = &aasworld.areas[areanums[i]];
@@ -831,7 +734,7 @@ int AAS_CheckAreaForPossiblePortals(int areanum)
 			{
 				if (k == i) continue;
 				if (face->frontarea == areanums[k] || face->backarea == areanums[k]) break;
-			} //end for
+			}
 			//if the face is shared
 			if (k != numareas) continue;
 			//the number of the area at the other side of the face
@@ -841,7 +744,6 @@ int AAS_CheckAreaForPossiblePortals(int areanum)
 			if (aasworld.areasettings[otherareanum].contents & AREACONTENTS_CLUSTERPORTAL) return 0;
 			//number of the plane of the area
 			faceplanenum = face->planenum & ~1;
-			//
 			if (frontplanenum < 0 || faceplanenum == frontplanenum)
 			{
 				frontplanenum = faceplanenum;
@@ -849,10 +751,10 @@ int AAS_CheckAreaForPossiblePortals(int areanum)
 				for (k = 0; k < numfrontareas; k++)
 				{
 					if (frontareanums[k] == otherareanum) break;
-				} //end for
+				}
 				if (k == numfrontareas) frontareanums[numfrontareas++] = otherareanum;
 				numareafrontfaces[i]++;
-			} //end if
+			}
 			else if (backplanenum < 0 || faceplanenum == backplanenum)
 			{
 				backplanenum = faceplanenum;
@@ -860,21 +762,21 @@ int AAS_CheckAreaForPossiblePortals(int areanum)
 				for (k = 0; k < numbackareas; k++)
 				{
 					if (backareanums[k] == otherareanum) break;
-				} //end for
+				}
 				if (k == numbackareas) backareanums[numbackareas++] = otherareanum;
 				numareabackfaces[i]++;
-			} //end else
+			}
 			else
 			{
 				return 0;
-			} //end else
-		} //end for
-	} //end for
+			}
+		}
+	}
 	//every area should have at least one front face and one back face
 	for (i = 0; i < numareas; i++)
 	{
 		if (!numareafrontfaces[i] || !numareabackfaces[i]) return 0;
-	} //end for
+	}
 	//the front areas should all be connected
 	if (!AAS_ConnectedAreas(frontareanums, numfrontareas)) return 0;
 	//the back areas should all be connected
@@ -893,13 +795,13 @@ int AAS_CheckAreaForPossiblePortals(int areanum)
 				{
 					backedgenum = abs(aasworld.edgeindex[backface->firstedge + ben]);
 					if (frontedgenum == backedgenum) break;
-				} //end for
+				}
 				if (ben != backface->numedges) break;
-			} //end for
+			}
 			if (j != numbackfaces) break;
-		} //end for
+		}
 		if (fen != frontface->numedges) break;
-	} //end for
+	}
 	if (i != numfrontfaces) return 0;
 	//set the cluster portal contents
 	for (i = 0; i < numareas; i++)
@@ -908,15 +810,10 @@ int AAS_CheckAreaForPossiblePortals(int areanum)
 		//this area can be used as a route portal
 		aasworld.areasettings[areanums[i]].contents |= AREACONTENTS_ROUTEPORTAL;
 		Log_Write("possible portal: %d\r\n", areanums[i]);
-	} //end for
-	//
+	}
 	return numareas;
-} //end of the function AAS_CheckAreaForPossiblePortals
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void AAS_FindPossiblePortals(void)
 {
@@ -926,14 +823,10 @@ void AAS_FindPossiblePortals(void)
 	for (i = 1; i < aasworld.numareas; i++)
 	{
 		numpossibleportals += AAS_CheckAreaForPossiblePortals(i);
-	} //end for
+	}
 	botimport.Print(PRT_MESSAGE, "\r%6d possible portal areas\n", numpossibleportals);
-} //end of the function AAS_FindPossiblePortals
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void AAS_RemoveAllPortals(void)
 {
@@ -942,15 +835,11 @@ void AAS_RemoveAllPortals(void)
 	for (i = 1; i < aasworld.numareas; i++)
 	{
 		aasworld.areasettings[i].contents &= ~AREACONTENTS_CLUSTERPORTAL;
-	} //end for
-} //end of the function AAS_RemoveAllPortals
+	}
+}
 
 #if 0
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void AAS_FloodCluster_r(int areanum, int clusternum)
 {
@@ -962,13 +851,11 @@ void AAS_FloodCluster_r(int areanum, int clusternum)
 	aasworld.areasettings[areanum].cluster = clusternum;
 	//if the area is a portal
 	//if (aasworld.areasettings[areanum].contents & AREACONTENTS_CLUSTERPORTAL) return;
-	//
 	area = &aasworld.areas[areanum];
 	//use area faces to flood into adjacent areas
 	for (i = 0; i < area->numfaces; i++)
 	{
 		face = &aasworld.faces[abs(aasworld.faceindex[area->firstface + i])];
-		//
 		if (face->frontarea != areanum) otherareanum = face->frontarea;
 		else otherareanum = face->backarea;
 		//if there's no area at the other side
@@ -977,9 +864,8 @@ void AAS_FloodCluster_r(int areanum, int clusternum)
 		if (aasworld.areasettings[otherareanum].contents & AREACONTENTS_CLUSTERPORTAL) continue;
 		//if the area is already marked
 		if (aasworld.areasettings[otherareanum].cluster) continue;
-		//
 		AAS_FloodCluster_r(otherareanum, clusternum);
-	} //end for
+	}
 	//use the reachabilities to flood into other areas
 	for (i = 0; i < aasworld.areasettings[areanum].numreachableareas; i++)
 	{
@@ -989,20 +875,15 @@ void AAS_FloodCluster_r(int areanum, int clusternum)
 		{
 			continue;
 			AAS_Error("reachability %d has zero area\n", aasworld.areasettings[areanum].firstreachablearea + i);
-		} //end if
+		}
 		//if the area is a portal
 		if (aasworld.areasettings[otherareanum].contents & AREACONTENTS_CLUSTERPORTAL) continue;
 		//if the area is already marked
 		if (aasworld.areasettings[otherareanum].cluster) continue;
-		//
 		AAS_FloodCluster_r(otherareanum, clusternum);
-	} //end for
-} //end of the function AAS_FloodCluster_r
+	}
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void AAS_RemoveTeleporterPortals(void)
 {
@@ -1018,15 +899,11 @@ void AAS_RemoveTeleporterPortals(void)
 				aasworld.areasettings[i].contents &= ~AREACONTENTS_CLUSTERPORTAL;
 				aasworld.areasettings[areanum].contents &= ~AREACONTENTS_CLUSTERPORTAL;
 				break;
-			} //end if
-		} //end for
-	} //end for
-} //end of the function AAS_RemoveTeleporterPortals
+			}
+		}
+	}
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void AAS_FloodClusterReachabilities(int clusternum)
 {
@@ -1051,16 +928,12 @@ void AAS_FloodClusterReachabilities(int clusternum)
 				AAS_FloodCluster_r(i, clusternum);
 				i = 0;
 				break;
-			} //end if
-		} //end for
-	} //end for
-} //end of the function AAS_FloodClusterReachabilities
+			}
+		}
+	}
+}
 
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void AAS_RemoveNotClusterClosingPortals(void)
 {
@@ -1069,7 +942,6 @@ void AAS_RemoveNotClusterClosingPortals(void)
 	aas_face_t *face;
 
 	AAS_RemoveTeleporterPortals();
-	//
 	nonclosingportals = 0;
 	for (i = 1; i < aasworld.numareas; i++)
 	{
@@ -1081,19 +953,15 @@ void AAS_RemoveNotClusterClosingPortals(void)
 		{
 			facenum = abs(aasworld.faceindex[area->firstface + j]);
 			face = &aasworld.faces[facenum];
-			//
 			if (face->frontarea != i) otherareanum = face->frontarea;
 			else otherareanum = face->backarea;
-			//
 			if (!otherareanum) continue;
-			//
 			if (aasworld.areasettings[otherareanum].contents & AREACONTENTS_CLUSTERPORTAL)
 			{
 				continue;
-			} //end if
+			}
 			//reset all cluster fields
 			AAS_RemoveClusterAreas();
-			//
 			AAS_FloodCluster_r(otherareanum, 1);
 			AAS_FloodClusterReachabilities(1);
 			//check if all adjacent non-portal areas have a cluster set
@@ -1101,19 +969,15 @@ void AAS_RemoveNotClusterClosingPortals(void)
 			{
 				facenum = abs(aasworld.faceindex[area->firstface + k]);
 				face = &aasworld.faces[facenum];
-				//
 				if (face->frontarea != i) otherareanum = face->frontarea;
 				else otherareanum = face->backarea;
-				//
 				if (!otherareanum) continue;
-				//
 				if (aasworld.areasettings[otherareanum].contents & AREACONTENTS_CLUSTERPORTAL)
 				{
 					continue;
-				} //end if
-				//
+				}
 				if (!aasworld.areasettings[otherareanum].cluster) break;
-			} //end for
+			}
 			//if all adjacent non-portal areas have a cluster set then the portal
 			//didn't seal a cluster
 			if (k >= area->numfaces)
@@ -1123,17 +987,13 @@ void AAS_RemoveNotClusterClosingPortals(void)
 				//recheck all the other portals again
 				i = 0;
 				break;
-			} //end if
-		} //end for
-	} //end for
+			}
+		}
+	}
 	botimport.Print(PRT_MESSAGE, "\r%6d non closing portals removed\n", nonclosingportals);
-} //end of the function AAS_RemoveNotClusterClosingPortals
+}
 
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 
 void AAS_RemoveNotClusterClosingPortals(void)
@@ -1143,12 +1003,10 @@ void AAS_RemoveNotClusterClosingPortals(void)
 	aas_face_t *face;
 
 	AAS_RemoveTeleporterPortals();
-	//
 	nonclosingportals = 0;
 	for (i = 1; i < aasworld.numareas; i++)
 	{
 		if (!(aasworld.areasettings[i].contents & AREACONTENTS_CLUSTERPORTAL)) continue;
-		//
 		numseperatedclusters = 0;
 		//reset all cluster fields
 		AAS_RemoveClusterAreas();
@@ -1159,7 +1017,6 @@ void AAS_RemoveNotClusterClosingPortals(void)
 		{
 			facenum = abs(aasworld.faceindex[area->firstface + j]);
 			face = &aasworld.faces[facenum];
-			//
 			if (face->frontarea != i) otherareanum = face->frontarea;
 			else otherareanum = face->backarea;
 			//if not solid at the other side of the face
@@ -1173,7 +1030,7 @@ void AAS_RemoveNotClusterClosingPortals(void)
 			//flood the cluster
 			AAS_FloodCluster_r(otherareanum, numseperatedclusters);
 			AAS_FloodClusterReachabilities(numseperatedclusters);
-		} //end for
+		}
 		//use the reachabilities to flood into other areas
 		for (j = 0; j < aasworld.areasettings[i].numreachableareas; j++)
 		{
@@ -1190,7 +1047,7 @@ void AAS_RemoveNotClusterClosingPortals(void)
 			//flood the cluster
 			AAS_FloodCluster_r(otherareanum, numseperatedclusters);
 			AAS_FloodClusterReachabilities(numseperatedclusters);
-		} //end for
+		}
 		//a portal must seperate no more and no less than 2 clusters
 		if (numseperatedclusters != 2)
 		{
@@ -1198,16 +1055,12 @@ void AAS_RemoveNotClusterClosingPortals(void)
 			nonclosingportals++;
 			//recheck all the other portals again
 			i = 0;
-		} //end if
-	} //end for
+		}
+	}
 	botimport.Print(PRT_MESSAGE, "\r%6d non closing portals removed\n", nonclosingportals);
-} //end of the function AAS_RemoveNotClusterClosingPortals
+}
 
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 
 void AAS_AddTeleporterPortals(void)
@@ -1233,14 +1086,13 @@ void AAS_AddTeleporterPortals(void)
 			{
 				botimport.Print(PRT_ERROR, "teleporter (%s) without origin\n", target);
 				continue;
-			} //end if
-			//
+			}
 			target = AAS_ValueForBSPEpairKey(ent, "target");
 			if (!target)
 			{
 				botimport.Print(PRT_ERROR, "teleporter (%s) without target\n", target);
 				continue;
-			} //end if
+			}
 			for (dest = entities; dest; dest = dest->next)
 			{
 				classname = AAS_ValueForBSPEpairKey(dest, "classname");
@@ -1250,19 +1102,19 @@ void AAS_AddTeleporterPortals(void)
 					if (targetname && !strcmp(targetname, target))
 					{
 						break;
-					} //end if
-				} //end if
-			} //end for
+					}
+				}
+			}
 			if (!dest)
 			{
 				botimport.Print(PRT_ERROR, "teleporter without destination (%s)\n", target);
 				continue;
-			} //end if
+			}
 			if (!AAS_VectorForBSPEpairKey(dest, "origin", destorigin))
 			{
 				botimport.Print(PRT_ERROR, "teleporter destination (%s) without origin\n", target);
 				continue;
-			} //end if
+			}
 			destorigin[2] += 24; //just for q2e1m2, the dork has put the telepads in the ground
 			VectorCopy(destorigin, end);
 			end[2] -= 100;
@@ -1271,20 +1123,17 @@ void AAS_AddTeleporterPortals(void)
 			{
 				botimport.Print(PRT_ERROR, "teleporter destination (%s) in solid\n", target);
 				continue;
-			} //end if
+			}
 			VectorCopy(trace.endpos, destorigin);
 			area2num = AAS_PointAreaNum(destorigin);
 			//reset all cluster fields
 			for (j = 0; j < aasworld.numareas; j++)
 			{
 				aasworld.areasettings[j].cluster = 0;
-			} //end for
-			//
+			}
 			VectorSet(mins, -8, -8, 8);
 			VectorSet(maxs, 8, 8, 24);
-			//
 			AAS_PresenceTypeBoundingBox(PRESENCE_CROUCH, bbmins, bbmaxs);
-			//
 			VectorAdd(origin, mins, mins);
 			VectorAdd(origin, maxs, maxs);
 			//add bounding box size
@@ -1292,15 +1141,13 @@ void AAS_AddTeleporterPortals(void)
 			VectorSubtract(maxs, bbmins, maxs);
 			//link an invalid (-1) entity
 			areas = AAS_AASLinkEntity(mins, maxs, -1);
-			//
 			for (link = areas; link; link = link->next_area)
 			{
 				if (!AAS_AreaGrounded(link->areanum)) continue;
 				//add the teleporter portal mark
 				aasworld.areasettings[link->areanum].contents |= AREACONTENTS_CLUSTERPORTAL |
 																			AREACONTENTS_TELEPORTAL;
-			} //end for
-			//
+			}
 			for (link = areas; link; link = link->next_area)
 			{
 				if (!AAS_AreaGrounded(link->areanum)) continue;
@@ -1311,20 +1158,16 @@ void AAS_AddTeleporterPortals(void)
 				{
 					facenum = abs(aasworld.faceindex[area->firstface + j]);
 					face = &aasworld.faces[facenum];
-					//
 					if (face->frontarea != link->areanum) otherareanum = face->frontarea;
 					else otherareanum = face->backarea;
-					//
 					if (!otherareanum) continue;
-					//
 					if (aasworld.areasettings[otherareanum].contents & AREACONTENTS_CLUSTERPORTAL)
 					{
 						continue;
-					} //end if
-					//
+					}
 					AAS_FloodCluster_r(otherareanum, 1);
-				} //end for
-			} //end for
+				}
+			}
 			//if the teleport destination IS in the same cluster
 			if (aasworld.areasettings[area2num].cluster)
 			{
@@ -1334,18 +1177,14 @@ void AAS_AddTeleporterPortals(void)
 					//add the teleporter portal mark
 					aasworld.areasettings[link->areanum].contents &= ~(AREACONTENTS_CLUSTERPORTAL |
 																				AREACONTENTS_TELEPORTAL);
-				} //end for
-			} //end if
-		} //end if
-	} //end for
+				}
+			}
+		}
+	}
 	AAS_FreeBSPEntities(entities);
-} //end of the function AAS_AddTeleporterPortals
+}
 
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void AAS_AddTeleporterPortals(void)
 {
@@ -1358,17 +1197,13 @@ void AAS_AddTeleporterPortals(void)
 			if (aasworld.reachability[aasworld.areasettings[i].firstreachablearea + j].traveltype != TRAVEL_TELEPORT) continue;
 			areanum = aasworld.reachability[aasworld.areasettings[i].firstreachablearea + j].areanum;
 			aasworld.areasettings[areanum].contents |= AREACONTENTS_CLUSTERPORTAL;
-		} //end for
-	} //end for
-} //end of the function AAS_AddTeleporterPortals
+		}
+	}
+}
 
 #endif
 
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 int AAS_TestPortals(void)
 {
@@ -1383,21 +1218,17 @@ int AAS_TestPortals(void)
 			aasworld.areasettings[portal->areanum].contents &= ~AREACONTENTS_CLUSTERPORTAL;
 			Log_Write("portal area %d has no front cluster\r\n", portal->areanum);
 			return qfalse;
-		} //end if
+		}
 		if (!portal->backcluster)
 		{
 			aasworld.areasettings[portal->areanum].contents &= ~AREACONTENTS_CLUSTERPORTAL;
 			Log_Write("portal area %d has no back cluster\r\n", portal->areanum);
 			return qfalse;
-		} //end if
-	} //end for
+		}
+	}
 	return qtrue;
 } //end of the function
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void AAS_CountForcedClusterPortals(void)
 {
@@ -1410,15 +1241,11 @@ void AAS_CountForcedClusterPortals(void)
 		{
 			Log_Write("area %d is a forced portal area\r\n", i);
 			num++;
-		} //end if
-	} //end for
+		}
+	}
 	botimport.Print(PRT_MESSAGE, "%6d forced portal areas\n", num);
-} //end of the function AAS_CountForcedClusterPortals
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void AAS_CreateViewPortals(void)
 {
@@ -1429,14 +1256,10 @@ void AAS_CreateViewPortals(void)
 		if (aasworld.areasettings[i].contents & AREACONTENTS_CLUSTERPORTAL)
 		{
 			aasworld.areasettings[i].contents |= AREACONTENTS_VIEWPORTAL;
-		} //end if
-	} //end for
-} //end of the function AAS_CreateViewPortals
+		}
+	}
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void AAS_SetViewPortalsAsClusterPortals(void)
 {
@@ -1447,14 +1270,10 @@ void AAS_SetViewPortalsAsClusterPortals(void)
 		if (aasworld.areasettings[i].contents & AREACONTENTS_VIEWPORTAL)
 		{
 			aasworld.areasettings[i].contents |= AREACONTENTS_CLUSTERPORTAL;
-		} //end if
-	} //end for
-} //end of the function AAS_SetViewPortalsAsClusterPortals
+		}
+	}
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void AAS_InitClustering(void)
 {
@@ -1470,7 +1289,7 @@ void AAS_InitClustering(void)
 		if (!((int)LibVarGetValue("forceclustering")) &&
 			!((int)LibVarGetValue("forcereachability"))) return;
 #endif
-	} //end if
+	}
 	//set all view portals as cluster portals in case we re-calculate the reachabilities and clusters (with -reach)
 	AAS_SetViewPortalsAsClusterPortals();
 	//count the number of forced cluster portals
@@ -1492,7 +1311,6 @@ void AAS_InitClustering(void)
 	//initialize cluster memory
 	if (aasworld.clusters) FreeMemory(aasworld.clusters);
 	aasworld.clusters = (aas_cluster_t *) GetClearedMemory(AAS_MAX_CLUSTERS * sizeof(aas_cluster_t));
-	//
 	removedPortalAreas = 0;
 	botimport.Print(PRT_MESSAGE, "\r%6d removed portal areas", removedPortalAreas);
 	while(1)
@@ -1504,7 +1322,6 @@ void AAS_InitClustering(void)
 		aasworld.numclusters = 1;		//cluster 0 is a dummy
 		//create the portals from the portal areas
 		AAS_CreatePortals();
-		//
 		removedPortalAreas++;
 		//find the clusters
 		if (!AAS_FindClusters())
@@ -1512,9 +1329,8 @@ void AAS_InitClustering(void)
 		//test the portals
 		if (!AAS_TestPortals())
 			continue;
-		//
 		break;
-	} //end while
+	}
 	botimport.Print(PRT_MESSAGE, "\n");
 	//the AAS file should be saved
 	aasworld.savefile = qtrue;
@@ -1522,7 +1338,7 @@ void AAS_InitClustering(void)
 	for (i = 1; i < aasworld.numportals; i++)
 	{
 		Log_Write("portal %d: area %d\r\n", i, aasworld.portals[i].areanum);
-	} //end for
+	}
 	// report cluster info
 	botimport.Print(PRT_MESSAGE, "%6d portals created\n", aasworld.numportals);
 	botimport.Print(PRT_MESSAGE, "%6d clusters created\n", aasworld.numclusters);
@@ -1530,7 +1346,7 @@ void AAS_InitClustering(void)
 	{
 		botimport.Print(PRT_MESSAGE, "cluster %d has %d reachability areas\n", i,
 				aasworld.clusters[i].numreachabilityareas);
-	} //end for
+	}
 	// report AAS file efficiency
 	numreachabilityareas = 0;
 	total = 0;
@@ -1540,7 +1356,6 @@ void AAS_InitClustering(void)
 		total += n * n;
 	}
 	total += numreachabilityareas * aasworld.numportals;
-	//
 	botimport.Print(PRT_MESSAGE, "%6i total reachability areas\n", numreachabilityareas);
 	botimport.Print(PRT_MESSAGE, "%6i AAS memory/CPU usage (the lower the better)\n", total * 3);
-} //end of the function AAS_InitClustering
+}

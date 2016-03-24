@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 // cg_players.c -- handle the media and animation for player entities
 #include "cg_local.h"
 
@@ -260,15 +259,12 @@ CG_ParseAnimationFile(const char *filename, clientInfo_t *ci)
 	animations[FLAG_STAND2RUN].framelerp = 1000 / 15;
 	animations[FLAG_STAND2RUN].initiallerp = 1000 / 15;
 	animations[FLAG_STAND2RUN].reversed = qtrue;
-	//
 	// new anims changes
-	//
 //	animations[TORSO_GETFLAG].flipflop = qtrue;
 //	animations[TORSO_GUARDBASE].flipflop = qtrue;
 //	animations[TORSO_PATROL].flipflop = qtrue;
 //	animations[TORSO_AFFIRMATIVE].flipflop = qtrue;
 //	animations[TORSO_NEGATIVE].flipflop = qtrue;
-	//
 	return qtrue;
 }
 
@@ -1307,7 +1303,6 @@ CG_PlayerFlag(centity_t *cent, qhandle_t hSkin, refEntity_t *torso)
 		d = vecdot(pole.axis[2], dir);
 		// if there is enough movement orthogonal to the flag pole
 		if(fabs(d) < 0.9){
-			//
 			d = vecdot(pole.axis[0], dir);
 			if(d > 1.0f)
 				d = 1.0f;
@@ -1445,9 +1440,7 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 	rightmove = cent->currstate.rightmove / 127.0f;
 	upmove = cent->currstate.upmove / 127.0f;
 
-	//
 	// rear thrusters
-	//
 
 	for(i = 0; i < ARRAY_LEN(rearthrusttags); i++){
 		if(forwardmove <= 0)
@@ -1455,9 +1448,7 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 		addthrustflame(cent, ship, forwardmove, rearthrusttags[i], qfalse);
 	}
 
-	//
 	// forward thrusters
-	//
 
 	forwardmove = -forwardmove;
 
@@ -2036,9 +2027,7 @@ doplayer(centity_t *cent)
 		CG_PlayerTokens(cent, renderfx);
 
 #endif
-	//
 	// add the torso
-	//
 	torso.hModel = ci->torsomodel;
 	torso.customSkin = ci->torsoskin;
 
@@ -2142,9 +2131,7 @@ doplayer(centity_t *cent)
 	CG_DustTrail(cent);
 #endif
 
-	//
 	// add the gun / barrel / flash
-	//
 	addplayerweap(&torso, nil, cent, ci->team);
 
 	// add powerups floating behind the player

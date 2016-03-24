@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 
 #include "g_local.h"
 
@@ -258,7 +257,6 @@ Team_ForceGesture(int team)
 			continue;
 		if(ent->client->sess.team != team)
 			continue;
-		//
 		ent->flags |= FL_FORCE_GESTURE;
 	}
 }

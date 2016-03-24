@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 // g_local.h -- local definitions for game module
 
 #include "../qcommon/q_shared.h"
@@ -234,7 +233,6 @@ typedef struct
 	qboolean		teamleader;		// true when this client is a team leader
 } clientSession_t;
 
-//
 #define MAX_NETNAME	36
 #define MAX_VOTE_COUNT	3
 
@@ -294,7 +292,6 @@ struct gclient_s
 	int		accuracyshots;		// total number of shots
 	int		accuracyhits;		// total number of hits
 
-	//
 	int		lastkilledclient;	// last client that this client killed
 	int		lasthurtclient;	// last client that damaged this client
 	int		lasthurt_mod;		// type of damage the client did
@@ -328,9 +325,7 @@ struct gclient_s
 	char		*areabits;
 };
 
-//
 // this structure is cleared as each map is entered
-//
 #define MAX_SPAWN_VARS		64
 #define MAX_SPAWN_VARS_CHARS	4096
 
@@ -418,9 +413,7 @@ typedef struct
 #endif
 } level_locals_t;
 
-//
 // g_spawn.c
-//
 qboolean	spawnstr(const char *key, const char *defaultString, char **out);
 // spawn string returns a temporary reference, you must CopyString() if you want to keep it
 qboolean	spawnfloat(const char *key, const char *defaultString, float *out);
@@ -429,18 +422,14 @@ qboolean	spawnvec(const char *key, const char *defaultString, float *out);
 void		spawnall(void);
 char *		newstr(const char *string);
 
-//
 // g_cmds.c
-//
 void	Cmd_Score_f(gentity_t *ent);
 void	stopfollowing(gentity_t *ent);
 void	broadcastteamchange(gclient_t *client, int oldTeam);
 void	setteam(gentity_t *ent, char *s);
 void	Cmd_FollowCycle_f(gentity_t *ent, int dir);
 
-//
 // g_items.c
-//
 void		checkteamitems(void);
 void		runitem(gentity_t *ent);
 void		itemrespawn(gentity_t *ent);
@@ -461,9 +450,7 @@ void		clearitems(void);
 void		registeritem(gitem_t *item);
 void		mkitemsconfigstr(void);
 
-//
 // g_utils.c
-//
 int		getmodelindex(char *name);
 int		getsoundindex(char *name);
 void		teamcmd(team_t team, char *cmd);
@@ -492,9 +479,7 @@ void		setorigin(gentity_t *ent, vec3_t origin);
 void		addshaderremap(const char *oldShader, const char *newShader, float timeOffset);
 const char *	mkshaderstateconfigstr(void);
 
-//
 // g_combat.c
-//
 qboolean	candamage(gentity_t *targ, vec3_t origin);
 void		entdamage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod);
 qboolean	radiusdamage(vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int mod);
@@ -515,9 +500,7 @@ void		TossClientCubes(gentity_t *self);
 #define DAMAGE_NO_TEAM_PROTECTION	0x00000010	// armor, shields, invulnerability, and godmode have no effect
 #endif
 
-//
 // g_missile.c
-//
 void		runmissile(gentity_t *ent);
 
 gentity_t *	fire_plasma(gentity_t *self, vec3_t start, vec3_t aimdir);
@@ -531,29 +514,21 @@ gentity_t *	fire_nail(gentity_t *self, vec3_t start, vec3_t forward, vec3_t righ
 gentity_t *	fire_prox(gentity_t *self, vec3_t start, vec3_t aimdir);
 #endif
 
-//
 // g_mover.c
-//
 void	runmover(gentity_t *ent);
 void	doortrigger_touch(gentity_t *ent, gentity_t *other, trace_t *trace);
 
-//
 // g_trigger.c
-//
 void trigger_teleporter_touch(gentity_t *self, gentity_t *other, trace_t *trace);
 
-//
 // g_misc.c
-//
 void	teleportentity(gentity_t *player, vec3_t origin, vec3_t angles);
 #ifdef MISSIONPACK
 void	DropPortalSource(gentity_t *ent);
 void	DropPortalDestination(gentity_t *ent);
 #endif
 
-//
 // g_weapon.c
-//
 qboolean	logaccuracyhit(gentity_t *target, gentity_t *attacker);
 void		calcmuzzlepoint(gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint);
 void		snapvectortowards(vec3_t v, vec3_t to);
@@ -562,9 +537,7 @@ void		weapon_hook_free(gentity_t *ent);
 void		weapon_hook_think(gentity_t *ent);
 void		homing_scan(gentity_t *ent);
 
-//
 // g_client.c
-//
 int		getteamcount(int ignoreClientNum, team_t team);
 int		getteamleader(int team);
 team_t		pickteam(int ignoreClientNum);
@@ -580,29 +553,21 @@ void		addscore(gentity_t *ent, vec3_t origin, int score);
 void		calcranks(void);
 qboolean	possibletelefrag(gentity_t *spot);
 
-//
 // g_svcmds.c
-//
 qboolean	consolecmd(void);
 void		processipbans(void);
 qboolean	filterpacket(char *from);
 
-//
 // g_weapon.c
-//
 void	fireweapon(gentity_t *ent);
 #ifdef MISSIONPACK
 void	G_StartKamikaze(gentity_t *ent);
 #endif
 
-//
 // g_cmds.c
-//
 void deathmatchscoreboardmsg(gentity_t *ent);
 
-//
 // g_main.c
-//
 void		clientintermission(gentity_t *ent);
 void		findintermissionpoint(void);
 void		setleader(int team, int client);
@@ -614,55 +579,41 @@ void		sendscoreboardmsgall(void);
 void QDECL	gprintf(const char *fmt, ...) __attribute__ ((format(printf, 1, 2)));
 void QDECL	errorf(const char *fmt, ...) __attribute__ ((noreturn, format(printf, 1, 2)));
 
-//
 // g_client.c
-//
 char *	clientconnect(int clientNum, qboolean firstTime, qboolean isBot);
 void	clientuserinfochanged(int clientNum);
 void	clientdisconnect(int clientNum);
 void	clientbegin(int clientNum);
 void	clientcmd(int clientNum);
 
-//
 // g_active.c
-//
 void	clientthink(int clientNum);
 void	clientendframe(gentity_t *ent);
 void	runclient(gentity_t *ent);
 
-//
 // g_team.c
-//
 qboolean	onsameteam(gentity_t *ent1, gentity_t *ent2);
 void		ckhdroppedteamitem(gentity_t *dropped);
 qboolean	CheckObeliskAttack(gentity_t *obelisk, gentity_t *attacker);
 
-//
 // g_mem.c
-//
 void *	alloc(int size);
 void	initmem(void);
 void	Svcmd_GameMem_f(void);
 
-//
 // g_session.c
-//
 void	sessread(gclient_t *client);
 void	sessinit(gclient_t *client, char *userinfo);
 
 void	worldsessinit(void);
 void	sesswrite(void);
 
-//
 // g_arenas.c
-//
 void	updatetourney(void);
 void	spawnonvictorypads(void);
 void	Svcmd_AbortPodium_f(void);
 
-//
 // g_bot.c
-//
 void		initbots(qboolean restart);
 char *		botinfo(int num);
 char *		botinfobyname(const char *name);

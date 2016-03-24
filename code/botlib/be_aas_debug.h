@@ -31,7 +31,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //clear the shown debug lines
 void AAS_ClearShownDebugLines(void);
-//
 void AAS_ClearShownPolygons(void);
 //show a debug line
 void AAS_DebugLine(vec3_t start, vec3_t end, int color);
@@ -47,7 +46,6 @@ void AAS_ShowBoundingBox(vec3_t origin, vec3_t mins, vec3_t maxs);
 void AAS_ShowFace(int facenum);
 //show an area
 void AAS_ShowArea(int areanum, int groundfacesonly);
-//
 void AAS_ShowAreaPolygons(int areanum, int color, int groundfacesonly);
 //draw a cros
 void AAS_DrawCross(vec3_t origin, float size, int color);

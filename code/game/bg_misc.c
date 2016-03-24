@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 // bg_misc.c -- both games misc functions, all completely stateless
 
 #include "../qcommon/q_shared.h"
@@ -58,9 +57,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},	// leave index 0 alone
 
-	//
 	// ARMOR
-	//
 
 /*QUAKED item_armor_shard (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
@@ -111,9 +108,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-	//
 	// health
-	//
 /*QUAKED item_health_small (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
@@ -182,9 +177,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-	//
 	// WEAPONS
-	//
 
 /*QUAKED weapon_gauntlet (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
@@ -361,9 +354,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-	//
 	// AMMO ITEMS
-	//
 
 /*QUAKED ammo_shells (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
@@ -493,9 +484,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-	//
 	// HOLDABLE ITEMS
-	//
 /*QUAKED holdable_teleporter (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
@@ -530,9 +519,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ "sound/items/use_medkit.wav"
 	},
 
-	//
 	// POWERUP ITEMS
-	//
 /*QUAKED item_quad (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
@@ -766,9 +753,7 @@ Only in CTF games
 /* sounds */ ""
 	},
 
-	//
 	// PERSISTANT POWERUP ITEMS
-	//
 /*QUAKED item_scout (.3 .3 1) (-16 -16 -16) (16 16 16) suspended redteam blueteam
 */
 	{

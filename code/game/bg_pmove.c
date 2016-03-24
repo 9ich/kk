@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 // bg_pmove.c -- both games player movement code
 // takes a playerstate and a usercmd as input and returns a modifed playerstate
 
@@ -437,9 +436,7 @@ PM_WaterMove(void)
 	PM_Friction();
 
 	scale = PM_CmdScale(&pm->cmd);
-	//
 	// user intentions
-	//
 	if(!scale){
 		wishvel[0] = 0;
 		wishvel[1] = 0;
@@ -512,9 +509,7 @@ PM_FlyMove(void)
 	PM_Friction();
 
 	scale = PM_CmdScale(&pm->cmd);
-	//
 	// user intentions
-	//
 	if(!scale){
 		wishvel[0] = 0;
 		wishvel[1] = 0;
@@ -652,7 +647,6 @@ PM_WalkMove(void)
 	// project the forward and right directions onto the ground plane
 	pmclipvel(pml.forward, pml.groundtrace.plane.normal, pml.forward, OVERCLIP);
 	pmclipvel(pml.right, pml.groundtrace.plane.normal, pml.right, OVERCLIP);
-	//
 	vecnorm(pml.forward);
 	vecnorm(pml.right);
 
@@ -889,9 +883,7 @@ PM_SetWaterLevel(void)
 	int sample1;
 	int sample2;
 
-	//
 	// get waterlevel, accounting for ducking
-	//
 	pm->waterlevel = 0;
 	pm->watertype = 0;
 
@@ -939,25 +931,18 @@ static void
 PM_WaterEvents(void)	// FIXME?
 {	//
 	// if just entered a water volume, play a sound
-	//
 	if(!pml.prevwaterlevel && pm->waterlevel)
 		pmaddevent(EV_WATER_TOUCH);
 
-	//
 	// if just completely exited a water volume, play a sound
-	//
 	if(pml.prevwaterlevel && !pm->waterlevel)
 		pmaddevent(EV_WATER_LEAVE);
 
-	//
 	// check for head just going under water
-	//
 	if(pml.prevwaterlevel != 3 && pm->waterlevel == 3)
 		pmaddevent(EV_WATER_UNDER);
 
-	//
 	// check for head just coming out of water
-	//
 	if(pml.prevwaterlevel == 3 && pm->waterlevel != 3)
 		pmaddevent(EV_WATER_CLEAR);
 }

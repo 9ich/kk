@@ -63,10 +63,6 @@ typedef struct memoryblock_s
 memoryblock_t *memory;
 
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void LinkMemoryBlock(memoryblock_t *block)
 {
@@ -74,24 +70,16 @@ void LinkMemoryBlock(memoryblock_t *block)
 	block->next = memory;
 	if (memory) memory->prev = block;
 	memory = block;
-} //end of the function LinkMemoryBlock
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void UnlinkMemoryBlock(memoryblock_t *block)
 {
 	if (block->prev) block->prev->next = block->next;
 	else memory = block->next;
 	if (block->next) block->next->prev = block->prev;
-} //end of the function UnlinkMemoryBlock
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 #ifdef MEMDEBUG
 void *GetMemoryDebug(unsigned long size, char *label, char *file, int line)
@@ -117,12 +105,8 @@ void *GetMemory(unsigned long size)
 	totalmemorysize += block->size + sizeof(memoryblock_t);
 	numblocks++;
 	return block->ptr;
-} //end of the function GetMemoryDebug
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 #ifdef MEMDEBUG
 void *GetClearedMemoryDebug(unsigned long size, char *label, char *file, int line)
@@ -138,12 +122,8 @@ void *GetClearedMemory(unsigned long size)
 #endif //MEMDEBUG
 	Com_Memset(ptr, 0, size);
 	return ptr;
-} //end of the function GetClearedMemory
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 #ifdef MEMDEBUG
 void *GetHunkMemoryDebug(unsigned long size, char *label, char *file, int line)
@@ -169,12 +149,8 @@ void *GetHunkMemory(unsigned long size)
 	totalmemorysize += block->size + sizeof(memoryblock_t);
 	numblocks++;
 	return block->ptr;
-} //end of the function GetHunkMemoryDebug
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 #ifdef MEMDEBUG
 void *GetClearedHunkMemoryDebug(unsigned long size, char *label, char *file, int line)
@@ -190,12 +166,8 @@ void *GetClearedHunkMemory(unsigned long size)
 #endif //MEMDEBUG
 	Com_Memset(ptr, 0, size);
 	return ptr;
-} //end of the function GetClearedHunkMemory
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 memoryblock_t *BlockFromPointer(void *ptr, char *str)
 {
@@ -209,25 +181,21 @@ memoryblock_t *BlockFromPointer(void *ptr, char *str)
 		botimport.Print(PRT_FATAL, "%s: NULL pointer\n", str);
 #endif // MEMDEBUG
 		return NULL;
-	} //end if
+	}
 	block = (memoryblock_t *) ((char *) ptr - sizeof(memoryblock_t));
 	if (block->id != MEM_ID && block->id != HUNK_ID)
 	{
 		botimport.Print(PRT_FATAL, "%s: invalid memory block\n", str);
 		return NULL;
-	} //end if
+	}
 	if (block->ptr != ptr)
 	{
 		botimport.Print(PRT_FATAL, "%s: memory block pointer invalid\n", str);
 		return NULL;
-	} //end if
+	}
 	return block;
-} //end of the function BlockFromPointer
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void FreeMemory(void *ptr)
 {
@@ -239,27 +207,18 @@ void FreeMemory(void *ptr)
 	allocatedmemory -= block->size;
 	totalmemorysize -= block->size + sizeof(memoryblock_t);
 	numblocks--;
-	//
 	if (block->id == MEM_ID)
 	{
 		botimport.FreeMemory(block);
-	} //end if
-} //end of the function FreeMemory
+	}
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 int AvailableMemory(void)
 {
 	return botimport.AvailableMemory();
-} //end of the function AvailableMemory
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 int MemoryByteSize(void *ptr)
 {
@@ -268,24 +227,16 @@ int MemoryByteSize(void *ptr)
 	block = BlockFromPointer(ptr, "MemoryByteSize");
 	if (!block) return 0;
 	return block->size;
-} //end of the function MemoryByteSize
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void PrintUsedMemorySize(void)
 {
 	botimport.Print(PRT_MESSAGE, "total allocated memory: %d KB\n", allocatedmemory >> 10);
 	botimport.Print(PRT_MESSAGE, "total botlib memory: %d KB\n", totalmemorysize >> 10);
 	botimport.Print(PRT_MESSAGE, "total memory blocks: %d\n", numblocks);
-} //end of the function PrintUsedMemorySize
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void PrintMemoryLabels(void)
 {
@@ -302,20 +253,16 @@ void PrintMemoryLabels(void)
 		if (block->id == HUNK_ID)
 		{
 			Log_Write("%6d, hunk %p, %8d: %24s line %6d: %s\r\n", i, block->ptr, block->size, block->file, block->line, block->label);
-		} //end if
+		}
 		else
 		{
 			Log_Write("%6d,      %p, %8d: %24s line %6d: %s\r\n", i, block->ptr, block->size, block->file, block->line, block->label);
-		} //end else
+		}
 #endif //MEMDEBUG
 		i++;
-	} //end for
-} //end of the function PrintMemoryLabels
+	}
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void DumpMemory(void)
 {
@@ -324,18 +271,14 @@ void DumpMemory(void)
 	for (block = memory; block; block = memory)
 	{
 		FreeMemory(block->ptr);
-	} //end for
+	}
 	totalmemorysize = 0;
 	allocatedmemory = 0;
-} //end of the function DumpMemory
+}
 
 #else
 
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 #ifdef MEMDEBUG
 void *GetMemoryDebug(unsigned long size, char *label, char *file, int line)
@@ -351,12 +294,8 @@ void *GetMemory(unsigned long size)
 	memid = (unsigned long int *) ptr;
 	*memid = MEM_ID;
 	return (unsigned long int *) ((char *) ptr + sizeof(unsigned long int));
-} //end of the function GetMemory
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 #ifdef MEMDEBUG
 void *GetClearedMemoryDebug(unsigned long size, char *label, char *file, int line)
@@ -372,12 +311,8 @@ void *GetClearedMemory(unsigned long size)
 #endif //MEMDEBUG
 	Com_Memset(ptr, 0, size);
 	return ptr;
-} //end of the function GetClearedMemory
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 #ifdef MEMDEBUG
 void *GetHunkMemoryDebug(unsigned long size, char *label, char *file, int line)
@@ -393,12 +328,8 @@ void *GetHunkMemory(unsigned long size)
 	memid = (unsigned long int *) ptr;
 	*memid = HUNK_ID;
 	return (unsigned long int *) ((char *) ptr + sizeof(unsigned long int));
-} //end of the function GetHunkMemory
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 #ifdef MEMDEBUG
 void *GetClearedHunkMemoryDebug(unsigned long size, char *label, char *file, int line)
@@ -414,12 +345,8 @@ void *GetClearedHunkMemory(unsigned long size)
 #endif //MEMDEBUG
 	Com_Memset(ptr, 0, size);
 	return ptr;
-} //end of the function GetClearedHunkMemory
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void FreeMemory(void *ptr)
 {
@@ -430,35 +357,23 @@ void FreeMemory(void *ptr)
 	if (*memid == MEM_ID)
 	{
 		botimport.FreeMemory(memid);
-	} //end if
-} //end of the function FreeMemory
+	}
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 int AvailableMemory(void)
 {
 	return botimport.AvailableMemory();
-} //end of the function AvailableMemory
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void PrintUsedMemorySize(void)
 {
-} //end of the function PrintUsedMemorySize
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void PrintMemoryLabels(void)
 {
-} //end of the function PrintMemoryLabels
+}
 
 #endif

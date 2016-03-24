@@ -44,80 +44,48 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 bot_input_t *botinputs;
 
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void EA_Say(int client, char *str)
 {
 	botimport.BotClientCommand(client, va("say %s", str) );
-} //end of the function EA_Say
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void EA_SayTeam(int client, char *str)
 {
 	botimport.BotClientCommand(client, va("say_team %s", str));
-} //end of the function EA_SayTeam
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void EA_Tell(int client, int clientto, char *str)
 {
 	botimport.BotClientCommand(client, va("tell %d, %s", clientto, str));
-} //end of the function EA_SayTeam
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void EA_UseItem(int client, char *it)
 {
 	botimport.BotClientCommand(client, va("use %s", it));
-} //end of the function EA_UseItem
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void EA_DropItem(int client, char *it)
 {
 	botimport.BotClientCommand(client, va("drop %s", it));
-} //end of the function EA_DropItem
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void EA_UseInv(int client, char *inv)
 {
 	botimport.BotClientCommand(client, va("invuse %s", inv));
-} //end of the function EA_UseInv
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_DropInv(int client, char *inv)
 {
 	botimport.BotClientCommand(client, va("invdrop %s", inv));
-} //end of the function EA_DropInv
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_Gesture(int client)
 {
@@ -126,22 +94,14 @@ void EA_Gesture(int client)
 	bi = &botinputs[client];
 
 	bi->actionflags |= ACTION_GESTURE;
-} //end of the function EA_Gesture
+}
 //===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
 //===========================================================================
 void EA_Command(int client, char *command)
 {
 	botimport.BotClientCommand(client, command);
-} //end of the function EA_Command
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_SelectWeapon(int client, int weapon)
 {
@@ -150,12 +110,8 @@ void EA_SelectWeapon(int client, int weapon)
 	bi = &botinputs[client];
 
 	bi->weapon = weapon;
-} //end of the function EA_SelectWeapon
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_Attack(int client)
 {
@@ -164,12 +120,8 @@ void EA_Attack(int client)
 	bi = &botinputs[client];
 
 	bi->actionflags |= ACTION_ATTACK;
-} //end of the function EA_Attack
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_Talk(int client)
 {
@@ -178,12 +130,8 @@ void EA_Talk(int client)
 	bi = &botinputs[client];
 
 	bi->actionflags |= ACTION_TALK;
-} //end of the function EA_Talk
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_Use(int client)
 {
@@ -192,12 +140,8 @@ void EA_Use(int client)
 	bi = &botinputs[client];
 
 	bi->actionflags |= ACTION_USE;
-} //end of the function EA_Use
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_Respawn(int client)
 {
@@ -206,12 +150,8 @@ void EA_Respawn(int client)
 	bi = &botinputs[client];
 
 	bi->actionflags |= ACTION_RESPAWN;
-} //end of the function EA_Respawn
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_Jump(int client)
 {
@@ -222,17 +162,13 @@ void EA_Jump(int client)
 	if (bi->actionflags & ACTION_JUMPEDLASTFRAME)
 	{
 		bi->actionflags &= ~ACTION_JUMP;
-	} //end if
+	}
 	else
 	{
 		bi->actionflags |= ACTION_JUMP;
-	} //end if
-} //end of the function EA_Jump
+	}
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_DelayedJump(int client)
 {
@@ -243,17 +179,13 @@ void EA_DelayedJump(int client)
 	if (bi->actionflags & ACTION_JUMPEDLASTFRAME)
 	{
 		bi->actionflags &= ~ACTION_DELAYEDJUMP;
-	} //end if
+	}
 	else
 	{
 		bi->actionflags |= ACTION_DELAYEDJUMP;
-	} //end if
-} //end of the function EA_DelayedJump
+	}
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_Crouch(int client)
 {
@@ -262,12 +194,8 @@ void EA_Crouch(int client)
 	bi = &botinputs[client];
 
 	bi->actionflags |= ACTION_CROUCH;
-} //end of the function EA_Crouch
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_Walk(int client)
 {
@@ -276,12 +204,8 @@ void EA_Walk(int client)
 	bi = &botinputs[client];
 
 	bi->actionflags |= ACTION_WALK;
-} //end of the function EA_Walk
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_Action(int client, int action)
 {
@@ -292,10 +216,6 @@ void EA_Action(int client, int action)
 	bi->actionflags |= action;
 } //end of function EA_Action
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_MoveUp(int client)
 {
@@ -304,12 +224,8 @@ void EA_MoveUp(int client)
 	bi = &botinputs[client];
 
 	bi->actionflags |= ACTION_MOVEUP;
-} //end of the function EA_MoveUp
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_MoveDown(int client)
 {
@@ -318,12 +234,8 @@ void EA_MoveDown(int client)
 	bi = &botinputs[client];
 
 	bi->actionflags |= ACTION_MOVEDOWN;
-} //end of the function EA_MoveDown
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_MoveForward(int client)
 {
@@ -332,12 +244,8 @@ void EA_MoveForward(int client)
 	bi = &botinputs[client];
 
 	bi->actionflags |= ACTION_MOVEFORWARD;
-} //end of the function EA_MoveForward
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_MoveBack(int client)
 {
@@ -346,12 +254,8 @@ void EA_MoveBack(int client)
 	bi = &botinputs[client];
 
 	bi->actionflags |= ACTION_MOVEBACK;
-} //end of the function EA_MoveBack
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_MoveLeft(int client)
 {
@@ -360,12 +264,8 @@ void EA_MoveLeft(int client)
 	bi = &botinputs[client];
 
 	bi->actionflags |= ACTION_MOVELEFT;
-} //end of the function EA_MoveLeft
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_MoveRight(int client)
 {
@@ -374,12 +274,8 @@ void EA_MoveRight(int client)
 	bi = &botinputs[client];
 
 	bi->actionflags |= ACTION_MOVERIGHT;
-} //end of the function EA_MoveRight
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_Move(int client, vec3_t dir, float speed)
 {
@@ -392,12 +288,8 @@ void EA_Move(int client, vec3_t dir, float speed)
 	if (speed > MAX_USERMOVE) speed = MAX_USERMOVE;
 	else if (speed < -MAX_USERMOVE) speed = -MAX_USERMOVE;
 	bi->speed = speed;
-} //end of the function EA_Move
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_View(int client, vec3_t viewangles)
 {
@@ -406,21 +298,13 @@ void EA_View(int client, vec3_t viewangles)
 	bi = &botinputs[client];
 
 	VectorCopy(viewangles, bi->viewangles);
-} //end of the function EA_View
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_EndRegular(int client, float thinktime)
 {
-} //end of the function EA_EndRegular
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_GetInput(int client, float thinktime, bot_input_t *input)
 {
@@ -429,12 +313,8 @@ void EA_GetInput(int client, float thinktime, bot_input_t *input)
 	bi = &botinputs[client];
 	bi->thinktime = thinktime;
 	Com_Memcpy(input, bi, sizeof(bot_input_t));
-} //end of the function EA_GetInput
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_ResetInput(int client)
 {
@@ -449,12 +329,8 @@ void EA_ResetInput(int client)
 	jumped = bi->actionflags & ACTION_JUMP;
 	bi->actionflags = 0;
 	if (jumped) bi->actionflags |= ACTION_JUMPEDLASTFRAME;
-} //end of the function EA_ResetInput
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 int EA_Setup(void)
 {
@@ -462,15 +338,11 @@ int EA_Setup(void)
 	botinputs = (bot_input_t *) GetClearedHunkMemory(
 									botlibglobals.maxclients * sizeof(bot_input_t));
 	return BLERR_NOERROR;
-} //end of the function EA_Setup
+}
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
 //===========================================================================
 void EA_Shutdown(void)
 {
 	FreeMemory(botinputs);
 	botinputs = NULL;
-} //end of the function EA_Shutdown
+}

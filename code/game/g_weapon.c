@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 // g_weapon.c
 // perform the server side effects of a weapon firing
 
@@ -521,7 +520,6 @@ weapon_railgun_fire(gentity_t *ent)
 					vecmad(tent->s.origin2, 4, right, tent->s.origin2);
 					vecmad(tent->s.origin2, -1, up, tent->s.origin2);
 					tent->s.eventParm = 255;	// don't make the explosion at the end
-					//
 					veccpy(impactpoint, muzzle);
 					// the player can hit him/herself with the bounced rail
 					passent = ENTITYNUM_NONE;
@@ -666,7 +664,6 @@ Weapon_LightningFire(gentity_t *ent)
 		if(i){
 			// add bounced off lightning bolt temp entity
 			// the first lightning bolt is a cgame only visual
-			//
 			tent = enttemp(muzzle, EV_LIGHTNINGBOLT);
 			veccpy(tr.endpos, end);
 			SnapVector(end);
@@ -1042,7 +1039,6 @@ KamikazeShockWave(vec3_t origin, gentity_t *attacker, float damage, float push, 
 		vecsub(ent->r.currentOrigin, origin, dir);
 		dir[2] += 24;
 		entdamage(ent, nil, attacker, dir, origin, damage, DAMAGE_RADIUS|DAMAGE_NO_TEAM_PROTECTION, MOD_KAMIKAZE);
-		//
 		dir[2] = 0;
 		vecnorm(dir);
 		if(ent->client){
@@ -1075,7 +1071,6 @@ KamikazeDamage(gentity_t *self)
 		t = self->count - KAMI_SHOCKWAVE_STARTTIME;
 		KamikazeShockWave(self->s.pos.trBase, self->activator, 25, 400, (int)(float)t * KAMI_SHOCKWAVE_MAXRADIUS / (KAMI_SHOCKWAVE_ENDTIME - KAMI_SHOCKWAVE_STARTTIME));
 	}
-	//
 	if(self->count >= KAMI_EXPLODE_STARTTIME){
 		// do our damage
 		t = self->count - KAMI_EXPLODE_STARTTIME;
@@ -1151,9 +1146,7 @@ G_StartKamikaze(gentity_t *ent)
 	trap_LinkEntity(explosion);
 
 	if(ent->client){
-		//
 		explosion->activator = ent;
-		//
 		ent->s.eFlags &= ~EF_KAMIKAZE;
 		// nuke the guy that used it
 		entdamage(ent, ent, ent, nil, nil, 100000, DAMAGE_NO_PROTECTION, MOD_KAMIKAZE);

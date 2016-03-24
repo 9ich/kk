@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 #ifndef __UI_LOCAL_H__
 #define __UI_LOCAL_H__
 
@@ -130,9 +129,7 @@ extern vmCvar_t ui_smallFont;
 extern vmCvar_t ui_bigFont;
 extern vmCvar_t ui_serverStatusTimeOut;
 
-//
 // ui_qmenu.c
-//
 
 #define RCOLUMN_OFFSET		(BIGCHAR_WIDTH)
 #define LCOLUMN_OFFSET		(-BIGCHAR_WIDTH)
@@ -336,9 +333,7 @@ extern char *ui_medalNames[];
 extern char *ui_medalPicNames[];
 extern char *ui_medalSounds[];
 
-//
 // ui_mfield.c
-//
 extern void		MField_Clear(mfield_t *edit);
 extern void		MField_KeyDownEvent(mfield_t *edit, int key);
 extern void		MField_CharEvent(mfield_t *edit, int ch);
@@ -347,9 +342,7 @@ extern void		MenuField_Init(menufield_s* m);
 extern void		MenuField_Draw(menufield_s *f);
 extern sfxHandle_t	MenuField_Key(menufield_s* m, int* key);
 
-//
 // ui_main.c
-//
 void	UI_Report(void);
 void	UI_Load(void);
 void	UI_LoadMenus(const char *menuFile, qboolean reset);
@@ -359,143 +352,99 @@ void	UI_ShowPostGame(qboolean newHigh);
 void	UI_ClearScores(void);
 void	UI_LoadArenas(void);
 
-//
 // ui_menu.c
-//
 extern void	MainMenu_Cache(void);
 extern void	UI_MainMenu(void);
 extern void	UI_RegisterCvars(void);
 extern void	UI_UpdateCvars(void);
 
-//
 // ui_credits.c
-//
 extern void UI_CreditMenu(void);
 
-//
 // ui_ingame.c
-//
 extern void	InGame_Cache(void);
 extern void	UI_InGameMenu(void);
 
-//
 // ui_confirm.c
-//
 extern void	ConfirmMenu_Cache(void);
 extern void	UI_ConfirmMenu(const char *question, void (*draw)(void), void (*action)(qboolean result));
 
-//
 // ui_setup.c
-//
 extern void	UI_SetupMenu_Cache(void);
 extern void	UI_SetupMenu(void);
 
-//
 // ui_team.c
-//
 extern void	UI_TeamMainMenu(void);
 extern void	TeamMain_Cache(void);
 
-//
 // ui_connect.c
-//
 extern void UI_DrawConnectScreen(qboolean overlay);
 
-//
 // ui_controls2.c
-//
 extern void	UI_ControlsMenu(void);
 extern void	Controls_Cache(void);
 
-//
 // ui_demo2.c
-//
 extern void	UI_DemosMenu(void);
 extern void	Demos_Cache(void);
 
-//
 // ui_cinematics.c
-//
 extern void	UI_CinematicsMenu(void);
 extern void	UI_CinematicsMenu_f(void);
 extern void	UI_CinematicsMenu_Cache(void);
 
-//
 // ui_mods.c
-//
 extern void	UI_ModsMenu(void);
 extern void	UI_ModsMenu_Cache(void);
 
-//
 // ui_cdkey.c
-//
 extern void	UI_CDKeyMenu(void);
 extern void	UI_CDKeyMenu_Cache(void);
 extern void	UI_CDKeyMenu_f(void);
 
-//
 // ui_playermodel.c
-//
 extern void	UI_PlayerModelMenu(void);
 extern void	PlayerModel_Cache(void);
 
-//
 // ui_playersettings.c
-//
 extern void	UI_PlayerSettingsMenu(void);
 extern void	PlayerSettings_Cache(void);
 
-//
 // ui_preferences.c
-//
 extern void	UI_PreferencesMenu(void);
 extern void	Preferences_Cache(void);
 
-//
 // ui_specifyleague.c
-//
 extern void	UI_SpecifyLeagueMenu(void);
 extern void	SpecifyLeague_Cache(void);
 
-//
 // ui_specifyserver.c
-//
 extern void	UI_SpecifyServerMenu(void);
 extern void	SpecifyServer_Cache(void);
 
-//
 // ui_servers2.c
-//
 #define MAX_FAVORITESERVERS 16
 
 extern void	UI_ArenaServersMenu(void);
 extern void	ArenaServers_Cache(void);
 
-//
 // ui_startserver.c
-//
 extern void	UI_StartServerMenu(qboolean multiplayer);
 extern void	StartServer_Cache(void);
 extern void	ServerOptions_Cache(void);
 extern void	UI_BotSelectMenu(char *bot);
 extern void	UI_BotSelectMenu_Cache(void);
 
-//
 // ui_serverinfo.c
-//
 extern void	UI_ServerInfoMenu(void);
 extern void	ServerInfo_Cache(void);
 
-//
 // ui_video.c
-//
 extern void	UI_GraphicsOptionsMenu(void);
 extern void	GraphicsOptions_Cache(void);
 extern void	DriverInfo_Cache(void);
 
-//
 // ui_players.c
-//
 
 //FIXME ripped from cg_local.h
 typedef struct
@@ -573,9 +522,7 @@ void		UI_PlayerInfo_SetModel(playerInfo_t *pi, const char *model, const char *he
 void		UI_PlayerInfo_SetInfo(playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_t viewAngles, vec3_t moveAngles, weapon_t weaponNum, qboolean chat);
 qboolean	UI_RegisterClientModelname(playerInfo_t *pi, const char *modelSkinName, const char *headName, const char *teamName);
 
-//
 // ui_atoms.c
-//
 // this is only used in the old ui, the new ui has its own version
 typedef struct
 {
@@ -893,34 +840,24 @@ extern qboolean m_entersound;
 void		UI_LoadBestScores(const char *map, int game);
 extern uiStatic_t uis;
 
-//
 // ui_spLevel.c
-//
 void	UI_SPLevelMenu_Cache(void);
 void	UI_SPLevelMenu(void);
 void	UI_SPLevelMenu_f(void);
 void	UI_SPLevelMenu_ReInit(void);
 
-//
 // ui_spArena.c
-//
 void UI_SPArena_Start(const char *arenaInfo);
 
-//
 // ui_spPostgame.c
-//
 void	UI_SPPostgameMenu_Cache(void);
 void	UI_SPPostgameMenu_f(void);
 
-//
 // ui_spSkill.c
-//
 void	UI_SPSkillMenu(const char *arenaInfo);
 void	UI_SPSkillMenu_Cache(void);
 
-//
 // ui_syscalls.c
-//
 void		trap_Print(const char *string);
 void		trap_Error(const char *string) __attribute__((noreturn));
 int		trap_Milliseconds(void);
@@ -1005,58 +942,40 @@ qboolean	trap_VerifyCDKey(const char *key, const char *chksum);
 
 void		trap_SetPbClStatus(int status);
 
-//
 // ui_addbots.c
-//
 void	UI_AddBots_Cache(void);
 void	UI_AddBotsMenu(void);
 
-//
 // ui_removebots.c
-//
 void	UI_RemoveBots_Cache(void);
 void	UI_RemoveBotsMenu(void);
 
-//
 // ui_teamorders.c
-//
 extern void	UI_TeamOrdersMenu(void);
 extern void	UI_TeamOrdersMenu_f(void);
 extern void	UI_TeamOrdersMenu_Cache(void);
 
-//
 // ui_loadconfig.c
-//
 void	UI_LoadConfig_Cache(void);
 void	UI_LoadConfigMenu(void);
 
-//
 // ui_saveconfig.c
-//
 void	UI_SaveConfigMenu_Cache(void);
 void	UI_SaveConfigMenu(void);
 
-//
 // ui_display.c
-//
 void	UI_DisplayOptionsMenu_Cache(void);
 void	UI_DisplayOptionsMenu(void);
 
-//
 // ui_sound.c
-//
 void	UI_SoundOptionsMenu_Cache(void);
 void	UI_SoundOptionsMenu(void);
 
-//
 // ui_network.c
-//
 void	UI_NetworkOptionsMenu_Cache(void);
 void	UI_NetworkOptionsMenu(void);
 
-//
 // ui_gameinfo.c
-//
 typedef enum
 {
 	AWARD_ACCURACY,
@@ -1095,21 +1014,15 @@ void		UI_SPUnlockMedals_f(void);
 
 void		UI_InitGameinfo(void);
 
-//
 // ui_login.c
-//
 void	Login_Cache(void);
 void	UI_LoginMenu(void);
 
-//
 // ui_signup.c
-//
 void	Signup_Cache(void);
 void	UI_SignupMenu(void);
 
-//
 // ui_rankstatus.c
-//
 void	RankStatus_Cache(void);
 void	UI_RankStatusMenu(void);
 

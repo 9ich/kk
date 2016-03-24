@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 
 #include "g_local.h"
 
@@ -1639,7 +1638,6 @@ CheckTeamVote(int team)
 		if(level.teamvoteyes[cs_offset] > level.nteamvoters[cs_offset]/2){
 			// execute the command, then remove the vote
 			trap_SendServerCommand(-1, "print \"Team vote passed.\n\"");
-			//
 			if(!Q_strncmp("leader", level.teamvotestr[cs_offset], 6))
 				//set the team leader
 				setleader(team, atoi(level.teamvotestr[cs_offset] + 7));
@@ -1723,9 +1721,7 @@ G_RunFrame(int levelTime)
 	// get any cvar changes
 	G_UpdateCvars();
 
-	//
 	// go through all allocated objects
-	//
 	ent = &g_entities[0];
 	for(i = 0; i<level.nentities; i++, ent++){
 		if(!ent->inuse)

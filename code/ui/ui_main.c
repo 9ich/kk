@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 /*
 =======================================================================
 
@@ -1972,7 +1971,6 @@ UI_DrawGLInfo(rectDef_t *rect, float scale, vec4_t color, int textStyle)
 }
 
 // FIXME: table drive
-//
 static void
 UI_OwnerDraw(float x, float y, float w, float h, float text_x, float text_y, int ownerDraw, int ownerDrawFlags, int align, float special, float scale, vec4_t color, qhandle_t shader, int textStyle)
 {
@@ -3623,7 +3621,6 @@ UI_InsertServerIntoDisplayList(int num, int position)
 
 	if(position < 0 || position > uiInfo.serverStatus.numDisplayServers)
 		return;
-	//
 	uiInfo.serverStatus.numDisplayServers++;
 	for(i = uiInfo.serverStatus.numDisplayServers; i > position; i--)
 		uiInfo.serverStatus.displayServers[i] = uiInfo.serverStatus.displayServers[i-1];
@@ -3666,7 +3663,6 @@ UI_BinaryServerInsertion(int num)
 	res = 0;
 	while(mid > 0){
 		mid = len >> 1;
-		//
 		res = trap_LAN_CompareServers(UI_SourceForLAN(), uiInfo.serverStatus.sortKey,
 					      uiInfo.serverStatus.sortDir, num, uiInfo.serverStatus.displayServers[offset+mid]);
 		// if equal
@@ -3837,7 +3833,6 @@ UI_SortServerStatusInfo(serverStatusInfo_t *info)
 
 	// FIXME: if "gamename" == "baseq3" or "missionpack" then
 	// replace the gametype number by FFA, CTF etc.
-	//
 	index = 0;
 	for(i = 0; serverStatusCvars[i].name; i++)
 		for(j = 0; j < info->numLines; j++){
@@ -3851,7 +3846,6 @@ UI_SortServerStatusInfo(serverStatusInfo_t *info)
 				info->lines[index][3] = info->lines[j][3];
 				info->lines[j][0] = tmp1;
 				info->lines[j][3] = tmp2;
-				//
 				if(strlen(serverStatusCvars[i].altName))
 					info->lines[index][0] = serverStatusCvars[i].altName;
 				index++;
@@ -3947,7 +3941,6 @@ UI_GetServerStatusInfo(const char *serverAddress, serverStatusInfo_t *info)
 				if(!p)
 					break;
 				*p++ = '\0';
-				//
 				i++;
 			}
 		}
@@ -4012,7 +4005,6 @@ UI_BuildFindPlayerList(qboolean force)
 		trap_Cvar_Set("cl_serverStatusResendTime", va("%d", resend));
 		// reset all server status requests
 		trap_LAN_ServerStatus(nil, nil, 0);
-		//
 		uiInfo.numFoundPlayerServers = 1;
 		Com_sprintf(uiInfo.foundPlayerServerNames[uiInfo.numFoundPlayerServers-1],
 			    sizeof(uiInfo.foundPlayerServerNames[uiInfo.numFoundPlayerServers-1]),
@@ -4025,7 +4017,6 @@ UI_BuildFindPlayerList(qboolean force)
 		if(uiInfo.pendingServerStatus.server[i].valid)
 			// try to get the server status for this server
 			if(UI_GetServerStatusInfo(uiInfo.pendingServerStatus.server[i].adrstr, &info)){
-				//
 				numFound++;
 				// parse through the server status lines
 				for(j = 0; j < info.numLines; j++){
@@ -4039,7 +4030,6 @@ UI_BuildFindPlayerList(qboolean force)
 					if(stristr(name, uiInfo.findPlayerName)){
 						// add to found server list if we have space (always leave space for a line with the number found)
 						if(uiInfo.numFoundPlayerServers < MAX_FOUNDPLAYER_SERVERS-1){
-							//
 							Q_strncpyz(uiInfo.foundPlayerServerAddresses[uiInfo.numFoundPlayerServers-1],
 								   uiInfo.pendingServerStatus.server[i].adrstr,
 								   sizeof(uiInfo.foundPlayerServerAddresses[0]));
@@ -4415,10 +4405,8 @@ UI_FeederSelection(float feederID, int index)
 		if(mapName && *mapName)
 			uiInfo.serverStatus.currentServerCinematic = trap_CIN_PlayCinematic(va("%s.roq", mapName), 0, 0, 0, 0, (CIN_loop | CIN_silent));
 	}else if(feederID == FEEDER_SERVERSTATUS){
-		//
 	}else if(feederID == FEEDER_FINDPLAYER){
 		uiInfo.currentFoundPlayerServer = index;
-		//
 		if(index < uiInfo.numFoundPlayerServers-1){
 			// build a new server status for this server
 			Q_strncpyz(uiInfo.serverStatusAddress, uiInfo.foundPlayerServerAddresses[uiInfo.currentFoundPlayerServer], sizeof(uiInfo.serverStatusAddress));
@@ -5819,7 +5807,6 @@ UI_DoServerRefresh(void)
 		// stop the refresh
 		UI_StopServerRefresh();
 	}
-	//
 	UI_BuildServerDisplayList(qfalse);
 }
 
@@ -5854,7 +5841,6 @@ UI_StartServerRefresh(qboolean full)
 	trap_LAN_MarkServerVisible(lanSource, -1, qtrue);
 	// reset all the pings
 	trap_LAN_ResetPings(lanSource);
-	//
 	if(ui_netSource.integer == UIAS_LOCAL){
 		trap_Cmd_ExecuteText(EXEC_NOW, "localservers\n");
 		uiInfo.serverStatus.refreshtime = uiInfo.uiDC.realTime + 1000;

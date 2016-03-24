@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 // cg_playerstate.c -- this file acts on changes in a new playerState_t
 // With normal play, this will be done after local prediction, but when
 // following another player or playing back a demo, it will be checked
@@ -246,7 +245,6 @@ chkpredictableevents(playerState_t *ps)
 
 	cent = &cg.pplayerent;
 	for(i = ps->eventSequence - MAX_PS_EVENTS; i < ps->eventSequence; i++){
-		//
 		if(i >= cg.eventSequence)
 			continue;
 		// if this event is not further back in than the maximum predictable events we remember
@@ -410,7 +408,6 @@ CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops)
 
 	// lead changes
 	if(!reward)
-		//
 		if(!cg.warmup){
 			// never play lead changes during warmup
 			if(ps->persistant[PERS_RANK] != ops->persistant[PERS_RANK])
