@@ -1994,8 +1994,6 @@ CG_Tracer(vec3_t source, vec3_t dest)
 	len = vecnorm(forward);
 
 	// start at least a little ways from the muzzle
-	if(len < 100)
-		return;
 	begin = 50 + random() * (len - 60);
 	end = begin + cg_tracerLength.value;
 	if(end > len)
