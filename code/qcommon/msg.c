@@ -834,7 +834,11 @@ netField_t	entityStateFields[] =
 { NETF(frame), 16 },
 { NETF(lockontarget), GENTITYNUM_BITS },
 { NETF(lockontime), 32 },
-{ NETF(lockonstarttime), 32 }
+{ NETF(lockonstarttime), 32 },
+{ NETF(lightintensity), 0 },
+{ NETF(lightcolor[0]), 0 },
+{ NETF(lightcolor[1]), 0 },
+{ NETF(lightcolor[2]), 0 }
 };
 
 

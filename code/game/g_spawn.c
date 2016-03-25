@@ -234,7 +234,7 @@ spawn_t spawns[] = {
 	{"target_location", SP_target_location},
 	{"target_push", SP_target_push},
 
-	{"light", SP_light},
+	{"liteEntity", SP_light},
 	{"path_corner", SP_path_corner},
 
 	{"misc_teleporter_dest", SP_misc_teleporter_dest},

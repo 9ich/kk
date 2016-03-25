@@ -1398,6 +1398,9 @@ typedef struct entityState_s {
 	int			lockontarget;
 	int			lockontime;
 	int			lockonstarttime;
+
+	vec3_t			lightcolor;	// ET_POINTLIGHT
+	float			lightintensity;
 } entityState_t;
 
 typedef enum {

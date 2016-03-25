@@ -963,6 +963,11 @@ CG_AddCEntity(centity_t *cent)
 	case ET_TEAM:
 		doteambase(cent);
 		break;
+	case ET_POINTLIGHT:
+		trap_R_AddLightToScene(cent->currstate.origin, cent->currstate.lightintensity,
+		   cent->currstate.lightcolor[0], cent->currstate.lightcolor[1],
+		   cent->currstate.lightcolor[2]);
+		break;
 	}
 }
 

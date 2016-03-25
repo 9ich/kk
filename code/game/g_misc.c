@@ -65,7 +65,12 @@ Lights pointed at a target will be spotlights.
 void
 SP_light(gentity_t *self)
 {
-	entfree(self);
+	self->s.eType = ET_POINTLIGHT;
+	setorigin(self, self->s.origin);
+	self->r.svFlags &= ~SVF_NOCLIENT;
+	spawnvec("color", "1 1 1", self->s.lightcolor);
+	spawnfloat("intensity", "200", &self->s.lightintensity);
+	trap_LinkEntity(self);
 }
 
 /*
