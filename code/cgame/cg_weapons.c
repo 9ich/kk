@@ -43,9 +43,9 @@ CG_MachineGunEjectBrass(centity_t *cent)
 	le = alloclocalent();
 	re = &le->refEntity;
 
-	velocity[0] = 0;
-	velocity[1] = -50 + 40 * crandom();
-	velocity[2] = 100 + 50 * crandom();
+	velocity[0] = -5 + 10 * crandom();
+	velocity[1] = -300 + 10 * crandom();
+	velocity[2] = -5 + 10 * crandom();
 
 	le->type = LE_FRAGMENT;
 	le->starttime = cg.time;
@@ -56,9 +56,9 @@ CG_MachineGunEjectBrass(centity_t *cent)
 
 	AnglesToAxis(cent->lerpangles, v);
 
-	offset[0] = 8;
-	offset[1] = -4;
-	offset[2] = 24;
+	offset[0] = -4;
+	offset[1] = -8;
+	offset[2] = 0;
 
 	xoffset[0] = offset[0] * v[0][0] + offset[1] * v[1][0] + offset[2] * v[2][0];
 	xoffset[1] = offset[0] * v[0][1] + offset[1] * v[1][1] + offset[2] * v[2][1];
@@ -85,9 +85,9 @@ CG_MachineGunEjectBrass(centity_t *cent)
 	le->angles.trBase[0] = rand()&31;
 	le->angles.trBase[1] = rand()&31;
 	le->angles.trBase[2] = rand()&31;
-	le->angles.trDelta[0] = 2;
-	le->angles.trDelta[1] = 1;
-	le->angles.trDelta[2] = 0;
+	le->angles.trDelta[0] = -5 + 10*random();
+	le->angles.trDelta[1] = -5 + 10*random();
+	le->angles.trDelta[2] = -5 + 10*random();
 
 	le->flags = LEF_TUMBLE;
 	le->bouncesoundtype = LEBS_BRASS;
