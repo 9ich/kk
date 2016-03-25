@@ -1414,7 +1414,7 @@ addthrustflame(centity_t *cent, refEntity_t *ship, float factor, char *tag, qboo
 	vecmul(flame.axis[1], factor, flame.axis[1]);
 	vecmul(flame.axis[2], factor, flame.axis[2]);
 	trap_R_AddRefEntityToScene(&flame);
-	trap_R_AddLightToScene(flame.origin, 100, r, g, b);
+	trap_R_AddLightToScene(flame.origin, 200, r*0.2f, g*0.2f, b*0.2f);
 
 	if(nothirdperson  && !cg_thirdPerson.integer &&
 	   cent->currstate.number == cg.snap->ps.clientNum)
