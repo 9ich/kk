@@ -24,9 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "cg_local.h"
 
 // for the voice chats
-#ifdef MISSIONPACK
-#include "../../ui/menudef.h"
-#endif
 //==========================================================================
 
 /*
@@ -218,13 +215,7 @@ CG_Obituary(entityState_t *ent)
 		else
 			s = va("You fragged %s", targetName);
 
-#ifdef MISSIONPACK
-		if(!(cg_singlePlayerActive.integer && cg_cameraOrbit.integer))
-			centerprint(s, SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH);
-
-#else
 		centerprint(s, SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH);
-#endif
 
 		// print the text message as well
 	}
@@ -596,32 +587,6 @@ entevent(centity_t *cent, vec3_t position)
 		DEBUGNAME("EV_TAUNT");
 		trap_S_StartSound(nil, es->number, CHAN_VOICE, customsound(es->number, "*taunt.wav"));
 		break;
-#ifdef MISSIONPACK
-	case EV_TAUNT_YES:
-		DEBUGNAME("EV_TAUNT_YES");
-		CG_VoiceChatLocal(SAY_TEAM, qfalse, es->number, COLOR_CYAN, VOICECHAT_YES);
-		break;
-	case EV_TAUNT_NO:
-		DEBUGNAME("EV_TAUNT_NO");
-		CG_VoiceChatLocal(SAY_TEAM, qfalse, es->number, COLOR_CYAN, VOICECHAT_NO);
-		break;
-	case EV_TAUNT_FOLLOWME:
-		DEBUGNAME("EV_TAUNT_FOLLOWME");
-		CG_VoiceChatLocal(SAY_TEAM, qfalse, es->number, COLOR_CYAN, VOICECHAT_FOLLOWME);
-		break;
-	case EV_TAUNT_GETFLAG:
-		DEBUGNAME("EV_TAUNT_GETFLAG");
-		CG_VoiceChatLocal(SAY_TEAM, qfalse, es->number, COLOR_CYAN, VOICECHAT_ONGETFLAG);
-		break;
-	case EV_TAUNT_GUARDBASE:
-		DEBUGNAME("EV_TAUNT_GUARDBASE");
-		CG_VoiceChatLocal(SAY_TEAM, qfalse, es->number, COLOR_CYAN, VOICECHAT_ONDEFENSE);
-		break;
-	case EV_TAUNT_PATROL:
-		DEBUGNAME("EV_TAUNT_PATROL");
-		CG_VoiceChatLocal(SAY_TEAM, qfalse, es->number, COLOR_CYAN, VOICECHAT_ONPATROL);
-		break;
-#endif
 	case EV_WATER_TOUCH:
 		DEBUGNAME("EV_WATER_TOUCH");
 		trap_S_StartSound(nil, es->number, CHAN_AUTO, cgs.media.watrInSound);
@@ -972,18 +937,8 @@ entevent(centity_t *cent, vec3_t position)
 			if(cg.snap->ps.powerups[PW_BLUEFLAG] || cg.snap->ps.powerups[PW_NEUTRALFLAG]){
 			}else{
 				if(cg.snap->ps.persistant[PERS_TEAM] == TEAM_BLUE){
-#ifdef MISSIONPACK
-					if(cgs.gametype == GT_1FCTF)
-						addbufferedsound(cgs.media.yourTeamTookTheFlagSound);
-					else
-#endif
 					addbufferedsound(cgs.media.enemyTookYourFlagSound);
 				}else if(cg.snap->ps.persistant[PERS_TEAM] == TEAM_RED){
-#ifdef MISSIONPACK
-					if(cgs.gametype == GT_1FCTF)
-						addbufferedsound(cgs.media.enemyTookTheFlagSound);
-					else
-#endif
 					addbufferedsound(cgs.media.yourTeamTookEnemyFlagSound);
 				}
 			}
@@ -993,32 +948,12 @@ entevent(centity_t *cent, vec3_t position)
 			if(cg.snap->ps.powerups[PW_REDFLAG] || cg.snap->ps.powerups[PW_NEUTRALFLAG]){
 			}else{
 				if(cg.snap->ps.persistant[PERS_TEAM] == TEAM_RED){
-#ifdef MISSIONPACK
-					if(cgs.gametype == GT_1FCTF)
-						addbufferedsound(cgs.media.yourTeamTookTheFlagSound);
-					else
-#endif
 					addbufferedsound(cgs.media.enemyTookYourFlagSound);
 				}else if(cg.snap->ps.persistant[PERS_TEAM] == TEAM_BLUE){
-#ifdef MISSIONPACK
-					if(cgs.gametype == GT_1FCTF)
-						addbufferedsound(cgs.media.enemyTookTheFlagSound);
-					else
-#endif
 					addbufferedsound(cgs.media.yourTeamTookEnemyFlagSound);
 				}
 			}
 			break;
-#ifdef MISSIONPACK
-		case GTS_REDOBELISK_ATTACKED:			// Overload: red obelisk is being attacked
-			if(cg.snap->ps.persistant[PERS_TEAM] == TEAM_RED)
-				addbufferedsound(cgs.media.yourBaseIsUnderAttackSound);
-			break;
-		case GTS_BLUEOBELISK_ATTACKED:			// Overload: blue obelisk is being attacked
-			if(cg.snap->ps.persistant[PERS_TEAM] == TEAM_BLUE)
-				addbufferedsound(cgs.media.yourBaseIsUnderAttackSound);
-			break;
-#endif
 
 		case GTS_REDTEAM_SCORED:
 			addbufferedsound(cgs.media.redScoredSound);
@@ -1035,11 +970,6 @@ entevent(centity_t *cent, vec3_t position)
 		case GTS_TEAMS_ARE_TIED:
 			addbufferedsound(cgs.media.teamsTiedSound);
 			break;
-#ifdef MISSIONPACK
-		case GTS_KAMIKAZE:
-			trap_S_StartLocalSound(cgs.media.kamikazeFarSound, CHAN_ANNOUNCER);
-			break;
-#endif
 		default:
 			break;
 		}

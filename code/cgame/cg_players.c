@@ -1139,88 +1139,6 @@ CG_HasteTrail(centity_t *cent)
 	smoke->type = LE_SCALE_FADE;
 }
 
-#ifdef MISSIONPACK
-/*
-===============
-CG_BreathPuffs
-===============
-*/
-static void
-CG_BreathPuffs(centity_t *cent, refEntity_t *head)
-{
-	clientInfo_t *ci;
-	vec3_t up, origin;
-	int contents;
-
-	ci = &cgs.clientinfo[cent->currstate.number];
-
-	if(!cg_enableBreath.integer)
-		return;
-	if(cent->currstate.number == cg.snap->ps.clientNum && !cg.thirdperson)
-		return;
-	if(cent->currstate.eFlags & EF_DEAD)
-		return;
-	contents = pointcontents(head->origin, 0);
-	if(contents & (CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA))
-		return;
-	if(ci->breathPuffTime > cg.time)
-		return;
-
-	vecset(up, 0, 0, 8);
-	vecmad(head->origin, 8, head->axis[0], origin);
-	vecmad(origin, -4, head->axis[2], origin);
-	smokepuff(origin, up, 16, 1, 1, 1, 0.66f, 1500, cg.time, cg.time + 400, LEF_PUFF_DONT_SCALE, cgs.media.shotgunSmokePuffShader);
-	ci->breathPuffTime = cg.time + 2000;
-}
-
-/*
-===============
-CG_DustTrail
-===============
-*/
-static void
-CG_DustTrail(centity_t *cent)
-{
-	int anim;
-	vec3_t end, vel;
-	trace_t tr;
-
-	if(!cg_enableDust.integer)
-		return;
-
-	if(cent->dusttrailtime > cg.time)
-		return;
-
-	anim = cent->pe.legs.animnum & ~ANIM_TOGGLEBIT;
-	if(anim != LEGS_LANDB && anim != LEGS_LAND)
-		return;
-
-	cent->dusttrailtime += 40;
-	if(cent->dusttrailtime < cg.time)
-		cent->dusttrailtime = cg.time;
-
-	veccpy(cent->currstate.pos.trBase, end);
-	end[2] -= 64;
-	cgtrace(&tr, cent->currstate.pos.trBase, nil, nil, end, cent->currstate.number, MASK_PLAYERSOLID);
-
-	if(!(tr.surfaceFlags & SURF_DUST))
-		return;
-
-	veccpy(cent->currstate.pos.trBase, end);
-	end[2] -= 16;
-
-	vecset(vel, 0, 0, -30);
-	smokepuff(end, vel,
-		     24,
-		     .8f, .8f, 0.7f, 0.33f,
-		     500,
-		     cg.time,
-		     0,
-		     0,
-		     cgs.media.dustPuffShader);
-}
-
-#endif
 
 /*
 ===============
@@ -2135,10 +2053,6 @@ doplayer(centity_t *cent)
 		trap_R_AddRefEntityToScene(&powerup);
 	}
 #endif	// MISSIONPACK
-
-#ifdef MISSIONPACK
-	CG_DustTrail(cent);
-#endif
 
 	// add the gun / barrel / flash
 	addplayerweap(&torso, nil, cent, ci->team);

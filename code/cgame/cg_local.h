@@ -78,13 +78,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define TEAM_OVERLAY_MAXLOCATION_WIDTH	16
 
 #define DEFAULT_MODEL			"sarge"
-#ifdef MISSIONPACK
-#define DEFAULT_TEAM_MODEL		"james"
-#define DEFAULT_TEAM_HEAD		"*james"
-#else
 #define DEFAULT_TEAM_MODEL		"sarge"
 #define DEFAULT_TEAM_HEAD		"sarge"
-#endif
 
 #define DEFAULT_REDTEAM_NAME		"Stroggs"
 #define DEFAULT_BLUETEAM_NAME		"Pagans"
@@ -981,9 +976,6 @@ typedef struct
 	sfxHandle_t	guardSound;
 	sfxHandle_t	scoutSound;
 
-	qhandle_t	cursor;
-	qhandle_t	selectCursor;
-	qhandle_t	sizeCursor;
 #endif
 
 	sfxHandle_t	regenSound;
@@ -1418,11 +1410,6 @@ void	execnewsrvcmds(int latestSequence);
 void	parsesrvinfo(void);
 void	setconfigvals(void);
 void	shaderstatechanged(void);
-#ifdef MISSIONPACK
-void	CG_LoadVoiceChats(void);
-void	CG_VoiceChatLocal(int mode, qboolean voiceOnly, int clientNum, int color, const char *cmd);
-void	CG_PlayBufferedVoiceChats(void);
-#endif
 
 // cg_playerstate.c
 void	respawn(void);

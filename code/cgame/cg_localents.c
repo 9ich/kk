@@ -536,6 +536,92 @@ CG_AddSpriteExplosion(localEntity_t *le)
 	}
 }
 
+/*
+===================
+CG_AddScorePlum
+===================
+*/
+#define NUMBER_SIZE 8
+
+void
+CG_AddScorePlum(localEntity_t *le)
+{
+	refEntity_t *re;
+	vec3_t origin, delta, dir, vec, up = {0, 0, 1};
+	float c, len;
+	int i, score, digits[10], numdigits, negative;
+
+	re = &le->refEntity;
+
+	c = (le->endtime - cg.time) * le->liferate;
+
+	score = le->radius;
+	if(score < 0){
+		re->shaderRGBA[0] = 0xff;
+		re->shaderRGBA[1] = 0x11;
+		re->shaderRGBA[2] = 0x11;
+	}else{
+		re->shaderRGBA[0] = 0xff;
+		re->shaderRGBA[1] = 0xff;
+		re->shaderRGBA[2] = 0xff;
+		if(score >= 50)
+			re->shaderRGBA[1] = 0;
+		else if(score >= 20)
+			re->shaderRGBA[0] = re->shaderRGBA[1] = 0;
+		else if(score >= 10)
+			re->shaderRGBA[2] = 0;
+		else if(score >= 2)
+			re->shaderRGBA[0] = re->shaderRGBA[2] = 0;
+
+	}
+	if(c < 0.25)
+		re->shaderRGBA[3] = 0xff * 4 * c;
+	else
+		re->shaderRGBA[3] = 0xff;
+
+	re->radius = NUMBER_SIZE / 2;
+
+	veccpy(le->pos.trBase, origin);
+	origin[2] += 110 - c * 100;
+
+	vecsub(cg.refdef.vieworg, origin, dir);
+	veccross(dir, up, vec);
+	vecnorm(vec);
+
+	vecmad(origin, -10 + 20 * sin(c * 2 * M_PI), vec, origin);
+
+	// if the view would be "inside" the sprite, kill the sprite
+	// so it doesn't add too much overdraw
+	vecsub(origin, cg.refdef.vieworg, delta);
+	len = veclen(delta);
+	if(len < 20){
+		CG_FreeLocalEntity(le);
+		return;
+	}
+
+	negative = qfalse;
+	if(score < 0){
+		negative = qtrue;
+		score = -score;
+	}
+
+	for(numdigits = 0; !(numdigits && !score); numdigits++){
+		digits[numdigits] = score % 10;
+		score = score / 10;
+	}
+
+	if(negative){
+		digits[numdigits] = 10;
+		numdigits++;
+	}
+
+	for(i = 0; i < numdigits; i++){
+		vecmad(origin, (float)(((float)numdigits / 2) - i) * NUMBER_SIZE, vec, re->origin);
+		re->customShader = cgs.media.numberShaders[digits[numdigits-1-i]];
+		trap_R_AddRefEntityToScene(re);
+	}
+}
+
 #ifdef MISSIONPACK
 /*
 ====================
@@ -708,91 +794,6 @@ CG_AddRefEntity(localEntity_t *le)
 }
 
 #endif
-/*
-===================
-CG_AddScorePlum
-===================
-*/
-#define NUMBER_SIZE 8
-
-void
-CG_AddScorePlum(localEntity_t *le)
-{
-	refEntity_t *re;
-	vec3_t origin, delta, dir, vec, up = {0, 0, 1};
-	float c, len;
-	int i, score, digits[10], numdigits, negative;
-
-	re = &le->refEntity;
-
-	c = (le->endtime - cg.time) * le->liferate;
-
-	score = le->radius;
-	if(score < 0){
-		re->shaderRGBA[0] = 0xff;
-		re->shaderRGBA[1] = 0x11;
-		re->shaderRGBA[2] = 0x11;
-	}else{
-		re->shaderRGBA[0] = 0xff;
-		re->shaderRGBA[1] = 0xff;
-		re->shaderRGBA[2] = 0xff;
-		if(score >= 50)
-			re->shaderRGBA[1] = 0;
-		else if(score >= 20)
-			re->shaderRGBA[0] = re->shaderRGBA[1] = 0;
-		else if(score >= 10)
-			re->shaderRGBA[2] = 0;
-		else if(score >= 2)
-			re->shaderRGBA[0] = re->shaderRGBA[2] = 0;
-
-	}
-	if(c < 0.25)
-		re->shaderRGBA[3] = 0xff * 4 * c;
-	else
-		re->shaderRGBA[3] = 0xff;
-
-	re->radius = NUMBER_SIZE / 2;
-
-	veccpy(le->pos.trBase, origin);
-	origin[2] += 110 - c * 100;
-
-	vecsub(cg.refdef.vieworg, origin, dir);
-	veccross(dir, up, vec);
-	vecnorm(vec);
-
-	vecmad(origin, -10 + 20 * sin(c * 2 * M_PI), vec, origin);
-
-	// if the view would be "inside" the sprite, kill the sprite
-	// so it doesn't add too much overdraw
-	vecsub(origin, cg.refdef.vieworg, delta);
-	len = veclen(delta);
-	if(len < 20){
-		CG_FreeLocalEntity(le);
-		return;
-	}
-
-	negative = qfalse;
-	if(score < 0){
-		negative = qtrue;
-		score = -score;
-	}
-
-	for(numdigits = 0; !(numdigits && !score); numdigits++){
-		digits[numdigits] = score % 10;
-		score = score / 10;
-	}
-
-	if(negative){
-		digits[numdigits] = 10;
-		numdigits++;
-	}
-
-	for(i = 0; i < numdigits; i++){
-		vecmad(origin, (float)(((float)numdigits / 2) - i) * NUMBER_SIZE, vec, re->origin);
-		re->customShader = cgs.media.numberShaders[digits[numdigits-1-i]];
-		trap_R_AddRefEntityToScene(re);
-	}
-}
 
 //==============================================================================
 

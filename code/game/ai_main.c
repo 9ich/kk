@@ -1010,15 +1010,6 @@ BotAI(int client, float thinktime)
 			args[strlen(args)-1] = '\0';
 			trap_BotQueueConsoleMessage(bs->cs, CMS_CHAT, args);
 		}
-#ifdef MISSIONPACK
-		else if(!Q_stricmp(buf, "vchat"))
-			BotVoiceChatCommand(bs, SAY_ALL, args);
-		else if(!Q_stricmp(buf, "vtchat"))
-			BotVoiceChatCommand(bs, SAY_TEAM, args);
-		else if(!Q_stricmp(buf, "vtell"))
-			BotVoiceChatCommand(bs, SAY_TELL, args);
-
-#endif
 		else if(!Q_stricmp(buf, "scores")){	/*FIXME: parse scores?*/
 		}else if(!Q_stricmp(buf, "clientLevelShot")){	/*ignore*/
 		}

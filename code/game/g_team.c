@@ -705,6 +705,7 @@ Team_TouchOurFlag(gentity_t *ent, gentity_t *other, int team)
 		enemy_flag = PW_BLUEFLAG;
 	else
 		enemy_flag = PW_REDFLAG;
+	}
 
 	if(ent->flags & FL_DROPPED_ITEM){
 		// hey, it's not home.  return it by teleporting it back
@@ -717,24 +718,12 @@ Team_TouchOurFlag(gentity_t *ent, gentity_t *other, int team)
 		Team_ReturnFlagSound(Team_ResetFlag(team), team);
 		return 0;
 	}
-#ifdef MISSIONPACK
-}
-
-#endif
 
 	// the flag is at home base.  if the player has the enemy
 	// flag, he's just won!
 	if(!cl->ps.powerups[enemy_flag])
 		return 0;	// We don't have the flag
-#ifdef MISSIONPACK
-	if(g_gametype.integer == GT_1FCTF)
-		PrintMsg(nil, "%s" S_COLOR_WHITE " captured the flag!\n", cl->pers.netname);
-	else{
-#endif
 	PrintMsg(nil, "%s" S_COLOR_WHITE " captured the %s flag!\n", cl->pers.netname, teamname(getotherteam(team)));
-#ifdef MISSIONPACK
-}
-#endif
 
 	cl->ps.powerups[enemy_flag] = 0;
 

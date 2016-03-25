@@ -437,21 +437,12 @@ G_SpawnGEntityFromSpawnVars(void)
 		}
 	}
 
-#ifdef MISSIONPACK
-	spawnint("notta", "0", &i);
-	if(i){
-		ADJUST_AREAPORTAL();
-		entfree(ent);
-		return;
-	}
-#else
 	spawnint("notq3a", "0", &i);
 	if(i){
 		ADJUST_AREAPORTAL();
 		entfree(ent);
 		return;
 	}
-#endif
 
 	if(spawnstr("gametype", nil, &value))
 		if(g_gametype.integer >= GT_FFA && g_gametype.integer < GT_MAX_GAME_TYPE){

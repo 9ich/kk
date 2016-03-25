@@ -324,9 +324,6 @@ doitem(centity_t *cent)
 		vecmul(ent.axis[1], 1.5, ent.axis[1]);
 		vecmul(ent.axis[2], 1.5, ent.axis[2]);
 		ent.nonNormalizedAxes = qtrue;
-#ifdef MISSIONPACK
-		trap_S_AddLoopingSound(cent->currstate.number, cent->lerporigin, vec3_origin, cgs.media.weaponHoverSound);
-#endif
 	}
 
 #ifdef MISSIONPACK
@@ -467,12 +464,6 @@ domissile(centity_t *cent)
 	ent.hModel = weapon->missilemodel;
 	ent.renderfx = weapon->missilerenderfx | RF_NOSHADOW;
 
-#ifdef MISSIONPACK
-	if(cent->currstate.weapon == WP_PROX_LAUNCHER)
-		if(s1->generic1 == TEAM_BLUE)
-			ent.hModel = cgs.media.blueProxMine;
-
-#endif
 
 	// convert direction of travel into axis
 	if(VectorNormalize2(s1->pos.trDelta, ent.axis[0]) == 0)
@@ -482,11 +473,6 @@ domissile(centity_t *cent)
 	if(s1->pos.trType != TR_STATIONARY)
 		RotateAroundDirection(ent.axis, cg.time / 4);
 	else{
-#ifdef MISSIONPACK
-		if(s1->weapon == WP_PROX_LAUNCHER)
-			AnglesToAxis(cent->lerpangles, ent.axis);
-		else
-#endif
 		{
 			RotateAroundDirection(ent.axis, s1->time);
 		}

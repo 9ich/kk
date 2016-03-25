@@ -24,15 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 
-#ifdef MISSIONPACK
-#include "../ui/ui_shared.h"
-
-// used for scoreboard
-extern displayContextDef_t cgDC;
-menuDef_t *menuScoreboard = nil;
-#else
 int drawTeamOverlayModificationCount = -1;
-#endif
 
 int sortedteamplayers[TEAM_MAXOVERLAY];
 int nsortedteamplayers;
@@ -41,158 +33,6 @@ char syschat[256];
 char teamchat1[256];
 char teamchat2[256];
 
-#ifdef MISSIONPACK
-
-int
-CG_Text_Width(const char *text, float scale, int limit)
-{
-	int count, len;
-	float out;
-	glyphInfo_t *glyph;
-	float useScale;
-	const char *s = text;
-	fontInfo_t *font = &cgDC.Assets.textFont;
-	if(scale <= cg_smallFont.value)
-		font = &cgDC.Assets.smallFont;
-	else if(scale > cg_bigFont.value)
-		font = &cgDC.Assets.bigFont;
-	useScale = scale * font->glyphScale;
-	out = 0;
-	if(text){
-		len = strlen(text);
-		if(limit > 0 && len > limit)
-			len = limit;
-		count = 0;
-		while(s && *s && count < len){
-			if(Q_IsColorString(s)){
-				s += 2;
-				continue;
-			}else{
-				glyph = &font->glyphs[*s & 255];
-				out += glyph->xSkip;
-				s++;
-				count++;
-			}
-		}
-	}
-	return out * useScale;
-}
-
-int
-CG_Text_Height(const char *text, float scale, int limit)
-{
-	int len, count;
-	float max;
-	glyphInfo_t *glyph;
-	float useScale;
-	const char *s = text;
-	fontInfo_t *font = &cgDC.Assets.textFont;
-	if(scale <= cg_smallFont.value)
-		font = &cgDC.Assets.smallFont;
-	else if(scale > cg_bigFont.value)
-		font = &cgDC.Assets.bigFont;
-	useScale = scale * font->glyphScale;
-	max = 0;
-	if(text){
-		len = strlen(text);
-		if(limit > 0 && len > limit)
-			len = limit;
-		count = 0;
-		while(s && *s && count < len){
-			if(Q_IsColorString(s)){
-				s += 2;
-				continue;
-			}else{
-				glyph = &font->glyphs[*s & 255];
-				if(max < glyph->height)
-					max = glyph->height;
-				s++;
-				count++;
-			}
-		}
-	}
-	return max * useScale;
-}
-
-void
-CG_Text_PaintChar(float x, float y, float width, float height, float scale, float s, float t, float s2, float t2, qhandle_t hShader)
-{
-	float w, h;
-	w = width * scale;
-	h = height * scale;
-	adjustcoords(&x, &y, &w, &h);
-	trap_R_DrawStretchPic(x, y, w, h, s, t, s2, t2, hShader);
-}
-
-void
-CG_Text_Paint(float x, float y, float scale, vec4_t color, const char *text, float adjust, int limit, int style)
-{
-	int len, count;
-	vec4_t newColor;
-	glyphInfo_t *glyph;
-	float useScale;
-	fontInfo_t *font = &cgDC.Assets.textFont;
-	if(scale <= cg_smallFont.value)
-		font = &cgDC.Assets.smallFont;
-	else if(scale > cg_bigFont.value)
-		font = &cgDC.Assets.bigFont;
-	useScale = scale * font->glyphScale;
-	if(text){
-		const char *s = text;
-		trap_R_SetColor(color);
-		memcpy(&newColor[0], &color[0], sizeof(vec4_t));
-		len = strlen(text);
-		if(limit > 0 && len > limit)
-			len = limit;
-		count = 0;
-		while(s && *s && count < len){
-			glyph = &font->glyphs[*s & 255];
-			//int yadj = Assets.textFont.glyphs[text[i]].bottom + Assets.textFont.glyphs[text[i]].top;
-			//float yadj = scale * (Assets.textFont.glyphs[text[i]].imageHeight - Assets.textFont.glyphs[text[i]].height);
-			if(Q_IsColorString(s)){
-				memcpy(newColor, g_color_table[ColorIndex(*(s+1))], sizeof(newColor));
-				newColor[3] = color[3];
-				trap_R_SetColor(newColor);
-				s += 2;
-				continue;
-			}else{
-				float yadj = useScale * glyph->top;
-				if(style == ITEM_TEXTSTYLE_SHADOWED || style == ITEM_TEXTSTYLE_SHADOWEDMORE){
-					int ofs = style == ITEM_TEXTSTYLE_SHADOWED ? 1 : 2;
-					colorBlack[3] = newColor[3];
-					trap_R_SetColor(colorBlack);
-					CG_Text_PaintChar(x + ofs, y - yadj + ofs,
-							  glyph->imageWidth,
-							  glyph->imageHeight,
-							  useScale,
-							  glyph->s,
-							  glyph->t,
-							  glyph->s2,
-							  glyph->t2,
-							  glyph->glyph);
-					colorBlack[3] = 1.0;
-					trap_R_SetColor(newColor);
-				}
-				CG_Text_PaintChar(x, y - yadj,
-						  glyph->imageWidth,
-						  glyph->imageHeight,
-						  useScale,
-						  glyph->s,
-						  glyph->t,
-						  glyph->s2,
-						  glyph->t2,
-						  glyph->glyph);
-				// drawpic(x, y - yadj, scale * cgDC.Assets.textFont.glyphs[text[i]].imageWidth, scale * cgDC.Assets.textFont.glyphs[text[i]].imageHeight, cgDC.Assets.textFont.glyphs[text[i]].glyph);
-				x += (glyph->xSkip * useScale) + adjust;
-				s++;
-				count++;
-			}
-		}
-		trap_R_SetColor(nil);
-	}
-}
-
-#endif
 
 /*
 ==============
@@ -201,7 +41,6 @@ drawfield
 Draws large numbers for status bar and powerups
 ==============
 */
-#ifndef MISSIONPACK
 static void
 drawfield(int x, int y, int width, int value)
 {
@@ -255,7 +94,6 @@ drawfield(int x, int y, int width, int value)
 	}
 }
 
-#endif	// MISSIONPACK
 
 /*
 ================
@@ -392,7 +230,6 @@ CG_DrawStatusBarHead
 
 ================
 */
-#ifndef MISSIONPACK
 
 static void
 CG_DrawStatusBarHead(float x)
@@ -446,7 +283,6 @@ CG_DrawStatusBarHead(float x)
 		    cg.snap->ps.clientNum, angles);
 }
 
-#endif	// MISSIONPACK
 
 /*
 ================
@@ -454,14 +290,12 @@ CG_DrawStatusBarFlag
 
 ================
 */
-#ifndef MISSIONPACK
 static void
 CG_DrawStatusBarFlag(float x, int team)
 {
 	drawflag(x, 480 - ICON_SIZE, ICON_SIZE, ICON_SIZE, team, qfalse);
 }
 
-#endif	// MISSIONPACK
 
 /*
 ================
@@ -496,7 +330,6 @@ drawstatusbar
 
 ================
 */
-#ifndef MISSIONPACK
 static void
 drawstatusbar(void)
 {
@@ -614,7 +447,6 @@ drawstatusbar(void)
 	}
 }
 
-#endif
 
 /*
 ===========================================================================================
@@ -990,7 +822,6 @@ CG_DrawScores
 Draw the small two score display
 =================
 */
-#ifndef MISSIONPACK
 static float
 CG_DrawScores(float y)
 {
@@ -1131,14 +962,12 @@ CG_DrawScores(float y)
 	return y1 - 8;
 }
 
-#endif	// MISSIONPACK
 
 /*
 ================
 drawpowerups
 ================
 */
-#ifndef MISSIONPACK
 static float
 drawpowerups(float y)
 {
@@ -1229,7 +1058,6 @@ drawpowerups(float y)
 	return y;
 }
 
-#endif	// MISSIONPACK
 
 /*
 =====================
@@ -1237,7 +1065,6 @@ drawlowerright
 
 =====================
 */
-#ifndef MISSIONPACK
 static void
 drawlowerright(void)
 {
@@ -1252,14 +1079,12 @@ drawlowerright(void)
 	drawpowerups(y);
 }
 
-#endif	// MISSIONPACK
 
 /*
 ===================
 drawpickup
 ===================
 */
-#ifndef MISSIONPACK
 static int
 drawpickup(int y)
 {
@@ -1286,7 +1111,6 @@ drawpickup(int y)
 	return y;
 }
 
-#endif	// MISSIONPACK
 
 /*
 =====================
@@ -1294,7 +1118,6 @@ drawlowerleft
 
 =====================
 */
-#ifndef MISSIONPACK
 static void
 drawlowerleft(void)
 {
@@ -1309,7 +1132,6 @@ drawlowerleft(void)
 	drawpickup(y);
 }
 
-#endif	// MISSIONPACK
 
 //===========================================================================================
 
@@ -1318,7 +1140,6 @@ drawlowerleft(void)
 drawteaminfo
 =================
 */
-#ifndef MISSIONPACK
 static void
 drawteaminfo(void)
 {
@@ -1375,14 +1196,12 @@ drawteaminfo(void)
 	}
 }
 
-#endif	// MISSIONPACK
 
 /*
 ===================
 drawholdable
 ===================
 */
-#ifndef MISSIONPACK
 static void
 drawholdable(void)
 {
@@ -1395,29 +1214,7 @@ drawholdable(void)
 	}
 }
 
-#endif	// MISSIONPACK
 
-#ifdef MISSIONPACK
-/*
-===================
-CG_DrawPersistantPowerup
-===================
-*/
-#if 0	// sos001208 - DEAD
-static void
-CG_DrawPersistantPowerup(void)
-{
-	int value;
-
-	value = cg.snap->ps.stats[STAT_PERSISTANT_POWERUP];
-	if(value){
-		registeritemgfx(value);
-		drawpic(640-ICON_SIZE, (SCREEN_HEIGHT-ICON_SIZE)/2 - ICON_SIZE, ICON_SIZE, ICON_SIZE, cg_items[value].icon);
-	}
-}
-
-#endif
-#endif	// MISSIONPACK
 
 /*
 ===================
@@ -1614,13 +1411,8 @@ drawlagometer(void)
 	}
 
 	// draw the graph
-#ifdef MISSIONPACK
-	x = 640 - 48;
-	y = 480 - 144;
-#else
 	x = 640 - 48;
 	y = 480 - 48;
-#endif
 
 	trap_R_SetColor(nil);
 	drawpic(x, y, 48, 48, cgs.media.lagometerShader);
@@ -1748,9 +1540,6 @@ drawcenterstr(void)
 	char *start;
 	int l;
 	int x, y, w;
-#ifdef MISSIONPACK
-	int h;
-#endif
 	float *color;
 
 	if(!cg.centerprinttime)
@@ -1776,13 +1565,6 @@ drawcenterstr(void)
 		}
 		linebuffer[l] = 0;
 
-#ifdef MISSIONPACK
-		w = CG_Text_Width(linebuffer, 0.5, 0);
-		h = CG_Text_Height(linebuffer, 0.5, 0);
-		x = (SCREEN_WIDTH - w) / 2;
-		CG_Text_Paint(x, y + h, 0.5, color, linebuffer, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE);
-		y += h + 6;
-#else
 		w = cg.centerprintcharwidth * drawstrlen(linebuffer);
 
 		x = (SCREEN_WIDTH - w) / 2;
@@ -1791,7 +1573,6 @@ drawcenterstr(void)
 				 cg.centerprintcharwidth, (int)(cg.centerprintcharwidth * 1.5), 0);
 
 		y += cg.centerprintcharwidth * 1.5;
-#endif
 		while(*start && (*start != '\n'))
 			start++;
 		if(!*start)
@@ -2004,14 +1785,8 @@ drawxhairnames(void)
 	}
 
 	name = cgs.clientinfo[cg.xhairclientnum].name;
-#ifdef MISSIONPACK
-	color[3] *= 0.5f;
-	w = CG_Text_Width(name, 0.3f, 0);
-	CG_Text_Paint(320 - w / 2, 190, 0.3f, color, name, 0, 0, ITEM_TEXTSTYLE_SHADOWED);
-#else
 	w = drawstrlen(name) * BIGCHAR_WIDTH;
 	drawbigstr(320 - w / 2, 170, name, color[3] * 0.5f);
-#endif
 	trap_R_SetColor(nil);
 }
 
@@ -2075,15 +1850,8 @@ drawvote(void)
 	if(sec < 0)
 		sec = 0;
 
-#ifdef MISSIONPACK
 	s = va("VOTE(%i):%s yes:%i no:%i", sec, cgs.votestr, cgs.voteyes, cgs.voteno);
 	drawsmallstr(0, 58, s, 1.0F);
-	s = "or press ESC then click Vote";
-	drawsmallstr(0, 58 + SMALLCHAR_HEIGHT + 2, s, 1.0F);
-#else
-	s = va("VOTE(%i):%s yes:%i no:%i", sec, cgs.votestr, cgs.voteyes, cgs.voteno);
-	drawsmallstr(0, 58, s, 1.0F);
-#endif
 }
 
 /*
@@ -2124,60 +1892,7 @@ drawteamvote(void)
 static qboolean
 drawscoreboard(void)
 {
-#ifdef MISSIONPACK
-	static qboolean firstTime = qtrue;
-
-	if(menuScoreboard)
-		menuScoreboard->window.flags &= ~WINDOW_FORCED;
-	if(cg_paused.integer){
-		cg.deferredplayerloading = 0;
-		firstTime = qtrue;
-		return qfalse;
-	}
-
-	// should never happen in Team Arena
-	if(cgs.gametype == GT_SINGLE_PLAYER && cg.pps.pm_type == PM_INTERMISSION){
-		cg.deferredplayerloading = 0;
-		firstTime = qtrue;
-		return qfalse;
-	}
-
-	// don't draw scoreboard during death while warmup up
-	if(cg.warmup && !cg.showscores)
-		return qfalse;
-
-	if(cg.showscores || cg.pps.pm_type == PM_DEAD || cg.pps.pm_type == PM_INTERMISSION){
-	}else  if(!fadecolor(cg.scorefadetime, FADE_TIME)){
-		// next time scoreboard comes up, don't print killer
-		cg.deferredplayerloading = 0;
-		cg.killername[0] = 0;
-		firstTime = qtrue;
-		return qfalse;
-	}
-
-	if(menuScoreboard == nil){
-		if(cgs.gametype >= GT_TEAM)
-			menuScoreboard = Menus_FindByName("teamscore_menu");
-		else
-			menuScoreboard = Menus_FindByName("score_menu");
-	}
-
-	if(menuScoreboard){
-		if(firstTime){
-			setscoresel(menuScoreboard);
-			firstTime = qfalse;
-		}
-		Menu_Paint(menuScoreboard, qtrue);
-	}
-
-	// load any models that have been deferred
-	if(++cg.deferredplayerloading > 10)
-		loaddeferred();
-
-	return qtrue;
-#else
 	return drawoldscoreboard();
-#endif
 }
 
 /*
@@ -2189,17 +1904,10 @@ static void
 drawintermission(void)
 {
 //	int key;
-#ifdef MISSIONPACK
-	//if (cg_singlePlayer.integer) {
-	//	drawcenterstr();
-	//	return;
-	//}
-#else
 	if(cgs.gametype == GT_SINGLE_PLAYER){
 		drawcenterstr();
 		return;
 	}
-#endif
 	cg.scorefadetime = cg.time;
 	cg.scoreboardshown = drawscoreboard();
 }
@@ -2305,11 +2013,7 @@ drawwarmup(void)
 	int w;
 	int sec;
 	int i;
-#ifdef MISSIONPACK
-	float scale;
-#else
 	int cw;
-#endif
 	clientInfo_t *ci1, *ci2;
 	const char *s;
 
@@ -2339,10 +2043,6 @@ drawwarmup(void)
 
 		if(ci1 && ci2){
 			s = va("%s vs %s", ci1->name, ci2->name);
-#ifdef MISSIONPACK
-			w = CG_Text_Width(s, 0.6f, 0);
-			CG_Text_Paint(320 - w / 2, 60, 0.6f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE);
-#else
 			w = drawstrlen(s);
 			if(w > 640 / GIANT_WIDTH)
 				cw = 640 / w;
@@ -2350,7 +2050,6 @@ drawwarmup(void)
 				cw = GIANT_WIDTH;
 			drawstr2(320 - w * cw/2, 20, s, colorWhite,
 					 qfalse, qtrue, cw, (int)(cw * 1.5f), 0);
-#endif
 		}
 	}else{
 		if(cgs.gametype == GT_FFA)
@@ -2370,10 +2069,6 @@ drawwarmup(void)
 		}else
 			s = "";
 
-#ifdef MISSIONPACK
-		w = CG_Text_Width(s, 0.6f, 0);
-		CG_Text_Paint(320 - w / 2, 90, 0.6f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE);
-#else
 		w = drawstrlen(s);
 		if(w > 640 / GIANT_WIDTH)
 			cw = 640 / w;
@@ -2381,7 +2076,6 @@ drawwarmup(void)
 			cw = GIANT_WIDTH;
 		drawstr2(320 - w * cw/2, 25, s, colorWhite,
 				 qfalse, qtrue, cw, (int)(cw * 1.1f), 0);
-#endif
 	}
 
 	sec = (sec - cg.time) / 1000;
@@ -2407,25 +2101,6 @@ drawwarmup(void)
 		}
 	}
 
-#ifdef MISSIONPACK
-	switch(cg.warmupcount){
-	case 0:
-		scale = 0.54f;
-		break;
-	case 1:
-		scale = 0.51f;
-		break;
-	case 2:
-		scale = 0.48f;
-		break;
-	default:
-		scale = 0.45f;
-		break;
-	}
-
-	w = CG_Text_Width(s, scale, 0);
-	CG_Text_Paint(320 - w / 2, 125, scale, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE);
-#else
 	switch(cg.warmupcount){
 	case 0:
 		cw = 28;
@@ -2444,30 +2119,9 @@ drawwarmup(void)
 	w = drawstrlen(s);
 	drawstr2(320 - w * cw/2, 70, s, colorWhite,
 			 qfalse, qtrue, cw, (int)(cw * 1.5), 0);
-#endif
 }
 
 //==================================================================================
-#ifdef MISSIONPACK
-/*
-=================
-CG_DrawTimedMenus
-=================
-*/
-void
-CG_DrawTimedMenus(void)
-{
-	if(cg.voicetime){
-		int t = cg.time - cg.voicetime;
-		if(t > 2500){
-			Menus_CloseByName("voiceMenu");
-			trap_Cvar_Set("cl_conXOffset", "0");
-			cg.voicetime = 0;
-		}
-	}
-}
-
-#endif
 /*
 =================
 draw2d
@@ -2476,11 +2130,6 @@ draw2d
 static void
 draw2d(stereoFrame_t stereoFrame)
 {
-#ifdef MISSIONPACK
-	if(cgs.orderPending && cg.time > cgs.orderTime)
-		CG_CheckOrderPending();
-
-#endif
 	// if we are taking a levelshot for the menu, don't draw anything
 	if(cg.levelshot)
 		return;
@@ -2508,14 +2157,7 @@ draw2d(stereoFrame_t stereoFrame)
 	}else{
 		// don't draw any status if dead or the scoreboard is being explicitly shown
 		if(!cg.showscores && cg.snap->ps.stats[STAT_HEALTH] > 0){
-#ifdef MISSIONPACK
-			if(cg_drawStatus.integer){
-				Menu_PaintAll();
-				CG_DrawTimedMenus();
-			}
-#else
 			drawstatusbar();
-#endif
 
 			CG_DrawAmmoWarning();
 
@@ -2527,18 +2169,12 @@ draw2d(stereoFrame_t stereoFrame)
 			drawxhairnames();
 			drawweapsel();
 
-#ifndef MISSIONPACK
 			drawholdable();
-#else
-			//CG_DrawPersistantPowerup();
-#endif
 			drawreward();
 		}
 
 		if(cgs.gametype >= GT_TEAM){
-#ifndef MISSIONPACK
 			drawteaminfo();
-#endif
 		}
 	}
 
@@ -2551,18 +2187,10 @@ draw2d(stereoFrame_t stereoFrame)
 	if(cg_drawSpeedometer.integer)
 		drawspeedometer();
 
-#ifdef MISSIONPACK
-	if(!cg_paused.integer)
-		drawupperright(stereoFrame);
-
-#else
 	drawupperright(stereoFrame);
-#endif
 
-#ifndef MISSIONPACK
 	drawlowerright();
 	drawlowerleft();
-#endif
 
 	if(!drawfollow())
 		drawwarmup();
@@ -2576,10 +2204,7 @@ draw2d(stereoFrame_t stereoFrame)
 static void
 CG_DrawTourneyScoreboard(void)
 {
-#ifdef MISSIONPACK
-#else
 	CG_DrawOldTourneyScoreboard();
-#endif
 }
 
 /*

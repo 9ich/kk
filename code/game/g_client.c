@@ -805,17 +805,6 @@ clientuserinfochanged(int clientNum)
         }
 */
 
-#ifdef MISSIONPACK
-	if(g_gametype.integer >= GT_TEAM)
-		client->pers.teaminfo = qtrue;
-	else{
-		s = Info_ValueForKey(userinfo, "teamoverlay");
-		if(!*s || atoi(s) != 0)
-			client->pers.teaminfo = qtrue;
-		else
-			client->pers.teaminfo = qfalse;
-	}
-#else
 	// teaminfo
 	s = Info_ValueForKey(userinfo, "teamoverlay");
 	if(!*s || atoi(s) != 0)
@@ -823,7 +812,6 @@ clientuserinfochanged(int clientNum)
 	else
 		client->pers.teaminfo = qfalse;
 
-#endif
 	/*
 	s = Info_ValueForKey( userinfo, "cg_pmove_fixed" );
 	if ( !*s || atoi( s ) == 0 ) {

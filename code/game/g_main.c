@@ -994,18 +994,11 @@ intermission(void)
 			clientrespawn(client);
 		clientintermission(client);
 	}
-#ifdef MISSIONPACK
-	if(g_singlePlayer.integer){
-		trap_Cvar_Set("ui_singlePlayerActive", "0");
-		updatetourney();
-	}
-#else
 	// if single player game
 	if(g_gametype.integer == GT_SINGLE_PLAYER){
 		updatetourney();
 		spawnonvictorypads();
 	}
-#endif
 	// send the current scoring to all clients
 	sendscoreboardmsgall();
 }
@@ -1302,18 +1295,10 @@ CheckExitRules(void)
 	}
 
 	if(level.intermissionqueued){
-#ifdef MISSIONPACK
-		int time = (g_singlePlayer.integer) ? SP_INTERMISSION_DELAY_TIME : INTERMISSION_DELAY_TIME;
-		if(level.time - level.intermissionqueued >= time){
-			level.intermissionqueued = 0;
-			intermission();
-		}
-#else
 		if(level.time - level.intermissionqueued >= INTERMISSION_DELAY_TIME){
 			level.intermissionqueued = 0;
 			intermission();
 		}
-#endif
 		return;
 	}
 

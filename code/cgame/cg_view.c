@@ -813,10 +813,6 @@ drawframe(int serverTime, stereoFrame_t stereoview, qboolean demoplayback)
 	// add buffered sounds
 	CG_PlayBufferedSounds();
 
-#ifdef MISSIONPACK
-	// play buffered voice chats
-	CG_PlayBufferedVoiceChats();
-#endif
 
 	// finish up the rest of the refdef
 	if(cg.testmodelent.hModel)
