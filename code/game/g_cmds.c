@@ -295,9 +295,11 @@ Cmd_Give_f(gentity_t *ent)
 			return;
 
 		it_ent = entspawn();
-		veccpy(ent->r.currentOrigin, it_ent->s.origin);
+		vecadd(ent->r.absmin, ent->r.absmax, it_ent->s.origin);
+		vecmul(it_ent->s.origin, 0.5f, it_ent->s.origin);
 		it_ent->classname = it->classname;
 		itemspawn(it_ent, it);
+		it_ent->spawnflags |= 1;	// SUSPEND
 		itemspawnfinish(it_ent);
 		memset(&trace, 0, sizeof(trace));
 		item_touch(it_ent, ent, &trace);
