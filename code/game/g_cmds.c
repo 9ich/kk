@@ -1395,6 +1395,29 @@ Cmd_Stats_f(gentity_t *ent)
 */
 }
 
+void
+Cmd_Mark_f(gentity_t *ent)
+{
+	if(!g_cheats.integer){
+		trap_SendServerCommand(ent-g_entities, "print \"Cheats are not enabled on this server.\n\"");
+		return;
+	}
+	veccpy(ent->client->ps.origin, ent->s.origin2);
+	trap_SendServerCommand(ent-g_entities, "print \"Position marked. Use /recall to return here.\n\"");
+}
+
+void
+Cmd_Recall_f(gentity_t *ent)
+{
+	if(!g_cheats.integer){
+		trap_SendServerCommand(ent-g_entities, "print \"Cheats are not enabled on this server.\n\"");
+		return;
+	}
+	setorigin(ent, ent->s.origin2);
+	veccpy(ent->s.origin2, ent->client->ps.origin);
+	vecset(ent->client->ps.velocity, 0, 0, 0);
+}
+
 /*
 =================
 clientcmd
@@ -1474,6 +1497,10 @@ clientcmd(int clientNum)
 		Cmd_SetViewpos_f(ent);
 	else if(Q_stricmp(cmd, "stats") == 0)
 		Cmd_Stats_f(ent);
+	else if(Q_stricmp(cmd, "mark") == 0)
+		Cmd_Mark_f(ent);
+	else if(Q_stricmp(cmd, "recall") == 0)
+		Cmd_Recall_f(ent);
 	else
 		trap_SendServerCommand(clientNum, va("print \"unknown cmd %s\n\"", cmd));
 }
