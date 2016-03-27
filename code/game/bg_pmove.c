@@ -1136,7 +1136,7 @@ PM_Weapon(void)
 		break;
 #ifdef MISSIONPACK
 	case WP_NAILGUN:
-		addTime = 1000;
+		addTime = 120;
 		break;
 	case WP_PROX_LAUNCHER:
 		addTime = 800;

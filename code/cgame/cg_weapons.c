@@ -44,7 +44,7 @@ CG_MachineGunEjectBrass(centity_t *cent)
 	re = &le->refEntity;
 
 	velocity[0] = -5 + 10 * crandom();
-	velocity[1] = -300 + 10 * crandom();
+	velocity[1] = -400 + 10 * crandom();
 	velocity[2] = -5 + 10 * crandom();
 
 	le->type = LE_FRAGMENT;
@@ -57,7 +57,7 @@ CG_MachineGunEjectBrass(centity_t *cent)
 	AnglesToAxis(cent->lerpangles, v);
 
 	offset[0] = -4;
-	offset[1] = -8;
+	offset[1] = -12;
 	offset[2] = 0;
 
 	xoffset[0] = offset[0] * v[0][0] + offset[1] * v[1][0] + offset[2] * v[2][0];
@@ -179,29 +179,68 @@ CG_NailgunEjectBrass
 static void
 CG_NailgunEjectBrass(centity_t *cent)
 {
-	localEntity_t *smoke;
-	vec3_t origin;
+	localEntity_t *le;
+	refEntity_t *re;
+	vec3_t velocity, xvelocity;
+	vec3_t offset, xoffset;
+	float waterScale = 1.0f;
 	vec3_t v[3];
-	vec3_t offset;
-	vec3_t xoffset;
-	vec3_t up;
+
+	if(cg_brassTime.integer <= 0)
+		return;
+
+	le = alloclocalent();
+	re = &le->refEntity;
+
+	velocity[0] = -5 + 10 * crandom();
+	velocity[1] = -400 + 10 * crandom();
+	velocity[2] = -5 + 10 * crandom();
+
+	le->type = LE_FRAGMENT;
+	le->starttime = cg.time;
+	le->endtime = le->starttime + cg_brassTime.integer + (cg_brassTime.integer / 4) * random();
+
+	le->pos.trType = TR_GRAVITY;
+	le->pos.trTime = cg.time - (rand()&15);
 
 	AnglesToAxis(cent->lerpangles, v);
 
-	offset[0] = 0;
+	offset[0] = -4;
 	offset[1] = -12;
-	offset[2] = 24;
+	offset[2] = 0;
 
 	xoffset[0] = offset[0] * v[0][0] + offset[1] * v[1][0] + offset[2] * v[2][0];
 	xoffset[1] = offset[0] * v[0][1] + offset[1] * v[1][1] + offset[2] * v[2][1];
 	xoffset[2] = offset[0] * v[0][2] + offset[1] * v[1][2] + offset[2] * v[2][2];
-	vecadd(cent->lerporigin, xoffset, origin);
+	vecadd(cent->lerporigin, xoffset, re->origin);
 
-	vecset(up, 0, 0, 64);
+	veccpy(re->origin, le->pos.trBase);
 
-	smoke = smokepuff(origin, up, 32, 1, 1, 1, 0.33f, 700, cg.time, 0, 0, cgs.media.smokePuffShader);
-	// use the optimized local entity add
-	smoke->type = LE_SCALE_FADE;
+	if(pointcontents(re->origin, -1) & CONTENTS_WATER)
+		waterScale = 0.10f;
+
+	xvelocity[0] = velocity[0] * v[0][0] + velocity[1] * v[1][0] + velocity[2] * v[2][0];
+	xvelocity[1] = velocity[0] * v[0][1] + velocity[1] * v[1][1] + velocity[2] * v[2][1];
+	xvelocity[2] = velocity[0] * v[0][2] + velocity[1] * v[1][2] + velocity[2] * v[2][2];
+	vecmul(xvelocity, waterScale, le->pos.trDelta);
+
+	AxisCopy(axisDefault, re->axis);
+	re->hModel = cgs.media.machinegunBrassModel;
+
+	le->bouncefactor = 0.4 * waterScale;
+
+	le->angles.trType = TR_LINEAR;
+	le->angles.trTime = cg.time;
+	le->angles.trBase[0] = rand()&31;
+	le->angles.trBase[1] = rand()&31;
+	le->angles.trBase[2] = rand()&31;
+	le->angles.trDelta[0] = -5 + 10*random();
+	le->angles.trDelta[1] = -5 + 10*random();
+	le->angles.trDelta[2] = -5 + 10*random();
+
+	le->flags = LEF_TUMBLE;
+	le->bouncesoundtype = LEBS_BRASS;
+	le->marktype = LEMT_NONE;
 }
 
 #endif
@@ -759,11 +798,8 @@ registerweap(int weaponNum)
 #ifdef MISSIONPACK
 	case WP_NAILGUN:
 		weapinfo->ejectbrass = CG_NailgunEjectBrass;
-		weapinfo->missileTrailFunc = CG_NailTrail;
 //		weapinfo->missilesound = trap_S_RegisterSound( "sound/weapons/nailgun/wnalflit.wav", qfalse );
-		weapinfo->trailradius = 16;
-		weapinfo->trailtime = 250;
-		weapinfo->missilemodel = trap_R_RegisterModel("models/weaphits/nail.md3");
+		weapinfo->missilemodel = trap_R_RegisterModel("models/ammo/rocket/rocket.md3");
 		MAKERGB(weapinfo->flashcolor, 1, 0.75f, 0);
 		weapinfo->flashsnd[0] = trap_S_RegisterSound("sound/weapons/nailgun/wnalfire.wav", qfalse);
 		break;

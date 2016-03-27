@@ -28,8 +28,6 @@ static float s_quadFactor;
 static vec3_t forward, right, up;
 static vec3_t muzzle;
 
-#define NUM_NAILSHOTS 15
-
 static void
 inheritvel(gentity_t *ent, gentity_t *m)
 {
@@ -729,15 +727,12 @@ void
 Weapon_Nailgun_Fire(gentity_t *ent)
 {
 	gentity_t       *m;
-	int count;
 
-	for(count = 0; count < NUM_NAILSHOTS; count++){
-		m = fire_nail(ent, muzzle, forward, right, up);
-		m->damage *= s_quadFactor;
-		m->splashdmg *= s_quadFactor;
-	}
-
+	m = fire_nail(ent, muzzle, forward);
+	m->damage *= s_quadFactor;
+	m->splashdmg *= s_quadFactor;
 	inheritvel(ent, m);
+
 }
 
 /*
@@ -852,15 +847,7 @@ fireweapon(gentity_t *ent)
 
 	// track shots taken for accuracy tracking.  Grapple is not a weapon and gauntet is just not tracked
 	if(ent->s.weapon != WP_GRAPPLING_HOOK && ent->s.weapon != WP_GAUNTLET){
-#ifdef MISSIONPACK
-		if(ent->s.weapon == WP_NAILGUN)
-			ent->client->accuracyshots += NUM_NAILSHOTS;
-		else
-			ent->client->accuracyshots++;
-
-#else
 		ent->client->accuracyshots++;
-#endif
 	}
 
 	// set aiming directions

@@ -285,7 +285,8 @@ G_MissileImpact(gentity_t *ent, trace_t *trace)
 	if(!other->takedmg &&
 	   (ent->s.eFlags & (EF_BOUNCE | EF_BOUNCE_HALF))){
 		G_BounceMissile(ent, trace);
-		addevent(ent, EV_GRENADE_BOUNCE, 0);
+		if(ent->s.weapon == WP_GRENADE_LAUNCHER)
+			addevent(ent, EV_GRENADE_BOUNCE, 0);
 		return;
 	}
 
@@ -787,19 +788,15 @@ fire_grapple(gentity_t *self, vec3_t start, vec3_t dir)
 fire_nail
 =================
 */
-#define NAILGUN_SPREAD 500
-
 gentity_t *
-fire_nail(gentity_t *self, vec3_t start, vec3_t forward, vec3_t right, vec3_t up)
+fire_nail(gentity_t *self, vec3_t start, vec3_t dir)
 {
 	gentity_t *bolt;
-	vec3_t dir;
 	vec3_t end;
-	float r, u, scale;
 
 	bolt = entspawn();
 	bolt->classname = "nail";
-	bolt->nextthink = level.time + 10000;
+	bolt->nextthink = level.time + 5000;
 	bolt->think = G_ExplodeMissile;
 	bolt->s.eType = ET_MISSILE;
 	bolt->s.eFlags = EF_BOUNCE;
@@ -813,22 +810,10 @@ fire_nail(gentity_t *self, vec3_t start, vec3_t forward, vec3_t right, vec3_t up
 	bolt->target_ent = nil;
 
 	bolt->s.pos.trType = TR_LINEAR;
-	bolt->s.pos.trTime = level.time;
+	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
 	veccpy(start, bolt->s.pos.trBase);
-
-	r = random() * M_PI * 2.0f;
-	u = sin(r) * crandom() * NAILGUN_SPREAD * 16;
-	r = cos(r) * crandom() * NAILGUN_SPREAD * 16;
-	vecmad(start, 8192 * 16, forward, end);
-	vecmad(end, r, right, end);
-	vecmad(end, u, up, end);
-	vecsub(end, start, dir);
-	vecnorm(dir);
-
-	scale = 555 + random() * 1800;
-	vecmul(dir, scale, bolt->s.pos.trDelta);
-	SnapVector(bolt->s.pos.trDelta);
-
+	vecmul(dir, 1600, bolt->s.pos.trDelta);
+	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
 	veccpy(start, bolt->r.currentOrigin);
 
 	return bolt;
