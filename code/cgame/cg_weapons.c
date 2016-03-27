@@ -82,12 +82,12 @@ CG_MachineGunEjectBrass(centity_t *cent)
 
 	le->angles.trType = TR_LINEAR;
 	le->angles.trTime = cg.time;
-	le->angles.trBase[0] = rand()&31;
-	le->angles.trBase[1] = rand()&31;
-	le->angles.trBase[2] = rand()&31;
-	le->angles.trDelta[0] = -5 + 10*random();
-	le->angles.trDelta[1] = -5 + 10*random();
-	le->angles.trDelta[2] = -5 + 10*random();
+	le->angles.trBase[0] = cent->lerpangles[0] + (rand()&31);
+	le->angles.trBase[1] = cent->lerpangles[1] + (-89 + rand()&31);
+	le->angles.trBase[2] = cent->lerpangles[2] + (rand()&31);
+	le->angles.trDelta[0] = -15 + 30*random();
+	le->angles.trDelta[1] = -15 + 30*random();
+	le->angles.trDelta[2] = -15 + 30*random();
 
 	le->flags = LEF_TUMBLE;
 	le->bouncesoundtype = LEBS_BRASS;
@@ -231,12 +231,12 @@ CG_NailgunEjectBrass(centity_t *cent)
 
 	le->angles.trType = TR_LINEAR;
 	le->angles.trTime = cg.time;
-	le->angles.trBase[0] = rand()&31;
-	le->angles.trBase[1] = rand()&31;
-	le->angles.trBase[2] = rand()&31;
-	le->angles.trDelta[0] = -5 + 10*random();
-	le->angles.trDelta[1] = -5 + 10*random();
-	le->angles.trDelta[2] = -5 + 10*random();
+	le->angles.trBase[0] = cent->lerpangles[0] + (rand()&31);
+	le->angles.trBase[1] = cent->lerpangles[1] + (-89 + rand()&31);
+	le->angles.trBase[2] = cent->lerpangles[2] + (rand()&31);
+	le->angles.trDelta[0] = -15 + 30*random();
+	le->angles.trDelta[1] = -15 + 30*random();
+	le->angles.trDelta[2] = -15 + 30*random();
 
 	le->flags = LEF_TUMBLE;
 	le->bouncesoundtype = LEBS_BRASS;
