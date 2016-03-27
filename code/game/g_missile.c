@@ -802,6 +802,7 @@ fire_nail(gentity_t *self, vec3_t start, vec3_t forward, vec3_t right, vec3_t up
 	bolt->nextthink = level.time + 10000;
 	bolt->think = G_ExplodeMissile;
 	bolt->s.eType = ET_MISSILE;
+	bolt->s.eFlags = EF_BOUNCE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_NAILGUN;
 	bolt->r.ownerNum = self->s.number;
