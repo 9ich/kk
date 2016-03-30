@@ -653,43 +653,58 @@ void Parse3DMatrix (char **buf_p, int z, int y, int x, float *m) {
 	COM_MatchToken( buf_p, ")" );
 }
 
+void Com_HexStrToColor( const char *str, vec4_t clr )
+{
+	long c;
+
+	c = Com_HexStrToInt(str);
+	if(strlen(str) == 6)
+		c = (c << 8) | 0xFF;
+	clr[3] = (c & 0xFF) / 255.0f;
+	clr[2] = ((c >> 8) & 0xFF) / 255.0f;
+	clr[1] = ((c >> 16) & 0xFF) / 255.0f;
+	clr[0] = ((c >> 24) & 0xFF) / 255.0f;
+}
+
 /*
 ===================
 Com_HexStrToInt
 ===================
 */
-int Com_HexStrToInt( const char *str )
+long Com_HexStrToInt( const char *str )
 {
+	int i, n, len;
+
 	if ( !str || !str[ 0 ] )
 		return -1;
 
 	// check for hex code
-	if( str[ 0 ] == '0' && str[ 1 ] == 'x' )
+	if( str[ 0 ] == '0' && ( str[ 1 ] == 'x' ||  str[ 1 ] == 'X' ) )
 	{
-		int i, n = 0;
-
-		for( i = 2; i < strlen( str ); i++ )
-		{
-			char digit;
-
-			n *= 16;
-
-			digit = tolower( str[ i ] );
-
-			if( digit >= '0' && digit <= '9' )
-				digit -= '0';
-			else if( digit >= 'a' && digit <= 'f' )
-				digit = digit - 'a' + 10;
-			else
-				return -1;
-
-			n += digit;
-		}
-
-		return n;
+		str += 2;
 	}
 
-	return -1;
+	n = 0;
+	len = strlen( str );
+	for( i = 0; i < len; i++ )
+	{
+		char digit;
+
+		n *= 16;
+
+		digit = tolower( str[ i ] );
+
+		if( digit >= '0' && digit <= '9' )
+			digit -= '0';
+		else if( digit >= 'a' && digit <= 'f' )
+			digit = digit - 'a' + 10;
+		else
+			return -1;
+
+		n += digit;
+	}
+
+	return n;
 }
 
 /*
