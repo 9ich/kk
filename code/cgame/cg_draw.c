@@ -1604,6 +1604,7 @@ drawxhair(void)
 	float f;
 	float x, y;
 	int ca;
+	vec4_t clr;
 
 	if(!cg_drawCrosshair.integer)
 		return;
@@ -1614,14 +1615,11 @@ drawxhair(void)
 	if(cg.thirdperson)
 		return;
 
-	// set color based on health
-	if(cg_crosshairHealth.integer){
-		vec4_t hcolor;
-
-		colorforhealth(hcolor);
-		trap_R_SetColor(hcolor);
-	}else
-		trap_R_SetColor(nil);
+	if(cg_crosshairHealth.integer)
+		colorforhealth(clr);	// set color based on health
+	else
+		Com_HexStrToColor(cg_crosshairColor.string, clr);
+	trap_R_SetColor(clr);
 
 	w = h = cg_crosshairSize.value;
 
@@ -1637,11 +1635,15 @@ drawxhair(void)
 	y = cg_crosshairY.integer;
 	adjustcoords(&x, &y, &w, &h);
 
-	ca = cg_drawCrosshair.integer;
+	ca = cg_drawCrosshair.integer - 1;
 	if(ca < 0)
 		ca = 0;
-	hShader = cgs.media.crosshairShader[ca % NUM_CROSSHAIRS];
+	if(ca >= NUM_CROSSHAIRS)
+		ca = NUM_CROSSHAIRS - 1;
+	hShader = cgs.media.crosshairShader[ca];
 
+	w = round(w);
+	h = round(h);
 	trap_R_DrawStretchPic(x + cg.refdef.x + 0.5 * (cg.refdef.width - w),
 			      y + cg.refdef.y + 0.5 * (cg.refdef.height - h),
 			      w, h, 0, 0, 1, 1, hShader);

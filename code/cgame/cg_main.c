@@ -96,6 +96,7 @@ vmCvar_t cg_crosshairSize;
 vmCvar_t cg_crosshairX;
 vmCvar_t cg_crosshairY;
 vmCvar_t cg_crosshairHealth;
+vmCvar_t cg_crosshairColor;
 vmCvar_t cg_draw2D;
 vmCvar_t cg_drawStatus;
 vmCvar_t cg_animSpeed;
@@ -210,6 +211,7 @@ static cvarTable_t cvarTable[] = {
 	{&cg_drawRewards, "cg_drawRewards", "1", CVAR_ARCHIVE},
 	{&cg_crosshairSize, "cg_crosshairSize", "24", CVAR_ARCHIVE},
 	{&cg_crosshairHealth, "cg_crosshairHealth", "1", CVAR_ARCHIVE},
+	{&cg_crosshairColor, "cg_crosshairColor", "FFFFFFFF", CVAR_ARCHIVE},
 	{&cg_crosshairX, "cg_crosshairX", "0", CVAR_ARCHIVE},
 	{&cg_crosshairY, "cg_crosshairY", "0", CVAR_ARCHIVE},
 	{&cg_brassTime, "cg_brassTime", "10000", CVAR_ARCHIVE},
@@ -819,7 +821,7 @@ CG_RegisterGraphics(void)
 	cgs.media.selectShader = trap_R_RegisterShader("gfx/2d/select");
 
 	for(i = 0; i < NUM_CROSSHAIRS; i++)
-		cgs.media.crosshairShader[i] = trap_R_RegisterShader(va("gfx/2d/crosshair%c", 'a'+i));
+		cgs.media.crosshairShader[i] = trap_R_RegisterShaderNoMip(va("gfx/2d/crosshair%d", i+1));
 
 	cgs.media.backTileShader = trap_R_RegisterShader("gfx/2d/backtile");
 	cgs.media.noammoShader = trap_R_RegisterShader("icons/noammo");
