@@ -1088,22 +1088,15 @@ quat2axis(quat_t q, vec3_t  axis[3])
  * out = q1q2
  */
 void
-quatmul(const quat_t q1, const quat_t q2, quat_t out)
+quatmul(const quat_t q, const quat_t r, quat_t out)
 {
-	float a, b, c, d, e, f, g, h;
+	quat_t s;
 
-	a = (q1[0] + q1[1])*(q2[0] + q2[1]);
-	b = (q1[3] - q1[2])*(q2[2] - q2[3]);
-	c = (q1[0] - q1[1])*(q2[2] + q2[3]);
-	d = (q1[2] + q1[3])*(q2[0] - q2[1]);
-	e = (q1[1] + q1[3])*(q2[1] + q2[2]);
-	f = (q1[1] - q1[3])*(q2[1] - q2[2]);
-	g = (q1[0] + q1[2])*(q2[0] - q2[3]);
-	h = (q1[0] - q1[2])*(q2[0] + q2[3]);
-	out[0] = b + (h - e - f + g)*0.5;	/* r */
-	out[1] = a - (e + f + g + h)*0.5;	/* v0 */
-	out[2] = c + (e - f + g - h)*0.5;	/* v1 */
-	out[3] = d + (e - f - g + h)*0.5;	/* v2 */
+	s[0] = q[0]*r[0] - q[1]*r[1] - q[2]*r[2] - q[3]*r[3];	/* r */
+	s[1] = q[0]*r[1] + r[0]*q[1] + q[2]*r[3] - q[3]*r[2];	/* v0 */
+	s[2] = q[0]*r[2] + r[0]*q[2] + q[3]*r[1] - q[1]*r[3];	/* v1 */
+	s[3] = q[0]*r[3] + r[0]*q[3] + q[1]*r[2] - q[2]*r[1];	/* v2 */
+	quatcpy(s, out);
 }
 
 /*
