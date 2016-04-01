@@ -112,6 +112,12 @@ trap_FS_Seek(fileHandle_t f, long offset, int origin)
 }
 
 void
+trap_Cvar_SetDescription(vmCvar_t *cv, const char *desc)
+{
+	return syscall(G_CVAR_SETDESCRIPTION, cv, desc);
+}
+
+void
 trap_SendConsoleCommand(int exec_when, const char *text)
 {
 	syscall(G_SEND_CONSOLE_COMMAND, exec_when, text);

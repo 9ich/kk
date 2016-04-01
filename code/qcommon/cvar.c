@@ -1316,6 +1316,13 @@ void Cvar_SetDescription( cvar_t *var, const char *var_description )
 	}
 }
 
+void Cvar_VMSetDescription( vmCvar_t *cv, const char *desc )
+{
+	if( cv == NULL )
+		return;
+	Cvar_SetDescription( cvar_indexes + cv->handle, desc );
+}
+
 /*
 =====================
 Cvar_Register

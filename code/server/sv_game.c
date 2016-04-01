@@ -313,6 +313,9 @@ intptr_t SV_GameSystemCalls( intptr_t *args ) {
 	case G_CVAR_VARIABLE_STRING_BUFFER:
 		Cvar_VariableStringBuffer( VMA(1), VMA(2), args[3] );
 		return 0;
+	case G_CVAR_SETDESCRIPTION:
+		Cvar_VMSetDescription( VMA(1), VMA(2) );
+		return 0;
 	case G_ARGC:
 		return Cmd_Argc();
 	case G_ARGV:
