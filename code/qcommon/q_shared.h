@@ -681,6 +681,7 @@ void Vector4Scale( const vec4_t in, vec_t scale, vec4_t out );
 void VectorRotate( vec3_t in, vec3_t matrix[3], vec3_t out );
 
 void	quatset(quat_t q, float w, float x, float y, float z);
+void	quatcpy(quat_t src, quat_t dst);
 void	angles2quat(const vec3_t angles, quat_t out);
 void	quat2angles(const quat_t q, vec3_t a);
 void	quat2axis(quat_t q, vec3_t axis[3]);

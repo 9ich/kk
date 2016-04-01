@@ -1009,6 +1009,15 @@ quatset(quat_t q, float w, float x, float y, float z)
 	q[3] = z;
 }
 
+void
+quatcpy(quat_t src, quat_t dst)
+{
+	dst[0] = src[0];
+	dst[1] = src[1];
+	dst[2] = src[2];
+	dst[3] = src[3];
+}
+
 /* Euler angles to quaternion */
 void
 angles2quat(const vec3_t angles, quat_t out)
@@ -1046,7 +1055,7 @@ quat2angles(const quat_t q, vec3_t a)
 	a[YAW] = (180.0/M_PI)*atan2(2*(q[0]*q[3] + q[1]*q[2]), 1 - 2*(q2[2] + q2[3]));	/* ψ */
 }
 
-/* quaternion  to axis representation */
+/* quaternion to axis representation */
 void
 quat2axis(quat_t q, vec3_t  axis[3])
 {
