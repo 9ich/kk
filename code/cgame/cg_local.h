@@ -351,7 +351,6 @@ typedef struct
 	char		blueteam[MAX_TEAMNAME];
 	qboolean	deferred;
 
-	qboolean	newanims;	// true if using the new mission pack animations
 	qboolean	fixedlegs;	// true if legs yaw is always the same as torso yaw
 	qboolean	fixedtorso;	// true if torso never changes yaw
 
@@ -656,13 +655,6 @@ typedef struct
 	qhandle_t	redFlagShader[3];
 	qhandle_t	blueFlagShader[3];
 	qhandle_t	flagShader[4];
-
-	qhandle_t	flagPoleModel;
-	qhandle_t	flagFlapModel;
-
-	qhandle_t	redFlagFlapSkin;
-	qhandle_t	blueFlagFlapSkin;
-	qhandle_t	neutralFlagFlapSkin;
 
 	qhandle_t	redFlagBaseModel;
 	qhandle_t	blueFlagBaseModel;

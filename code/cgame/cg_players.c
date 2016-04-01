@@ -490,14 +490,6 @@ CG_LoadClientInfo(int clientNum, clientInfo_t *ci)
 		modelloaded = qfalse;
 	}
 
-	ci->newanims = qfalse;
-	if(ci->torsomodel){
-		orientation_t tag;
-		// if the torso model has the "tag_flag"
-		if(trap_R_LerpTag(&tag, ci->torsomodel, 0, 0, 1, "tag_flag"))
-			ci->newanims = qtrue;
-	}
-
 	// sounds
 	dir = ci->modelname;
 	fallback = (cgs.gametype >= GT_TEAM) ? DEFAULT_TEAM_MODEL : DEFAULT_MODEL;
@@ -538,8 +530,6 @@ CG_CopyClientInfoModel(clientInfo_t *from, clientInfo_t *to)
 	to->torsomodel = from->torsomodel;
 	to->torsoskin = from->torsoskin;
 	to->modelicon = from->modelicon;
-
-	to->newanims = from->newanims;
 
 	memcpy(to->animations, from->animations, sizeof(to->animations));
 	memcpy(to->sounds, from->sounds, sizeof(to->sounds));
@@ -1173,108 +1163,26 @@ CG_PlayerFlag
 ===============
 */
 static void
-CG_PlayerFlag(centity_t *cent, qhandle_t hSkin, refEntity_t *torso)
+CG_PlayerFlag(centity_t *cent, refEntity_t *torso, qhandle_t flagmodel)
 {
 	clientInfo_t *ci;
-	refEntity_t pole;
 	refEntity_t flag;
-	vec3_t angles, dir;
-	int legsAnim, flagAnim, updateangles;
-	float angle, d;
-
-	// show the flag pole model
-	memset(&pole, 0, sizeof(pole));
-	pole.hModel = cgs.media.flagPoleModel;
-	veccpy(torso->lightingOrigin, pole.lightingOrigin);
-	pole.shadowPlane = torso->shadowPlane;
-	pole.renderfx = torso->renderfx;
-	entontag(&pole, torso, torso->hModel, "tag_flag");
-	trap_R_AddRefEntityToScene(&pole);
 
 	// show the flag model
 	memset(&flag, 0, sizeof(flag));
-	flag.hModel = cgs.media.flagFlapModel;
-	flag.customSkin = hSkin;
 	veccpy(torso->lightingOrigin, flag.lightingOrigin);
 	flag.shadowPlane = torso->shadowPlane;
 	flag.renderfx = torso->renderfx;
-
-	vecclear(angles);
-
-	updateangles = qfalse;
-	legsAnim = cent->currstate.legsAnim & ~ANIM_TOGGLEBIT;
-	if(legsAnim == LEGS_IDLE || legsAnim == LEGS_IDLECR)
-		flagAnim = FLAG_STAND;
-	else if(legsAnim == LEGS_WALK || legsAnim == LEGS_WALKCR){
-		flagAnim = FLAG_STAND;
-		updateangles = qtrue;
-	}else{
-		flagAnim = FLAG_RUN;
-		updateangles = qtrue;
-	}
-
-	if(updateangles){
-		veccpy(cent->currstate.pos.trDelta, dir);
-		// add gravity
-		dir[2] += 100;
-		vecnorm(dir);
-		d = vecdot(pole.axis[2], dir);
-		// if there is enough movement orthogonal to the flag pole
-		if(fabs(d) < 0.9){
-			d = vecdot(pole.axis[0], dir);
-			if(d > 1.0f)
-				d = 1.0f;
-			else if(d < -1.0f)
-				d = -1.0f;
-			angle = acos(d);
-
-			d = vecdot(pole.axis[1], dir);
-			if(d < 0)
-				angles[YAW] = 360 - angle * 180 / M_PI;
-			else
-				angles[YAW] = angle * 180 / M_PI;
-			if(angles[YAW] < 0)
-				angles[YAW] += 360;
-			if(angles[YAW] > 360)
-				angles[YAW] -= 360;
-
-			//vectoangles( cent->currstate.pos.trDelta, tmpangles );
-			//angles[YAW] = tmpangles[YAW] + 45 - cent->pe.torso.yaw;
-			// change the yaw angle
-			CG_SwingAngles(angles[YAW], 25, 90, 0.15f, &cent->pe.flag.yaw, &cent->pe.flag.yawing);
-		}
-
-		/*
-		d = vecdot(pole.axis[2], dir);
-		angle = Q_acos(d);
-
-		d = vecdot(pole.axis[1], dir);
-		if (d < 0) {
-		        angle = 360 - angle * 180 / M_PI;
-		}
-		else {
-		        angle = angle * 180 / M_PI;
-		}
-		if (angle > 340 && angle < 20) {
-		        flagAnim = FLAG_RUNUP;
-		}
-		if (angle > 160 && angle < 200) {
-		        flagAnim = FLAG_RUNDOWN;
-		}
-		*/
-	}
-
-	// set the yaw angle
-	angles[YAW] = cent->pe.flag.yaw;
 	// lerp the flag animation frames
 	ci = &cgs.clientinfo[cent->currstate.clientNum];
-	CG_RunLerpFrame(ci, &cent->pe.flag, flagAnim, 1);
+	CG_RunLerpFrame(ci, &cent->pe.flag, 0, 1);
+	flag.hModel = flagmodel;
 	flag.oldframe = cent->pe.flag.oldframe;
 	flag.frame = cent->pe.flag.frame;
 	flag.backlerp = cent->pe.flag.backlerp;
 
-	AnglesToAxis(angles, flag.axis);
-	rotentontag(&flag, &pole, pole.hModel, "tag_flag");
+	AxisClear(flag.axis);
+	rotentontag(&flag, torso, torso->hModel, "tag_flag");
 
 	trap_R_AddRefEntityToScene(&flag);
 }
@@ -1528,28 +1436,19 @@ CG_PlayerPowerups(centity_t *cent, refEntity_t *torso)
 	ci = &cgs.clientinfo[cent->currstate.clientNum];
 	// redflag
 	if(powerups & (1 << PW_REDFLAG)){
-		if(ci->newanims)
-			CG_PlayerFlag(cent, cgs.media.redFlagFlapSkin, torso);
-		else
-			CG_TrailItem(cent, cgs.media.redFlagModel);
+		CG_PlayerFlag(cent, torso, cgs.media.redFlagModel);
 		trap_R_AddLightToScene(cent->lerporigin, 200 + (rand()&31), 1.0, 0.2f, 0.2f);
 	}
 
 	// blueflag
 	if(powerups & (1 << PW_BLUEFLAG)){
-		if(ci->newanims)
-			CG_PlayerFlag(cent, cgs.media.blueFlagFlapSkin, torso);
-		else
-			CG_TrailItem(cent, cgs.media.blueFlagModel);
+		CG_PlayerFlag(cent, torso, cgs.media.blueFlagModel);
 		trap_R_AddLightToScene(cent->lerporigin, 200 + (rand()&31), 0.2f, 0.2f, 1.0);
 	}
 
 	// neutralflag
 	if(powerups & (1 << PW_NEUTRALFLAG)){
-		if(ci->newanims)
-			CG_PlayerFlag(cent, cgs.media.neutralFlagFlapSkin, torso);
-		else
-			CG_TrailItem(cent, cgs.media.neutralFlagModel);
+		CG_PlayerFlag(cent, torso, cgs.media.neutralFlagModel);
 		trap_R_AddLightToScene(cent->lerporigin, 200 + (rand()&31), 1.0, 1.0, 1.0);
 	}
 
