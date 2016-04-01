@@ -181,6 +181,17 @@ static cvarTable_t gameCvarTable[] = {
 
 static int gameCvarTableSize = ARRAY_LEN(gameCvarTable);
 
+static struct
+{
+	vmCvar_t *cv;
+	char *desc;
+} cvardesctab[] = {
+	{&g_gametype, "Gametypes:\n    0: Free For All\n    1: Tournament\n"
+	   "    2: Single Player\n    3: Team Deathmatch\n    "
+	   "4: Capture The Flag\n    5: One Flag CTF\n    6: Overload\n    "
+	   "7: Harvester"}
+};
+
 void	G_InitGame(int levelTime, int randomSeed, int restart);
 void	G_RunFrame(int levelTime);
 void	G_ShutdownGame(int restart);
@@ -352,6 +363,9 @@ G_RegisterCvars(void)
 		if(cv->teamShader)
 			remapped = qtrue;
 	}
+
+	for(i = 0; i < ARRAY_LEN(cvardesctab); i++)
+		trap_Cvar_SetDescription(cvardesctab[i].cv, cvardesctab[i].desc);
 
 	if(remapped)
 		G_RemapTeamShaders();
