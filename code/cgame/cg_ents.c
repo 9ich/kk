@@ -293,8 +293,6 @@ doitem(centity_t *cent)
 			wi->midpoint[0] * ent.axis[0][2] +
 			wi->midpoint[1] * ent.axis[1][2] +
 			wi->midpoint[2] * ent.axis[2][2];
-
-		cent->lerporigin[2] += 8;	// an extra height boost
 	}
 
 	if(item->type == IT_WEAPON && item->tag == WP_RAILGUN){
