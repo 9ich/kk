@@ -228,6 +228,7 @@ doitem(centity_t *cent)
 	float frac;
 	float scale;
 	weaponInfo_t *wi;
+	vec3_t tmp;
 
 	es = &cent->currstate;
 	if(es->modelindex >= bg_nitems)
@@ -252,25 +253,32 @@ doitem(centity_t *cent)
 		return;
 	}
 
-	// items bob up and down continuously
-	scale = 0.005 + cent->currstate.number * 0.00001;
-	cent->lerporigin[2] += 4 + cos((cg.time + 1000) *  scale) * 4;
-
 	memset(&ent, 0, sizeof(ent));
 
-	// autorotate at one of two speeds
+	// item rotation
+
+	AnglesToAxis(cent->currstate.angles, ent.axis);
+	// create an arbitrary ent.axis[1]
+	vecperp(ent.axis[1], ent.axis[2]);
+	veccpy(ent.axis[1], tmp);
+	// rotate it around axis[2] at one of two speeds
 	if(item->type == IT_HEALTH){
-		veccpy(cg.autoanglesfast, cent->lerpangles);
-		AxisCopy(cg.autoaxisfast, ent.axis);
+		RotatePointAroundVector(ent.axis[1], ent.axis[2], tmp, cg.time/2);
+		veccross(ent.axis[2], ent.axis[1], ent.axis[0]);
 	}else{
-		veccpy(cg.autoangles, cent->lerpangles);
-		AxisCopy(cg.autoaxis, ent.axis);
+		RotatePointAroundVector(ent.axis[1], ent.axis[2], tmp, cg.time/4);
+		veccross(ent.axis[2], ent.axis[1], ent.axis[0]);
 	}
 
-	wi = nil;
+	// items bob up and down on their "up" axis
+	scale = 0.005 + cent->currstate.number * 0.00001;
+	vecmad(cent->lerporigin, 4 + cos((cg.time + 1000) *  scale) * 4, ent.axis[2], cent->lerporigin);
+
 	// the weapons have their origin where they attatch to player
-	// models, so we need to offset them or they will rotate
-	// eccentricly
+	// models, so we need to place them at their midpoint or they
+	// will rotate eccentricly
+
+	wi = nil;
 	if(item->type == IT_WEAPON){
 		wi = &cg_weapons[item->tag];
 		cent->lerporigin[0] -=
