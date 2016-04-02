@@ -108,7 +108,7 @@ field_t fields[] = {
 	{"health", FOFS(health), F_INT},
 	{"dmg", FOFS(damage), F_INT},
 	{"angles", FOFS(s.angles), F_VECTOR},
-	{"angle", FOFS(s.angles), F_ANGLEHACK},
+	{"yaw", FOFS(s.angles), F_ANGLEHACK},
 	{"targetshadername", FOFS(targetshadername), F_STRING},
 	{"newtargetshadername", FOFS(newtargetshadername), F_STRING},
 
@@ -373,6 +373,12 @@ G_ParseField(const char *key, const char *value, gentity_t *ent)
 				break;
 			case F_ANGLEHACK:
 				v = atof(value);
+				// skip this key if the ent has obviously
+				// already been given an "angles" key
+				if(((float*)(b+f->ofs))[0] != 0 ||
+				  ((float*)(b+f->ofs))[1] != 0 ||
+				  ((float*)(b+f->ofs))[2] != 0)
+					break;
 				((float*)(b+f->ofs))[0] = 0;
 				((float*)(b+f->ofs))[1] = v;
 				((float*)(b+f->ofs))[2] = 0;
