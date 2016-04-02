@@ -504,12 +504,6 @@ typedef struct
 	// input state sent to server
 	int		weapsel;
 
-	// auto rotating items
-	vec3_t		autoangles;
-	vec3_t		autoaxis[3];
-	vec3_t		autoanglesfast;
-	vec3_t		autoaxisfast[3];
-
 	// view rendering
 	refdef_t	refdef;
 	vec3_t		refdefviewangles;	// will be converted to refdef.viewaxis

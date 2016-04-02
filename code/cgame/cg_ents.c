@@ -991,18 +991,6 @@ addpacketents(void)
 		cg.frameinterpolation = 0;	// actually, it should never be used, because
 		// no entities should be marked as interpolating
 
-	// the auto-rotating items will all have the same axis
-	cg.autoangles[0] = 0;
-	cg.autoangles[1] = (cg.time & 2047) * 360 / 2048.0;
-	cg.autoangles[2] = 0;
-
-	cg.autoanglesfast[0] = 0;
-	cg.autoanglesfast[1] = (cg.time & 1023) * 360 / 1024.0f;
-	cg.autoanglesfast[2] = 0;
-
-	AnglesToAxis(cg.autoangles, cg.autoaxis);
-	AnglesToAxis(cg.autoanglesfast, cg.autoaxisfast);
-
 	// generate and add the entity from the playerstate
 	ps = &cg.pps;
 	playerstate2entstate(ps, &cg.pplayerent.currstate, qfalse);
