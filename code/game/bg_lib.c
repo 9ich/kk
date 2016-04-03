@@ -335,6 +335,94 @@ void *memcpy( void *dest, const void *src, size_t count ) {
 	return dest;
 }
 
+/*
+ * sizeof(word) MUST BE A POWER OF TWO
+ * SO THAT wmask BELOW IS ALL ONES
+ */
+ 
+/*
+ * Copy a block of memory, not handling overlap.
+ */
+void *
+memcpy(void *dst0, const void *src0, size_t length)
+{
+	char *dst = dst0;
+	const char *src = src0;
+	size_t t;
+
+	if(length == 0 || dst == src)	/* nothing to do */
+		goto done;
+
+	if((dst < src && dst + length > src) ||
+	   (src < dst && src + length > dst)){
+	   	Com_Error(ERR_FATAL, "backwards memcpy\n");
+	   	return nil;
+	}
+
+	/*
+	 * Macros: loop-t-times; and loop-t-times, t>0
+	 */
+	#define TLOOP(s)	if(t) TLOOP1(s)
+	#define TLOOP1(s)	do {s; } while(--t)
+
+	/*
+	 * Copy forward.
+	 */
+	t = (long)src;	/* only need low bits */
+	if((t | (long)dst) & wmask){
+		/*
+		 * Try to align operands.  This cannot be done
+		 * unless the low bits match.
+		 */
+		if((t ^ (long)dst) & wmask || length < wsize)
+			t = length;
+		else
+			t = wsize - (t & wmask);
+		length -= t;
+		TLOOP1(*dst++ = *src++);
+	}
+	/*
+	 * Copy whole words, then mop up any trailing bytes.
+	 */
+	t = length / wsize;
+	TLOOP(*(word*)dst = *(word*)src; src += wsize; dst += wsize);
+	t = length & wmask;
+	TLOOP(*dst++ = *src++);
+ done:
+	return dst0;
+}
+
+#endif
+int
+memcmp(const void *s1, const void *s2, size_t n)
+{
+	if (n != 0) {
+		const unsigned char *p1 = s1, *p2 = s2;
+
+		do {
+			if (*p1++ != *p2++)
+				return (*--p1 - *--p2);
+		} while (--n != 0);
+	}
+	return (0);
+}
+
+void *
+memchr(const void *s, int c, size_t n)
+{
+	if (n != 0) {
+		const unsigned char *p = s;
+
+		do {
+			if (*p++ == (unsigned char)c)
+				return ((void *)(p - 1));
+		} while (--n != 0);
+	}
+	return (NULL);
+}
+
+#if 0
+
 char *strncpy( char *strDest, const char *strSource, size_t count ) {
 	char	*s;
 

@@ -169,6 +169,8 @@ typedef enum
 	UI_KEY_EVENT,
 //	void	UI_KeyEvent( int key );
 
+	UI_CHAR_EVENT,
+
 	UI_MOUSE_EVENT,
 //	void	UI_MouseEvent( int dx, int dy );
 

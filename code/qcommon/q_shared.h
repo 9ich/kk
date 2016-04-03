@@ -775,6 +775,7 @@ void PerpendicularVector( vec3_t dst, const vec3_t src );
 //=============================================
 
 float Com_Clamp( float min, float max, float value );
+#define Com_Scale(x, min, max, newmin, newmax) ((newmin) + ((newmax)-(newmin)) * ((x)-(min)) / ((max)-(min)))
 
 char	*COM_SkipPath( char *pathname );
 const char	*COM_GetExtension( const char *name );
