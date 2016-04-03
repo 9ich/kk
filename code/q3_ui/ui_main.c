@@ -84,7 +84,7 @@ static cvarTable_t cvarTable[] = {
 	{&ui_drawCrosshair, "cg_drawCrosshair", "4", CVAR_ARCHIVE},
 	{&ui_drawfps, "cg_drawfps", "1", CVAR_ARCHIVE},
 	{nil, "cg_fov", "90", CVAR_ARCHIVE},
-	{nil, "cg_thirdperson", "1", CVAR_ARCHIVE}
+	{nil, "cg_thirdperson", "0", CVAR_ARCHIVE}
 };
 
 void
