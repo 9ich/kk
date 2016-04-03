@@ -246,6 +246,7 @@ SYSDIR=$(MOUNT_DIR)/sys
 GDIR=$(MOUNT_DIR)/game
 CGDIR=$(MOUNT_DIR)/cgame
 BLIBDIR=$(MOUNT_DIR)/botlib
+DRAWLIBDIR=$(MOUNT_DIR)/drawlib
 NDIR=$(MOUNT_DIR)/null
 UIDIR=$(MOUNT_DIR)/ui
 Q3UIDIR=$(MOUNT_DIR)/q3_ui
@@ -2264,6 +2265,8 @@ $(B)/$(BASEGAME)/vm/qagame.qvm: cleanvmobj $(Q3GVMOBJ) $(GDIR)/g_syscalls.asm $(
 Q3UIOBJ_ = \
   $(B)/$(BASEGAME)/ui/ui_main.o \
   $(B)/$(BASEGAME)/ui/bg_lib.o \
+  $(B)/$(BASEGAME)/ui/d_draw.o \
+  $(B)/$(BASEGAME)/ui/d_font.o \
   $(B)/$(BASEGAME)/ui/ui_connect.o \
   $(B)/$(BASEGAME)/ui/ui_menus.o \
   $(B)/$(BASEGAME)/ui/ui_atoms.o \
@@ -2436,10 +2439,16 @@ $(B)/$(BASEGAME)/game/%.asm: $(GDIR)/%.c $(Q3LCC)
 $(B)/$(BASEGAME)/ui/bg_%.o: $(GDIR)/bg_%.c
 	$(DO_UI_CC)
 
+$(B)/$(BASEGAME)/ui/d_%.o: $(DRAWLIBDIR)/d_%.c
+	$(DO_UI_CC)
+
 $(B)/$(BASEGAME)/ui/%.o: $(Q3UIDIR)/%.c
 	$(DO_UI_CC)
 
 $(B)/$(BASEGAME)/ui/bg_%.asm: $(GDIR)/bg_%.c $(Q3LCC)
+	$(DO_UI_Q3LCC)
+
+$(B)/$(BASEGAME)/ui/d_%.asm: $(DRAWLIBDIR)/d_%.c $(Q3LCC)
 	$(DO_UI_Q3LCC)
 
 $(B)/$(BASEGAME)/ui/%.asm: $(Q3UIDIR)/%.c $(Q3LCC)

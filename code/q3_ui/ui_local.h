@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../qcommon/q_shared.h"
 #include "../renderercommon/tr_types.h"
 #include "../ui/ui_public.h"
+#include "../drawlib/d_public.h"
 #include "../client/keycodes.h"
 
 extern vmCvar_t ui_drawCrosshair;
@@ -71,11 +72,8 @@ typedef struct
 	void(*stk[NSTACK])(void);		// menu drawing stack
 	int		sp;			// stack pointer
 
-	qhandle_t	whiteShader;
-	qhandle_t	menuBackShader;
-	qhandle_t	charset;
-	qhandle_t	charsetProp;
 	qhandle_t	cursor;
+	qhandle_t	menuBackShader;
 	sfxHandle_t	fieldUpdateSound;
 	float		xscale;
 	float		yscale;
@@ -83,47 +81,6 @@ typedef struct
 	qboolean	demoversion;
 	qboolean	firstdraw;
 } uiStatic_t;
-
-extern vec4_t CBlack;
-extern vec4_t CWhite;
-extern vec4_t CAmethyst;
-extern vec4_t CApple;
-extern vec4_t CAquamarine;
-extern vec4_t CBlue;
-extern vec4_t CBrown;
-extern vec4_t CCream;
-extern vec4_t CCyan;
-extern vec4_t CDkBlue;
-extern vec4_t CDkGreen;
-extern vec4_t CDkGrey;
-extern vec4_t CDkLavender;
-extern vec4_t CGreen;
-extern vec4_t CIndigo;
-extern vec4_t CLtBlue;
-extern vec4_t CLtGreen;
-extern vec4_t CLtGrey;
-extern vec4_t CLtMagenta;
-extern vec4_t CLtOrange;
-extern vec4_t CMagenta;
-extern vec4_t COrange;
-extern vec4_t CPink;
-extern vec4_t CPurple;
-extern vec4_t CRed;
-extern vec4_t CTeal;
-extern vec4_t CViolet;
-extern vec4_t CYellow;
-
-extern float *CText;
-extern float *CWBorder;
-extern float *CWBody;
-extern float *CWText;
-extern float *CWHot;
-extern float *CWActive;
-extern float *CWFocus;
-extern float *CWShadow;
-
-// drop shadows
-#define Shadowalpha	0.7f
 
 extern void	init(void);
 extern void	shutdown(void);
@@ -133,23 +90,7 @@ extern void	mouseevent(int dx, int dy);
 extern void	refresh(int realtime);
 extern qboolean consolecommand(int realTime);
 extern float	UI_ClampCvar(float min, float max, float value);
-extern void	drawnamedpic(float x, float y, float w, float h, const char *picname);
-extern void	drawpic(float x, float y, float w, float h, qhandle_t hShader);
-extern void	fillrect(float x, float y, float width, float height, const float *color);
-extern void	drawrect(float x, float y, float width, float height, const float *color);
-extern void	updatescreen(void);
-extern void	setcolour(const float *rgba);
-extern void	lerpcolour(vec4_t a, vec4_t b, vec4_t c, float t);
-extern float	propsizescale(int style);
-extern void	drawpropstr(int x, int y, const char *str, int style, vec4_t color);
-extern void	drawpropstrwrapped(int x, int ystart, int xmax, int ystep, const char *str, int style, vec4_t color);
-extern int	propstrwidth(const char *str, int slicebegin, int sliceend);
-extern float	propstrsizescale(int style);
-extern void	drawstr(int x, int y, const char *str, int style, vec4_t color);
-extern void	drawstrwrapped(int x, int y, int xmax, int ystep, const char *str, int style, vec4_t color);
-extern void	drawchar(int x, int y, int ch, int style, vec4_t color);
 extern qboolean mouseover(int x, int y, int width, int height);
-extern void	adjustcoords(float *x, float *y, float *w, float *h);
 extern void	setactivemenu(uiMenuCommand_t menu);
 extern void	push(void (*drawfunc)(void));
 extern void	pop(void);
