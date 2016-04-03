@@ -393,9 +393,9 @@ videomenu(void)
 	if(!vo.initialized)
 		initvideomenu();
 
-	focusorder(".v.res .v.rat .v.hz .v.fs .v.brightness .v.fov .v.vs"
+	focusorder(".v.udr .v.res .v.rat .v.hz .v.fs .v.brightness .v.fov .v.vs"
 	   " .v.fps .v.tq .v.gq .v.3rd");
-	defaultfocus(".v.res");
+	defaultfocus(".v.udr");
 
 	uis.fullscreen = qtrue;
 	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
