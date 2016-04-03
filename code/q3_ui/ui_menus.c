@@ -83,6 +83,7 @@ static char **refreshrates = fallbackhz;
 static struct
 {
 	qboolean	initialized, dirty, needrestart;
+	qboolean	usedesktopres;
 	char		*reslist[NRES];
 	int		nres, resi;
 	char		*ratlist[ARRAY_LEN(knownratios) + 1];
@@ -302,17 +303,34 @@ initvideomenu(void)
 	char resstr[16], hzstr[16], *ratio, buf[MAX_STRING_CHARS];
 
 	memset(&vo, 0, sizeof vo);
-	ratio = nil;
+
+	vo.texquality = 0;
+	trap_Cvar_VariableStringBuffer("r_texturemode", buf, sizeof buf);
+	if(Q_stricmp(buf, "gl_nearest") == 0)
+		vo.texquality = 1;
+	vo.vsync = (qboolean)trap_Cvar_VariableValue("r_swapinterval");
+	vo.fov = trap_Cvar_VariableValue("cg_fov");
+	vo.drawfps = trap_Cvar_VariableValue("cg_drawfps");
+	vo.thirdperson = trap_Cvar_VariableValue("cg_thirdperson");
+	vo.fullscr = (qboolean)trap_Cvar_VariableValue("r_fullscreen");
+	vo.gamma = trap_Cvar_VariableValue("r_gamma");
+	vo.initialized = qtrue;
+
+	// grab the current mode
+	if(trap_Cvar_VariableValue("r_mode") == -2){
+		vo.usedesktopres = qtrue;
+	}
+
 	getmodes();
 	calcratios();
 	mkratlist();
 
-	// grab the current mode
 	w = trap_Cvar_VariableValue("r_customwidth");
 	h = trap_Cvar_VariableValue("r_customheight");
 	hz = trap_Cvar_VariableValue("r_displayrefresh");
 	Com_sprintf(resstr, sizeof resstr, "%dx%d", w, h);
 	Com_sprintf(hzstr, sizeof hzstr, "%d", hz);
+	ratio = ratios[0];
 	for(i = 0; resolutions[i] != nil; i++)
 		if(Q_stricmp(resolutions[i], resstr) == 0)
 			ratio = ratios[i];
@@ -329,17 +347,6 @@ initvideomenu(void)
 	for(i = 0; vo.hzlist[i] != nil; i++)
 		if(Q_stricmp(vo.hzlist[i], hzstr) == 0)
 			vo.hzi = i;
-	vo.texquality = 0;
-	trap_Cvar_VariableStringBuffer("r_texturemode", buf, sizeof buf);
-	if(Q_stricmp(buf, "gl_nearest") == 0)
-		vo.texquality = 1;
-	vo.vsync = (qboolean)trap_Cvar_VariableValue("r_swapinterval");
-	vo.fov = trap_Cvar_VariableValue("cg_fov");
-	vo.drawfps = trap_Cvar_VariableValue("cg_drawfps");
-	vo.thirdperson = trap_Cvar_VariableValue("cg_thirdperson");
-	vo.fullscr = (qboolean)trap_Cvar_VariableValue("r_fullscreen");
-	vo.gamma = trap_Cvar_VariableValue("r_gamma");
-	vo.initialized = qtrue;
 }
 
 static void
@@ -350,11 +357,15 @@ savevideochanges(void)
 	if(!vo.dirty && !vo.needrestart)
 		return;
 
-	h = strchr(vo.reslist[vo.resi], 'x') + 1;
-	Q_strncpyz(w, vo.reslist[vo.resi], h-vo.reslist[vo.resi]);
-	trap_Cvar_Set("r_customwidth", w);
-	trap_Cvar_Set("r_customheight", h);
-	trap_Cvar_SetValue("r_mode -1", -1);
+	if(!vo.usedesktopres){
+		h = strchr(vo.reslist[vo.resi], 'x') + 1;
+		Q_strncpyz(w, vo.reslist[vo.resi], h-vo.reslist[vo.resi]);
+		trap_Cvar_Set("r_customwidth", w);
+		trap_Cvar_Set("r_customheight", h);
+		trap_Cvar_SetValue("r_mode", -1);
+	}else{
+		trap_Cvar_SetValue("r_mode", -2);
+	}
 	trap_Cvar_SetValue("cg_fov", (int)vo.fov);
 	trap_Cvar_SetValue("cg_drawfps", (int)vo.drawfps);
 	trap_Cvar_SetValue("cg_thirdperson", (int)vo.thirdperson);
@@ -396,41 +407,49 @@ videomenu(void)
 	xx = 440;
 	y = 100;
 
-	drawstr(x, y, "Resolution", style, textclr);
-	if(textspinner(".v.res", xx, y, 0, vo.reslist, &vo.resi, vo.nres))
+	drawstr(x, y, "Use desktop res", style, textclr);
+	if(checkbox(".v.udr", xx, y, 0, &vo.usedesktopres)){
 		vo.needrestart = qtrue;
-	y += spc;
-
-	drawstr(x, y, "Aspect ratio", style, textclr);
-	if(textspinner(".v.rat", xx, y, 0, vo.ratlist, &vo.rati, vo.nrat)){
-		int w, h, hz;
-		char resstr[16], hzstr[16];
-
-		vo.needrestart = qtrue;
-
-		// show res & hz combinations for the selected ratio
-		mkmodelists(vo.ratlist[vo.rati]);
-
-		// set the textspinner indices
-		w = trap_Cvar_VariableValue("r_customwidth");
-		h = trap_Cvar_VariableValue("r_customheight");
-		hz = trap_Cvar_VariableValue("r_displayrefresh");
-		Com_sprintf(resstr, sizeof resstr, "%dx%d", w, h);
-		Com_sprintf(hzstr, sizeof hzstr, "%d", hz);
-		vo.resi = vo.hzi = 0;
-		for(i = 0; i < vo.nres; i++)
-			if(Q_stricmp(vo.reslist[i], resstr) == 0)
-				vo.resi = i;
-		for(i = 0; i < vo.nhz; i++)
-			if(Q_stricmp(vo.hzlist[i], hzstr) == 0)
-				vo.hzi = i;
 	}
 	y += spc;
 
-	drawstr(x, y, "Refresh rate", style, textclr);
-	if(textspinner(".v.hz", xx, y, 0, vo.hzlist, &vo.hzi, vo.nhz))
+	if(!vo.usedesktopres){
+		drawstr(x, y, "Resolution", style, textclr);
+		if(textspinner(".v.res", xx, y, 0, vo.reslist, &vo.resi, vo.nres))
 		vo.needrestart = qtrue;
-	y += spc;
+		y += spc;
+
+		drawstr(x, y, "Aspect ratio", style, textclr);
+		if(textspinner(".v.rat", xx, y, 0, vo.ratlist, &vo.rati, vo.nrat)){
+			int w, h, hz;
+			char resstr[16], hzstr[16];
+
+			vo.needrestart = qtrue;
+
+			// show res & hz combinations for the selected ratio
+			mkmodelists(vo.ratlist[vo.rati]);
+
+			// set the textspinner indices
+			w = trap_Cvar_VariableValue("r_customwidth");
+			h = trap_Cvar_VariableValue("r_customheight");
+			hz = trap_Cvar_VariableValue("r_displayrefresh");
+			Com_sprintf(resstr, sizeof resstr, "%dx%d", w, h);
+			Com_sprintf(hzstr, sizeof hzstr, "%d", hz);
+			vo.resi = vo.hzi = 0;
+			for(i = 0; i < vo.nres; i++)
+			if(Q_stricmp(vo.reslist[i], resstr) == 0)
+					vo.resi = i;
+			for(i = 0; i < vo.nhz; i++)
+				if(Q_stricmp(vo.hzlist[i], hzstr) == 0)
+					vo.hzi = i;
+		}
+		y += spc;
+
+		drawstr(x, y, "Refresh rate", style, textclr);
+		if(textspinner(".v.hz", xx, y, 0, vo.hzlist, &vo.hzi, vo.nhz))
+			vo.needrestart = qtrue;
+		y += spc;
+	}
 
 	drawstr(x, y, "Fullscreen", style, textclr);
 	if(checkbox(".v.fs", xx, y, 0, &vo.fullscr))
