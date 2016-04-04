@@ -114,7 +114,7 @@ trap_FS_Seek(fileHandle_t f, long offset, int origin)
 void
 trap_Cvar_SetDescription(vmCvar_t *cv, const char *desc)
 {
-	return syscall(G_CVAR_SETDESCRIPTION, cv, desc);
+	syscall(G_CVAR_SETDESCRIPTION, cv, desc);
 }
 
 void
