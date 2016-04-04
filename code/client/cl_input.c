@@ -46,6 +46,9 @@ at the same time.
 ===============================================================================
 */
 
+// these are used to derive inertia on roll, but are given for all
+// three angles in case we ever wanted inertia on those too
+static float viewangleforce[3];		// range -1 to 1
 
 kbutton_t	in_left, in_right, in_forward, in_back;
 kbutton_t	in_lookup, in_lookdown, in_moveleft, in_moveright;
@@ -283,11 +286,11 @@ void IN_CenterView (void) {
 cvar_t	*cl_yawspeed;
 cvar_t	*cl_pitchspeed;
 cvar_t	*cl_rollspeed;
+cvar_t	*cl_rollinertia;
 
 cvar_t	*cl_run;
 
 cvar_t	*cl_anglespeedkey;
-
 
 /*
 ================
@@ -297,7 +300,7 @@ Moves the local angle positions
 ================
 */
 void CL_AdjustAngles( vec3_t delta ) {
-	float	speed;
+	float speed, sign;
 	
 	if ( in_speed.active ) {
 		speed = 0.001 * cls.frametime * cl_anglespeedkey->value;
@@ -314,8 +317,23 @@ void CL_AdjustAngles( vec3_t delta ) {
 	delta[PITCH] -= speed*cl_pitchspeed->value * CL_KeyState (&in_lookup);
 	delta[PITCH] += speed*cl_pitchspeed->value * CL_KeyState (&in_lookdown);
 
-	delta[ROLL] += speed*cl_rollspeed->value*CL_KeyState (&in_rollleft);
-	delta[ROLL] -= speed*cl_rollspeed->value*CL_KeyState (&in_rollright);
+	sign = (-CL_KeyState(&in_rollright)) + CL_KeyState(&in_rollleft);
+
+	if(sign != 0 && viewangleforce[ROLL] != 0 &&
+	   (Com_Sign(sign) != Com_Sign(viewangleforce[ROLL])))
+		sign *= 2;
+	if(sign != 0){
+		viewangleforce[ROLL] += sign * 1000/cl_rollinertia->value * speed;
+		viewangleforce[ROLL] = Com_Clamp(-1, 1, viewangleforce[ROLL]);
+	}else if(viewangleforce[ROLL] > 0){
+		viewangleforce[ROLL] -= speed * 1000/cl_rollinertia->value;
+		viewangleforce[ROLL] = MAX(0, viewangleforce[ROLL]);
+	}else if(viewangleforce[ROLL] < 0){
+		viewangleforce[ROLL] += speed * 1000/cl_rollinertia->value;
+		viewangleforce[ROLL] = MIN(0, viewangleforce[ROLL]);
+	}
+
+	delta[ROLL] += speed * viewangleforce[ROLL] * cl_rollspeed->value;
 }
 
 /*
