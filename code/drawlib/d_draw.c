@@ -4,13 +4,13 @@
 
 static vec4_t vshadow	= {0.000f, 0.000f, 0.100f, Shadowalpha};
 
-float *CText		= CCream;	// normal text
+float *CText		= CLightBlue;	// normal text
 float *CWBorder		= CBlack;	// widget border
-float *CWBody		= CIndigo;	// widget body
-float *CWText		= CCream;	// widget text
-float *CWHot		= CGreen;	// widget text when hot
-float *CWActive		= CLtBlue;	// widget text when active
-float *CWFocus		= CAquamarine;	// widget outline when active
+float *CWBody		= CRoyalBlue;	// widget body
+float *CWText		= CLightBlue;	// widget text
+float *CWHot		= CGoldenrod;	// widget text when hot
+float *CWActive		= CHoneydew;	// widget text when active
+float *CWFocus		= CGoldenrod;	// widget outline when active
 float *CWShadow		= vshadow;
 
 drawStatic_t drawstuff;

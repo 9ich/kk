@@ -36,7 +36,7 @@ button(const char *id, int x, int y, int just, const char *label)
 		}
 	}
 
-	clr = CLtBlue;
+	clr = CWText;
 	if(hot){
 		clr = CWHot;
 		if(strcmp(uis.active, id) == 0)

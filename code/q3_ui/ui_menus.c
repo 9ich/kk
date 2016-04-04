@@ -803,7 +803,7 @@ errormenu(void)
 	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
 	trap_Cvar_VariableStringBuffer("com_errormessage", buf, sizeof buf);
 	drawstr(20, 180, "error:", UI_DROPSHADOW, CRed);
-	drawstrwrapped(20, 220, SCREEN_WIDTH-40, 16, buf, UI_SMALLFONT|UI_DROPSHADOW, CCream);
+	drawstrwrapped(20, 220, SCREEN_WIDTH-40, 16, buf, UI_SMALLFONT|UI_DROPSHADOW, CBeige);
 }
 
 void
