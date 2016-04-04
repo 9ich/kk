@@ -813,15 +813,12 @@ mainmenu(void)
 	float y;
 
 	uis.fullscreen = qtrue;
-	focusorder(".mm.sp .mm.co .mm.opt .mm.q");
+	focusorder(".mm.mp .mm.opt .mm.q");
 	defaultfocus(".mm.sp");
 
 	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
 	y = 190;
-	if(button(".mm.sp", SCREEN_WIDTH/2, y, UI_CENTER, "Single Player"))
-		push(placeholder);
-	y += spc;
-	if(button(".mm.co", SCREEN_WIDTH/2, y, UI_CENTER, "Co-op"))
+	if(button(".mm.sp", SCREEN_WIDTH/2, y, UI_CENTER, "Multiplayer"))
 		push(placeholder);
 	y += spc;
 	if(button(".mm.opt", SCREEN_WIDTH/2, y, UI_CENTER, "Options"))
