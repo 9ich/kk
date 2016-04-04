@@ -22,6 +22,7 @@ extern float *CWShadow;
 
 extern void	drawlibinit(void);
 extern void	drawlibbeginframe(int realtime, float xscale, float yscale, float bias);
+extern void	adjustcoords(float *x, float *y, float *w, float *h);
 extern void	drawnamedpic(float x, float y, float w, float h, const char *picname);
 extern void	drawpic(float x, float y, float w, float h, qhandle_t hShader);
 extern void	fillrect(float x, float y, float width, float height, const float *color);
@@ -33,6 +34,7 @@ extern void	drawpropstrwrapped(int x, int ystart, int xmax, int ystep, const cha
 extern int	propstrwidth(const char *str, int slicebegin, int sliceend);
 extern float	propstrsizescale(int style);
 extern void	drawstr(int x, int y, const char *str, int style, vec4_t color);
+extern void	drawstr2(int x, int y, const char *str, vec4_t color, int charw, int charh);
 extern void	drawstrwrapped(int x, int y, int xmax, int ystep, const char *str, int style, vec4_t color);
 extern void	drawchar(int x, int y, int ch, int style, vec4_t color);
 

@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../renderercommon/tr_types.h"
 #include "../game/bg_public.h"
 #include "cg_public.h"
+#include "../drawlib/d_public.h"
 
 // The entire cgame module is unloaded and reloaded on each level change,
 // so there is NO persistant data between levels on the client side.
@@ -1211,14 +1212,6 @@ void	addbufferedsound(sfxHandle_t sfx);
 void	drawframe(int serverTime, stereoFrame_t stereoview, qboolean demoplayback);
 
 // cg_drawtools.c
-void	adjustcoords(float *x, float *y, float *w, float *h);
-void	fillrect(float x, float y, float width, float height, const float *color);
-void	drawpic(float x, float y, float width, float height, qhandle_t hShader);
-void	drawstr(float x, float y, const char *string,
-		      float charWidth, float charHeight, const float *modulate);
-
-void	drawstr2(int x, int y, const char *string, const float *setColor,
-			 qboolean forceColor, qboolean shadow, int charWidth, int charHeight, int maxChars);
 void	drawbigstr(int x, int y, const char *s, float alpha);
 void	drawbigstrcolor(int x, int y, const char *s, vec4_t color);
 void	drawsmallstr(int x, int y, const char *s, float alpha);
@@ -1231,9 +1224,6 @@ float * teamcolor(int team);
 void	tileclear(void);
 void	colorforhealth(vec4_t hcolor);
 void	getcolorforhealth(int health, int armor, vec4_t hcolor);
-
-void	drawpropstr(int x, int y, const char* str, int style, vec4_t color);
-void	drawrect(float x, float y, float width, float height, float size, const float *color);
 void	drawsides(float x, float y, float w, float h, float size);
 void	drawtopbottom(float x, float y, float w, float h, float size);
 
@@ -1613,3 +1603,4 @@ void		CG_ParticleMisc(qhandle_t pshader, vec3_t origin, int size, int duration, 
 void		CG_ParticleExplosion(char *animStr, vec3_t origin, vec3_t vel, int duration, int sizeStart, int sizeEnd);
 extern qboolean initparticles;
 int		CG_NewParticleArea(int num);
+

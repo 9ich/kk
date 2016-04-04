@@ -402,7 +402,7 @@ CG_CenterGiantLine(float y, const char *string)
 
 	x = 0.5 * (640 - GIANT_WIDTH * drawstrlen(string));
 
-	drawstr2(x, y, string, color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0);
+	drawstr2(x, y, string, color, GIANT_WIDTH, GIANT_HEIGHT);
 }
 
 /*
@@ -461,15 +461,15 @@ CG_DrawOldTourneyScoreboard(void)
 	y = 160;
 	if(cgs.gametype >= GT_TEAM){
 		// teamplay scoreboard
-		drawstr2(8, y, "Red Team", color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0);
+		drawstr2(8, y, "Red Team", color, GIANT_WIDTH, GIANT_HEIGHT);
 		s = va("%i", cg.teamscores[0]);
-		drawstr2(632 - GIANT_WIDTH * strlen(s), y, s, color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0);
+		drawstr2(632 - GIANT_WIDTH * strlen(s), y, s, color, GIANT_WIDTH, GIANT_HEIGHT);
 
 		y += 64;
 
-		drawstr2(8, y, "Blue Team", color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0);
+		drawstr2(8, y, "Blue Team", color, GIANT_WIDTH, GIANT_HEIGHT);
 		s = va("%i", cg.teamscores[1]);
-		drawstr2(632 - GIANT_WIDTH * strlen(s), y, s, color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0);
+		drawstr2(632 - GIANT_WIDTH * strlen(s), y, s, color, GIANT_WIDTH, GIANT_HEIGHT);
 	}else
 		// free for all scoreboard
 		for(i = 0; i < MAX_CLIENTS; i++){
@@ -479,9 +479,9 @@ CG_DrawOldTourneyScoreboard(void)
 			if(ci->team != TEAM_FREE)
 				continue;
 
-			drawstr2(8, y, ci->name, color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0);
+			drawstr2(8, y, ci->name, color, GIANT_WIDTH, GIANT_HEIGHT);
 			s = va("%i", ci->score);
-			drawstr2(632 - GIANT_WIDTH * strlen(s), y, s, color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0);
+			drawstr2(632 - GIANT_WIDTH * strlen(s), y, s, color, GIANT_WIDTH, GIANT_HEIGHT);
 			y += 64;
 		}
 

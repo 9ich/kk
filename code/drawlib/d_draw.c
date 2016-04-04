@@ -39,8 +39,15 @@ Adjusts for resolution and screen aspect ratio.
 void
 adjustcoords(float *x, float *y, float *w, float *h)
 {
+#if 0
+	// adjust for wide screens
+	if(cgs.glconfig.vidWidth * 480 > cgs.glconfig.vidHeight * 640)
+		*x += 0.5 * (cgs.glconfig.vidWidth - (cgs.glconfig.vidHeight * 640 / 480));
+
+#endif
 	// expect valid pointers
-	*x = *x * drawstuff.xscale + drawstuff.bias;
+	//*x = *x * drawstuff.xscale + drawstuff.bias;
+	*x *= drawstuff.xscale;
 	*y *= drawstuff.yscale;
 	*w *= drawstuff.xscale;
 	*h *= drawstuff.yscale;

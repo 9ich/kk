@@ -713,9 +713,7 @@ CG_DrawTeamOverlay(float y, qboolean right, qboolean upper)
 
 			xx = x + TINYCHAR_WIDTH;
 
-			drawstr2(xx, y,
-					 ci->name, hcolor, qfalse, qfalse,
-					 TINYCHAR_WIDTH, TINYCHAR_HEIGHT, TEAM_OVERLAY_MAXNAME_WIDTH);
+			drawstr2(xx, y, ci->name, hcolor, TINYCHAR_WIDTH, TINYCHAR_HEIGHT);
 
 			if(lwidth){
 				p = getconfigstr(CS_LOCATIONS + ci->location);
@@ -728,9 +726,7 @@ CG_DrawTeamOverlay(float y, qboolean right, qboolean upper)
 //				xx = x + TINYCHAR_WIDTH * 2 + TINYCHAR_WIDTH * pwidth +
 //					((lwidth/2 - len/2) * TINYCHAR_WIDTH);
 				xx = x + TINYCHAR_WIDTH * 2 + TINYCHAR_WIDTH * pwidth;
-				drawstr2(xx, y,
-						 p, hcolor, qfalse, qfalse, TINYCHAR_WIDTH, TINYCHAR_HEIGHT,
-						 TEAM_OVERLAY_MAXLOCATION_WIDTH);
+				drawstr2(xx, y, p, hcolor, TINYCHAR_WIDTH, TINYCHAR_HEIGHT);
 			}
 
 			getcolorforhealth(ci->health, ci->armor, hcolor);
@@ -740,9 +736,7 @@ CG_DrawTeamOverlay(float y, qboolean right, qboolean upper)
 			xx = x + TINYCHAR_WIDTH * 3 +
 			     TINYCHAR_WIDTH * pwidth + TINYCHAR_WIDTH * lwidth;
 
-			drawstr2(xx, y,
-					 st, hcolor, qfalse, qfalse,
-					 TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 0);
+			drawstr2(xx, y, st, hcolor, TINYCHAR_WIDTH, TINYCHAR_HEIGHT);
 
 			// draw weapon icon
 			xx += TINYCHAR_WIDTH * 3;
@@ -1191,8 +1185,8 @@ drawteaminfo(void)
 		for(i = cgs.teamchatpos - 1; i >= cgs.teamlastchatpos; i--)
 			drawstr2(CHATLOC_X + TINYCHAR_WIDTH,
 					 CHATLOC_Y - (cgs.teamchatpos - i)*TINYCHAR_HEIGHT,
-					 cgs.teamchatmsgs[i % chatHeight], hcolor, qfalse, qfalse,
-					 TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 0);
+					 cgs.teamchatmsgs[i % chatHeight], hcolor,
+					 TINYCHAR_WIDTH, TINYCHAR_HEIGHT);
 	}
 }
 
@@ -1271,8 +1265,7 @@ drawreward(void)
 		drawpic(x, y, ICON_SIZE-4, ICON_SIZE-4, cg.rewardshaders[0]);
 		Com_sprintf(buf, sizeof(buf), "%d", cg.nrewards[0]);
 		x = (SCREEN_WIDTH - SMALLCHAR_WIDTH * drawstrlen(buf)) / 2;
-		drawstr2(x, y+ICON_SIZE, buf, color, qfalse, qtrue,
-				 SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, 0);
+		drawstr2(x, y+ICON_SIZE, buf, color, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT);
 	}else{
 		count = cg.nrewards[0];
 
@@ -1569,8 +1562,7 @@ drawcenterstr(void)
 
 		x = (SCREEN_WIDTH - w) / 2;
 
-		drawstr2(x, y, linebuffer, color, qfalse, qtrue,
-				 cg.centerprintcharwidth, (int)(cg.centerprintcharwidth * 1.5), 0);
+		drawstr2(x, y, linebuffer, color, cg.centerprintcharwidth, (int)(cg.centerprintcharwidth * 1.5));
 
 		y += cg.centerprintcharwidth * 1.5;
 		while(*start && (*start != '\n'))
@@ -1939,7 +1931,7 @@ drawfollow(void)
 
 	x = 0.5 * (640 - GIANT_WIDTH * drawstrlen(name));
 
-	drawstr2(x, 40, name, color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0);
+	drawstr2(x, 40, name, color, GIANT_WIDTH, GIANT_HEIGHT);
 
 	return qtrue;
 }
@@ -2051,7 +2043,7 @@ drawwarmup(void)
 			else
 				cw = GIANT_WIDTH;
 			drawstr2(320 - w * cw/2, 20, s, colorWhite,
-					 qfalse, qtrue, cw, (int)(cw * 1.5f), 0);
+					 cw, (int)(cw * 1.5f));
 		}
 	}else{
 		if(cgs.gametype == GT_FFA)
@@ -2077,7 +2069,7 @@ drawwarmup(void)
 		else
 			cw = GIANT_WIDTH;
 		drawstr2(320 - w * cw/2, 25, s, colorWhite,
-				 qfalse, qtrue, cw, (int)(cw * 1.1f), 0);
+				 cw, (int)(cw * 1.1f));
 	}
 
 	sec = (sec - cg.time) / 1000;
@@ -2120,7 +2112,7 @@ drawwarmup(void)
 
 	w = drawstrlen(s);
 	drawstr2(320 - w * cw/2, 70, s, colorWhite,
-			 qfalse, qtrue, cw, (int)(cw * 1.5), 0);
+			 cw, (int)(cw * 1.5));
 }
 
 //==================================================================================
@@ -2219,6 +2211,8 @@ Perform all drawing needed to completely fill the screen
 void
 drawactive(stereoFrame_t stereoview)
 {
+	drawlibbeginframe(cg.time, cgs.scrnxscale, cgs.scrnyscale, cgs.scrnxbias);
+
 	// optionally draw the info screen instead
 	if(!cg.snap){
 		drawinfo();

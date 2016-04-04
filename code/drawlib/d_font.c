@@ -30,6 +30,8 @@ drawpropstr2(int x, int y, const char *str, vec4_t color, float scale, qhandle_t
 			aw = (float)propMap[ch][2] * drawstuff.xscale * scale;
 			ah = (float)PROP_HEIGHT * drawstuff.yscale * scale;
 			trap_R_DrawStretchPic(ax, ay, aw, ah, fcol, frow, fcol+fwidth, frow+fheight, charset);
+		}else{
+			aw = 0;
 		}
 		ax += (aw + (float)PROP_GAP_WIDTH * drawstuff.xscale * scale);
 		s++;
@@ -63,7 +65,7 @@ float
 propstrsizescale(int style)
 {
 	if(style & UI_SMALLFONT)
-		return PROP_SMALL_SIZE_SCALE;
+		return 0.75f;
 	return 1.00;
 }
 
@@ -174,7 +176,10 @@ drawpropstrwrapped(int x, int y, int xmax, int ystep, const char *str, int style
 	}
 }
 
-static void
+/*
+From ui.
+*/
+void
 drawstr2(int x, int y, const char *str, vec4_t color, int charw, int charh)
 {
 	const char *s;
@@ -219,6 +224,14 @@ drawstr2(int x, int y, const char *str, vec4_t color, int charw, int charh)
 	}
 	trap_R_SetColor(nil);
 }
+
+/*
+From cgame.
+
+Draws a multi-colored string with a drop shadow, optionally forcing
+to a fixed color.
+*/
+////
 
 void
 drawstr(int x, int y, const char *str, int style, vec4_t color)
