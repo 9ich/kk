@@ -1036,6 +1036,7 @@ PM_Weapon(void)
 	// make weapon function
 	if(pm->ps->weaponTime > 0)
 		pm->ps->weaponTime -= pml.msec;
+	pm->ps->weaponTime = MAX(0, pm->ps->weaponTime);
 
 	// check for weapon change
 	// can't change if weapon is firing, but can change
@@ -1114,7 +1115,7 @@ PM_Weapon(void)
 		addTime = 1000;
 		break;
 	case WP_MACHINEGUN:
-		addTime = 50;
+		addTime = 1000/40.0;
 		break;
 	case WP_GRENADE_LAUNCHER:
 		addTime = 800;
