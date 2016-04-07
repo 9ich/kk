@@ -445,6 +445,15 @@ drawstatusbar(void)
 			drawpic(370 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE, cgs.media.armorIcon);
 
 	}
+
+	//
+	// boost
+	//
+	value = ps->stats[STAT_BOOST_FUEL];
+	fillrect(500, 418, 125.0f, 10, CDimGray);
+	fillrect(500, 418, Com_Scale(value, 0, MAX_BOOST_FUEL, 0, 125), 10, CHotPink);
+	trap_R_SetColor(CLightBlue);
+	drawfield(500, 432, 4, value / (MAX_BOOST_FUEL/100));
 }
 
 
@@ -1064,12 +1073,12 @@ drawlowerright(void)
 {
 	float y;
 
-	y = 480 - ICON_SIZE;
+	y = 410 - ICON_SIZE;
 
 	if(cgs.gametype >= GT_TEAM && cg_drawTeamOverlay.integer == 2)
 		y = CG_DrawTeamOverlay(y, qtrue, qfalse);
 
-	y = CG_DrawScores(y);
+	//y = CG_DrawScores(y);
 	drawpowerups(y);
 }
 

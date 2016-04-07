@@ -1218,6 +1218,7 @@ typedef struct playerState_s {
 	int		upmove;
 
 	int			weaponTime;
+	int			boosttime;		// boost fuel remaining, in millisecs
 	int			gravity;
 	int			speed;
 	int			delta_angles[3];	// add to command angles to get view direction

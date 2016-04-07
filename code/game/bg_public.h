@@ -45,6 +45,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define VOTE_TIME		30000	// 30 seconds before vote times out
 
+#define MAX_BOOST_FUEL		2500	// millisecs
+
 #define MAXS_X			30
 #define MAXS_Y			30
 #define MAXS_Z			30
@@ -208,6 +210,7 @@ void	Pmove(pmove_t *pmove);
 typedef enum
 {
 	STAT_HEALTH,
+	STAT_BOOST_FUEL,
 	STAT_HOLDABLE_ITEM,
 #ifdef MISSIONPACK
 	STAT_PERSISTANT_POWERUP,
@@ -610,6 +613,7 @@ typedef enum
 	IT_AMMO,	// EFX: rotate
 	IT_ARMOR,	// EFX: rotate + minlight
 	IT_HEALTH,	// EFX: static external sphere + rotating internal
+	IT_BOOST,	// EFX: rotate
 	IT_POWERUP,	// instant on, timer based
 	// EFX: rotate + external ring that rotates
 	IT_HOLDABLE,	// single use, holdable item

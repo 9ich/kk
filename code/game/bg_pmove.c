@@ -551,6 +551,8 @@ PM_AirMove(void)
 
 	PM_Friction();
 	_airmove(&pm->cmd, wishvel, wishdir, &wishspeed);
+	if((pm->cmd.buttons & BUTTON_WALKING) && pm->ps->stats[STAT_BOOST_FUEL] > 0)
+		wishspeed *= 3;
 	PM_Accelerate(wishdir, wishspeed, pm_airaccelerate);
 	pmslidemode(qtrue);
 }
@@ -1264,11 +1266,6 @@ PmoveSingle(pmove_t *pmove)
 	if(pm->ps->stats[STAT_HEALTH] <= 0)
 		pm->tracemask &= ~CONTENTS_BODY;	// corpses can fly through bodies
 
-	// make sure walking button is clear if they are running, to avoid
-	// proxy no-footsteps cheats
-	if(abs(pm->cmd.forwardmove) > 64 || abs(pm->cmd.rightmove) > 64)
-		pm->cmd.buttons &= ~BUTTON_WALKING;
-
 	// set the talk balloon flag
 	if(pm->cmd.buttons & BUTTON_TALK)
 		pm->ps->eFlags |= EF_TALK;
@@ -1320,6 +1317,15 @@ PmoveSingle(pmove_t *pmove)
 
 	// update the viewangles
 	PM_UpdateViewAngles(pm->ps, &pm->cmd);
+
+	// subtract boost fuel if boost button is down
+	if((pm->cmd.buttons & BUTTON_WALKING) &&
+	   pm->ps->stats[STAT_BOOST_FUEL] > 0 &&
+	   (pm->cmd.forwardmove != 0 ||
+	   pm->cmd.upmove != 0 ||
+	   pm->cmd.rightmove != 0))
+		pm->ps->stats[STAT_BOOST_FUEL] =
+		   MAX(0, pm->ps->stats[STAT_BOOST_FUEL] - pml.msec);
 
 	anglevecs(pm->ps->viewangles, pml.forward, pml.right, pml.up);
 

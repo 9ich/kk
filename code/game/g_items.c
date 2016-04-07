@@ -36,6 +36,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define RESPAWN_ARMOR		25
 #define RESPAWN_HEALTH		35
+#define RESPAWN_BOOST		20
 #define RESPAWN_AMMO		40
 #define RESPAWN_HOLDABLE	60
 #define RESPAWN_MEGAHEALTH	35	//120
@@ -292,6 +293,19 @@ Pickup_Health(gentity_t *ent, gentity_t *other)
 	return RESPAWN_HEALTH;
 }
 
+int
+Pickup_Boost(gentity_t *ent, gentity_t *other)
+{
+	int n;
+
+	n = ent->item->quantity;
+	if(ent->count != 0)
+		n = ent->count;
+	other->client->ps.stats[STAT_BOOST_FUEL] =
+	   MIN(MAX_BOOST_FUEL, other->client->ps.stats[STAT_BOOST_FUEL] + n);
+	return RESPAWN_BOOST;
+}
+
 //======================================================================
 
 int
@@ -431,6 +445,9 @@ item_touch(gentity_t *ent, gentity_t *other, trace_t *trace)
 		break;
 	case IT_HEALTH:
 		respawn = Pickup_Health(ent, other);
+		break;
+	case IT_BOOST:
+		respawn = Pickup_Boost(ent, other);
 		break;
 	case IT_POWERUP:
 		respawn = Pickup_Powerup(ent, other);
