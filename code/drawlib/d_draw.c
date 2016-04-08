@@ -46,8 +46,7 @@ adjustcoords(float *x, float *y, float *w, float *h)
 
 #endif
 	// expect valid pointers
-	//*x = *x * drawstuff.xscale + drawstuff.bias;
-	*x *= drawstuff.xscale;
+	*x = *x * drawstuff.xscale + drawstuff.bias;
 	*y *= drawstuff.yscale;
 	*w *= drawstuff.xscale;
 	*h *= drawstuff.yscale;
