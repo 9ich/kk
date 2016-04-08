@@ -35,13 +35,14 @@ float pm_duckScale = 0.25f;
 float pm_swimScale = 0.50f;
 
 float pm_accelerate = 10.0f;
-float pm_airaccelerate = 2.0f;
+float pm_airaccelerate = 6.0f;
 float pm_wateraccelerate = 4.0f;
 float pm_flyaccelerate = 8.0f;
 
 float pm_friction = 6.0f;
 float pm_waterfriction = 1.0f;
 float pm_flightfriction = 0.5f;
+float pm_flightcontrolfriction = 1.9f;
 float pm_spectatorfriction = 5.0f;
 
 int c_pmove = 0;
@@ -208,7 +209,10 @@ PM_Friction(void)
 		drop += speed*pm_waterfriction*pm->waterlevel*pml.frametime;
 
 	// apply flying friction
-	drop += speed*pm_flightfriction*pml.frametime;
+	if(pm->cmd.forwardmove != 0 || pm->cmd.rightmove != 0 || pm->cmd.upmove != 0)
+		drop += speed*pm_flightcontrolfriction*pml.frametime;
+	else
+		drop += speed*pm_flightfriction*pml.frametime;
 
 	if(pm->ps->pm_type == PM_SPECTATOR)
 		drop += speed*pm_spectatorfriction*pml.frametime;
