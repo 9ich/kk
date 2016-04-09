@@ -825,6 +825,9 @@ CG_RegisterGraphics(void)
 
 	cgs.media.backTileShader = trap_R_RegisterShader("gfx/2d/backtile");
 	cgs.media.noammoShader = trap_R_RegisterShader("icons/noammo");
+	cgs.media.hurtLeftShader = trap_R_RegisterShader("gfx/2d/hurtleft");
+	cgs.media.hurtForwardShader = trap_R_RegisterShader("gfx/2d/hurtfwd");
+	cgs.media.hurtUpShader = trap_R_RegisterShader("gfx/2d/hurtup");
 
 	// powerup shaders
 	cgs.media.quadShader = trap_R_RegisterShader("powerups/quad");

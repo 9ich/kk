@@ -166,6 +166,61 @@ drawhead(float x, float y, float w, float h, int clientNum, vec3_t headAngles)
 }
 
 /*
+Draws 2D hurt indicators depending on the attacker's
+position relative to our viewangles.
+*/
+void
+drawhurtindicator(void)
+{
+	const float thresh = 0.5;	// 60 deg
+	const float xofs = 140;
+	const float yofs = 140;
+	const float w = 140;
+	const float h = 140;
+	vec3_t dir;
+	int attacker, t;
+	float d, x, y;
+
+	if(!cg_blood.integer)
+		return;
+
+	if(!cg.dmgval)
+		return;
+
+	t = cg.time - cg.dmgtime;
+	if(t <= 0 || t >= DAMAGE_TIME)
+		return;
+
+	attacker = getlastattacker();
+	if(attacker == -1)
+		return;
+
+	vecsub(cg.snap->ps.origin, cg_entities[attacker].lerporigin, dir);
+	vecnorm(dir);
+
+	x = SCREEN_WIDTH/2 - w/2;
+	y = SCREEN_HEIGHT/2 - h/2;
+
+	d = vecdot(cg.refdef.viewaxis[0], dir);
+	if(d < -thresh)	// in front of us
+		drawpic(x, y - yofs, w, h, cgs.media.hurtForwardShader);
+	else if(d > thresh)	// behind us
+		drawpic(x, y + yofs, w, -h, cgs.media.hurtForwardShader);
+
+	d = vecdot(cg.refdef.viewaxis[1], dir);
+	if(d < -thresh)	// on our left
+		drawpic(x - xofs, y, w, h, cgs.media.hurtLeftShader);
+	else if(d > thresh)	// on our right
+		drawpic(x + xofs, y, -w, h, cgs.media.hurtLeftShader);
+
+	d = vecdot(cg.refdef.viewaxis[2], dir);
+	if(d < -thresh)	// below us
+		drawpic(x, y - yofs, w, h, cgs.media.hurtUpShader);
+	else if(d > thresh)	// above us
+		drawpic(x, y + yofs, w, -h, cgs.media.hurtUpShader);
+}
+
+/*
 ================
 drawflag
 
@@ -2180,6 +2235,8 @@ draw2d(stereoFrame_t stereoFrame)
 			drawteaminfo();
 		}
 	}
+
+	drawhurtindicator();
 
 	drawlockonwarning();
 

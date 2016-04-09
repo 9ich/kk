@@ -498,56 +498,6 @@ CG_CalcFov(void)
 
 /*
 ===============
-CG_DamageBlendBlob
-
-===============
-*/
-static void
-CG_DamageBlendBlob(void)
-{
-	int t;
-	int maxTime;
-	refEntity_t ent;
-
-	if(!cg_blood.integer)
-		return;
-
-	if(!cg.dmgval)
-		return;
-
-	//if (cg.cameramode) {
-	//	return;
-	//}
-
-	// ragePro systems can't fade blends, so don't obscure the screen
-	if(cgs.glconfig.hardwareType == GLHW_RAGEPRO)
-		return;
-
-	maxTime = DAMAGE_TIME;
-	t = cg.time - cg.dmgtime;
-	if(t <= 0 || t >= maxTime)
-		return;
-
-
-	memset(&ent, 0, sizeof(ent));
-	ent.reType = RT_SPRITE;
-	ent.renderfx = RF_FIRST_PERSON;
-
-	vecmad(cg.refdef.vieworg, 8, cg.refdef.viewaxis[0], ent.origin);
-	vecmad(ent.origin, cg.dmgx * -8, cg.refdef.viewaxis[1], ent.origin);
-	vecmad(ent.origin, cg.dmgy * 8, cg.refdef.viewaxis[2], ent.origin);
-
-	ent.radius = cg.dmgval * 3;
-	ent.customShader = cgs.media.viewBloodShader;
-	ent.shaderRGBA[0] = 255;
-	ent.shaderRGBA[1] = 255;
-	ent.shaderRGBA[2] = 255;
-	ent.shaderRGBA[3] = 200 * (1.0 - ((float)t / maxTime));
-	trap_R_AddRefEntityToScene(&ent);
-}
-
-/*
-===============
 CG_CalcViewValues
 
 Sets cg.refdef view values
@@ -796,10 +746,6 @@ drawframe(int serverTime, stereoFrame_t stereoview, qboolean demoplayback)
 
 	// build cg.refdef
 	inwater = CG_CalcViewValues();
-
-	// first person blend blobs, done after AnglesToAxis
-	if(!cg.thirdperson)
-		CG_DamageBlendBlob();
 
 	// build the render lists
 	if(!cg.hyperspace){
