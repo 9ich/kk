@@ -1873,7 +1873,9 @@ drawlockonwarning(void)
 
 	for(i = 0; i < cgs.maxclients; i++){
 		es = &cg_entities[i].currstate;
-		if(!cgs.clientinfo[i].infovalid || es->lockontarget != cg.snap->ps.clientNum)
+		if(!cgs.clientinfo[i].infovalid ||
+		   es->lockontarget != cg.snap->ps.clientNum ||
+		   es->lockonstarttime == 0)
 			continue;
 
 		if(es->lockontime - es->lockonstarttime > HOMING_SCANWAIT)
