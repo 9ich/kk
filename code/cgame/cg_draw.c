@@ -166,11 +166,11 @@ drawhead(float x, float y, float w, float h, int clientNum, vec3_t headAngles)
 }
 
 /*
-Draws 2D hurt indicators depending on the attacker's
+Draws 2D damage indicators depending on the attacker's
 position relative to our viewangles.
 */
 void
-drawhurtindicator(void)
+drawdmgindicator(void)
 {
 	const float thresh = 0.5;	// 60 deg
 	const float xofs = 140;
@@ -181,7 +181,7 @@ drawhurtindicator(void)
 	int attacker, t;
 	float d, x, y;
 
-	if(!cg_blood.integer)
+	if(!cg_drawDamageDir.integer)
 		return;
 
 	if(!cg.dmgval)
@@ -2236,7 +2236,7 @@ draw2d(stereoFrame_t stereoFrame)
 		}
 	}
 
-	drawhurtindicator();
+	drawdmgindicator();
 
 	drawlockonwarning();
 
