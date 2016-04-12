@@ -1879,9 +1879,9 @@ drawlockonwarning(void)
 			continue;
 
 		if(es->lockontime - es->lockonstarttime > HOMING_SCANWAIT)
-			drawbigstr(10, 200, "ENEMY LOCK", 1.0f);
+			drawpropstr(SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 100, "ENEMY LOCK", UI_CENTER, CRed);
 		else
-			drawbigstr(10, 200, "WARNING", 1.0f);
+			drawpropstr(SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 100, "WARNING", UI_CENTER, CLightBlue);
 		break;
 	}
 }
