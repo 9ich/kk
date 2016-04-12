@@ -657,7 +657,7 @@ fire_rocket(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->splashradius = 120;
 	bolt->meansofdeath = MOD_ROCKET;
 	bolt->splashmeansofdeath = MOD_ROCKET_SPLASH;
-	bolt->clipmask = MASK_SHOT;
+	bolt->clipmask = CONTENTS_TRIGGER;
 	bolt->target_ent = nil;
 
 	bolt->s.pos.trType = TR_LINEAR;
@@ -668,6 +668,26 @@ fire_rocket(gentity_t *self, vec3_t start, vec3_t dir)
 	veccpy(start, bolt->r.currentOrigin);
 
 	return bolt;
+}
+
+void
+homingrocket_pain(gentity_t *ent, gentity_t *attacker, int dmg)
+{
+}
+
+void
+homingrocket_die(gentity_t *ent, gentity_t *inflictor, gentity_t *attacker, int dmg, int mod)
+{
+	trap_UnlinkEntity(ent);
+	radiusdamage(ent->r.currentOrigin, ent, ent->splashdmg,
+	   1.5f * ent->splashradius, ent, ent->splashmeansofdeath);
+
+	ent->s.eType = ET_EVENTS + EV_MISSILE_MISS;
+	ent->eventtime = level.time;
+	ent->freeafterevent = qtrue;
+	ent->r.contents = 0;
+
+	trap_LinkEntity(ent);
 }
 
 void
@@ -719,6 +739,8 @@ fire_homingrocket(gentity_t *self, vec3_t start, vec3_t dir)
 
 	bolt = entspawn();
 	bolt->classname = "homingrocket";
+	bolt->pain = homingrocket_pain;
+	bolt->die = homingrocket_die;
 	bolt->think = homingrocket_think;
 	bolt->nextthink = level.time + 100;
 	bolt->s.eType = ET_MISSILE;
@@ -733,6 +755,11 @@ fire_homingrocket(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->splashmeansofdeath = MOD_ROCKET_SPLASH;
 	bolt->clipmask = MASK_SHOT;
 	bolt->homingtarget = self->client->ps.lockontarget;
+	vecset(bolt->r.mins, -4, -4, -4);
+	vecset(bolt->r.maxs, 4, 4, 4);
+	bolt->r.contents = MASK_PLAYERSOLID;
+	bolt->health = 50;
+	bolt->takedmg = qtrue;
 
 	veccpy(start, bolt->s.pos.trBase);
 	vecmul(dir, 100, bolt->s.pos.trDelta);
