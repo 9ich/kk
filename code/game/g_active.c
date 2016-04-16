@@ -340,6 +340,7 @@ ClientInactivityTimer(gclient_t *client)
 		 (client->pers.cmd.buttons & BUTTON_ATTACK)){
 		client->inactivitytime = level.time + g_inactivity.integer * 1000;
 		client->inactivitywarning = qfalse;
+		client->afktime = level.time + AFK_TIME;
 	}else if(!client->pers.localclient){
 		if(level.time > client->inactivitytime){
 			trap_DropClient(client - level.clients, "Dropped due to inactivity");
@@ -753,9 +754,8 @@ ClientThink_real(gentity_t *ent)
 	if(!ClientInactivityTimer(client))
 		return;
 
-	// clear the rewards if time
-	if(level.time > client->rewardtime)
-		client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP);
+	// clear the award flags from last frame
+	client->ps.awardflags &= ~AWARD_MASK;
 
 	if(client->noclip)
 		client->ps.pm_type = PM_NOCLIP;

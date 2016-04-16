@@ -569,6 +569,7 @@ typedef struct
 	int		nrewards[MAX_REWARDSTACK];
 	qhandle_t	rewardshaders[MAX_REWARDSTACK];
 	qhandle_t	rewardsounds[MAX_REWARDSTACK];
+	char		rewardmsgs[MAX_REWARDSTACK][MAX_STRING_CHARS];
 
 	// sound buffer mainly for announcer sounds
 	int		sndbufin;
@@ -625,6 +626,14 @@ typedef struct
 	char		testmodelname[MAX_QPATH];
 	qboolean	testgun;
 } cg_t;
+
+typedef struct
+{
+	int	award;
+	char	*sfx;
+	char	*shader;
+	char	*msg;
+} awardlist_t;
 
 // all of the model, shader, and sound references that are
 // loaded at gamestate time are stored in cgMedia_t
@@ -869,15 +878,6 @@ typedef struct
 	sfxHandle_t	hitSoundHighArmor;
 	sfxHandle_t	hitSoundLowArmor;
 	sfxHandle_t	hitTeamSound;
-	sfxHandle_t	impressiveSound;
-	sfxHandle_t	excellentSound;
-	sfxHandle_t	deniedSound;
-	sfxHandle_t	humiliationSound;
-	sfxHandle_t	assistSound;
-	sfxHandle_t	defendSound;
-	sfxHandle_t	firstImpressiveSound;
-	sfxHandle_t	firstExcellentSound;
-	sfxHandle_t	firstHumiliationSound;
 
 	sfxHandle_t	takenLeadSound;
 	sfxHandle_t	tiedLeadSound;
@@ -1074,6 +1074,8 @@ extern centity_t cg_entities[MAX_GENTITIES];
 extern weaponInfo_t cg_weapons[MAX_WEAPONS];
 extern itemInfo_t cg_items[MAX_ITEMS];
 extern markPoly_t cg_markPolys[MAX_MARK_POLYS];
+extern awardlist_t cg_awardlist[];
+extern int cg_nawardlist;
 
 extern vmCvar_t cg_centertime;
 extern vmCvar_t cg_swingSpeed;
@@ -1396,6 +1398,7 @@ void	shaderstatechanged(void);
 void	respawn(void);
 void	pstransition(playerState_t *ps, playerState_t *ops);
 void	chkpredictableevents(playerState_t *ps);
+void	pushreward(sfxHandle_t sfx, qhandle_t shader, const char *msg, int nrewards);
 
 //===============================================
 

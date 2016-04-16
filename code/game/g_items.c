@@ -101,7 +101,7 @@ Pickup_Powerup(gentity_t *ent, gentity_t *other)
 			continue;
 
 		// anti-reward
-		client->ps.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_DENIEDREWARD;
+		giveaward(client, AWARD_DENIED);
 	}
 	return RESPAWN_POWERUP;
 }

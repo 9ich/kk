@@ -379,9 +379,9 @@ CheckAlmostCapture(gentity_t *self, gentity_t *attacker)
 			// if the player was *very* close
 			vecsub(self->client->ps.origin, ent->s.origin, dir);
 			if(veclen(dir) < 200){
-				self->client->ps.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_HOLYSHIT;
+				giveaward(self->client, AWARD_DENIED);
 				if(attacker->client)
-					attacker->client->ps.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_HOLYSHIT;
+					giveaward(attacker->client, AWARD_DENIED);
 			}
 		}
 	}
@@ -411,11 +411,34 @@ CheckAlmostScored(gentity_t *self, gentity_t *attacker)
 			// if the player was *very* close
 			vecsub(self->client->ps.origin, ent->s.origin, dir);
 			if(veclen(dir) < 200){
-				self->client->ps.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_HOLYSHIT;
+				giveaward(self->client, AWARD_DENIED);
 				if(attacker->client)
-					attacker->client->ps.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_HOLYSHIT;
+					giveaward(attacker->client, AWARD_DENIED);
 			}
 		}
+	}
+}
+
+/*
+attacker has just got at least a doublekill, so give awards as appropriate
+*/
+static void
+chkmultikill(gentity_t *attacker)
+{
+	gclient_t *cl;
+
+	cl = attacker->client;
+
+	if(cl->lastmultikill == 0 ||
+	   cl->lastmultikilltime != cl->lastkilltime){
+	   	// first award
+		giveaward(cl, AWARD_DOUBLEKILL);
+		cl->lastmultikill = AWARD_DOUBLEKILL;
+		cl->lastmultikilltime = level.time;
+	} else if(cl->lastmultikill < AWARD_HOLYSHIT){
+		// subsequent awards up to AWARD_HOLYSHIT
+		giveaward(cl, ++cl->lastmultikill);
+		cl->lastmultikilltime = level.time;
 	}
 }
 
@@ -493,6 +516,16 @@ player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damag
 
 	self->client->ps.persistant[PERS_KILLED]++;
 
+	// if victim has died three times in a row without killing anyone,
+	// and is not afk, give them an AWARD_SADDAY
+	if(self->client->killsthislife < 1&&
+	   level.time < self->client->afktime)
+		self->client->ps.persistant[PERS_NO_KILLS]++;
+	else
+		self->client->ps.persistant[PERS_NO_KILLS] = 0;
+	if(self->client->ps.persistant[PERS_NO_KILLS] >= 3)
+		giveaward(self->client, AWARD_SADDAY);
+
 	if(attacker && attacker->client){
 		attacker->client->lastkilledclient = self->s.number;
 
@@ -500,30 +533,46 @@ player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damag
 			addscore(attacker, self->r.currentOrigin, -1);
 		else{
 			addscore(attacker, self->r.currentOrigin, 1);
+			attacker->client->killsthislife++;
+			if(level.totalkills < 1)
+				giveaward(attacker->client, AWARD_FIRSTBLOOD);
+			level.totalkills++;
+
+			// if attacker is a bad enough dude to have
+			// many kills since respawning, give them an
+			// award
+			switch(attacker->client->killsthislife){
+			case 5:
+				giveaward(attacker->client, AWARD_KILLINGSPREE);
+				break;
+			case 10:
+				giveaward(attacker->client, AWARD_DOMINATING);
+				break;
+			case 15:
+				giveaward(attacker->client, AWARD_RAMPAGE);
+				break;
+			case 20:
+				giveaward(attacker->client, AWARD_UNSTOPPABLE);
+				break;
+			case 25:
+				giveaward(attacker->client, AWARD_GODLIKE);
+				break;
+			case 30:
+				giveaward(attacker->client, AWARD_WICKEDSICK);
+				break;
+			}
 
 			if(meansOfDeath == MOD_GAUNTLET){
 				// play humiliation on player
-				attacker->client->ps.persistant[PERS_GAUNTLET_FRAG_COUNT]++;
-
-				// add the sprite over the player's head
-				attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP);
-				attacker->client->ps.eFlags |= EF_AWARD_GAUNTLET;
-				attacker->client->rewardtime = level.time + REWARD_SPRITE_TIME;
-
+				giveaward(attacker->client, AWARD_GAUNTLET);
 				// also play humiliation on target
-				self->client->ps.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_GAUNTLETREWARD;
+				giveaward(self->client, AWARD_HUMILIATED);
 			}
 
 			// check for two kills in a short amount of time
 			// if this is close enough to the last kill, give a reward sound
-			if(level.time - attacker->client->lastkilltime < CARNAGE_REWARD_TIME){
-				// play excellent on player
-				attacker->client->ps.persistant[PERS_EXCELLENT_COUNT]++;
-
-				// add the sprite over the player's head
-				attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP);
-				attacker->client->ps.eFlags |= EF_AWARD_EXCELLENT;
-				attacker->client->rewardtime = level.time + REWARD_SPRITE_TIME;
+			if(level.time - attacker->client->lastkilltime < MULTIKILL_TIME){
+				chkmultikill(attacker);
 			}
 			attacker->client->lastkilltime = level.time;
 		}

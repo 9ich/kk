@@ -76,6 +76,30 @@ cgs_t cgs;
 centity_t cg_entities[MAX_GENTITIES];
 weaponInfo_t cg_weapons[MAX_WEAPONS];
 itemInfo_t cg_items[MAX_ITEMS];
+awardlist_t cg_awardlist[] = {
+	{AWARD_IMPRESSIVE,	"sound/awards/impressive.wav",	"gfx/2d/impressive",		"Accuracy"},
+	{AWARD_DEFEND,		"sound/awards/defense.wav",		"gfx/2d/defense",		"Defense"},
+	{AWARD_ASSIST,		"sound/awards/assist.wav",		"gfx/2d/assist",		"Assist"},
+	{AWARD_DENIED,		"sound/awards/denied.wav",		0,		"Denied"},
+	{AWARD_GAUNTLET,	"sound/awards/humiliation.wav",	0,		"Humiliation"},
+	{AWARD_HUMILIATED,	"sound/awards/humiliation.wav",	0,		"Humiliated"},
+	{AWARD_KILLINGSPREE,	"sound/awards/killingspree.wav",	0,		"Killing Spree"},
+	{AWARD_DOMINATING,	"sound/awards/dominating.wav",	0,		"Dominating"},
+	{AWARD_RAMPAGE,		"sound/awards/rampage.wav",		0,		"Rampage"},
+	{AWARD_UNSTOPPABLE,	"sound/awards/unstoppable.wav",	0,		"Unstoppable"},
+	{AWARD_GODLIKE,		"sound/awards/godlike.wav",		0,		"Godlike"},
+	{AWARD_WICKEDSICK,	"sound/awards/wickedsick.wav",	0,		"Wicked Sick!"},
+	{AWARD_DOUBLEKILL,	"sound/awards/doublekill.wav",	0,		"Double Kill"},
+	{AWARD_MULTIKILL,	"sound/awards/multikill.wav",	0,		"Multi Kill"},
+	{AWARD_MEGAKILL,	"sound/awards/megakill.wav",	0,		"Mega Kill"},
+	{AWARD_ULTRAKILL,	"sound/awards/ultrakill.wav",	0,		"Ultra Kill!"},
+	{AWARD_MONSTERKILL,	"sound/awards/monsterkill.wav",	0,		"Monster Kill!"},
+	{AWARD_LUDICROUSKILL,	"sound/awards/ludicrouskill.wav",	0,		"Ludicrous Kill!"},
+	{AWARD_HOLYSHIT,	"sound/awards/holyshit.wav",	0,		"HOLY SHIT"},
+	{AWARD_FIRSTBLOOD,	"sound/awards/firstblood.wav",	0,		"First Blood"},
+	{AWARD_SADDAY,		"sound/awards/sadday.wav",		0,		"Sad Day!"}
+};
+int cg_nawardlist = ARRAY_LEN(cg_awardlist);
 
 vmCvar_t cg_railTrailTime;
 vmCvar_t cg_centertime;
@@ -641,17 +665,13 @@ CG_RegisterSounds(void)
 	cgs.media.hitSoundLowArmor = trap_S_RegisterSound("sound/feedback/hitlo.wav", qfalse);
 #endif
 
-	cgs.media.impressiveSound = trap_S_RegisterSound("sound/feedback/impressive.wav", qtrue);
-	cgs.media.excellentSound = trap_S_RegisterSound("sound/feedback/excellent.wav", qtrue);
-	cgs.media.deniedSound = trap_S_RegisterSound("sound/feedback/denied.wav", qtrue);
-	cgs.media.humiliationSound = trap_S_RegisterSound("sound/feedback/humiliation.wav", qtrue);
-	cgs.media.assistSound = trap_S_RegisterSound("sound/feedback/assist.wav", qtrue);
-	cgs.media.defendSound = trap_S_RegisterSound("sound/feedback/defense.wav", qtrue);
-#ifdef MISSIONPACK
-	cgs.media.firstImpressiveSound = trap_S_RegisterSound("sound/feedback/first_impressive.wav", qtrue);
-	cgs.media.firstExcellentSound = trap_S_RegisterSound("sound/feedback/first_excellent.wav", qtrue);
-	cgs.media.firstHumiliationSound = trap_S_RegisterSound("sound/feedback/first_gauntlet.wav", qtrue);
-#endif
+	// register award assets
+	for(i = 0; i < ARRAY_LEN(cg_awardlist); i++){
+		if(cg_awardlist[i].sfx != nil)
+			trap_S_RegisterSound(cg_awardlist[i].sfx, qtrue);
+		if(cg_awardlist[i].shader != nil)
+			trap_R_RegisterShaderNoMip(cg_awardlist[i].shader);
+	}
 
 	cgs.media.takenLeadSound = trap_S_RegisterSound("sound/feedback/takenlead.wav", qtrue);
 	cgs.media.tiedLeadSound = trap_S_RegisterSound("sound/feedback/tiedlead.wav", qtrue);

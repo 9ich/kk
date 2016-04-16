@@ -1296,12 +1296,15 @@ drawreward(void)
 			for(i = 0; i < cg.rewardstack; i++){
 				cg.rewardsounds[i] = cg.rewardsounds[i+1];
 				cg.rewardshaders[i] = cg.rewardshaders[i+1];
+				Q_strncpyz(cg.rewardmsgs[i], cg.rewardmsgs[i+1],
+				   sizeof cg.rewardmsgs[i]);
 				cg.nrewards[i] = cg.nrewards[i+1];
 			}
 			cg.rewardtime = cg.time;
 			cg.rewardstack--;
 			color = fadecolor(cg.rewardtime, REWARD_TIME);
-			trap_S_StartLocalSound(cg.rewardsounds[0], CHAN_ANNOUNCER);
+			if(cg.rewardsounds[0])
+				trap_S_StartLocalSound(cg.rewardsounds[0], CHAN_ANNOUNCER);
 		}else
 			return;
 	}
@@ -1323,13 +1326,16 @@ drawreward(void)
 	count = cg.nrewards[0] - count*10;		// number of small rewards to draw
 	*/
 
-	if(cg.nrewards[0] >= 10){
+	if(cg.nrewards[0] >= 10 || !cg.rewardshaders[0]){
 		y = 56;
 		x = 320 - ICON_SIZE/2;
-		drawpic(x, y, ICON_SIZE-4, ICON_SIZE-4, cg.rewardshaders[0]);
-		Com_sprintf(buf, sizeof(buf), "%d", cg.nrewards[0]);
-		x = (SCREEN_WIDTH - SMALLCHAR_WIDTH * drawstrlen(buf)) / 2;
-		drawstr2(x, y+ICON_SIZE, buf, color, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT);
+		if(cg.rewardshaders[0])
+			drawpic(x, y, ICON_SIZE-4, ICON_SIZE-4, cg.rewardshaders[0]);
+		if(cg.nrewards[0] > 1){
+			Com_sprintf(buf, sizeof(buf), "%d x", cg.nrewards[0]);
+			x = (SCREEN_WIDTH - SMALLCHAR_WIDTH * drawstrlen(buf)) / 2;
+			drawstr2(x, y+ICON_SIZE, buf, color, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT);
+		}
 	}else{
 		count = cg.nrewards[0];
 
@@ -1340,6 +1346,7 @@ drawreward(void)
 			x += ICON_SIZE;
 		}
 	}
+	centerprint(cg.rewardmsgs[cg.rewardstack], SCREEN_HEIGHT*0.30f, BIGCHAR_WIDTH);
 	trap_R_SetColor(nil);
 }
 
@@ -2230,8 +2237,9 @@ draw2d(stereoFrame_t stereoFrame)
 			drawweapsel();
 
 			drawholdable();
-			drawreward();
 		}
+		if(!cg.showscores)
+			drawreward();
 
 		if(cgs.gametype >= GT_TEAM){
 			drawteaminfo();

@@ -799,6 +799,7 @@ netField_t	entityStateFields[] =
 { NETF(groundEntityNum), GENTITYNUM_BITS },
 { NETF(pos.trType), 8 },
 { NETF(eFlags), 19 },
+{ NETF(awardflags), MAX_AWARDS },
 { NETF(otherEntityNum), GENTITYNUM_BITS },
 { NETF(weapon), 8 },
 { NETF(clientNum), 8 },
@@ -1132,6 +1133,7 @@ netField_t	playerStateFields[] =
 { PSF(groundEntityNum), GENTITYNUM_BITS },
 { PSF(weaponstate), 4 },
 { PSF(eFlags), 16 },
+{ PSF(awardflags), MAX_AWARDS },
 { PSF(externalEvent), 10 },
 { PSF(gravity), 16 },
 { PSF(speed), 16 },
@@ -1173,6 +1175,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 	playerState_t	dummy;
 	int				statsbits;
 	int				persistantbits;
+	long				awardsbits;
 	int				ammobits;
 	int				powerupbits;
 	int				numFields;
@@ -1250,6 +1253,12 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 			persistantbits |= 1<<i;
 		}
 	}
+	awardsbits = 0;
+	for (i=0 ; i<MAX_AWARDS ; i++) {
+		if (to->awards[i] != from->awards[i]) {
+			awardsbits |= 1<<i;
+		}
+	}
 	ammobits = 0;
 	for (i=0 ; i<MAX_WEAPONS ; i++) {
 		if (to->ammo[i] != from->ammo[i]) {
@@ -1263,9 +1272,9 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 		}
 	}
 
-	if (!statsbits && !persistantbits && !ammobits && !powerupbits) {
+	if (!statsbits && !persistantbits && !awardsbits && !ammobits && !powerupbits) {
 		MSG_WriteBits( msg, 0, 1 );	// no change
-		oldsize += 4;
+		oldsize += 5;
 		return;
 	}
 	MSG_WriteBits( msg, 1, 1 );	// changed
@@ -1287,6 +1296,17 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 		for (i=0 ; i<MAX_PERSISTANT ; i++)
 			if (persistantbits & (1<<i) )
 				MSG_WriteShort (msg, to->persistant[i]);
+	} else {
+		MSG_WriteBits( msg, 0, 1 );	// no change
+	}
+
+
+	if ( awardsbits ) {
+		MSG_WriteBits( msg, 1, 1 );	// changed
+		MSG_WriteBits( msg, awardsbits, MAX_AWARDS );
+		for (i=0 ; i<MAX_AWARDS ; i++)
+			if (awardsbits & (1<<i) )
+				MSG_WriteShort (msg, to->awards[i]);
 	} else {
 		MSG_WriteBits( msg, 0, 1 );	// no change
 	}
@@ -1422,6 +1442,17 @@ void MSG_ReadDeltaPlayerstate (msg_t *msg, playerState_t *from, playerState_t *t
 			for (i=0 ; i<MAX_PERSISTANT ; i++) {
 				if (bits & (1<<i) ) {
 					to->persistant[i] = MSG_ReadShort(msg);
+				}
+			}
+		}
+
+		// parse awards stats
+		if ( MSG_ReadBits( msg, 1 ) ) {
+			LOG("PS_AWARDS");
+			bits = MSG_ReadBits (msg, MAX_AWARDS);
+			for (i=0 ; i<MAX_AWARDS ; i++) {
+				if (bits & (1<<i) ) {
+					to->awards[i] = MSG_ReadShort(msg);
 				}
 			}
 		}

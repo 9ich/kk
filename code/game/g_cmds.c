@@ -65,13 +65,13 @@ deathmatchscoreboardmsg(gentity_t *ent)
 			    " %i %i %i %i %i %i %i %i %i %i %i %i %i %i", level.sortedclients[i],
 			    cl->ps.persistant[PERS_SCORE], ping, (level.time - cl->pers.entertime)/60000,
 			    scoreflags, g_entities[level.sortedclients[i]].s.powerups, accuracy,
-			    cl->ps.persistant[PERS_IMPRESSIVE_COUNT],
-			    cl->ps.persistant[PERS_EXCELLENT_COUNT],
-			    cl->ps.persistant[PERS_GAUNTLET_FRAG_COUNT],
-			    cl->ps.persistant[PERS_DEFEND_COUNT],
-			    cl->ps.persistant[PERS_ASSIST_COUNT],
+			    cl->ps.awards[AWARD_IMPRESSIVE],
+			    0 /* excellent */,
+			    cl->ps.awards[AWARD_GAUNTLET],
+			    cl->ps.awards[AWARD_DEFEND],
+			    cl->ps.awards[AWARD_ASSIST],
 			    perfect,
-			    cl->ps.persistant[PERS_CAPTURES]);
+			    cl->ps.awards[AWARD_CAPTURE]);
 		j = strlen(entry);
 		if(stringlength + j >= sizeof(string))
 			break;
@@ -267,24 +267,24 @@ Cmd_Give_f(gentity_t *ent)
 			return;
 	}
 
-	if(Q_stricmp(name, "excellent") == 0){
-		ent->client->ps.persistant[PERS_EXCELLENT_COUNT]++;
+	if(Q_stricmp(name, "doublekill") == 0){
+		ent->client->ps.awards[AWARD_DOUBLEKILL]++;
 		return;
 	}
 	if(Q_stricmp(name, "impressive") == 0){
-		ent->client->ps.persistant[PERS_IMPRESSIVE_COUNT]++;
+		ent->client->ps.awards[AWARD_IMPRESSIVE]++;
 		return;
 	}
 	if(Q_stricmp(name, "gauntletaward") == 0){
-		ent->client->ps.persistant[PERS_GAUNTLET_FRAG_COUNT]++;
+		ent->client->ps.awards[AWARD_GAUNTLET]++;
 		return;
 	}
 	if(Q_stricmp(name, "defend") == 0){
-		ent->client->ps.persistant[PERS_DEFEND_COUNT]++;
+		ent->client->ps.awards[AWARD_DEFEND]++;
 		return;
 	}
 	if(Q_stricmp(name, "assist") == 0){
-		ent->client->ps.persistant[PERS_ASSIST_COUNT]++;
+		ent->client->ps.awards[AWARD_ASSIST]++;
 		return;
 	}
 

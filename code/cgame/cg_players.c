@@ -1499,7 +1499,7 @@ Float sprites over the player's head
 static void
 CG_PlayerSprites(centity_t *cent)
 {
-	int team;
+	int team, i;
 
 	if(cent->currstate.eFlags & EF_CONNECTION){
 		CG_PlayerFloatSprite(cent, cgs.media.connectionShader);
@@ -1511,35 +1511,29 @@ CG_PlayerSprites(centity_t *cent)
 		return;
 	}
 
-	if(cent->currstate.eFlags & EF_AWARD_IMPRESSIVE){
-		CG_PlayerFloatSprite(cent, cgs.media.medalImpressive);
-		return;
-	}
+/*
+	for(i = cg_nawardlist-1; i >= 0; i--){
+		char *playername;
+		char s[MAX_STRING_CHARS];
+		const char *info;
+		sfxHandle_t sfx;
 
-	if(cent->currstate.eFlags & EF_AWARD_EXCELLENT){
-		CG_PlayerFloatSprite(cent, cgs.media.medalExcellent);
-		return;
-	}
+		sfx = 0;
 
-	if(cent->currstate.eFlags & EF_AWARD_GAUNTLET){
-		CG_PlayerFloatSprite(cent, cgs.media.medalGauntlet);
-		return;
-	}
+		if(!cent->currvalid)
+			break;	// if awardflags are lingering, don't keep queueing awards
+		if(!(cent->currstate.awardflags & (1<<cg_awardlist[i].award)))
+			continue;
+		if(cg_awardlist[i].sfx != nil && *cg_awardlist[i].sfx != 0)
+			sfx = trap_S_RegisterSound(cg_awardlist[i].sfx, qtrue);
+		info = getconfigstr(CS_PLAYERS + cent->currstate.number);
+		playername = Info_ValueForKey(info, "n");
+		Com_sprintf(s, sizeof s, "%s %s\n", playername, cg_awardlist[i].msg);
 
-	if(cent->currstate.eFlags & EF_AWARD_DEFEND){
-		CG_PlayerFloatSprite(cent, cgs.media.medalDefend);
-		return;
+		pushreward(sfx, 0, s, 1);
+		break;
 	}
-
-	if(cent->currstate.eFlags & EF_AWARD_ASSIST){
-		CG_PlayerFloatSprite(cent, cgs.media.medalAssist);
-		return;
-	}
-
-	if(cent->currstate.eFlags & EF_AWARD_CAP){
-		CG_PlayerFloatSprite(cent, cgs.media.medalCapture);
-		return;
-	}
+*/
 
 	team = cgs.clientinfo[cent->currstate.clientNum].team;
 	if(!(cent->currstate.eFlags & EF_DEAD) &&

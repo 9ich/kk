@@ -852,6 +852,16 @@ clientuserinfochanged(int clientNum)
 	logprintf("clientuserinfochanged: %i %s\n", clientNum, s);
 }
 
+void
+giveaward(gclient_t *cl, int award)
+{
+	cl->ps.awards[award]++;
+
+	// add the sprite over the player's head
+	//cl->ps.awardflags &= ~AWARD_MASK;
+	cl->ps.awardflags |= 1<<award;
+}
+
 /*
 ===========
 clientconnect
@@ -968,7 +978,7 @@ clientbegin(int clientNum)
 {
 	gentity_t *ent;
 	gclient_t *client;
-	int flags;
+	int flags, awardflags;
 
 	ent = g_entities + clientNum;
 
@@ -991,8 +1001,12 @@ clientbegin(int clientNum)
 	// so the viewpoint doesn't interpolate through the
 	// world to the new position
 	flags = client->ps.eFlags;
+	awardflags = client->ps.awardflags;
+
 	memset(&client->ps, 0, sizeof(client->ps));
+
 	client->ps.eFlags = flags;
+	client->ps.awardflags = awardflags;
 
 	// locate ent at a spawn point
 	clientspawn(ent);
@@ -1020,18 +1034,12 @@ clientspawn(gentity_t *ent)
 {
 	int index;
 	vec3_t spawn_origin, spawn_angles;
-	gclient_t *client;
+	gclient_t *client, sav;
 	int i;
-	clientPersistant_t saved;
-	clientSession_t savedSess;
 	int persistant[MAX_PERSISTANT];
 	gentity_t *spawnPoint;
 	gentity_t *tent;
 	int flags;
-	int savedPing;
-//	char	*savedAreaBits;
-	int accuracyhits, accuracyshots;
-	int eventSequence;
 	char userinfo[MAX_INFO_STRING];
 
 	index = ent - g_entities;
@@ -1074,36 +1082,28 @@ clientspawn(gentity_t *ent)
 	flags = ent->client->ps.eFlags & (EF_TELEPORT_BIT | EF_VOTED | EF_TEAMVOTED);
 	flags ^= EF_TELEPORT_BIT;
 
-	// clear everything but the persistant data
+	// clear everything but the client's persistent data
+	memset(&sav, 0, sizeof sav);
+	sav.pers = client->pers;
+	sav.sess = client->sess;
+	sav.ps.ping = client->ps.ping;
+	sav.areabits = client->areabits;
+	sav.accuracyhits = client->accuracyhits;
+	sav.accuracyshots = client->accuracyshots;
+	sav.ps.eventSequence = client->ps.eventSequence;
+	sav.ps.awardflags = client->ps.awardflags;
+	sav.afktime = client->afktime;
+	memcpy(&sav.ps.persistant, &client->ps.persistant, sizeof sav.ps.persistant);
+	memcpy(&sav.ps.awards, &client->ps.awards, sizeof sav.ps.awards);
 
-	saved = client->pers;
-	savedSess = client->sess;
-	savedPing = client->ps.ping;
-//	savedAreaBits = client->areabits;
-	accuracyhits = client->accuracyhits;
-	accuracyshots = client->accuracyshots;
-	for(i = 0; i < MAX_PERSISTANT; i++)
-		persistant[i] = client->ps.persistant[i];
-	eventSequence = client->ps.eventSequence;
+	memcpy(client, &sav, sizeof *client);
 
-	Com_Memset(client, 0, sizeof(*client));
-
-	client->pers = saved;
-	client->sess = savedSess;
-	client->ps.ping = savedPing;
-//	client->areabits = savedAreaBits;
-	client->accuracyhits = accuracyhits;
-	client->accuracyshots = accuracyshots;
-	client->lastkilledclient = -1;
-
-	for(i = 0; i < MAX_PERSISTANT; i++)
-		client->ps.persistant[i] = persistant[i];
-	client->ps.eventSequence = eventSequence;
 	// increment the spawncount so the client will detect the respawn
 	client->ps.persistant[PERS_SPAWN_COUNT]++;
 	client->ps.persistant[PERS_TEAM] = client->sess.team;
 
 	client->airouttime = level.time + 12000;
+	client->lastkilledclient = -1;
 
 	trap_GetUserinfo(index, userinfo, sizeof(userinfo));
 	// set max health
@@ -1160,6 +1160,7 @@ clientspawn(gentity_t *ent)
 
 	client->respawntime = level.time;
 	client->inactivitytime = level.time + g_inactivity.integer * 1000;
+	client->afktime = level.time + AFK_TIME;
 	client->latchedbuttons = 0;
 
 	// set default animations

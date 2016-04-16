@@ -1185,6 +1185,7 @@ typedef struct {
 // bit field limits
 #define	MAX_STATS				16
 #define	MAX_PERSISTANT			16
+#define MAX_AWARDS			32
 #define	MAX_POWERUPS			16
 #define	MAX_WEAPONS				16		
 
@@ -1240,6 +1241,7 @@ typedef struct playerState_s {
 	vec3_t		grapplePoint;	// location of grapple to pull towards if PMF_GRAPPLE_PULL
 
 	int			eFlags;			// copied to entityState_t->eFlags
+	int			awardflags;		// copied to entityState_t->awardflags;
 
 	int			eventSequence;	// pmove generated events
 	int			events[MAX_PS_EVENTS];
@@ -1264,6 +1266,7 @@ typedef struct playerState_s {
 
 	int			stats[MAX_STATS];
 	int			persistant[MAX_PERSISTANT];	// stats that aren't cleared on death
+	int			awards[MAX_AWARDS];
 	int			powerups[MAX_POWERUPS];	// level.time that the powerup runs out
 	int			ammo[MAX_WEAPONS];
 
@@ -1355,6 +1358,7 @@ typedef struct entityState_s {
 	int		number;			// entity index
 	int		eType;			// entityType_t
 	int		eFlags;
+	int		awardflags;
 
 	trajectory_t	pos;	// for calculating position
 	trajectory_t	apos;	// for calculating angles

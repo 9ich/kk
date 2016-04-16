@@ -223,8 +223,8 @@ typedef enum
 } statIndex_t;
 
 // player_state->persistant[] indexes
-// these fields are the only part of player_state that isn't
-// cleared on respawn
+// these fields, along with awards, are the only part of player_state
+// that isn't cleared on respawn
 // NOTE: may not have more than 16
 typedef enum
 {
@@ -233,17 +233,10 @@ typedef enum
 	PERS_RANK,			// player rank or team rank
 	PERS_TEAM,			// player team
 	PERS_SPAWN_COUNT,		// incremented every respawn
-	PERS_PLAYEREVENTS,		// 16 bits that can be flipped for events
 	PERS_ATTACKER,			// clientnum of last damage inflicter
 	PERS_ATTACKEE_ARMOR,		// health/armor of last person we attacked
 	PERS_KILLED,			// count of the number of times you died
-	// player awards tracking
-	PERS_IMPRESSIVE_COUNT,		// two railgun hits in a row
-	PERS_EXCELLENT_COUNT,		// two successive kills in a short amount of time
-	PERS_DEFEND_COUNT,		// defend awards
-	PERS_ASSIST_COUNT,		// assist awards
-	PERS_GAUNTLET_FRAG_COUNT,	// kills with the guantlet
-	PERS_CAPTURES			// captures
+	PERS_NO_KILLS			// times killed consecutively without getting any kills. Sad!
 } persEnum_t;
 
 // entityState_t->eFlags
@@ -256,7 +249,6 @@ typedef enum
 #define EF_PLAYER_EVENT		0x00000010
 #define EF_BOUNCE		0x00000010	// for missiles
 #define EF_BOUNCE_HALF		0x00000020	// for missiles
-#define EF_AWARD_GAUNTLET	0x00000040	// draw a gauntlet sprite
 #define EF_NODRAW		0x00000080	// may have an event, but no model (unspawned items)
 #define EF_FIRING		0x00000100	// for lightning gun
 #define EF_KAMIKAZE		0x00000200
@@ -265,11 +257,37 @@ typedef enum
 #define EF_TALK			0x00001000	// draw a talk balloon
 #define EF_CONNECTION		0x00002000	// draw a connection trouble sprite
 #define EF_VOTED		0x00004000	// already cast a vote
-#define EF_AWARD_IMPRESSIVE	0x00008000	// draw an impressive sprite
-#define EF_AWARD_DEFEND		0x00010000	// draw a defend sprite
-#define EF_AWARD_ASSIST		0x00020000	// draw a assist sprite
-#define EF_AWARD_DENIED		0x00040000	// denied
 #define EF_TEAMVOTED		0x00080000	// already cast a team vote
+
+// may not have more than 32 (MAX_AWARDS)
+enum
+{
+	AWARD_IMPRESSIVE,	// two railgun hits in a row
+	AWARD_CAPTURE,		// captured the flag
+	AWARD_DEFEND,		// defended base
+	AWARD_ASSIST,		// assisted carrier
+	AWARD_DENIED,		// denied flag
+	AWARD_GAUNTLET,		// killed melee
+	AWARD_HUMILIATED,	// receiving end of melee
+	AWARD_KILLINGSPREE,	// 5 kills in one life
+	AWARD_DOMINATING,	// 10
+	AWARD_RAMPAGE,		// 15
+	AWARD_UNSTOPPABLE,	// 20
+	AWARD_GODLIKE,		// 25
+	AWARD_WICKEDSICK,	// 30
+	AWARD_DOUBLEKILL,	// 2 kills in a few seconds
+	AWARD_MULTIKILL,	// 3
+	AWARD_MEGAKILL,		// 4
+	AWARD_ULTRAKILL,	// 5
+	AWARD_MONSTERKILL,	// 6
+	AWARD_LUDICROUSKILL,	// 7
+	AWARD_HOLYSHIT,		// 8
+	AWARD_FIRSTBLOOD,	// first kill
+	AWARD_SADDAY,		// died >=3 times without killing anyone
+
+	AWARD_MAX,
+	AWARD_MASK		= (1<<AWARD_MAX) - 1	// mask of all awards
+};
 
 // NOTE: may not have more than 16
 typedef enum
@@ -332,11 +350,6 @@ typedef enum
 
 	WP_NUM_WEAPONS
 } weapon_t;
-
-// reward sounds (stored in ps->persistant[PERS_PLAYEREVENTS])
-#define PLAYEREVENT_DENIEDREWARD	0x0001
-#define PLAYEREVENT_GAUNTLETREWARD	0x0002
-#define PLAYEREVENT_HOLYSHIT		0x0004
 
 // entityState_t->event values
 // entity events are for effects that take place relative

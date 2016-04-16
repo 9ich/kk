@@ -35,8 +35,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define INFINITE			1000000
 
 #define FRAMETIME			100	// msec
-#define CARNAGE_REWARD_TIME		3000
+#define MULTIKILL_TIME			3000	// max interval between each multikill kill
 #define REWARD_SPRITE_TIME		2000
+#define AFK_TIME			10000	// player is inactive but not yet kicked
 
 #define INTERMISSION_DELAY_TIME		1000
 #define SP_INTERMISSION_DELAY_TIME	5000
@@ -300,11 +301,15 @@ struct gclient_s
 	int		respawntime;		// can respawn when time > this, force after g_forcerespwan
 	int		inactivitytime;		// kick players when time > this
 	qboolean	inactivitywarning;	// qtrue if the five seoond warning has been given
-	int		rewardtime;		// clear the EF_AWARD_IMPRESSIVE, etc when time > this
+	int		afktime;		// player is inactive but not yet kicked
 
 	int		airouttime;
 
-	int		lastkilltime;	// for multiple kill rewards
+	int		lastkilltime;		// for multiple kill rewards
+	int		lastmultikilltime;
+	int		lastmultikill;
+
+	int		killsthislife;		// number of enemies killed since respawning, for AWARD_SADDAY
 
 	qboolean	fireheld;	// used for hook
 	gentity_t	*hook;		// grapple hook if out
@@ -408,6 +413,10 @@ typedef struct
 	gentity_t	*lochead;	// head of the location list
 	int		bodyqueueindex;	// dead bodies
 	gentity_t	*bodyqueue[BODY_QUEUE_SIZE];
+
+	// total kills for AWARD_FIRSTBLOOD
+	int		totalkills;
+
 #ifdef MISSIONPACK
 	int		portalSequence;
 #endif

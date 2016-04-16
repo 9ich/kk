@@ -1497,6 +1497,7 @@ playerstate2entstate(playerState_t *ps, entityState_t *s, qboolean snap)
 	s->clientNum = ps->clientNum;	// ET_PLAYER looks here instead of at number
 	// so corpses can also reference the proper config
 	s->eFlags = ps->eFlags;
+	s->awardflags = ps->awardflags;	// FIXME: redundant awardflags
 	if(ps->stats[STAT_HEALTH] <= 0)
 		s->eFlags |= EF_DEAD;
 	else
@@ -1576,6 +1577,7 @@ playerstate2entstatexerp(playerState_t *ps, entityState_t *s, int time, qboolean
 	s->clientNum = ps->clientNum;	// ET_PLAYER looks here instead of at number
 	// so corpses can also reference the proper config
 	s->eFlags = ps->eFlags;
+	s->awardflags = ps->awardflags;
 	if(ps->stats[STAT_HEALTH] <= 0)
 		s->eFlags |= EF_DEAD;
 	else
