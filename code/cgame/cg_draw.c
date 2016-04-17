@@ -281,66 +281,6 @@ drawflag(float x, float y, float w, float h, int team, qboolean force2D)
 
 /*
 ================
-CG_DrawStatusBarHead
-
-================
-*/
-
-static void
-CG_DrawStatusBarHead(float x)
-{
-	vec3_t angles;
-	float size, stretch;
-	float frac;
-
-	vecclear(angles);
-
-	if(cg.dmgtime && cg.time - cg.dmgtime < DAMAGE_TIME){
-		frac = (float)(cg.time - cg.dmgtime) / DAMAGE_TIME;
-		size = ICON_SIZE * 1.25 * (1.5 - frac * 0.5);
-
-		stretch = size - ICON_SIZE * 1.25;
-		// kick in the direction of damage
-		x -= stretch * 0.5 + cg.dmgx * stretch * 0.5;
-
-		cg.headStartYaw = 180 + cg.dmgx * 45;
-
-		cg.headEndYaw = 180 + 20 * cos(crandom()*M_PI);
-		cg.headEndPitch = 5 * cos(crandom()*M_PI);
-
-		cg.headStartTime = cg.time;
-		cg.headEndTime = cg.time + 100 + random() * 2000;
-	}else{
-		if(cg.time >= cg.headEndTime){
-			// select a new head angle
-			cg.headStartYaw = cg.headEndYaw;
-			cg.headStartPitch = cg.headEndPitch;
-			cg.headStartTime = cg.headEndTime;
-			cg.headEndTime = cg.time + 100 + random() * 2000;
-
-			cg.headEndYaw = 180 + 20 * cos(crandom()*M_PI);
-			cg.headEndPitch = 5 * cos(crandom()*M_PI);
-		}
-
-		size = ICON_SIZE * 1.25;
-	}
-
-	// if the server was frozen for a while we may have a bad head start time
-	if(cg.headStartTime > cg.time)
-		cg.headStartTime = cg.time;
-
-	frac = (cg.time - cg.headStartTime) / (float)(cg.headEndTime - cg.headStartTime);
-	frac = frac * frac * (3 - 2 * frac);
-	angles[YAW] = cg.headStartYaw + (cg.headEndYaw - cg.headStartYaw) * frac;
-	angles[PITCH] = cg.headStartPitch + (cg.headEndPitch - cg.headStartPitch) * frac;
-
-	drawhead(x, 480 - size, size, size,
-		    cg.snap->ps.clientNum, angles);
-}
-
-
-/*
-================
 CG_DrawStatusBarFlag
 
 ================
@@ -425,8 +365,6 @@ drawstatusbar(void)
 			       cg_weapons[cent->currstate.weapon].ammomodel, 0, origin, angles);
 	}
 
-	CG_DrawStatusBarHead(185 + CHAR_WIDTH*3 + TEXT_ICON_SPACE);
-
 	if(cg.pps.powerups[PW_REDFLAG])
 		CG_DrawStatusBarFlag(185 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ICON_SIZE, TEAM_RED);
 	else if(cg.pps.powerups[PW_BLUEFLAG])
@@ -442,6 +380,7 @@ drawstatusbar(void)
 		drawmodel(370 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE,
 			       cgs.media.armorModel, 0, origin, angles);
 	}
+
 	// ammo
 	if(cent->currstate.weapon){
 		value = ps->ammo[cent->currstate.weapon];
@@ -2214,6 +2153,7 @@ draw2d(stereoFrame_t stereoFrame)
                 return;
         }
 */
+
 	if(cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR){
 		drawspec();
 
@@ -2241,9 +2181,8 @@ draw2d(stereoFrame_t stereoFrame)
 		if(!cg.showscores)
 			drawreward();
 
-		if(cgs.gametype >= GT_TEAM){
+		if(cgs.gametype >= GT_TEAM)
 			drawteaminfo();
-		}
 	}
 
 	drawdmgindicator();

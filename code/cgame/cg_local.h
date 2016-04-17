@@ -602,15 +602,6 @@ typedef struct
 	float	dmgtime;
 	float	dmgx, dmgy, dmgval;
 
-	// status bar head
-	float	headYaw;
-	float	headEndPitch;
-	float	headEndYaw;
-	int	headEndTime;
-	float	headStartPitch;
-	float	headStartYaw;
-	int	headStartTime;
-
 	// view movement
 	float	vdmgtime;
 	float	vdmgpitch;
