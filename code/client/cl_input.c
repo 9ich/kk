@@ -300,7 +300,7 @@ Moves the local angle positions
 ================
 */
 void CL_AdjustAngles( vec3_t delta ) {
-	float speed, sign;
+	float speed, sign, inertia;
 	
 	if ( in_speed.active ) {
 		speed = 0.001 * cls.frametime * cl_anglespeedkey->value;
@@ -317,19 +317,22 @@ void CL_AdjustAngles( vec3_t delta ) {
 	delta[PITCH] -= speed*cl_pitchspeed->value * CL_KeyState (&in_lookup);
 	delta[PITCH] += speed*cl_pitchspeed->value * CL_KeyState (&in_lookdown);
 
+	inertia = cl_rollinertia->value;
+	if(inertia <= 0.0f)
+		inertia = 1.0f;	// don't divide by 0
 	sign = (-CL_KeyState(&in_rollright)) + CL_KeyState(&in_rollleft);
 
 	if(sign != 0 && viewangleforce[ROLL] != 0 &&
 	   (Com_Sign(sign) != Com_Sign(viewangleforce[ROLL])))
 		sign *= 2;
 	if(sign != 0){
-		viewangleforce[ROLL] += sign * 1000/cl_rollinertia->value * speed;
+		viewangleforce[ROLL] += sign * 1000/inertia * speed;
 		viewangleforce[ROLL] = Com_Clamp(-1, 1, viewangleforce[ROLL]);
 	}else if(viewangleforce[ROLL] > 0){
-		viewangleforce[ROLL] -= speed * 1000/cl_rollinertia->value;
+		viewangleforce[ROLL] -= speed * 1000/inertia;
 		viewangleforce[ROLL] = MAX(0, viewangleforce[ROLL]);
 	}else if(viewangleforce[ROLL] < 0){
-		viewangleforce[ROLL] += speed * 1000/cl_rollinertia->value;
+		viewangleforce[ROLL] += speed * 1000/inertia;
 		viewangleforce[ROLL] = MIN(0, viewangleforce[ROLL]);
 	}
 

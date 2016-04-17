@@ -3529,7 +3529,7 @@ void CL_Init( void ) {
 	cl_pitchspeed = Cvar_Get ("cl_pitchspeed", "140", CVAR_ARCHIVE);
 	cl_rollspeed = Cvar_Get ("cl_rollspeed", "140", CVAR_ARCHIVE);
 	cl_rollinertia = Cvar_Get ("cl_rollinertia", "300", CVAR_ARCHIVE);
-	Cvar_SetDescription(cl_rollinertia, "Time required to reach full roll speed, in millseconds.");
+	Cvar_SetDescription(cl_rollinertia, "Time to reach full roll speed, in millseconds.");
 	cl_anglespeedkey = Cvar_Get ("cl_anglespeedkey", "1.5", 0);
 
 	cl_maxpackets = Cvar_Get ("cl_maxpackets", "30", CVAR_ARCHIVE );
