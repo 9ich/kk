@@ -55,15 +55,17 @@ static struct
 	{'s',		K_DOWNARROW,	"Back",		"+back"},
 	{'a',		-1,		"Left",		"+moveleft"},
 	{'d',		-1,		"Right",	"+moveright"},
-	{K_SPACE,	-1,		"Jump/up",	"+moveup"},
-	{K_SHIFT,	-1,		"Crouch/down",	"+movedown"},
+	{K_SPACE,	-1,		"Up",		"+moveup"},
+	{K_SHIFT,	-1,		"Down",		"+movedown"},
+	{'q',		-1,		"Roll left",	"+rollleft"},
+	{'e',		-1,		"Roll right",	"+rollright"},
 	{K_LEFTARROW,	-1,		"Turn left",	"+left"},
 	{K_RIGHTARROW,	-1,		"Turn right",	"+right"},
-	{K_MOUSE1,	-1,		"Punch",	"+attack"},
-	{K_MOUSE2,	-1,		"Kick",		"+attack"},
+	{K_MOUSE1,	-1,		"Attack",	"+attack"},
 	{K_TAB,		-1,		"Scoreboard",	"+scores"},
 	{K_MOUSE3,	-1,		"Zoom",		"+zoom"},
 	{'y',		-1,		"Chat",		"messagemode"},
+	{'t',		-1,		"Team chat",	"messagemode2"},
 	{0}
 };
 
@@ -715,7 +717,7 @@ inputmenu(void)
 	x = 420;
 	xx = 440;
 	xxx = 520;
-	y = 100;
+	y = 50;
 
 	drawstr(x, y, "Sensitivity", UI_RIGHT|UI_DROPSHADOW, CText);
 	if(slider(".io.s", xx, y, UI_LEFT, 0.1f, 10.0f, &io.sens, "%.1f"))
