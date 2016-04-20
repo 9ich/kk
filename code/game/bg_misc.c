@@ -519,24 +519,6 @@ gitem_t bg_itemlist[] =
 /* sounds */ "sound/items/use_medkit.wav"
 	},
 
-/*QUAKED item_boost (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"item_boost",
-		"sound/items/boost.wav",
-		{
-			"models/powerups/boost.md3",
-			nil, nil, nil
-		},
-		"icons/item_boost",		// icon
-		"Boost Fuel",	// pickup
-		1000,			// count, in millisecs
-		IT_BOOST,
-		0,
-		"",			// precache
-		""			// sounds
-	},
-
 	// POWERUP ITEMS
 /*QUAKED item_quad (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
@@ -1110,9 +1092,6 @@ cangrabitem(int gametype, const entityState_t *ent, const playerState_t *ps)
 		if(ps->stats[STAT_HEALTH] >= ps->stats[STAT_MAX_HEALTH])
 			return qfalse;
 		return qtrue;
-
-	case IT_BOOST:
-		return (ps->stats[STAT_BOOST_FUEL] < MAX_BOOST_FUEL);
 
 	case IT_POWERUP:
 		return qtrue;	// powerups are always picked up

@@ -1144,8 +1144,6 @@ clientspawn(gentity_t *ent)
 	// health will count down towards max_health
 	ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH] + 25;
 
-	client->ps.stats[STAT_BOOST_FUEL] = 600;
-
 	setorigin(ent, spawn_origin);
 	veccpy(spawn_origin, client->ps.origin);
 

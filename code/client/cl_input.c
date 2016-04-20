@@ -355,10 +355,13 @@ void CL_KeyMove( usercmd_t *cmd ) {
 	// the walking flag is to keep animations consistant
 	// even during acceleration and develeration
 	//
-	if ( in_speed.active ) {
+	if ( in_speed.active ^ cl_run->integer ) {
+		movespeed = 127;
+		cmd->buttons &= ~BUTTON_WALKING;
+	} else {
 		cmd->buttons |= BUTTON_WALKING;
+		movespeed = 64;
 	}
-	movespeed = 127;
 
 	forward = 0;
 	side = 0;
@@ -421,8 +424,8 @@ CL_JoystickMove
 void CL_JoystickMove( usercmd_t *cmd, vec3_t delta ) {
 	float	anglespeed;
 
-	if ( !(in_speed.active ) ) {
-		cmd->buttons &= ~BUTTON_WALKING;
+	if ( !(in_speed.active ^ cl_run->integer) ) {
+		cmd->buttons |= BUTTON_WALKING;
 	}
 
 	if ( in_speed.active ) {

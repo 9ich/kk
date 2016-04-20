@@ -1118,7 +1118,6 @@ netField_t	playerStateFields[] =
 { PSF(viewangles[1]), 0 },
 { PSF(viewangles[0]), 0 },
 { PSF(weaponTime), -16 },
-{ PSF(boosttime), -16 },
 { PSF(origin[2]), 0 },
 { PSF(velocity[2]), 0 },
 { PSF(legsTimer), 8 },
