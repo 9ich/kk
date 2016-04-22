@@ -91,6 +91,8 @@ char *strchr( const char *string, int c );
 char *strrchr(const char *string, int c);
 char *strstr( const char *string, const char *strCharSet );
 char *strncpy( char *strDest, const char *strSource, size_t count );
+size_t strcspn( const char * str1, const char * str2 );
+size_t strspn( const char * str1, const char * str2 );
 int tolower( int c );
 int toupper( int c );
 

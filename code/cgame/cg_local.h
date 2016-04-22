@@ -1210,6 +1210,8 @@ void	drawframe(int serverTime, stereoFrame_t stereoview, qboolean demoplayback);
 
 // cg_drawtools.c
 void	drawbigstr(int x, int y, const char *s, float alpha);
+void	drawfixedstr(int x, int y, const char *s, float alpha);
+void	drawhudfield(float x, float y, const char *s, vec4_t color);
 void	drawbigstrcolor(int x, int y, const char *s, vec4_t color);
 void	drawsmallstr(int x, int y, const char *s, float alpha);
 void	drawsmallstrcolor(int x, int y, const char *s, vec4_t color);
@@ -1235,7 +1237,6 @@ extern char teamchat2[256];
 void		lagometerframeinfo(void);
 void		lagometersnapinfo(snapshot_t *snap);
 void		centerprint(const char *str, int y, int charWidth);
-void		drawhead(float x, float y, float w, float h, int clientNum, vec3_t headAngles);
 void		drawactive(stereoFrame_t stereoview);
 void		drawflag(float x, float y, float w, float h, int team, qboolean force2D);
 void		drawteambg(int x, int y, int w, int h, float alpha, int team);

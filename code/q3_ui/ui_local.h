@@ -53,8 +53,8 @@ typedef struct
 {
 	int		frametime;
 	int		realtime;
-	int		cursorx;
-	int		cursory;
+	float		cursorx;
+	float		cursory;
 	glconfig_t	glconfig;
 	qboolean	debug;
 	qboolean	fullscreen;
@@ -63,7 +63,7 @@ typedef struct
 	char		text[TEXTLEN];		// text entered this refresh
 	int		texti;			// text index
 	char		hot[IDLEN];		// id hovered over
-	char		active[IDLEN];		// id mouse1 is down on
+	char		active[IDLEN];		// id being clicked (and held) on
 	char		focus[IDLEN];		// id with keyboard focus
 	char		defaultfocus[IDLEN];
 	char		foclist[NFOCLIST][IDLEN];	// per-frame list of explicit focus order
@@ -90,7 +90,7 @@ extern void	mouseevent(int dx, int dy);
 extern void	refresh(int realtime);
 extern qboolean consolecommand(int realTime);
 extern float	UI_ClampCvar(float min, float max, float value);
-extern qboolean mouseover(int x, int y, int width, int height);
+extern qboolean mouseover(float x, float y, float width, float height);
 extern void	setactivemenu(uiMenuCommand_t menu);
 extern void	push(void (*drawfunc)(void));
 extern void	pop(void);
@@ -111,12 +111,12 @@ extern void	startdemoloop(void);
 extern uiStatic_t uis;
 
 // ui_widgets.c
-qboolean	button(const char *id, int x, int y, int just, const char *label);
-qboolean	checkbox(const char *id, int x, int y, int just, qboolean *state);
-qboolean	slider(const char *id, int x, int y, int just, float min, float max, float *val, const char *displayfmt);
-qboolean	textfield(const char *id, int x, int y, int just, int width, char *buf, int *caret, int sz);
-qboolean	textspinner(const char *id, int x, int y, int just, char **opts, int *i, int nopts);
-qboolean	keybinder(const char *id, int x, int y, int just, int key);
+qboolean	button(const char *id, int x, int y, const char *label);
+qboolean	checkbox(const char *id, int x, int y, qboolean *state);
+qboolean	slider(const char *id, int x, int y, float min, float max, float *val, const char *displayfmt);
+qboolean	textfield(const char *id, int x, int y, int width, char *buf, int *caret, int sz);
+qboolean	textspinner(const char *id, int x, int y, char **opts, int *i, int nopts);
+qboolean	keybinder(const char *id, int x, int y, int key);
 
 // ui_menus.c
 void		mainmenu(void);

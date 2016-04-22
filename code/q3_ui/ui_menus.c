@@ -23,7 +23,9 @@ static char *fallbackres[] = {
 
 static char *fallbackhz[] = {
 	"60",
+	"75",
 	"85",
+	"100",
 	"120",
 	"144",
 	"160"
@@ -69,7 +71,7 @@ static struct
 	{0}
 };
 
-static char *texqualities[] = {"N64", "PS1"};
+static char *texqualities[] = {"Pretty Nice", "Gravel"};
 static char *geomqualities[] = {"Low", "High"};
 static char *sndqualities[] = {"Default", "Low", "Normal", "Silly"};
 
@@ -127,6 +129,82 @@ static struct
 } bw;
 
 static void
+menubackground(void)
+{
+	vec4_t clr;
+
+	//drawpic(0, 0, screenwidth(), screenheight(), uis.menuBackShader);
+	colormix(CSlateBlue, CBlack, clr);
+	fillrect(0, 0, screenwidth(), screenheight(), clr);
+}
+
+static void
+optionsbuttons(void)
+{
+	const float spc = 35;
+	float x, y;
+
+	focusorder(".o.v .o.s .o.i .o.d .o.bk");
+
+	setalign("right");
+	x = 160;
+	y = 160;
+	if(button(".o.v", 160, y, "Video")){
+		pop();
+		vo.initialized = qfalse;
+		push(videomenu);
+	}
+	y += spc;
+	if(button(".o.s", x, y, "Sound")){
+		pop();
+		so.initialized = qfalse;
+		push(soundmenu);
+	}
+	y += spc;
+	if(button(".o.i", x, y, "Input")){
+		pop();
+		io.initialized = qfalse;
+		push(inputmenu);
+	}
+	y += spc;
+	if(button(".o.d", x, y, "Defaults"))
+		push(defaultsmenu);
+	y += spc;
+
+	setalign("");
+
+	pushalign("bottomleft");
+	// escape can also take us back
+	if(keydown(K_ESCAPE) || button(".o.bk", 10, screenheight()-10, "Back")){
+		vo.initialized = qfalse;
+		so.initialized = qfalse;
+		io.initialized = qfalse;
+		pop();
+	}
+	popalign(1);
+}
+
+static void
+optionname(const char *name, float y)
+{
+	pushalign("right");
+	drawstring(420, y, name, FONT3, 20, CText);
+	popalign(1);
+}
+
+static qboolean
+acceptbutton(const char *id)
+{
+	qboolean clicked;
+
+	focusorder(id);
+	pushalign("bottomright");
+	clicked = button(id, screenwidth()-10, screenheight()-10, "Accept");
+	popalign(1);
+	return clicked;
+}
+
+static void
 getmodes(void)
 {
 	int i;
@@ -172,12 +250,15 @@ calcratios(void)
 		w = (float)atoi(str);
 		h = (float)atoi(x);
 		str[0] = '\0';
-		for(i = 0; i < ARRAY_LEN(knownratios); i++)
-			if(fabs(knownratios[i].r - w/h) < 0.02f){	// close enough?
+		for(i = 0; i < ARRAY_LEN(knownratios); i++){
+			// close enough?
+			if(fabs(knownratios[i].r - w/h) < 0.02f){
 				Q_strncpyz(str, knownratios[i].s, sizeof str);
 				break;
 			}
-		if(*str == '\0')	// unrecognized ratio?
+		}
+		// unrecognized ratio?
+		if(*str == '\0')
 			Com_sprintf(str, sizeof str, "%.2f:1", w/h);
 		Q_strncpyz(ratiobuf[r], str, sizeof ratiobuf[r]);
 		ratios[r] = ratiobuf[r];
@@ -192,9 +273,11 @@ placeholder(void)
 	defaultfocus(".p.b");
 
 	uis.fullscreen = qtrue;
-	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
-	if(button(".p.b", SCREEN_WIDTH/2, 210, UI_CENTER, "Go away"))
+	menubackground();
+	pushalign("center");
+	if(keydown(K_ESCAPE) || button(".p.b", screenwidth()/2, 210, "Go away"))
 		pop();
+	popalign(1);
 }
 
 void
@@ -204,50 +287,15 @@ quitmenu(void)
 	defaultfocus(".qm.yes");
 
 	uis.fullscreen = qtrue;
-	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
-	if(button(".qm.yes", SCREEN_WIDTH/2 - 20, 210, UI_RIGHT, "Quit"))
+	menubackground();
+
+	pushalign("right");
+	if(button(".qm.yes", screenwidth()/2 - 20, 210, "Quit"))
 		trap_Cmd_ExecuteText(EXEC_APPEND, "quit\n");
-	if(button(".qm.no", SCREEN_WIDTH/2 + 20, 210, UI_LEFT, "Cancel"))
+	pushalign("left");
+	if(keydown(K_ESCAPE) || button(".qm.no", screenwidth()/2 + 20, 210, "Cancel"))
 		pop();
-}
-
-static void
-optionsbuttons(void)
-{
-	const float spc = 35;
-	float x, y;
-
-	focusorder(".o.v .o.s .o.i .o.d .o.bk");
-
-	x = 160;
-	y = 160;
-	if(button(".o.v", 160, y, UI_RIGHT, "Video")){
-		pop();
-		vo.initialized = qfalse;
-		push(videomenu);
-	}
-	y += spc;
-	if(button(".o.s", x, y, UI_RIGHT, "Sound")){
-		pop();
-		so.initialized = qfalse;
-		push(soundmenu);
-	}
-	y += spc;
-	if(button(".o.i", x, y, UI_RIGHT, "Input")){
-		pop();
-		io.initialized = qfalse;
-		push(inputmenu);
-	}
-	y += spc;
-	if(button(".o.d", x, y, UI_RIGHT, "Defaults"))
-		push(defaultsmenu);
-	y += spc;
-	if(button(".o.bk", 10, SCREEN_HEIGHT-30, UI_LEFT, "Back")){
-		vo.initialized = qfalse;
-		so.initialized = qfalse;
-		io.initialized = qfalse;
-		pop();
-	}
+	popalign(2);
 }
 
 // video options
@@ -390,17 +438,17 @@ videomenu(void)
 	const float spc = 24;
 	float x, xx, y;
 	float *textclr;
-	int i, style;
+	int i, style, font;
 
 	if(!vo.initialized)
 		initvideomenu();
 
-	focusorder(".v.udr .v.res .v.rat .v.hz .v.fs .v.brightness .v.fov .v.vs"
+	focusorder(".v.udr .v.res .v.rat .v.hz .v.fs .v.gamma .v.fov .v.vs"
 	   " .v.fps .v.tq .v.gq .v.3rd");
 	defaultfocus(".v.udr");
 
 	uis.fullscreen = qtrue;
-	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
+	menubackground();
 	optionsbuttons();
 
 	textclr = CText;
@@ -408,21 +456,22 @@ videomenu(void)
 	x = 420;
 	xx = 440;
 	y = 100;
+	font = FONT3;
 
-	drawstr(x, y, "Use desktop res", style, textclr);
-	if(checkbox(".v.udr", xx, y, 0, &vo.usedesktopres)){
+	optionname("Use desktop resolution", y);
+	if(checkbox(".v.udr", xx, y, &vo.usedesktopres)){
 		vo.needrestart = qtrue;
 	}
 	y += spc;
 
 	if(!vo.usedesktopres){
-		drawstr(x, y, "Resolution", style, textclr);
-		if(textspinner(".v.res", xx, y, 0, vo.reslist, &vo.resi, vo.nres))
+		optionname("Resolution", y);
+		if(textspinner(".v.res", xx, y, vo.reslist, &vo.resi, vo.nres))
 		vo.needrestart = qtrue;
 		y += spc;
 
-		drawstr(x, y, "Aspect ratio", style, textclr);
-		if(textspinner(".v.rat", xx, y, 0, vo.ratlist, &vo.rati, vo.nrat)){
+		optionname("Aspect ratio", y);
+		if(textspinner(".v.rat", xx, y, vo.ratlist, &vo.rati, vo.nrat)){
 			int w, h, hz;
 			char resstr[16], hzstr[16];
 
@@ -447,54 +496,49 @@ videomenu(void)
 		}
 		y += spc;
 
-		drawstr(x, y, "Refresh rate", style, textclr);
-		if(textspinner(".v.hz", xx, y, 0, vo.hzlist, &vo.hzi, vo.nhz))
+		optionname("Refresh rate", y);
+		if(textspinner(".v.hz", xx, y, vo.hzlist, &vo.hzi, vo.nhz))
 			vo.needrestart = qtrue;
 		y += spc;
 	}
 
-	drawstr(x, y, "Fullscreen", style, textclr);
-	if(checkbox(".v.fs", xx, y, 0, &vo.fullscr))
+	optionname("Fullscreen", y);
+	if(checkbox(".v.fs", xx, y, &vo.fullscr))
 		vo.needrestart = qtrue;
 	y += spc;
 
-	drawstr(x, y, "Brightness", style, textclr);
-	if(slider(".v.brightness", xx, y, 0, 0, 4, &vo.gamma, "%.2f"))
-		vo.dirty = qtrue;
-	y += spc;
-
-	drawstr(x, y, "Field of view", style, textclr);
-	if(slider(".v.fov", xx, y, 0, 85, 130, &vo.fov, "%.0f"))
-		vo.dirty = qtrue;
-	y += spc;
-
-	drawstr(x, y, "Vertical sync", style, textclr);
-	if(checkbox(".v.vs", xx, y, 0, &vo.vsync))
+	optionname("Gamma", y);
+	if(slider(".v.gamma", xx, y, 0, 4, &vo.gamma, "%.1f"))
 		vo.needrestart = qtrue;
 	y += spc;
 
-	drawstr(x, y, "Show framerate", style, textclr);
-	if(checkbox(".v.fps", xx, y, 0, &vo.drawfps))
+	optionname("Field of view", y);
+	if(slider(".v.fov", xx, y, 85, 130, &vo.fov, "%.0f"))
 		vo.dirty = qtrue;
 	y += spc;
 
-	drawstr(x, y, "Texture quality", style, textclr);
-	if(textspinner(".v.tq", xx, y, 0, texqualities, &vo.texquality, ARRAY_LEN(texqualities)))
+	optionname("Vertical sync", y);
+	if(checkbox(".v.vs", xx, y, &vo.vsync))
 		vo.needrestart = qtrue;
 	y += spc;
 
-	drawstr(x, y, "Geometry quality", style, textclr);
-	if(textspinner(".v.gq", xx, y, 0, geomqualities, &vo.gquality, ARRAY_LEN(geomqualities)))
+	optionname("Show framerate", y);
+	if(checkbox(".v.fps", xx, y, &vo.drawfps))
 		vo.dirty = qtrue;
 	y += spc;
 
-	drawstr(x, y, "Third person", style, textclr);
-	if(checkbox(".v.3rd", xx, y, 0, &vo.thirdperson))
+	optionname("Texture quality", y);
+	if(textspinner(".v.tq", xx, y, texqualities, &vo.texquality, ARRAY_LEN(texqualities)))
+		vo.needrestart = qtrue;
+	y += spc;
+
+	optionname("Geometry quality", y);
+	if(textspinner(".v.gq", xx, y, geomqualities, &vo.gquality, ARRAY_LEN(geomqualities)))
 		vo.dirty = qtrue;
+	y += spc;
 
 	if(vo.dirty || vo.needrestart){
-		focusorder(".v.accept");
-		if(button(".v.accept", 640-20, 480-30, UI_RIGHT, "Accept")){
+		if(acceptbutton(".v.accept")){
 			savevideochanges();
 			pop();
 		}
@@ -564,35 +608,34 @@ soundmenu(void)
 	defaultfocus(".s.qual");
 
 	uis.fullscreen = qtrue;
-	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
+	menubackground();
 	optionsbuttons();
 	x = 420;
 	xx = 440;
 	y = 100;
 
-	drawstr(x, y, "Quality", UI_RIGHT|UI_DROPSHADOW, CText);
-	if(textspinner(".s.qual", xx, y, 0, sndqualities, &so.qual, ARRAY_LEN(sndqualities)))
+	optionname("Quality", y);
+	if(textspinner(".s.qual", xx, y, sndqualities, &so.qual, ARRAY_LEN(sndqualities)))
 		so.needrestart = qtrue;
 	y += spc;
 
-	drawstr(x, y, "Master volume", UI_RIGHT|UI_DROPSHADOW, CText);
-	if(slider(".s.vol", xx, y, 0, 0.0f, 1.0f, &so.vol, "%.2f"))
+	optionname("Master volume", y);
+	if(slider(".s.vol", xx, y, 0.0f, 1.0f, &so.vol, "%.2f"))
 		trap_Cvar_SetValue("s_volume", so.vol);
 	y += spc;
 
-	drawstr(x, y, "Music volume", UI_RIGHT|UI_DROPSHADOW, CText);
-	if(slider(".s.muvol", xx, y, 0, 0.0f, 1.0f, &so.muvol, "%.2f"))
+	optionname("Music volume", y);
+	if(slider(".s.muvol", xx, y, 0.0f, 1.0f, &so.muvol, "%.2f"))
 		trap_Cvar_SetValue("s_musicvolume", so.muvol);
 	y += spc;
 
-	drawstr(x, y, "Doppler effect", UI_RIGHT|UI_DROPSHADOW, CText);
-	if(checkbox(".s.dop", xx, y, 0, &so.doppler))
+	optionname("Doppler effect", y);
+	if(checkbox(".s.dop", xx, y, &so.doppler))
 		so.dirty = qtrue;
 	y += spc;
 
 	if(so.dirty || so.needrestart){
-		focusorder(".s.accept");
-		if(button(".s.accept", 640-20, 480-30, UI_RIGHT, "Accept")){
+		if(acceptbutton("s.accept")){
 			savesoundchanges();
 			pop();
 		}
@@ -610,11 +653,14 @@ bindwaitmenu(void)
 	qboolean *p;
 
 	uis.fullscreen = qtrue;
-	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
+	menubackground();
 
+	setalign("center");
 	Com_sprintf(s, sizeof s, "Press a key to bind to %s", binds[bw.i].name);
-	drawstr(320, 200, s, style, CText);
-	drawstr(320, 240, "Press ESC to cancel", style, CText);
+	drawstring(screenwidth()/2, 200, s, FONT2, 24, CText);
+	drawstring(screenwidth()/2, 230, "BACKSPACE to unbind", FONT2, 24, CText);
+	drawstring(screenwidth()/2, 260, "ESC to cancel", FONT2, 24, CText);
+	setalign("");
 
 	if(keydown(K_ESCAPE)){
 		bw.i = -1;
@@ -713,14 +759,14 @@ inputmenu(void)
 	defaultfocus(".io.s");
 
 	uis.fullscreen = qtrue;
-	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
+	menubackground();
 	x = 420;
 	xx = 440;
 	xxx = 520;
 	y = 50;
 
-	drawstr(x, y, "Sensitivity", UI_RIGHT|UI_DROPSHADOW, CText);
-	if(slider(".io.s", xx, y, UI_LEFT, 0.1f, 10.0f, &io.sens, "%.1f"))
+	optionname("Sensitivity", y);
+	if(slider(".io.s", xx, y, 0.1f, 10.0f, &io.sens, "%.1f"))
 		io.dirty = qtrue;
 	y += spc;
 
@@ -732,8 +778,8 @@ inputmenu(void)
 		while((p = strchr(p, ' ')) != nil)
 			*p = '-';
 		focusorder(id);
-		drawstr(x, y, binds[i].name, UI_RIGHT|UI_DROPSHADOW, CText);
-		if(keybinder(id, xx, y, UI_LEFT, binds[i].k)){
+		optionname(binds[i].name, y);
+		if(keybinder(id, xx, y, binds[i].k)){
 			bw.i = i;
 			bw.whichkey = 0;
 			clearkeys();
@@ -745,7 +791,7 @@ inputmenu(void)
 		while((p = strchr(p, ' ')) != nil)
 			*p = '-';
 		focusorder(id);
-		if(keybinder(id, xxx, y, UI_LEFT|UI_DROPSHADOW, binds[i].alt)){
+		if(keybinder(id, xxx, y, binds[i].alt)){
 			bw.i = i;
 			bw.whichkey = 1;
 			clearkeys();
@@ -757,8 +803,7 @@ inputmenu(void)
 	optionsbuttons();
 
 	if(io.dirty || io.needrestart){
-		focusorder(".io.accept");
-		if(button(".io.accept", 640-20, 480-30, UI_RIGHT, "Accept")){
+		if(acceptbutton(".io.accept")){
 			saveinputchanges();
 			pop();
 		}
@@ -774,19 +819,23 @@ defaultsmenu(void)
 	defaultfocus(".dm.no");
 
 	uis.fullscreen = qtrue;
-	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
+	menubackground();
 
-	drawstr(320, 140, "CAREFUL NOW",
-	   UI_GIANTFONT|UI_CENTER|UI_DROPSHADOW, CRed);
-	drawstr(320, 200, "This will completely wipe your game config",
-	   UI_SMALLFONT|UI_CENTER|UI_DROPSHADOW, CText);
+	setalign("center");
+	drawstring(screenwidth()/2, 200, "This will erase your config file.",
+	   FONT2, 24, CRed);
 
-	if(button(".dm.yes", SCREEN_WIDTH/2 - 20, 320, UI_RIGHT, "Reset")){
+	setalign("right");
+	if(button(".dm.yes", screenwidth()/2 - 20, 320, "Reset")){
 		trap_Cmd_ExecuteText(EXEC_APPEND, "cvar_restart\n");
 		trap_Cmd_ExecuteText(EXEC_APPEND, "vid_restart\n");
 	}
-	if(button(".dm.no", SCREEN_WIDTH/2 + 20, 320, UI_LEFT, "Cancel"))
+
+	setalign("left");
+	if(button(".dm.no", screenwidth()/2 + 20, 320, "Cancel"))
 		pop();
+
+	setalign("");
 }
 
 void
@@ -802,10 +851,10 @@ errormenu(void)
 		return;
 	}
 	uis.fullscreen = qtrue;
-	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
+	menubackground();
 	trap_Cvar_VariableStringBuffer("com_errormessage", buf, sizeof buf);
-	drawstr(20, 180, "error:", UI_DROPSHADOW, CRed);
-	drawstrwrapped(20, 220, SCREEN_WIDTH-40, 16, buf, UI_SMALLFONT|UI_DROPSHADOW, CBeige);
+	drawstring(20, 180, "error:", FONT2, 20, CRed);
+	drawmultiline(20, 220, screenwidth()-20, buf, FONT2, 16, CText);
 }
 
 void
@@ -814,19 +863,23 @@ mainmenu(void)
 	const float spc = 35;
 	float y;
 
+
 	uis.fullscreen = qtrue;
+	menubackground();
+
 	focusorder(".mm.mp .mm.opt .mm.q");
 	defaultfocus(".mm.sp");
 
-	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
+	setalign("center");
+
 	y = 190;
-	if(button(".mm.sp", SCREEN_WIDTH/2, y, UI_CENTER, "Multiplayer"))
+	if(button(".mm.mp", screenwidth()/2, y, "Multiplayer"))
 		push(placeholder);
 	y += spc;
-	if(button(".mm.opt", SCREEN_WIDTH/2, y, UI_CENTER, "Options"))
+	if(button(".mm.opt", screenwidth()/2, y, "Options"))
 		push(videomenu);
 	y += spc;
-	if(button(".mm.q", SCREEN_WIDTH/2, y, UI_CENTER, "Quit"))
+	if(button(".mm.q", screenwidth()/2, y, "Quit"))
 		push(quitmenu);
 }
 
@@ -839,18 +892,22 @@ ingamemenu(void)
 	focusorder(".im.r .im.opt .im.qm .im.q");
 	defaultfocus(".im.r");
 
+	setalign("center");
+
 	y = 180;
-	if(keydown(K_ESCAPE) || button(".im.r", SCREEN_WIDTH/2, y, UI_CENTER, "Resume")){
+	if(keydown(K_ESCAPE) || button(".im.r", screenwidth()/2, y, "Resume")){
 		pop();
 		trap_Cvar_Set("cl_paused", "0");
 	}
 	y += spc;
-	if(button(".im.opt", SCREEN_WIDTH/2, y, UI_CENTER, "Options"))
+	if(button(".im.opt", screenwidth()/2, y, "Options"))
 		push(videomenu);
 	y += spc;
-	if(button(".im.qm", SCREEN_WIDTH/2, y, UI_CENTER, "Quit to menu"))
+	if(button(".im.qm", screenwidth()/2, y, "Quit to menu"))
 		trap_Cmd_ExecuteText(EXEC_APPEND, "disconnect\n");
 	y += spc;
-	if(button(".im.q", SCREEN_WIDTH/2, y, UI_CENTER, "Quit"))
+	if(button(".im.q", screenwidth()/2, y, "Quit"))
 		push(quitmenu);
+
+	setalign("");
 }

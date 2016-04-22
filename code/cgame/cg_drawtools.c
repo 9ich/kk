@@ -54,13 +54,24 @@ drawbigstr(int x, int y, const char *s, float alpha)
 
 	color[0] = color[1] = color[2] = 1.0;
 	color[3] = alpha;
-	drawstr2(x, y, s, color, BIGCHAR_WIDTH, BIGCHAR_HEIGHT);
+	drawstring(x, y, s, FONT2, 16, color);
+}
+
+// fixed-width
+void
+drawfixedstr(int x, int y, const char *s, float alpha)
+{
+	float color[4];
+
+	color[0] = color[1] = color[2] = 1.0;
+	color[3] = alpha;
+	drawstring(x, y, s, FONT4, 16, color);
 }
 
 void
 drawbigstrcolor(int x, int y, const char *s, vec4_t color)
 {
-	drawstr2(x, y, s, color, BIGCHAR_WIDTH, BIGCHAR_HEIGHT);
+	drawstring(x, y, s, FONT2, 16, color);
 }
 
 void
@@ -70,13 +81,22 @@ drawsmallstr(int x, int y, const char *s, float alpha)
 
 	color[0] = color[1] = color[2] = 1.0;
 	color[3] = alpha;
-	drawstr2(x, y, s, color, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT);
+	drawstring(x, y, s, FONT2, 16, color);
 }
 
 void
 drawsmallstrcolor(int x, int y, const char *s, vec4_t color)
 {
-	drawstr2(x, y, s, color, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT);
+	drawstring(x, y, s, FONT2, 12, color);
+}
+
+/*
+Used for HUD numbers.
+*/
+void
+drawhudfield(float x, float y, const char *s, vec4_t color)
+{
+	drawstring(x, y, s, FONT3, 48, color);
 }
 
 /*

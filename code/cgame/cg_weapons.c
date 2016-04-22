@@ -1429,8 +1429,8 @@ drawweapsel(void)
 		if(bits & (1 << i))
 			count++;
 
-	x = 320 - count * 20;
-	y = 380;
+	x = 0.5f*screenwidth() - count * 20;
+	y = 430;
 
 	for(i = 1; i < MAX_WEAPONS; i++){
 		if(!(bits & (1 << i)))
@@ -1456,9 +1456,9 @@ drawweapsel(void)
 	if(cg_weapons[cg.weapsel].item){
 		name = cg_weapons[cg.weapsel].item->pickupname;
 		if(name){
-			w = drawstrlen(name) * BIGCHAR_WIDTH;
-			x = (SCREEN_WIDTH - w) / 2;
-			drawbigstrcolor(x, y - 22, name, color);
+			setalign("center");
+			drawbigstr(0.5f*screenwidth(), y - 22, name, 1.0f);
+			setalign("");
 		}
 	}
 

@@ -150,8 +150,8 @@ drawinfo(void)
 	const char *s;
 	const char *info;
 	const char *sysInfo;
-	int y;
-	int value;
+	float x, y, value, size;
+	int font;
 	qhandle_t levelshot;
 	qhandle_t detail;
 	char buf[1024];
@@ -164,7 +164,7 @@ drawinfo(void)
 	if(!levelshot)
 		levelshot = trap_R_RegisterShaderNoMip("menu/art/unknownmap");
 	trap_R_SetColor(nil);
-	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, levelshot);
+	drawpic(0, 0, screenwidth(), screenheight(), levelshot);
 
 	// blend a detail texture over it
 	detail = trap_R_RegisterShader("levelShotDetail");
@@ -176,15 +176,16 @@ drawinfo(void)
 	// the first 150 rows are reserved for the client connection
 	// screen to write into
 	if(cg.infoscreentext[0])
-		drawpropstr(320, 128-32, va("Loading... %s", cg.infoscreentext),
-					  UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
+		drawstring(screenwidth()/2, 128-32, va("Loading... %s", cg.infoscreentext), FONT2, 32, CWhite);
 	else
-		drawpropstr(320, 128-32, "Awaiting snapshot...",
-					  UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
+		drawstring(screenwidth()/2, 128-32, "Awaiting snapshot...", FONT2, 32, CWhite);
 
 	// draw info string information
 
+	x = screenwidth()/2;
 	y = 180-32;
+	font = FONT2;
+	size = 32;
 
 	// don't print server lines if playing a local game
 	trap_Cvar_VariableStringBuffer("sv_running", buf, sizeof(buf));
@@ -192,24 +193,21 @@ drawinfo(void)
 		// server hostname
 		Q_strncpyz(buf, Info_ValueForKey(info, "sv_hostname"), 1024);
 		Q_CleanStr(buf);
-		drawpropstr(320, y, buf,
-					  UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
-		y += PROP_HEIGHT;
+		drawstring(x, y, buf, font, size, CWhite);
+		y += stringheight(buf, font, size);
 
 		// pure server
 		s = Info_ValueForKey(sysInfo, "sv_pure");
 		if(s[0] == '1'){
-			drawpropstr(320, y, "Pure Server",
-						  UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
-			y += PROP_HEIGHT;
+			drawstring(x, y, "Pure Server", font, size, CWhite);
+			y += stringheight("Pure Server", font, size);
 		}
 
 		// server-specific message of the day
 		s = getconfigstr(CS_MOTD);
 		if(s[0]){
-			drawpropstr(320, y, s,
-						  UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
-			y += PROP_HEIGHT;
+			drawstring(x, y, s, font, size, CWhite);
+			y += stringheight(s, font, size);
 		}
 
 		// some extra space after hostname and motd
@@ -219,17 +217,15 @@ drawinfo(void)
 	// map-specific message (long map name)
 	s = getconfigstr(CS_MESSAGE);
 	if(s[0]){
-		drawpropstr(320, y, s,
-					  UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
-		y += PROP_HEIGHT;
+		drawstring(x, y, s, font, size, CWhite);
+		y += stringheight(s, font, size);
 	}
 
 	// cheats warning
 	s = Info_ValueForKey(sysInfo, "sv_cheats");
 	if(s[0] == '1'){
-		drawpropstr(320, y, "CHEATS ARE ENABLED",
-					  UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
-		y += PROP_HEIGHT;
+		drawstring(x, y, "CHEATS ARE ENABLED", font, size, CWhite);
+		y += stringheight("CHEATS ARE ENABLED", font, size);
 	}
 
 	// game type
@@ -253,30 +249,31 @@ drawinfo(void)
 		s = "Unknown Gametype";
 		break;
 	}
-	drawpropstr(320, y, s,
-				  UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
-	y += PROP_HEIGHT;
+	drawstring(x, y, s, font, size, CWhite);
+	y += stringheight(s, font, size);
 
 	value = atoi(Info_ValueForKey(info, "timelimit"));
 	if(value){
-		drawpropstr(320, y, va("timelimit %i", value),
-					  UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
-		y += PROP_HEIGHT;
+		s = va("timelimit %i", value);
+		drawstring(x, y, s, font, size, CWhite);
+		y += stringheight(s, font, size);
 	}
 
 	if(cgs.gametype < GT_CTF){
 		value = atoi(Info_ValueForKey(info, "fraglimit"));
 		if(value){
-			drawpropstr(320, y, va("fraglimit %i", value),
-						  UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
-			y += PROP_HEIGHT;
+			s = va("fraglimit %i", value);
+			drawstring(x, y, s, font, size, CWhite);
+			y += stringheight(s, font, size);
 		}
 	}
 
 	if(cgs.gametype >= GT_CTF){
 		value = atoi(Info_ValueForKey(info, "capturelimit"));
-		if(value)
-			drawpropstr(320, y, va("capturelimit %i", value),
-						  UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
+		if(value){
+			s = va("capturelimit %i", value);
+			drawstring(x, y, s, font, size, CWhite);
+			y += stringheight(s, font, size);
+		}
 	}
 }

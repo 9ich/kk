@@ -273,6 +273,50 @@ char *strstr( const char *string, const char *strCharSet ) {
 	return (char *)0;
 }
 
+/*
+ * Span the complement of string s2.
+ */
+size_t
+strcspn(const char *s1, const char *s2)
+{
+	const char *p, *spanp;
+	char c, sc;
+
+	/*
+	 * Stop as soon as we find any character from s2.  Note that there
+	 * must be a NUL in s2; it suffices to stop when we find that, too.
+	 */
+	for (p = s1;;) {
+		c = *p++;
+		spanp = s2;
+		do {
+			if ((sc = *spanp++) == c)
+				return (p - 1 - s1);
+		} while (sc != 0);
+	}
+	/* NOTREACHED */
+}
+
+/*
+ * Span the string s2 (skip characters that are in s2).
+ */
+size_t
+strspn(const char *s1, const char *s2)
+{
+	const char *p = s1, *spanp;
+	char c, sc;
+
+	/*
+	 * Skip any characters in s2, excluding the terminating \0.
+	 */
+cont:
+	c = *p++;
+	for (spanp = s2; (sc = *spanp++) != 0;)
+		if (sc == c)
+			goto cont;
+	return (p - 1 - s1);
+}
+
 int tolower( int c ) {
 	if ( c >= 'A' && c <= 'Z' ) {
 		c += 'a' - 'A';

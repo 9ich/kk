@@ -215,7 +215,7 @@ CG_Obituary(entityState_t *ent)
 		else
 			s = va("You fragged %s", targetName);
 
-		centerprint(s, SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH);
+		centerprint(s, screenheight() * 0.30, BIGCHAR_WIDTH);
 
 		// print the text message as well
 	}
@@ -345,10 +345,10 @@ CG_UseItem(centity_t *cent)
 	// print a message if the local player
 	if(es->number == cg.snap->ps.clientNum){
 		if(!itemNum)
-			centerprint("No item to use", SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH);
+			centerprint("No item to use", screenheight() * 0.30, BIGCHAR_WIDTH);
 		else{
 			item = finditemforholdable(itemNum);
-			centerprint(va("Use %s", item->pickupname), SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH);
+			centerprint(va("Use %s", item->pickupname), screenheight() * 0.30, BIGCHAR_WIDTH);
 		}
 	}
 
