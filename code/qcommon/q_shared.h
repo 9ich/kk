@@ -1220,6 +1220,9 @@ typedef struct playerState_s {
 
 	int			weaponTime;
 	int			gravity;
+	float			airAccel;		// pmove accel while moving
+	float			airFriction;		// pmove friction while moving
+	float			airIdleFriction;	// pmove friction when player has released movement keys
 	int			speed;
 	int			delta_angles[3];	// add to command angles to get view direction
 									// changed by spawns, rotating objects, and teleporters

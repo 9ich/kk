@@ -210,9 +210,9 @@ PM_Friction(void)
 
 	// apply flying friction
 	if(pm->cmd.forwardmove != 0 || pm->cmd.rightmove != 0 || pm->cmd.upmove != 0)
-		drop += speed*pm_flightcontrolfriction*pml.frametime;
+		drop += speed*pm->ps->airFriction*pml.frametime;
 	else
-		drop += speed*pm_flightfriction*pml.frametime;
+		drop += speed*pm->ps->airIdleFriction*pml.frametime;
 
 	if(pm->ps->pm_type == PM_SPECTATOR)
 		drop += speed*pm_spectatorfriction*pml.frametime;
@@ -555,7 +555,7 @@ PM_AirMove(void)
 
 	PM_Friction();
 	_airmove(&pm->cmd, wishvel, wishdir, &wishspeed);
-	PM_Accelerate(wishdir, wishspeed, pm_airaccelerate);
+	PM_Accelerate(wishdir, wishspeed, pm->ps->airAccel);
 	pmslidemode(qtrue);
 }
 
@@ -655,7 +655,7 @@ PM_WalkMove(void)
 	// when a player gets hit, they temporarily lose
 	// full control, which allows them to be moved a bit
 	if((pml.groundtrace.surfaceFlags & SURF_SLICK) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK)
-		accelerate = pm_airaccelerate;
+		accelerate = pm->ps->airAccel;
 	else
 		accelerate = pm_accelerate;
 

@@ -765,6 +765,9 @@ ClientThink_real(gentity_t *ent)
 		client->ps.pm_type = PM_NORMAL;
 
 	client->ps.gravity = g_gravity.value;
+	client->ps.airAccel = g_airAccel.value;
+	client->ps.airFriction = g_airFriction.value;
+	client->ps.airIdleFriction = g_airIdleFriction.value;
 
 	// set speed
 	client->ps.speed = g_speed.value;

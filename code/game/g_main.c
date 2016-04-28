@@ -51,6 +51,9 @@ vmCvar_t g_maxGameClients;
 vmCvar_t g_dedicated;
 vmCvar_t g_speed;
 vmCvar_t g_gravity;
+vmCvar_t g_airAccel;
+vmCvar_t g_airFriction;
+vmCvar_t g_airIdleFriction;
 vmCvar_t g_cheats;
 vmCvar_t g_knockback;
 vmCvar_t g_quadfactor;
@@ -139,6 +142,9 @@ static cvarTable_t gameCvarTable[] = {
 
 	{&g_speed, "g_speed", "320", 0, 0, qtrue},
 	{&g_gravity, "g_gravity", "0", 0, 0, qtrue},
+	{&g_airAccel, "g_airAccel", "6.0", 0, 0, qtrue},
+	{&g_airFriction, "g_airFriction", "1.9", 0, 0, qtrue},
+	{&g_airIdleFriction, "g_airIdleFriction", "0.5", 0, 0, qtrue},	
 	{&g_knockback, "g_knockback", "1000", 0, 0, qtrue},
 	{&g_quadfactor, "g_quadfactor", "3", 0, 0, qtrue},
 	{&g_weaponRespawn, "g_weaponrespawn", "5", 0, 0, qtrue},
