@@ -522,22 +522,27 @@ void
 grappletrail(centity_t *ent, const weaponInfo_t *wi)
 {
 	vec3_t origin;
-	entityState_t *es;
 	vec3_t forward, up;
 	refEntity_t beam;
+	centity_t *player;
 
-	es = &ent->currstate;
-
-	evaltrajectory(&es->pos, cg.time, origin);
+	evaltrajectory(&ent->currstate.pos, cg.time, origin);
 	ent->trailtime = cg.time;
+	player = &cg_entities[ent->currstate.otherEntityNum];
 
 	memset(&beam, 0, sizeof(beam));
-	veccpy(cg_entities[ent->currstate.otherEntityNum].lerporigin, beam.origin);
-	anglevecs(cg_entities[ent->currstate.otherEntityNum].lerpangles, forward, nil, up);
+
+	// if we're drawing our own trail, use our own playerstate
+	// to avoid any prediction errors
+	if(player->currstate.number == cg.snap->ps.clientNum)
+		veccpy(cg.pps.origin, beam.origin);
+	else
+		veccpy(player->lerporigin, beam.origin);
+	anglevecs(player->lerpangles, forward, nil, up);
 	vecmad(beam.origin, -15, up, beam.origin);
 	veccpy(origin, beam.oldorigin);
 
-	if(vecdist(beam.origin, beam.oldorigin) < 64)
+	if(vecdist(beam.origin, beam.oldorigin) < 20)
 		return;		// Don't draw if close
 
 	beam.reType = RT_LIGHTNING;
