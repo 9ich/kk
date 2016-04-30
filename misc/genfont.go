@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"sort"
 	"text/tabwriter"
 )
 
@@ -34,6 +35,17 @@ type kerning struct {
 	Amount int `xml:"amount,attr"`
 }
 
+type kerningsort []kerning
+
+func (k kerningsort) Len() int      { return len(k) }
+func (k kerningsort) Swap(i, j int) { k[i], k[j] = k[j], k[i] }
+func (k kerningsort) Less(i, j int) bool {
+	if k[i].First == k[j].First {
+		return k[i].Second < k[j].Second
+	}
+	return k[i].First < k[j].First
+}
+
 type font struct {
 	Info     info      `xml:"info"`
 	Chars    []char    `xml:"chars>char"`
@@ -43,7 +55,7 @@ type font struct {
 // control characters are skipped
 var preamble string = `
 // %s, %dpx
-int charmap[128][6] = {
+int map[128][6] = {
 	{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1},
 	{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1},
 
@@ -73,6 +85,7 @@ func main() {
 	fmt.Fprintln(w, "\t{0,\t0,\t-1,\t0,\t0,\t0}\t// DEL\n};")
 
 	if len(font.Kernings) > 0 {
+		sort.Sort(kerningsort(font.Kernings))
 		fmt.Println(fmt.Sprintf(preamblekernings, len(font.Kernings)))
 		fmt.Fprintln(w, "//\tfirst\tsecond\tamount")
 		for _, k := range font.Kernings {

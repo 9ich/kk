@@ -18,19 +18,32 @@ registercharmap(int font, int w, int h, float charh, float spc,
 	charmaps[font].nkernings = nkern;
 }
 
+static int
+kerningcmp(const void * a, const void * b)
+{
+	const kerning_t *ka, *kb;
+
+	ka = a; kb = b;
+	if(ka->first == kb->first)
+		return ka->second - kb->second;
+	return ka->first - kb->first;
+}
+
 static float
 kerning(int font, int first, int second)
 {
-	int i;
+	kerning_t *ks, *p, key;
+	size_t nk;
 
-	if(charmaps[font].nkernings < 1 || charmaps[font].kernings == nil)
+	ks = charmaps[font].kernings;
+	nk = charmaps[font].nkernings;
+	if(nk < 1 || ks == nil)
 		return 0.0f;
-	for(i = 0; i < charmaps[font].nkernings; i++){
-		if(charmaps[font].kernings[i].first == first &&
-		   charmaps[font].kernings[i].second == second){
-			return charmaps[font].kernings[i].amount;
-		}
-	}
+	key.first = first;
+	key.second = second;
+	p = bsearch(&key, ks, nk, sizeof *ks, kerningcmp);
+	if(p != nil)
+		return p->amount;
 	return 0.0f;
 }
 
