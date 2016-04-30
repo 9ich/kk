@@ -499,6 +499,7 @@ void		tossclientitems(gentity_t *self);
 void		TossClientPersistantPowerups(gentity_t *self);
 #endif
 void		TossClientCubes(gentity_t *self);
+void		giveaward(gclient_t *cl, int award);
 
 // damage flags
 #define DAMAGE_RADIUS			0x00000001	// damage was indirect

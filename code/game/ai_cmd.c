@@ -797,14 +797,15 @@ BotMatch_GetFlag(bot_state_t *bs, bot_match_t *match)
 	char netname[MAX_MESSAGE_SIZE];
 	int client;
 
-	if(gametype == GT_CTF)
+	if(gametype == GT_CTF){
 		if(!ctf_redflag.areanum || !ctf_blueflag.areanum)
 			return;
-
+	}
 #ifdef MISSIONPACK
-	else if(gametype == GT_1FCTF)
+	else if(gametype == GT_1FCTF){
 		if(!ctf_neutralflag.areanum || !ctf_redflag.areanum || !ctf_blueflag.areanum)
 			return;
+	}
 
 #endif
 	else
@@ -845,14 +846,14 @@ BotMatch_AttackEnemyBase(bot_state_t *bs, bot_match_t *match)
 	char netname[MAX_MESSAGE_SIZE];
 	int client;
 
-	if(gametype == GT_CTF)
+	if(gametype == GT_CTF){
 		BotMatch_GetFlag(bs, match);
-
+	}
 #ifdef MISSIONPACK
-	else if(gametype == GT_1FCTF || gametype == GT_OBELISK || gametype == GT_HARVESTER)
+	else if(gametype == GT_1FCTF || gametype == GT_OBELISK || gametype == GT_HARVESTER){
 		if(!redobelisk.areanum || !blueobelisk.areanum)
 			return;
-
+	}
 #endif
 	else
 		return;
@@ -930,15 +931,15 @@ BotMatch_RushBase(bot_state_t *bs, bot_match_t *match)
 	char netname[MAX_MESSAGE_SIZE];
 	int client;
 
-	if(gametype == GT_CTF)
+	if(gametype == GT_CTF){
 		if(!ctf_redflag.areanum || !ctf_blueflag.areanum)
 			return;
-
+	}
 #ifdef MISSIONPACK
-	else if(gametype == GT_1FCTF || gametype == GT_HARVESTER)
+	else if(gametype == GT_1FCTF || gametype == GT_HARVESTER){
 		if(!redobelisk.areanum || !blueobelisk.areanum)
 			return;
-
+	}
 #endif
 	else
 		return;
@@ -1227,14 +1228,12 @@ void
 BotMatch_Suicide(bot_state_t *bs, bot_match_t *match)
 {
 	char netname[MAX_MESSAGE_SIZE];
-	int client;
 
 	if(!TeamPlayIsOn()) return;
 	//if not addressed to this bot
 	if(!BotAddressedToBot(bs, match)) return;
 	trap_EA_Command(bs->client, "kill");
 	trap_BotMatchVariable(match, NETNAME, netname, sizeof(netname));
-	client = ClientFromName(netname);
 	trap_EA_Action(bs->client, ACTION_AFFIRMATIVE);
 }
 

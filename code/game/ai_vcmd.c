@@ -65,15 +65,15 @@ BotVoiceChat_GetFlag
 void
 BotVoiceChat_GetFlag(bot_state_t *bs, int client, int mode)
 {
-	if(gametype == GT_CTF)
+	if(gametype == GT_CTF){
 		if(!ctf_redflag.areanum || !ctf_blueflag.areanum)
 			return;
-
+	}
 #ifdef MISSIONPACK
-	else if(gametype == GT_1FCTF)
+	else if(gametype == GT_1FCTF){
 		if(!ctf_neutralflag.areanum || !ctf_redflag.areanum || !ctf_blueflag.areanum)
 			return;
-
+	}
 #endif
 	else
 		return;

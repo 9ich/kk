@@ -254,7 +254,7 @@ drawinfo(void)
 
 	value = atoi(Info_ValueForKey(info, "timelimit"));
 	if(value){
-		s = va("timelimit %i", value);
+		s = va("timelimit %f", value);
 		drawstring(x, y, s, font, size, CWhite);
 		y += stringheight(s, font, size);
 	}
@@ -262,7 +262,7 @@ drawinfo(void)
 	if(cgs.gametype < GT_CTF){
 		value = atoi(Info_ValueForKey(info, "fraglimit"));
 		if(value){
-			s = va("fraglimit %i", value);
+			s = va("fraglimit %f", value);
 			drawstring(x, y, s, font, size, CWhite);
 			y += stringheight(s, font, size);
 		}
@@ -271,7 +271,7 @@ drawinfo(void)
 	if(cgs.gametype >= GT_CTF){
 		value = atoi(Info_ValueForKey(info, "capturelimit"));
 		if(value){
-			s = va("capturelimit %i", value);
+			s = va("capturelimit %f", value);
 			drawstring(x, y, s, font, size, CWhite);
 			y += stringheight(s, font, size);
 		}

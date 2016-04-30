@@ -1560,7 +1560,7 @@ void
 BotCheckItemPickup(bot_state_t *bs, int *oldinventory)
 {
 #ifdef MISSIONPACK
-	int offence, leader;
+	int offence;
 
 	if(gametype <= GT_TEAM)
 		return;
@@ -1584,7 +1584,6 @@ BotCheckItemPickup(bot_state_t *bs, int *oldinventory)
 	}
 
 	if(offence >= 0){
-		leader = ClientFromName(bs->teamleader);
 		if(offence){
 			if(!(bs->teamtaskpreference & TEAMTP_ATTACKER)){
 				// if we have a bot team leader
@@ -2199,11 +2198,11 @@ BotWantsToRetreat(bot_state_t *bs)
 {
 	aas_entityinfo_t entinfo;
 
-	if(gametype == GT_CTF)
+	if(gametype == GT_CTF){
 		//always retreat when carrying a CTF flag
 		if(BotCTFCarryingFlag(bs))
 			return qtrue;
-
+	}
 #ifdef MISSIONPACK
 	else if(gametype == GT_1FCTF){
 		//if carrying the flag then always retreat

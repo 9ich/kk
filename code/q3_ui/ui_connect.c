@@ -73,7 +73,6 @@ displaydownloadinfo(const char *downloadName)
 	char dlSizeBuf[64], totalSizeBuf[64], xferRateBuf[64], dlTimeBuf[64];
 	int xferRate;
 	int width, leftWidth;
-	int style = UI_LEFT|UI_SMALLFONT|UI_DROPSHADOW;
 	const char *s;
 
 	downloadSize = trap_Cvar_VariableValue("cl_downloadSize");
@@ -160,7 +159,6 @@ drawconnectscreen(qboolean overlay)
 	uiClientState_t cstate;
 	char info[MAX_INFO_VALUE];
 	char s[MAX_STRING_CHARS];
-	int style, bigstyle;
 
 	if(uis.keys[K_ESCAPE]){
 		trap_Cmd_ExecuteText(EXEC_APPEND, "disconnect\n");
@@ -168,11 +166,6 @@ drawconnectscreen(qboolean overlay)
 	}
 
 	cacheui();
-
-
-
-	style = UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW;
-	bigstyle = UI_BIGFONT|UI_CENTER|UI_DROPSHADOW;
 
 	if(!overlay){
 		setcolour(CWhite);

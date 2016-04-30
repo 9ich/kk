@@ -378,8 +378,6 @@ CG_DrawAttacker
 static float
 CG_DrawAttacker(float y)
 {
-	int t;
-	vec3_t angles;
 	const char *info;
 	const char *name;
 	int clientNum;
@@ -710,154 +708,6 @@ drawupperright(stereoFrame_t stereoFrame)
 */
 
 /*
-=================
-CG_DrawScores
-
-Draw the small two score display
-=================
-*/
-static float
-CG_DrawScores(float y)
-{
-	const char *s;
-	int s1, s2, score;
-	int x, w;
-	int v;
-	vec4_t color;
-	float y1;
-	gitem_t *item;
-
-	s1 = cgs.scores1;
-	s2 = cgs.scores2;
-
-	y -= BIGCHAR_HEIGHT + 8;
-
-	y1 = y;
-
-	// draw from the right side to left
-	if(cgs.gametype >= GT_TEAM){
-		x = 640;
-		color[0] = 0.0f;
-		color[1] = 0.0f;
-		color[2] = 1.0f;
-		color[3] = 0.33f;
-		s = va("%2i", s2);
-		w = drawstrlen(s) * BIGCHAR_WIDTH + 8;
-		x -= w;
-		fillrect(x, y-4, w, BIGCHAR_HEIGHT+8, color);
-		if(cg.snap->ps.persistant[PERS_TEAM] == TEAM_BLUE)
-			drawpic(x, y-4, w, BIGCHAR_HEIGHT+8, cgs.media.selectShader);
-		drawbigstr(x + 4, y, s, 1.0F);
-
-		if(cgs.gametype == GT_CTF){
-			// Display flag status
-			item = finditemforpowerup(PW_BLUEFLAG);
-
-			if(item){
-				y1 = y - BIGCHAR_HEIGHT - 8;
-				if(cgs.blueflag >= 0 && cgs.blueflag <= 2)
-					drawpic(x, y1-4, w, BIGCHAR_HEIGHT+8, cgs.media.blueFlagShader[cgs.blueflag]);
-			}
-		}
-		color[0] = 1.0f;
-		color[1] = 0.0f;
-		color[2] = 0.0f;
-		color[3] = 0.33f;
-		s = va("%2i", s1);
-		w = drawstrlen(s) * BIGCHAR_WIDTH + 8;
-		x -= w;
-		fillrect(x, y-4, w, BIGCHAR_HEIGHT+8, color);
-		if(cg.snap->ps.persistant[PERS_TEAM] == TEAM_RED)
-			drawpic(x, y-4, w, BIGCHAR_HEIGHT+8, cgs.media.selectShader);
-		drawbigstr(x + 4, y, s, 1.0F);
-
-		if(cgs.gametype == GT_CTF){
-			// Display flag status
-			item = finditemforpowerup(PW_REDFLAG);
-
-			if(item){
-				y1 = y - BIGCHAR_HEIGHT - 8;
-				if(cgs.redflag >= 0 && cgs.redflag <= 2)
-					drawpic(x, y1-4, w, BIGCHAR_HEIGHT+8, cgs.media.redFlagShader[cgs.redflag]);
-			}
-		}
-
-		if(cgs.gametype >= GT_CTF)
-			v = cgs.capturelimit;
-		else
-			v = cgs.fraglimit;
-		if(v){
-			s = va("%2i", v);
-			w = drawstrlen(s) * BIGCHAR_WIDTH + 8;
-			x -= w;
-			drawbigstr(x + 4, y, s, 1.0F);
-		}
-	}else{
-		qboolean spectator;
-
-		x = 640;
-		score = cg.snap->ps.persistant[PERS_SCORE];
-		spectator = (cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR);
-
-		// always show your score in the second box if not in first place
-		if(s1 != score)
-			s2 = score;
-		if(s2 != SCORE_NOT_PRESENT){
-			s = va("%2i", s2);
-			w = drawstrlen(s) * BIGCHAR_WIDTH + 8;
-			x -= w;
-			if(!spectator && score == s2 && score != s1){
-				color[0] = 1.0f;
-				color[1] = 0.0f;
-				color[2] = 0.0f;
-				color[3] = 0.33f;
-				fillrect(x, y-4, w, BIGCHAR_HEIGHT+8, color);
-				drawpic(x, y-4, w, BIGCHAR_HEIGHT+8, cgs.media.selectShader);
-			}else{
-				color[0] = 0.5f;
-				color[1] = 0.5f;
-				color[2] = 0.5f;
-				color[3] = 0.33f;
-				fillrect(x, y-4, w, BIGCHAR_HEIGHT+8, color);
-			}
-			drawbigstr(x + 4, y, s, 1.0F);
-		}
-
-		// first place
-		if(s1 != SCORE_NOT_PRESENT){
-			s = va("%2i", s1);
-			w = drawstrlen(s) * BIGCHAR_WIDTH + 8;
-			x -= w;
-			if(!spectator && score == s1){
-				color[0] = 0.0f;
-				color[1] = 0.0f;
-				color[2] = 1.0f;
-				color[3] = 0.33f;
-				fillrect(x, y-4, w, BIGCHAR_HEIGHT+8, color);
-				drawpic(x, y-4, w, BIGCHAR_HEIGHT+8, cgs.media.selectShader);
-			}else{
-				color[0] = 0.5f;
-				color[1] = 0.5f;
-				color[2] = 0.5f;
-				color[3] = 0.33f;
-				fillrect(x, y-4, w, BIGCHAR_HEIGHT+8, color);
-			}
-			drawbigstr(x + 4, y, s, 1.0F);
-		}
-
-		if(cgs.fraglimit){
-			s = va("%2i", cgs.fraglimit);
-			w = drawstrlen(s) * BIGCHAR_WIDTH + 8;
-			x -= w;
-			drawbigstr(x + 4, y, s, 1.0F);
-		}
-	}
-
-	return y1 - 8;
-}
-
-
-/*
 ================
 drawpowerups
 ================
@@ -1046,6 +896,7 @@ drawteaminfo(void)
 
 	font = FONT2;
 	size = 14;
+	i = 0;
 
 	if(cg_teamChatHeight.integer < TEAMCHAT_HEIGHT)
 		chatHeight = cg_teamChatHeight.integer;
@@ -1059,7 +910,7 @@ drawteaminfo(void)
 			cgs.teamlastchatpos++;
 
 		h = (cgs.teamchatpos - cgs.teamlastchatpos) *
-		   stringheight(cgs.teamchatmsgs[i % chatHeight], font, size);
+		   stringheight(cgs.teamchatmsgs[i % chatHeight], font, size);	// FIXME: what was this?
 
 		if(cg.snap->ps.persistant[PERS_TEAM] == TEAM_RED){
 			hcolor[0] = 1.0f;
@@ -1442,7 +1293,7 @@ drawcenterstr(void)
 {
 	char *start;
 	int l;
-	int x, y, w;
+	int y;
 	float *color;
 
 	if(!cg.centerprinttime)
@@ -1467,10 +1318,6 @@ drawcenterstr(void)
 			linebuffer[l] = start[l];
 		}
 		linebuffer[l] = 0;
-
-		w = cg.centerprintcharwidth * drawstrlen(linebuffer);
-
-		x = (screenwidth() - w) / 2;
 
 		setalign("center");
 		drawstring(0.5f*screenwidth(), y, linebuffer, FONT1, 24, color);

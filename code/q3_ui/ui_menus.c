@@ -436,9 +436,8 @@ void
 videomenu(void)
 {
 	const float spc = 24;
-	float x, xx, y;
-	float *textclr;
-	int i, style, font;
+	float xx, y;
+	int i;
 
 	if(!vo.initialized)
 		initvideomenu();
@@ -451,12 +450,8 @@ videomenu(void)
 	menubackground();
 	optionsbuttons();
 
-	textclr = CText;
-	style = UI_RIGHT|UI_DROPSHADOW;
-	x = 420;
 	xx = 440;
 	y = 100;
-	font = FONT3;
 
 	optionname("Use desktop resolution", y);
 	if(checkbox(".v.udr", xx, y, &vo.usedesktopres)){
@@ -599,7 +594,7 @@ void
 soundmenu(void)
 {
 	const float spc = 24;
-	float x, xx, y;
+	float xx, y;
 
 	if(!so.initialized)
 		initsoundmenu();
@@ -610,7 +605,6 @@ soundmenu(void)
 	uis.fullscreen = qtrue;
 	menubackground();
 	optionsbuttons();
-	x = 420;
 	xx = 440;
 	y = 100;
 
@@ -648,7 +642,6 @@ static void
 bindwaitmenu(void)
 {
 	char s[MAX_STRING_CHARS];
-	const int style = UI_SMALLFONT|UI_CENTER|UI_DROPSHADOW;
 	int i;
 	qboolean *p;
 
@@ -749,7 +742,7 @@ void
 inputmenu(void)
 {
 	const float spc = 24;
-	float x, xx, xxx, y;
+	float xx, xxx, y;
 	int i;
 
 	if(!io.initialized)
@@ -760,7 +753,6 @@ inputmenu(void)
 
 	uis.fullscreen = qtrue;
 	menubackground();
-	x = 420;
 	xx = 440;
 	xxx = 520;
 	y = 50;

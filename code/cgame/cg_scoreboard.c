@@ -381,13 +381,6 @@ CG_CenterGiantLine
 static void
 CG_CenterGiantLine(float y, const char *string)
 {
-	vec4_t color;
-
-	color[0] = 1;
-	color[1] = 1;
-	color[2] = 1;
-	color[3] = 1;
-
 	setalign("center");
 	drawstring(screenwidth()/2, y, string, FONT1, 32, CText);
 	setalign("");

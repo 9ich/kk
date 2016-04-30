@@ -1036,7 +1036,6 @@ clientspawn(gentity_t *ent)
 	vec3_t spawn_origin, spawn_angles;
 	gclient_t *client, sav;
 	int i;
-	int persistant[MAX_PERSISTANT];
 	gentity_t *spawnPoint;
 	gentity_t *tent;
 	int flags;

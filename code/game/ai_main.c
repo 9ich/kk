@@ -286,12 +286,12 @@ BotReportStatus(bot_state_t *bs)
 	else leader = " ";
 
 	strcpy(flagstatus, "  ");
-	if(gametype == GT_CTF)
+	if(gametype == GT_CTF){
 		if(BotCTFCarryingFlag(bs)){
 			if(BotTeam(bs) == TEAM_RED) strcpy(flagstatus, S_COLOR_RED "F ");
 			else strcpy(flagstatus, S_COLOR_BLUE "F ");
 		}
-
+	}
 #ifdef MISSIONPACK
 	else if(gametype == GT_1FCTF){
 		if(Bot1FCTFCarryingFlag(bs)){
@@ -432,10 +432,10 @@ BotSetInfoConfigString(bot_state_t *bs)
 	else leader = " ";
 
 	strcpy(carrying, "  ");
-	if(gametype == GT_CTF)
+	if(gametype == GT_CTF){
 		if(BotCTFCarryingFlag(bs))
 			strcpy(carrying, "F ");
-
+	}
 #ifdef MISSIONPACK
 	else if(gametype == GT_1FCTF){
 		if(Bot1FCTFCarryingFlag(bs))

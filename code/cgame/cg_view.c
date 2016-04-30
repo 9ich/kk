@@ -268,7 +268,6 @@ CG_OffsetThirdPersonView(void)
 	static vec3_t maxs = {4, 4, 4};
 	vec3_t focusPoint;
 	float focusDist;
-	float forwardScale, sideScale;
 
 	veccpy(cg.refdefviewangles, focusAngles);
 
@@ -319,7 +318,6 @@ CG_OffsetFirstPersonView(void)
 	float *angles;
 	float ratio;
 	float delta;
-	float speed;
 	float f;
 	int timeDelta;
 
@@ -639,7 +637,6 @@ CG_PlayBufferedSounds(void)
 static void
 drawlockon(void)
 {
-	qhandle_t shader;
 	refEntity_t ent;
 	centity_t *enemy;
 

@@ -819,7 +819,6 @@ gentity_t *
 fire_nail(gentity_t *self, vec3_t start, vec3_t dir)
 {
 	gentity_t *bolt;
-	vec3_t end;
 
 	bolt = entspawn();
 	bolt->classname = "nail";

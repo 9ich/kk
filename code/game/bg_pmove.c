@@ -99,27 +99,6 @@ PM_StartTorsoAnim(int anim)
 }
 
 static void
-PM_StartLegsAnim(int anim)
-{
-	if(pm->ps->pm_type >= PM_DEAD)
-		return;
-	if(pm->ps->legsTimer > 0)
-		return;	// a high priority animation is running
-	pm->ps->legsAnim = ((pm->ps->legsAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT)
-			   | anim;
-}
-
-static void
-PM_ContinueLegsAnim(int anim)
-{
-	if((pm->ps->legsAnim & ~ANIM_TOGGLEBIT) == anim)
-		return;
-	if(pm->ps->legsTimer > 0)
-		return;	// a high priority animation is running
-	PM_StartLegsAnim(anim);
-}
-
-static void
 PM_ContinueTorsoAnim(int anim)
 {
 	if((pm->ps->torsoAnim & ~ANIM_TOGGLEBIT) == anim)
@@ -127,13 +106,6 @@ PM_ContinueTorsoAnim(int anim)
 	if(pm->ps->torsoTimer > 0)
 		return;	// a high priority animation is running
 	PM_StartTorsoAnim(anim);
-}
-
-static void
-PM_ForceLegsAnim(int anim)
-{
-	pm->ps->legsTimer = 0;
-	PM_StartLegsAnim(anim);
 }
 
 /*
@@ -240,7 +212,7 @@ PM_Accelerate(vec3_t wishdir, float wishspeed, float accel)
 {
 #if 1
 	int i;
-	float addspeed, accelspeed, currentspeed;
+	float accelspeed;
 
 	accelspeed = accel*pml.frametime*wishspeed;
 	for(i = 0; i<3; i++)
@@ -517,7 +489,7 @@ _airmove(usercmd_t *cmd, float *wvel, float *wdir, float *wspeed)
 {
 	int i;
 	float fm, sm, um, scale, wishspeed;
-	vec3_t wishvel, wishdir;
+	vec3_t wishvel;
 
 	fm = cmd->forwardmove;
 	sm = cmd->rightmove;
@@ -585,109 +557,6 @@ PM_GrappleMove(void)
 	veccpy(vel, pm->ps->velocity);
 
 	pml.groundplane = qfalse;
-}
-
-/*
-===================
-PM_WalkMove
-
-===================
-*/
-static void
-PM_WalkMove(void)
-{
-	int i;
-	vec3_t wishvel;
-	float fmove, smove;
-	vec3_t wishdir;
-	float wishspeed;
-	float scale;
-	usercmd_t cmd;
-	float accelerate;
-	float vel;
-
-	if(pm->waterlevel > 2 && vecdot(pml.forward, pml.groundtrace.plane.normal) > 0){
-		// begin swimming
-		PM_WaterMove();
-		return;
-	}
-
-	PM_Friction();
-
-	fmove = pm->cmd.forwardmove;
-	smove = pm->cmd.rightmove;
-
-	cmd = pm->cmd;
-	scale = PM_CmdScale(&cmd);
-
-	// set the movementDir so clients can rotate the legs for strafing
-	PM_SetMovementDir();
-
-	// project moves down to flat plane
-	pml.forward[2] = 0;
-	pml.right[2] = 0;
-
-	// project the forward and right directions onto the ground plane
-	pmclipvel(pml.forward, pml.groundtrace.plane.normal, pml.forward, OVERCLIP);
-	pmclipvel(pml.right, pml.groundtrace.plane.normal, pml.right, OVERCLIP);
-	vecnorm(pml.forward);
-	vecnorm(pml.right);
-
-	for(i = 0; i < 3; i++)
-		wishvel[i] = pml.forward[i]*fmove + pml.right[i]*smove;
-	// when going up or down slopes the wish velocity should Not be zero
-//	wishvel[2] = 0;
-
-	veccpy(wishvel, wishdir);
-	wishspeed = vecnorm(wishdir);
-	wishspeed *= scale;
-
-	// clamp the speed lower if wading or walking on the bottom
-	if(pm->waterlevel){
-		float waterScale;
-
-		waterScale = pm->waterlevel / 3.0;
-		waterScale = 1.0 - (1.0 - pm_swimScale) * waterScale;
-		if(wishspeed > pm->ps->speed * waterScale)
-			wishspeed = pm->ps->speed * waterScale;
-	}
-
-	// when a player gets hit, they temporarily lose
-	// full control, which allows them to be moved a bit
-	if((pml.groundtrace.surfaceFlags & SURF_SLICK) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK)
-		accelerate = pm->ps->airAccel;
-	else
-		accelerate = pm_accelerate;
-
-	PM_Accelerate(wishdir, wishspeed, accelerate);
-
-	//Com_Printf("velocity = %1.1f %1.1f %1.1f\n", pm->ps->velocity[0], pm->ps->velocity[1], pm->ps->velocity[2]);
-	//Com_Printf("velocity1 = %1.1f\n", veclen(pm->ps->velocity));
-
-	if((pml.groundtrace.surfaceFlags & SURF_SLICK) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK)
-		pm->ps->velocity[2] -= pm->ps->gravity * pml.frametime;
-	else{
-		// don't reset the z velocity for slopes
-//		pm->ps->velocity[2] = 0;
-	}
-
-	vel = veclen(pm->ps->velocity);
-
-	// slide along the ground plane
-	pmclipvel(pm->ps->velocity, pml.groundtrace.plane.normal,
-			pm->ps->velocity, OVERCLIP);
-
-	// don't decrease velocity when going up or down a slope
-	vecnorm(pm->ps->velocity);
-	vecmul(pm->ps->velocity, vel, pm->ps->velocity);
-
-	// don't do anything if standing still
-	if(!pm->ps->velocity[0] && !pm->ps->velocity[1])
-		return;
-
-	pmstepslidemove(qfalse);
-
-	//Com_Printf("velocity2 = %1.1f\n", veclen(pm->ps->velocity));
 }
 
 /*
@@ -775,83 +644,6 @@ PM_NoclipMove(void)
 }
 
 //============================================================================
-
-/*
-=================
-PM_CrashLand
-
-Check for hard landings that generate sound events
-=================
-*/
-static void
-PM_CrashLand(void)
-{
-	float delta;
-	float dist;
-	float vel, acc;
-	float t;
-	float a, b, c, den;
-
-	// decide which landing animation to use
-	if(pm->ps->pm_flags & PMF_BACKWARDS_JUMP)
-		PM_ForceLegsAnim(LEGS_LANDB);
-	else
-		PM_ForceLegsAnim(LEGS_LAND);
-
-	pm->ps->legsTimer = TIMER_LAND;
-
-	// calculate the exact velocity on landing
-	dist = pm->ps->origin[2] - pml.prevorigin[2];
-	vel = pml.prevvelocity[2];
-	acc = -pm->ps->gravity;
-
-	a = acc / 2;
-	b = vel;
-	c = -dist;
-
-	den = b * b - 4 * a * c;
-	if(den < 0)
-		return;
-	t = (-b - sqrt(den)) / (2 * a);
-
-	delta = vel + t * acc;
-	delta = delta*delta * 0.0001;
-
-	// ducking while falling doubles damage
-	if(pm->ps->pm_flags & PMF_DUCKED)
-		delta *= 2;
-
-	// never take falling damage if completely underwater
-	if(pm->waterlevel == 3)
-		return;
-
-	// reduce falling damage if there is standing water
-	if(pm->waterlevel == 2)
-		delta *= 0.25;
-	if(pm->waterlevel == 1)
-		delta *= 0.5;
-
-	if(delta < 1)
-		return;
-
-	// create a local entity event to play the sound
-
-	// SURF_NODAMAGE is used for bounce pads where you don't ever
-	// want to take damage or play a crunch sound
-	if(!(pml.groundtrace.surfaceFlags & SURF_NODAMAGE)){
-		if(delta > 60)
-			pmaddevent(EV_FALL_FAR);
-		else if(delta > 40){
-			// this is a pain grunt, so don't play it if dead
-			if(pm->ps->stats[STAT_HEALTH] > 0)
-				pmaddevent(EV_FALL_MEDIUM);
-		}else if(delta > 7)
-			pmaddevent(EV_FALL_SHORT);
-	}
-
-	// start footstep cycle over
-	pm->ps->bobCycle = 0;
-}
 
 /*
 =============

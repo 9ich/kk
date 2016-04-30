@@ -83,7 +83,7 @@ CG_MachineGunEjectBrass(centity_t *cent)
 	le->angles.trType = TR_LINEAR;
 	le->angles.trTime = cg.time;
 	le->angles.trBase[0] = cent->lerpangles[0] + (rand()&31);
-	le->angles.trBase[1] = cent->lerpangles[1] + (-89 + rand()&31);
+	le->angles.trBase[1] = cent->lerpangles[1] + (-89 + (rand()&31));
 	le->angles.trBase[2] = cent->lerpangles[2] + (rand()&31);
 	le->angles.trDelta[0] = -15 + 30*random();
 	le->angles.trDelta[1] = -15 + 30*random();
@@ -232,7 +232,7 @@ CG_NailgunEjectBrass(centity_t *cent)
 	le->angles.trType = TR_LINEAR;
 	le->angles.trTime = cg.time;
 	le->angles.trBase[0] = cent->lerpangles[0] + (rand()&31);
-	le->angles.trBase[1] = cent->lerpangles[1] + (-89 + rand()&31);
+	le->angles.trBase[1] = cent->lerpangles[1] + (-89 + (rand()&31));
 	le->angles.trBase[2] = cent->lerpangles[2] + (rand()&31);
 	le->angles.trDelta[0] = -15 + 30*random();
 	le->angles.trDelta[1] = -15 + 30*random();
@@ -422,75 +422,6 @@ CG_RocketTrail(centity_t *ent, const weaponInfo_t *wi)
 		smoke->type = LE_SCALE_FADE;
 	}
 }
-
-#ifdef MISSIONPACK
-/*
-==========================
-CG_NailTrail
-==========================
-*/
-static void
-CG_NailTrail(centity_t *ent, const weaponInfo_t *wi)
-{
-	int step;
-	vec3_t origin, lastPos;
-	int t;
-	int starttime, contents;
-	int lastContents;
-	entityState_t *es;
-	vec3_t up;
-	localEntity_t *smoke;
-
-	if(cg_noProjectileTrail.integer)
-		return;
-
-	up[0] = 0;
-	up[1] = 0;
-	up[2] = 0;
-
-	step = 50;
-
-	es = &ent->currstate;
-	starttime = ent->trailtime;
-	t = step * ((starttime + step) / step);
-
-	evaltrajectory(&es->pos, cg.time, origin);
-	contents = pointcontents(origin, -1);
-
-	// if object (e.g. grenade) is stationary, don't toss up smoke
-	if(es->pos.trType == TR_STATIONARY){
-		ent->trailtime = cg.time;
-		return;
-	}
-
-	evaltrajectory(&es->pos, ent->trailtime, lastPos);
-	lastContents = pointcontents(lastPos, -1);
-
-	ent->trailtime = cg.time;
-
-	if(contents & (CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA)){
-		if(contents & lastContents & CONTENTS_WATER)
-			bubbletrail(lastPos, origin, 8);
-		return;
-	}
-
-	for(; t <= ent->trailtime; t += step){
-		evaltrajectory(&es->pos, t, lastPos);
-
-		smoke = smokepuff(lastPos, up,
-				     wi->trailradius,
-				     1, 1, 1, 0.33f,
-				     wi->trailtime,
-				     t,
-				     0,
-				     0,
-				     cgs.media.nailPuffShader);
-		// use the optimized local entity add
-		smoke->type = LE_SCALE_FADE;
-	}
-}
-
-#endif
 
 /*
 ==========================
@@ -1406,7 +1337,7 @@ drawweapsel(void)
 	int i;
 	int bits;
 	int count;
-	int x, y, w;
+	int x, y;
 	char *name;
 	float *color;
 

@@ -55,7 +55,7 @@ void
 drawstring(float x, float y, const char *str, int font, float size, vec4_t color)
 {
 	const char *p;
-	float w, h, ww, hh;
+	float w, h;
 	float scale, strwidth;
 	float glyphrow, glyphcol, glyphwidth, glyphheight;
 	int c;

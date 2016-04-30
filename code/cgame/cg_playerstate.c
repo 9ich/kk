@@ -295,7 +295,6 @@ CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops)
 	int health, armor;
 #endif
 	int i;
-	sfxHandle_t sfx;
 
 	// don't play the sounds if the player just changed teams
 	if(ps->persistant[PERS_TEAM] != ops->persistant[PERS_TEAM])

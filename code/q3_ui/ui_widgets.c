@@ -365,7 +365,6 @@ keybinder(const char *id, int x, int y, int key)
 	const float w = width*SMALLCHAR_WIDTH;
 	const float h = 16, pad = 4;
 	char buf[32], *p;
-	float *clr;
 	qboolean changed;
 
 	if(mouseover(x-pad, y-pad, w+2*pad, h+2*pad)){
@@ -393,11 +392,9 @@ keybinder(const char *id, int x, int y, int key)
 
 	fillrect(x-pad, y-pad, w+2*pad, h+2*pad, CWBody);
 	drawrect(x-pad, y-pad, w+2*pad, h+2*pad, CWBorder);
-	clr = CWText;
-	if(mouseover(x, y, w, h))
-		clr = CWHot;
+
 	drawstring(x, y+2, buf, FONT2, 12, CWText);
-	
+
 	changed = !uis.keys[K_MOUSE1] && strcmp(uis.hot, id) == 0 &&
 	   strcmp(uis.active, id) == 0;	
 	

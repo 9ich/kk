@@ -390,17 +390,17 @@ CG_RegisterClientModelname(clientInfo_t *ci, const char *modelname, const char *
 	// if any skins failed to load, return failure
 	if(!CG_RegisterClientSkin(ci, teamName, modelname, skinname)){
 		if(teamName && *teamName){
-			Com_Printf("Failed to load skin file: %s : %s : %s, %s : %s\n", teamName, modelname, skinname);
+			Com_Printf("Failed to load skin file: %s : %s : %s\n", teamName, modelname, skinname);
 			if(ci->team == TEAM_BLUE)
 				Com_sprintf(newTeamName, sizeof(newTeamName), "%s/", DEFAULT_BLUETEAM_NAME);
 			else
 				Com_sprintf(newTeamName, sizeof(newTeamName), "%s/", DEFAULT_REDTEAM_NAME);
 			if(!CG_RegisterClientSkin(ci, newTeamName, modelname, skinname)){
-				Com_Printf("Failed to load skin file: %s : %s : %s, %s : %s\n", newTeamName, modelname, skinname);
+				Com_Printf("Failed to load skin file: %s : %s : %s\n", newTeamName, modelname, skinname);
 				return qfalse;
 			}
 		}else{
-			Com_Printf("Failed to load skin file: %s : %s, %s : %s\n", modelname, skinname);
+			Com_Printf("Failed to load skin file: %s : %s\n", modelname, skinname);
 			return qfalse;
 		}
 	}
@@ -473,7 +473,7 @@ CG_LoadClientInfo(int clientNum, clientInfo_t *ci)
 	modelloaded = qtrue;
 	if(!CG_RegisterClientModelname(ci, ci->modelname, ci->skinname, teamname)){
 		if(cg_buildScript.integer)
-			cgerrorf("CG_RegisterClientModelname( %s, %s, %s, %s %s ) failed", ci->modelname, ci->skinname, teamname);
+			cgerrorf("CG_RegisterClientModelname( %s, %s, %s ) failed", ci->modelname, ci->skinname, teamname);
 
 		// fall back to default team name
 		if(cgs.gametype >= GT_TEAM){
@@ -992,65 +992,6 @@ PLAYER ANGLES
 */
 
 /*
-==================
-CG_SwingAngles
-==================
-*/
-static void
-CG_SwingAngles(float destination, float swingTolerance, float clampTolerance,
-	       float speed, float *angle, qboolean *swinging)
-{
-	float swing;
-	float move;
-	float scale;
-
-	if(!*swinging){
-		// see if a swing should be started
-		swing = AngleSubtract(*angle, destination);
-		if(swing > swingTolerance || swing < -swingTolerance)
-			*swinging = qtrue;
-	}
-
-	if(!*swinging)
-		return;
-
-	// modify the speed depending on the delta
-	// so it doesn't seem so linear
-	swing = AngleSubtract(destination, *angle);
-	scale = fabs(swing);
-	if(scale < swingTolerance * 0.5)
-		scale = 0.5;
-	else if(scale < swingTolerance)
-		scale = 1.0;
-	else
-		scale = 2.0;
-
-	// swing towards the destination angle
-	if(swing >= 0){
-		move = cg.frametime * scale * speed;
-		if(move >= swing){
-			move = swing;
-			*swinging = qfalse;
-		}
-		*angle = AngleMod(*angle + move);
-	}else if(swing < 0){
-		move = cg.frametime * scale * -speed;
-		if(move <= swing){
-			move = swing;
-			*swinging = qfalse;
-		}
-		*angle = AngleMod(*angle + move);
-	}
-
-	// clamp to no more than tolerance
-	swing = AngleSubtract(destination, *angle);
-	if(swing > clampTolerance)
-		*angle = AngleMod(destination - (clampTolerance - 1));
-	else if(swing < -clampTolerance)
-		*angle = AngleMod(destination + (clampTolerance - 1));
-}
-
-/*
 =================
 CG_AddPainTwitch
 =================
@@ -1127,34 +1068,6 @@ CG_HasteTrail(centity_t *cent)
 
 	// use the optimized local entity add
 	smoke->type = LE_SCALE_FADE;
-}
-
-
-/*
-===============
-CG_TrailItem
-===============
-*/
-static void
-CG_TrailItem(centity_t *cent, qhandle_t hModel)
-{
-	refEntity_t ent;
-	vec3_t angles;
-	vec3_t axis[3];
-
-	veccpy(cent->lerpangles, angles);
-	angles[PITCH] = 0;
-	angles[ROLL] = 0;
-	AnglesToAxis(angles, axis);
-
-	memset(&ent, 0, sizeof(ent));
-	vecmad(cent->lerporigin, -16, axis[0], ent.origin);
-	ent.origin[2] += 16;
-	angles[YAW] += 90;
-	AnglesToAxis(angles, ent.axis);
-
-	ent.hModel = hModel;
-	trap_R_AddRefEntityToScene(&ent);
 }
 
 /*
@@ -1258,14 +1171,11 @@ static void
 CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 {
 	int i;
-	vec3_t plumevel, angles;
-	float forwardmove, rightmove, upmove;
+	float forwardmove;
 	int dirs;
 	sfxHandle_t thrustsound, thrustbacksound, idlesound;
 
 	forwardmove = cent->currstate.forwardmove / 127.0f;
-	rightmove = cent->currstate.rightmove / 127.0f;
-	upmove = cent->currstate.upmove / 127.0f;
 
 	// rear thrusters
 
@@ -1419,7 +1329,6 @@ static void
 CG_PlayerPowerups(centity_t *cent, refEntity_t *torso)
 {
 	int powerups;
-	clientInfo_t *ci;
 
 	powerups = cent->currstate.powerups;
 	if(!powerups)
@@ -1433,7 +1342,6 @@ CG_PlayerPowerups(centity_t *cent, refEntity_t *torso)
 	if(powerups & (1 << PW_FLIGHT))
 		trap_S_AddLoopingSound(cent->currstate.number, cent->lerporigin, vec3_origin, cgs.media.flightSound);
 
-	ci = &cgs.clientinfo[cent->currstate.clientNum];
 	// redflag
 	if(powerups & (1 << PW_REDFLAG)){
 		CG_PlayerFlag(cent, torso, cgs.media.redFlagModel);
@@ -1499,7 +1407,7 @@ Float sprites over the player's head
 static void
 CG_PlayerSprites(centity_t *cent)
 {
-	int team, i;
+	int team;
 
 	if(cent->currstate.eFlags & EF_CONNECTION){
 		CG_PlayerFloatSprite(cent, cgs.media.connectionShader);
@@ -1791,12 +1699,10 @@ doplayer(centity_t *cent)
 	qboolean shadow;
 	float shadowPlane;
 #ifdef MISSIONPACK
-	refEntity_t skull;
 	refEntity_t powerup;
 	int t;
 	float c;
-	float angle;
-	vec3_t dir, angles;
+	vec3_t angles;
 #endif
 
 	// the client number is stored in clientNum.  It can't be derived

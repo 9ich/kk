@@ -279,10 +279,6 @@ pmstepslidemove(qboolean gravity)
 	}else
 #endif
 	{
-		// use the step move
-		float delta;
-
-		delta = pm->ps->origin[2] - start_o[2];
 		if(pm->debuglevel)
 			Com_Printf("%i:stepped\n", c_pmove);
 	}
