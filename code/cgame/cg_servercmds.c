@@ -486,7 +486,7 @@ CG_ServerCommand(void)
 		return;
 
 	if(!strcmp(cmd, "cp")){
-		centerprint(cgargv(1), SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH);
+		centerprint(cgargv(1), screenheight() * 0.30, BIGCHAR_WIDTH);
 		return;
 	}
 

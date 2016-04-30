@@ -1,5 +1,5 @@
 /*
-Drawlib is a 2D drawing package for cgame and ui.
+Drawlib is a drawing package for cgame and ui.
 It replaces their own redundant drawing functions.
 */
 
@@ -7,6 +7,15 @@ It replaces their own redundant drawing functions.
 #define __D_PUBLIC_H__
 
 #include "d_colourdecls.h"
+
+enum
+{
+	FONT1,
+	FONT2,
+	FONT3,
+	FONT4,
+	NUMFONTS
+};
 
 // drop shadows
 #define Shadowalpha	0.7f
@@ -20,22 +29,33 @@ extern float *CWActive;	// widget text when active
 extern float *CWFocus;	// widget outline when active
 extern float *CWShadow;
 
-extern void	drawlibinit(void);
-extern void	drawlibbeginframe(int realtime, float xscale, float yscale, float bias);
-extern void	adjustcoords(float *x, float *y, float *w, float *h);
-extern void	drawnamedpic(float x, float y, float w, float h, const char *picname);
-extern void	drawpic(float x, float y, float w, float h, qhandle_t hShader);
-extern void	fillrect(float x, float y, float width, float height, const float *color);
-extern void	drawrect(float x, float y, float width, float height, const float *color);
-extern void	setcolour(const float *rgba);
-extern void	lerpcolour(vec4_t a, vec4_t b, vec4_t c, float t);
-extern void	drawpropstr(int x, int y, const char *str, int style, vec4_t color);
-extern void	drawpropstrwrapped(int x, int ystart, int xmax, int ystep, const char *str, int style, vec4_t color);
-extern int	propstrwidth(const char *str, int slicebegin, int sliceend);
-extern float	propstrsizescale(int style);
-extern void	drawstr(int x, int y, const char *str, int style, vec4_t color);
-extern void	drawstr2(int x, int y, const char *str, vec4_t color, int charw, int charh);
-extern void	drawstrwrapped(int x, int y, int xmax, int ystep, const char *str, int style, vec4_t color);
-extern void	drawchar(int x, int y, int ch, int style, vec4_t color);
+void	drawlibinit(void);
+void	drawlibbeginframe(int realtime, float vidwidth, float vidheight);
+
+float	screenwidth(void);
+float	screenheight(void);
+float	centerleft(void);
+float	centerright(void);
+void	pushalign(const char *s);
+void	popalign(int n);
+void	setalign(const char *s);
+const char	*getalign(void);
+void	aligncoords(float *x, float *y, float *w, float *h);
+void	scalecoords(float *x, float *y, float *w, float *h);
+void	adjustcoords(float *x, float *y, float *w, float *h);
+void	stretchcoords(float *x, float *y, float *w, float *h);
+
+void	setcolour(const float *rgba);
+void	lerpcolour(vec4_t a, vec4_t b, vec4_t c, float t);
+void	colormix(vec4_t a, vec4_t b, vec4_t dst);
+void	drawnamedpic(float x, float y, float w, float h, const char *picname);
+void	drawpic(float x, float y, float w, float h, qhandle_t hShader);
+void	fillrect(float x, float y, float width, float height, const float *color);
+void	drawrect(float x, float y, float width, float height, const float *color);
+void	drawstring(float x, float y, const char *str, int font, float size, vec4_t color);
+void	drawmultiline(float x, float y, float xmax, const char *str, int font, float size, vec4_t color);
+float	stringwidth(const char *str, int font, float size, int slicebegin, int sliceend);
+float	stringheight(const char *str, int font, float size);
+void	truncstringtowidth(char *str, int font, float size, float maxw);
 
 #endif // __D_PUBLIC_H__

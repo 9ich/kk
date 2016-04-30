@@ -1,20 +1,7 @@
 #include "ui_local.h"
 
-static void
-justify(int just, int *x, int w)
-{
-	switch(just){
-	case UI_CENTER:
-		*x = *x - w/2;
-		break;
-	case UI_RIGHT:
-		*x = *x - w;
-		break;
-	}
-}
-
 qboolean
-button(const char *id, int x, int y, int just, const char *label)
+button(const char *id, int x, int y, const char *label)
 {
 	float w = 48, h = 28;
 	float propw;
@@ -22,10 +9,9 @@ button(const char *id, int x, int y, int just, const char *label)
 	float *clr;
 
 	hot = qfalse;
-	propw = propstrwidth(label, 0, -1);
+	propw = stringwidth(label, FONT1, 32, 0, -1);
 	if(w < propw)
 		w = propw;
-	justify(just, &x, w);
 
 	if(mouseover(x, y, w, h)){
 		Q_strncpyz(uis.hot, id, sizeof uis.hot);
@@ -42,7 +28,7 @@ button(const char *id, int x, int y, int just, const char *label)
 		if(strcmp(uis.active, id) == 0)
 			clr = CWActive;
 	}
-	drawpropstr(x+w/2, y, label, UI_CENTER|UI_DROPSHADOW, clr);
+	drawstring(x, y, label, FONT1, 32, clr);
 
 	changed = !uis.keys[K_MOUSE1] && hot && strcmp(uis.active, id) == 0;
 
@@ -55,7 +41,7 @@ button(const char *id, int x, int y, int just, const char *label)
 }
 
 qboolean
-slider(const char *id, int x, int y, int just, float min, float max, float *val, const char *displayfmt)
+slider(const char *id, int x, int y, float min, float max, float *val, const char *displayfmt)
 {
 	float w = 120, pad = 2, h = 12, knobw = 6, knobh = 18;
 	float knobx, knoby, ix, iy, iw;
@@ -66,7 +52,6 @@ slider(const char *id, int x, int y, int just, float min, float max, float *val,
 
 	hot = qfalse;
 	updated = qfalse;
-	justify(just, &x, w);
 	ix = x+pad;
 	iy = y+pad;
 	iw = w - 2*pad;
@@ -106,12 +91,11 @@ slider(const char *id, int x, int y, int just, float min, float max, float *val,
 		clr = CWHot;
 	else
 		clr = CWText;
-	fillrect(knobx+1, knoby+1, knobw, knobh, CWShadow);
 	fillrect(knobx, knoby, knobw, knobh, clr);
 	drawrect(knobx, knoby, knobw, knobh, CWBorder);
 	if(*displayfmt != '\0'){
 		Com_sprintf(s, sizeof s, displayfmt, *val);
-		drawstr(x+w+6, iy, s, UI_LEFT|UI_SMALLFONT|UI_DROPSHADOW, CWText);
+		drawstring(x+w+6, iy, s, FONT2, 12, CWText);
 		*val = atof(s);
 	}
 
@@ -147,14 +131,13 @@ slider(const char *id, int x, int y, int just, float min, float max, float *val,
 }
 
 qboolean
-checkbox(const char *id, int x, int y, int just, qboolean *state)
+checkbox(const char *id, int x, int y, qboolean *state)
 {
 	const float w = 16, h = 16;
 	qboolean hot, changed;
 
 	hot = qfalse;
 	changed = qfalse;
-	justify(just, &x, w);
 
 	if(mouseover(x, y, w, h)){
 		Q_strncpyz(uis.hot, id, sizeof uis.hot);
@@ -169,13 +152,11 @@ checkbox(const char *id, int x, int y, int just, qboolean *state)
 	fillrect(x, y, w, h, CWBody);
 	drawrect(x, y, w, h, CWBorder);
 	if(*state){
-		setcolour(CWShadow);
-		drawnamedpic(x+2, y+2, w, h, "menu/art/tick");
 		if(hot)
 			setcolour(CWHot);
 		else
 			setcolour(CWText);
-		drawnamedpic(x, y, w, h, "menu/art/tick");
+		drawnamedpic(x+2, y+2, w-4, h-4, "menu/art/tick");
 		setcolour(nil);
 	}
 
@@ -258,7 +239,7 @@ updatefield(char *buf, int *caret, int sz)
 }
 
 qboolean
-textfield(const char *id, int x, int y, int just, int width, char *buf, int *caret, int sz)
+textfield(const char *id, int x, int y, int width, char *buf, int *caret, int sz)
 {
 	const float w = width*SMALLCHAR_WIDTH;
 	const float h = 16, pad = 4;
@@ -267,7 +248,6 @@ textfield(const char *id, int x, int y, int just, int width, char *buf, int *car
 
 	hot = qfalse;
 	updated = qfalse;
-	justify(just, &x, w);
 
 	if(mouseover(x-pad, y-pad, w+2*pad, h+2*pad)){
 		Q_strncpyz(uis.hot, id, sizeof uis.hot);
@@ -285,7 +265,7 @@ textfield(const char *id, int x, int y, int just, int width, char *buf, int *car
 		fillrect(x-pad, y-pad, w+2*pad, h+2*pad, CWActive);
 	else
 		fillrect(x-pad, y-pad, w+2*pad, h+2*pad, CWHot);
-	drawstr(x, y+2, buf, UI_LEFT|UI_SMALLFONT|UI_DROPSHADOW, COrange);
+	drawstring(x, y+2, buf, FONT2, 12, CWText);
 	for(i = 0, caretpos = 0; i < *caret && buf[i] != '\0'; i++){
 		if(Q_IsColorString(&buf[i]))
 			i++;
@@ -316,8 +296,6 @@ spinnerbutton(const char *id, int x, int y, const char *shader)
 			Q_strncpyz(uis.active, id, sizeof uis.active);
 	}
 
-	setcolour(CWShadow);
-	drawnamedpic(x+2, y+2, sz, sz, shader);
 	if(hot)
 		setcolour(CWHot);
 	else
@@ -328,14 +306,13 @@ spinnerbutton(const char *id, int x, int y, const char *shader)
 }
 
 qboolean
-textspinner(const char *id, int x, int y, int just, char **opts, int *i, int nopts)
+textspinner(const char *id, int x, int y, char **opts, int *i, int nopts)
 {
 	const float w = 13*SMALLCHAR_WIDTH, h = 18, bsz = 18;
 	qboolean changed;
 	char bid[IDLEN];
 
 	changed = qfalse;
-	justify(just, &x, w);
 
 	if(nopts > 1){
 		Com_sprintf(bid, sizeof bid, "%s.prev", id);
@@ -360,8 +337,10 @@ textspinner(const char *id, int x, int y, int just, char **opts, int *i, int nop
 
 	fillrect(x+bsz, y, w, h, CWBody);
 	drawrect(x+bsz, y, w, h, CWBorder);
-	drawstr(x+bsz+w/2, y+2, opts[*i], UI_SMALLFONT|UI_CENTER|UI_DROPSHADOW,
-	   CWText);
+
+	pushalign("center");
+	drawstring(x+bsz+w/2, y+2, opts[*i], FONT2, 12, CText);
+	popalign(1);
 
 	if(strcmp(uis.focus, id) == 0){
 		drawrect(x+bsz-2, y-2, w+4, h+4, CWFocus);
@@ -380,7 +359,7 @@ textspinner(const char *id, int x, int y, int just, char **opts, int *i, int nop
 This only displays the key; binding the key is the caller's responsibility.
 */
 qboolean
-keybinder(const char *id, int x, int y, int just, int key)
+keybinder(const char *id, int x, int y, int key)
 {
 	const int width = 7;	// in chars
 	const float w = width*SMALLCHAR_WIDTH;
@@ -388,8 +367,6 @@ keybinder(const char *id, int x, int y, int just, int key)
 	char buf[32], *p;
 	float *clr;
 	qboolean changed;
-
-	justify(just, &x, w);
 
 	if(mouseover(x-pad, y-pad, w+2*pad, h+2*pad)){
 		Q_strncpyz(uis.hot, id, sizeof uis.hot);
@@ -419,7 +396,7 @@ keybinder(const char *id, int x, int y, int just, int key)
 	clr = CWText;
 	if(mouseover(x, y, w, h))
 		clr = CWHot;
-	drawstr(x, y+2, buf, UI_LEFT|UI_SMALLFONT|UI_DROPSHADOW, clr);
+	drawstring(x, y+2, buf, FONT2, 12, CWText);
 	
 	changed = !uis.keys[K_MOUSE1] && strcmp(uis.hot, id) == 0 &&
 	   strcmp(uis.active, id) == 0;	

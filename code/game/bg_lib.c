@@ -5,8 +5,8 @@
 
 #include "../qcommon/q_shared.h"
 
-/*-
- * Copyright (c) 1992, 1993
+/*
+ * Copyright (c) 1990, 1992, 1993
  *	The Regents of the University of California.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -176,6 +176,43 @@ loop:	SWAPINIT(a, es);
 /*		qsort(pn - r, r / es, es, cmp);*/
 }
 
+/*
+ * Perform a binary search.
+ *
+ * The code below is a bit sneaky.  After a comparison fails, we
+ * divide the work in half by moving either left or right. If lim
+ * is odd, moving left simply involves halving lim: e.g., when lim
+ * is 5 we look at item 2, so we change lim to 2 so that we will
+ * look at items 0 & 1.  If lim is even, the same applies.  If lim
+ * is odd, moving right again involves halving lim, this time moving
+ * the base up one item past p: e.g., when lim is 5 we change base
+ * to item 3 and make lim 2 so that we will look at items 3 and 4.
+ * If lim is even, however, we have to shrink it by one before
+ * halving: e.g., when lim is 4, we still looked at item 2, so we
+ * have to make lim 3, then halve, obtaining 1, so that we will only
+ * look at item 3.
+ */
+void *
+bsearch(const void *key, const void *base0, size_t nmemb, size_t size,
+    int (*compar)(const void *, const void *))
+{
+	const char *base = base0;
+	int lim, cmp;
+	const void *p;
+
+	for (lim = nmemb; lim != 0; lim >>= 1) {
+		p = base + (lim >> 1) * size;
+		cmp = (*compar)(key, p);
+		if (cmp == 0)
+			return ((void *)p);
+		if (cmp > 0) {	/* key > p: move right */
+			base = (char *)p + size;
+			lim--;
+		} /* else move left */
+	}
+	return (NULL);
+}
+
 //==================================================================================
 
 size_t strlen( const char *string ) {
@@ -271,6 +308,50 @@ char *strstr( const char *string, const char *strCharSet ) {
 		string++;
 	}
 	return (char *)0;
+}
+
+/*
+ * Span the complement of string s2.
+ */
+size_t
+strcspn(const char *s1, const char *s2)
+{
+	const char *p, *spanp;
+	char c, sc;
+
+	/*
+	 * Stop as soon as we find any character from s2.  Note that there
+	 * must be a NUL in s2; it suffices to stop when we find that, too.
+	 */
+	for (p = s1;;) {
+		c = *p++;
+		spanp = s2;
+		do {
+			if ((sc = *spanp++) == c)
+				return (p - 1 - s1);
+		} while (sc != 0);
+	}
+	/* NOTREACHED */
+}
+
+/*
+ * Span the string s2 (skip characters that are in s2).
+ */
+size_t
+strspn(const char *s1, const char *s2)
+{
+	const char *p = s1, *spanp;
+	char c, sc;
+
+	/*
+	 * Skip any characters in s2, excluding the terminating \0.
+	 */
+cont:
+	c = *p++;
+	for (spanp = s2; (sc = *spanp++) != 0;)
+		if (sc == c)
+			goto cont;
+	return (p - 1 - s1);
 }
 
 int tolower( int c ) {

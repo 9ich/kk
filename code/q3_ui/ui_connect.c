@@ -80,33 +80,33 @@ displaydownloadinfo(const char *downloadName)
 	downloadCount = trap_Cvar_VariableValue("cl_downloadCount");
 	downloadTime = trap_Cvar_VariableValue("cl_downloadTime");
 
-	leftWidth = propstrwidth(dlText, 0, -1) * propstrsizescale(style);
-	width = propstrwidth(etaText, 0, -1) * propstrsizescale(style);
+	leftWidth = stringwidth(dlText, FONT1, 16, 0, -1);
+	width = stringwidth(etaText, FONT1, 16, 0, -1);
 	if(width > leftWidth)
 		leftWidth = width;
-	width = propstrwidth(xferText, 0, -1) * propstrsizescale(style);
+	width = stringwidth(xferText, FONT1, 16, 0, -1);
 	if(width > leftWidth)
 		leftWidth = width;
 	leftWidth += 16;
 
-	drawpropstr(8, 128, dlText, style, CWhite);
-	drawpropstr(8, 160, etaText, style, CWhite);
-	drawpropstr(8, 224, xferText, style, CWhite);
+	drawstring(centerleft(), 128, dlText, FONT1, 16, CText);
+	drawstring(centerleft(), 160, etaText, FONT1, 16, CText);
+	drawstring(centerleft(), 224, xferText, FONT1, 16, CText);
 
 	if(downloadSize > 0)
 		s = va("%s (%d%%)", downloadName, (int)((float)downloadCount * 100.0f / downloadSize));
 	else
 		s = downloadName;
 
-	drawpropstr(leftWidth, 128, s, style, CWhite);
+	//drawpropstr(leftWidth, 128, s, style, CWhite);
 
 	readablesize(dlSizeBuf, sizeof dlSizeBuf, downloadCount);
 	readablesize(totalSizeBuf, sizeof totalSizeBuf, downloadSize);
 
 	if(downloadCount < 4096 || !downloadTime){
-		drawpropstr(leftWidth, 160, "estimating", style, CWhite);
-		drawpropstr(leftWidth, 192,
-			    va("(%s of %s copied)", dlSizeBuf, totalSizeBuf), style, CWhite);
+		//drawpropstr(leftWidth, 160, "estimating", style, CWhite);
+		//drawpropstr(leftWidth, 192,
+		//	    va("(%s of %s copied)", dlSizeBuf, totalSizeBuf), style, CWhite);
 	}else{
 		if((uis.realtime - downloadTime) / 1000)
 			xferRate = downloadCount / ((uis.realtime - downloadTime) / 1000);
@@ -126,24 +126,27 @@ displaydownloadinfo(const char *downloadName)
 			printtime(dlTimeBuf, sizeof dlTimeBuf, n);
 			//(n - (((downloadCount/1024) * n) / (downloadSize/1024))) * 1000);
 
-			drawpropstr(leftWidth, 160,
-				    dlTimeBuf, style, CWhite);
-			drawpropstr(leftWidth, 192,
-				    va("(%s of %s copied)", dlSizeBuf, totalSizeBuf), style, CWhite);
+			//drawpropstr(leftWidth, 160,
+			//	    dlTimeBuf, style, CWhite);
+			//drawpropstr(leftWidth, 192,
+			//	    va("(%s of %s copied)", dlSizeBuf, totalSizeBuf), style, CWhite);
 		}else{
-			drawpropstr(leftWidth, 160,
-				    "estimating", style, CWhite);
+			//drawpropstr(leftWidth, 160,
+			//	    "estimating", style, CWhite);
 			if(downloadSize)
-				drawpropstr(leftWidth, 192,
-					    va("(%s of %s copied)", dlSizeBuf, totalSizeBuf), style, CWhite);
+				;
+				//drawpropstr(leftWidth, 192,
+				//	    va("(%s of %s copied)", dlSizeBuf, totalSizeBuf), style, CWhite);
 			else
-				drawpropstr(leftWidth, 192,
-					    va("(%s copied)", dlSizeBuf), style, CWhite);
+				;
+				//drawpropstr(leftWidth, 192,
+				//	    va("(%s copied)", dlSizeBuf), style, CWhite);
 		}
 
 		if(xferRate)
-			drawpropstr(leftWidth, 224,
-				    va("%s/Sec", xferRateBuf), style, CWhite);
+			;
+			//drawpropstr(leftWidth, 224,
+			//	    va("%s/Sec", xferRateBuf), style, CWhite);
 	}
 }
 
@@ -166,12 +169,14 @@ drawconnectscreen(qboolean overlay)
 
 	cacheui();
 
+
+
 	style = UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW;
 	bigstyle = UI_BIGFONT|UI_CENTER|UI_DROPSHADOW;
 
 	if(!overlay){
 		setcolour(CWhite);
-		drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
+		drawpic(0, 0, screenwidth(), screenheight(), uis.menuBackShader);
 	}
 
 	// see what information we should display
@@ -181,22 +186,23 @@ drawconnectscreen(qboolean overlay)
 	if(trap_GetConfigString(CS_SERVERINFO, info, sizeof(info))){
 		Com_sprintf(s, sizeof s, "Loading %s",
 		   Info_ValueForKey(info, "mapname"));
-		drawpropstr(320, 16, s, bigstyle, CWhite);
+		drawstring(screenwidth()/2, 16, s, FONT1, 32, CWhite);
 	}
 
+	setalign("center");
+
 	Com_sprintf(s, sizeof s, "Connecting to %s", cstate.servername);
-	drawpropstr(320, 64, s, style, CText);
-	drawpropstr(320, 96, "Press ESC to abort", style, CText);
+	drawstring(screenwidth()/2, 64, s, FONT1, 32, CText);
+	drawstring(screenwidth()/2, 96, "Press ESC to abort", FONT1, 32, CText);
 
 	// display global MOTD at bottom
-	drawpropstr(SCREEN_WIDTH/2, SCREEN_HEIGHT-32,
-	   Info_ValueForKey(cstate.updateInfoString, "motd"),
-	   style, CText);
+	drawmultiline(centerleft(), screenheight()-32, centerright(),
+	   Info_ValueForKey(cstate.updateInfoString, "motd"), FONT2, 16, CText);
 
 	// print any server info (server full, bad version, etc)
 	if(cstate.connState < CA_CONNECTED)
-		drawpropstrwrapped(320, 192, 630, 20, cstate.messageString,
-		   style, CText);
+		drawmultiline(centerleft(), 192, centerright(), cstate.messageString,
+		   FONT2, 16, CText);
 
 	// display password field
 	if(passwordNeeded){
@@ -235,7 +241,9 @@ drawconnectscreen(qboolean overlay)
 		return;
 	}
 
-	drawpropstr(320, 128, s, style, CWhite);
+	drawstring(screenwidth()/2, 128, s, FONT1, 32, CText);
+
+	setalign("");
 
 	// password required / connection rejected information goes here
 }

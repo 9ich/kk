@@ -147,16 +147,10 @@ charevent(int ch)
 void
 mouseevent(int dx, int dy)
 {
-	uis.cursorx += dx;
-	if(uis.cursorx < -uis.bias)
-		uis.cursorx = -uis.bias;
-	else if(uis.cursorx > SCREEN_WIDTH+uis.bias)
-		uis.cursorx = SCREEN_WIDTH+uis.bias;
-	uis.cursory += dy;
-	if(uis.cursory < 0)
-		uis.cursory = 0;
-	else if(uis.cursory > SCREEN_HEIGHT)
-		uis.cursory = SCREEN_HEIGHT;
+	uis.cursorx += dx * SCREEN_HEIGHT/uis.glconfig.vidHeight;
+	uis.cursory += dy * SCREEN_HEIGHT/uis.glconfig.vidHeight;
+	uis.cursorx = Com_Clamp(0, screenwidth(), uis.cursorx);
+	uis.cursory = Com_Clamp(0, screenheight(), uis.cursory);
 }
 
 void
@@ -218,7 +212,7 @@ drawfps(void)
 	enum {FRAMES = 4};
 	static int prevtimes[FRAMES], index, previous;
 	int i, total, t, frametime, fps;
-	char s[16];
+	char *s;
 
 	t = trap_Milliseconds();
 	frametime = t - previous;
@@ -232,8 +226,10 @@ drawfps(void)
 		if(total <= 0)
 			total = 1;
 		fps = 1000 * FRAMES / total;
-		Com_sprintf(s, sizeof s, "%ifps", fps);
-		drawstr(638, 2, s, UI_RIGHT|UI_SMALLFONT, CWhite);
+		setalign("right");
+		s = va("%i", fps);
+		drawstring(screenwidth() - 2, 2, s, FONT4, 16, CText);
+		setalign("");
 	}
 }
 
@@ -279,16 +275,18 @@ refresh(int realtime)
 		uis.fullscreen = qfalse;
 		return;
 	}
+
+	drawlibbeginframe(realtime, uis.glconfig.vidWidth, uis.glconfig.vidHeight);
+
 	if(uis.firstdraw){
-		mouseevent(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+		uis.cursorx = 0.5f*screenwidth();
+		uis.cursory = 0.5f*screenheight();
 		uis.firstdraw = qfalse;
 	}
 	uis.fullscreen = qfalse;
 
 	updatecvars();
 	clearfocuslist();
-
-	drawlibbeginframe(realtime, uis.xscale, uis.yscale, uis.bias);
 
 	if(uis.sp >= 0)
 		uis.stk[uis.sp]();
@@ -298,28 +296,33 @@ refresh(int realtime)
 
 	// draw cursor
 	setcolour(nil);
-	drawpic(uis.cursorx-16, uis.cursory-16, 32, 32, uis.cursor);
+	setalign("mid center");
+	drawpic(uis.cursorx, uis.cursory, 32, 32, uis.cursor);
 
-	if(uis.debug)
+	setalign("topleft");
+	if(1 || uis.debug)
 		// cursor coordinates
-		drawstr(0, 0, va("(%d,%d)", uis.cursorx, uis.cursory),
-		   UI_LEFT|UI_SMALLFONT, CMagenta);
+		drawstring(0, 0, va("(%.2f,%.2f)", uis.cursorx, uis.cursory),
+		   FONT2, 16, CMagenta);
+	setalign("");
 
 	// finish the frame
 	if(!uis.keys[K_MOUSE1])
 		Q_strncpyz(uis.active, "", sizeof uis.active);
 	memset(uis.text, 0, TEXTLEN);
-	memset(uis.keys+'0', 0, '0'+'9');
-	memset(uis.keys+'A', 0, 'A'+'Z');
-	memset(uis.keyshadow+'0', 0, '0'+'9');
-	memset(uis.keyshadow+'A', 0, 'A'+'Z');
+	memset(uis.keys+'0', 0, '9'-'0');
+	memset(uis.keys+'A', 0, 'Z'-'A');
+	memset(uis.keyshadow+'0', 0, '9'-'0');
+	memset(uis.keyshadow+'A', 0, 'Z'-'A');
 	uis.texti = 0;
 	cyclefocus();
 }
 
 qboolean
-mouseover(int x, int y, int w, int h)
+mouseover(float x, float y, float w, float h)
 {
+	aligncoords(&x, &y, &w, &h);
+
 	if(uis.cursorx < x || uis.cursory < y ||
 	   uis.cursorx > x+w || uis.cursory > y+h)
 		return qfalse;

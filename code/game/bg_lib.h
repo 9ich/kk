@@ -79,6 +79,8 @@ typedef char *  va_list;
 // Misc functions
 typedef int cmp_t(const void *, const void *);
 void qsort(void *a, size_t n, size_t es, cmp_t *cmp);
+void *bsearch(const void *key, const void *base0, size_t nmemb, size_t size, 
+   int (*compar)(const void *, const void *));
 void	srand( unsigned seed );
 int		rand( void );
 
@@ -91,6 +93,8 @@ char *strchr( const char *string, int c );
 char *strrchr(const char *string, int c);
 char *strstr( const char *string, const char *strCharSet );
 char *strncpy( char *strDest, const char *strSource, size_t count );
+size_t strcspn( const char * str1, const char * str2 );
+size_t strspn( const char * str1, const char * str2 );
 int tolower( int c );
 int toupper( int c );
 
