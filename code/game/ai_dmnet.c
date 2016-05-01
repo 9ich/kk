@@ -1751,11 +1751,11 @@ AINode_Seek_LTG(bot_state_t *bs)
 		if(bs->ltgtype == LTG_DEFENDKEYAREA) range = 400;
 		else range = 150;
 #ifdef CTF
-		if(gametype == GT_CTF)
+		if(gametype == GT_CTF){
 			//if carrying a flag the bot shouldn't be distracted too much
 			if(BotCTFCarryingFlag(bs))
 				range = 50;
-
+		}
 #endif	//CTF
 #ifdef MISSIONPACK
 		else if(gametype == GT_1FCTF){
@@ -2251,11 +2251,11 @@ AINode_Battle_Retreat(bot_state_t *bs)
 		bs->check_time = FloatTime() + 1;
 		range = 150;
 #ifdef CTF
-		if(gametype == GT_CTF)
+		if(gametype == GT_CTF){
 			//if carrying a flag the bot shouldn't be distracted too much
 			if(BotCTFCarryingFlag(bs))
 				range = 50;
-
+		}
 #endif	//CTF
 #ifdef MISSIONPACK
 		else if(gametype == GT_1FCTF){
