@@ -1131,8 +1131,7 @@ addthrustflame(centity_t *cent, refEntity_t *ship, float factor, char *tag, qboo
 	float r, g, b, a;
 
 	memset(&flame, 0, sizeof(flame));
-	flame.hModel = trap_R_RegisterModel("models/players/thrust.md3");
-	flame.customShader = trap_R_RegisterShader("thrustcone");
+	flame.hModel = cgs.media.thrustFlameModel;
 	veccpy(ship->lightingOrigin, flame.lightingOrigin);
 	flame.nonNormalizedAxes = qtrue;
 

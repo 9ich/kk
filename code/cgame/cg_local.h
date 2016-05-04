@@ -667,6 +667,8 @@ typedef struct
 	qhandle_t	harvesterNeutralModel;
 #endif
 
+	qhandle_t	thrustFlameModel;
+
 	qhandle_t	armorModel;
 	qhandle_t	armorIcon;
 

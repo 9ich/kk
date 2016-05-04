@@ -551,8 +551,6 @@ CG_RegisterSounds(void)
 	char name[MAX_QPATH];
 	const char *soundName;
 
-	// voice commands
-
 	cgs.media.oneMinuteSound = trap_S_RegisterSound("sound/feedback/1_minute.wav", qtrue);
 	cgs.media.fiveMinuteSound = trap_S_RegisterSound("sound/feedback/5_minute.wav", qtrue);
 	cgs.media.suddenDeathSound = trap_S_RegisterSound("sound/feedback/sudden_death.wav", qtrue);
@@ -924,6 +922,8 @@ CG_RegisterGraphics(void)
 		cgs.media.blueKamikazeShader = trap_R_RegisterShader("models/weaphits/kamikblu");
 #endif
 	}
+
+	cgs.media.thrustFlameModel = trap_R_RegisterModel("models/players/thrust.md3");
 
 	cgs.media.armorModel = trap_R_RegisterModel("models/powerups/armor/armor_yel.md3");
 	cgs.media.armorIcon = trap_R_RegisterShaderNoMip("icons/iconr_yellow");
