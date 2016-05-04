@@ -315,7 +315,7 @@ static cvarTable_t cvarTable[] = {
 	{&cg_smallFont, "ui_smallFont", "0.25", CVAR_ARCHIVE},
 	{&cg_bigFont, "ui_bigFont", "0.4", CVAR_ARCHIVE},
 	{&cg_oldRail, "cg_oldRail", "1", CVAR_ARCHIVE},
-	{&cg_oldRocket, "cg_oldRocket", "1", CVAR_ARCHIVE},
+	{&cg_oldRocket, "cg_oldRocket", "0", CVAR_ARCHIVE},
 	{&cg_oldPlasma, "cg_oldPlasma", "1", CVAR_ARCHIVE},
 	{&cg_trueLightning, "cg_trueLightning", "0.0", CVAR_ARCHIVE}
 //	{ &cg_pmove_fixed, "cg_pmove_fixed", "0", CVAR_USERINFO | CVAR_ARCHIVE }
