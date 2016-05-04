@@ -661,7 +661,7 @@ registerweap(int weaponNum)
 		weapinfo->missilemodel = trap_R_RegisterModel("models/ammo/rocket/rocket.md3");
 		weapinfo->missileTrailFunc = grappletrail;
 		weapinfo->missilelight = 200;
-		MAKERGB(weapinfo->missilelightcolor, 1, 0.75f, 0);
+		MAKERGB(weapinfo->missilelightcolor, 0.9f*0.2f, 0.4f*0.2f, 0.0f);
 		weapinfo->rdysound = trap_S_RegisterSound("sound/weapons/melee/fsthum.wav", qfalse);
 		weapinfo->firingsound = trap_S_RegisterSound("sound/weapons/melee/fstrun.wav", qfalse);
 		cgs.media.lightningShader = trap_R_RegisterShader("lightningBoltNew");
@@ -702,8 +702,8 @@ registerweap(int weaponNum)
 		weapinfo->trailtime = 2000;
 		weapinfo->trailradius = 64;
 
-		MAKERGB(weapinfo->missilelightcolor, 1, 0.75f, 0);
-		MAKERGB(weapinfo->flashcolor, 1, 0.75f, 0);
+		MAKERGB(weapinfo->missilelightcolor, 0.9f*0.4f, 0.45f*0.4f, 0.0f);
+		MAKERGB(weapinfo->flashcolor, 0.9f, 0.4f, 0.0f);
 
 		weapinfo->flashsnd[0] = trap_S_RegisterSound("sound/weapons/rocket/rocklf1a.wav", qfalse);
 		cgs.media.rocketExplosionShader = trap_R_RegisterShader("rocketExplosion");
@@ -1683,10 +1683,10 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		radius = 64;
 		light = 300;
 		isSprite = qtrue;
-		duration = 1000;
-		lightcolor[0] = 1;
-		lightcolor[1] = 0.75;
-		lightcolor[2] = 0.0;
+		duration = 500;
+		lightcolor[0] = 0.9f;
+		lightcolor[1] = 0.45f;
+		lightcolor[2] = 0.0f;
 		if(cg_oldRocket.integer == 0){
 			// explosion sprite animation
 			vecmad(origin, 24, dir, sprOrg);
