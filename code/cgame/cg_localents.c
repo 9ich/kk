@@ -226,14 +226,6 @@ CG_ReflectVelocity(localEntity_t *le, trace_t *trace)
 
 	veccpy(trace->endpos, le->pos.trBase);
 	le->pos.trTime = cg.time;
-
-	// check for stop, making sure that even on low FPS systems it doesn't bobble
-	if(trace->allsolid ||
-	   (trace->plane.normal[2] > 0 &&
-	    (le->pos.trDelta[2] < 40 || le->pos.trDelta[2] < -cg.frametime * le->pos.trDelta[2])))
-		le->pos.trType = TR_STATIONARY;
-	else{
-	}
 }
 
 /*
