@@ -596,12 +596,11 @@ itemdrop(gentity_t *ent, gitem_t *item, float angle)
 	vec3_t angles;
 
 	veccpy(ent->s.apos.trBase, angles);
-	angles[YAW] += angle;
-	angles[PITCH] = 0;	// always forward
 
 	anglevecs(angles, velocity, nil, nil);
 	vecmul(velocity, 150, velocity);
-	velocity[2] += 200 + crandom() * 50;
+	if(ent->client != nil)
+		vecadd(velocity, ent->client->ps.velocity, velocity);
 
 	return itemlaunch(item, ent->s.pos.trBase, velocity);
 }
