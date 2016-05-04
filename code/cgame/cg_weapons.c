@@ -381,7 +381,7 @@ CG_RocketTrail(centity_t *ent, const weaponInfo_t *wi)
 	up[1] = 0;
 	up[2] = 0;
 
-	step = 50;
+	step = 25;
 
 	es = &ent->currstate;
 	starttime = ent->trailtime;
@@ -412,7 +412,7 @@ CG_RocketTrail(centity_t *ent, const weaponInfo_t *wi)
 
 		smoke = smokepuff(lastPos, up,
 				     wi->trailradius,
-				     1, 1, 1, 0.33f,
+				     1, 1, 1, 0.20f,
 				     wi->trailtime,
 				     t,
 				     0,
