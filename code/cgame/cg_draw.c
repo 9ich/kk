@@ -112,9 +112,10 @@ drawdmgindicator(void)
 	vecsub(cg.snap->ps.origin, cg_entities[attacker].lerporigin, dir);
 	vecnorm(dir);
 
-	x = screenwidth()/2 - w/2;
-	y = screenheight()/2 - h/2;
+	x = screenwidth()/2;
+	y = screenheight()/2;
 
+	setalign("midcenter");
 	d = vecdot(cg.refdef.viewaxis[0], dir);
 	if(d < -thresh)	// in front of us
 		drawpic(x, y - yofs, w, h, cgs.media.hurtForwardShader);
@@ -132,6 +133,8 @@ drawdmgindicator(void)
 		drawpic(x, y - yofs, w, h, cgs.media.hurtUpShader);
 	else if(d > thresh)	// above us
 		drawpic(x, y + yofs, w, -h, cgs.media.hurtUpShader);
+
+	setalign("");
 }
 
 /*
