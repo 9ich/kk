@@ -1113,7 +1113,7 @@ static char *frontthrusttags[] = {
 	"tag_thrustFBR"
 };
 
-#define PLUME_TIME	(1000/40)
+#define PLUME_TIME	(1000/30.0f)
 
 enum
 {
@@ -1126,7 +1126,7 @@ enum
 static void
 addthrustflame(centity_t *cent, refEntity_t *ship, float factor, char *tag, qboolean nothirdperson)
 {
-	vec3_t angles, plumevel;
+	vec3_t angles, plumepos;
 	refEntity_t flame;
 	float r, g, b, a;
 
@@ -1136,14 +1136,9 @@ addthrustflame(centity_t *cent, refEntity_t *ship, float factor, char *tag, qboo
 	veccpy(ship->lightingOrigin, flame.lightingOrigin);
 	flame.nonNormalizedAxes = qtrue;
 
-	if(nothirdperson  && !cg_thirdPerson.integer &&
+	if(nothirdperson && !cg_thirdPerson.integer &&
 	   cent->currstate.number == cg.snap->ps.clientNum)
 		flame.renderfx = RF_THIRD_PERSON;	// only show in mirrors
-
-	r = 0.9f;
-	g = 0.4f;
-	b = 0.0f;
-	a = 0.1f;
 
 	vecclear(angles);
 	angles[ROLL] = crandom() * 7777;
@@ -1153,17 +1148,20 @@ addthrustflame(centity_t *cent, refEntity_t *ship, float factor, char *tag, qboo
 	vecmul(flame.axis[1], factor, flame.axis[1]);
 	vecmul(flame.axis[2], factor, flame.axis[2]);
 	trap_R_AddRefEntityToScene(&flame);
-	trap_R_AddLightToScene(flame.origin, 200, r*0.2f, g*0.2f, b*0.2f);
 
-	if(nothirdperson  && !cg_thirdPerson.integer &&
+	r = 0.9f;
+	g = 0.4f;
+	b = 0.0f;
+	a = 0.1f;
+	trap_R_AddLightToScene(flame.origin, 150+crandom()*50, r*0.2f, g*0.2f, b*0.2f);
+
+	if(nothirdperson && !cg_thirdPerson.integer &&
 	   cent->currstate.number == cg.snap->ps.clientNum)
 		return;
 
 	if(cent->lastplume + PLUME_TIME < cg.time){
-		vecset(plumevel, crandom(), crandom(), crandom());
-		vecmul(plumevel, 4, plumevel);
-		smokepuff(flame.origin, plumevel, 16, r, g, b, a*factor,
-		   2000, cg.time, 0, 0, cgs.media.smokePuffShader);
+		vecmad(flame.origin, 10, flame.axis[0], plumepos);
+		CG_ParticleThrustPlume(cent, plumepos, flame.axis[0]);
 	}
 }
 

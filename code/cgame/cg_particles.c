@@ -1781,7 +1781,7 @@ CG_ParticleSparks(vec3_t org, vec3_t vel, int duration, float x, float y, float 
 }
 
 void
-CG_ParticleDust(centity_t *cent, vec3_t origin, vec3_t dir)
+CG_ParticleThrustPlume(centity_t *cent, vec3_t origin, vec3_t dir)
 {
 	float length;
 	float dist;
@@ -1798,7 +1798,7 @@ CG_ParticleDust(centity_t *cent, vec3_t origin, vec3_t dir)
 	vectoangles(dir, angles);
 	anglevecs(angles, forward, nil, nil);
 
-	crittersize = LARGESIZE;
+	crittersize = 6;
 
 	if(length)
 		dist = length / crittersize;
@@ -1820,55 +1820,45 @@ CG_ParticleDust(centity_t *cent, vec3_t origin, vec3_t dir)
 		active_particles = p;
 
 		p->time = cg.time;
-		p->alpha = 5.0;
+		p->alpha = 2.0;
 		p->alphavel = 0;
 		p->roll = 0;
 
 		p->pshader = cgs.media.smokePuffShader;
 
 		// RF, stay around for long enough to expand and dissipate naturally
-		if(length)
-			p->endtime = cg.time + 4500 + (crandom() * 3500);
-		else
-			p->endtime = cg.time + 750 + (crandom() * 500);
+		p->endtime = cg.time + 1500 + (crandom() * 500);
 
 		p->startfade = cg.time;
 
-		p->width = LARGESIZE;
-		p->height = LARGESIZE;
+		p->width = NORMALSIZE;
+		p->height = NORMALSIZE;
 
-		// RF, expand while falling
-		p->endheight = LARGESIZE*3.0;
-		p->endwidth = LARGESIZE*3.0;
-
-		if(!length){
-			p->width *= 0.2f;
-			p->height *= 0.2f;
-
-			p->endheight = NORMALSIZE;
-			p->endwidth = NORMALSIZE;
-		}
+		// RF, expand while floating
+		p->endheight = NORMALSIZE*4.0;
+		p->endwidth = NORMALSIZE*4.0;
 
 		p->type = P_SMOKE;
 
 		veccpy(point, p->org);
 
-		p->vel[0] = crandom()*6;
-		p->vel[1] = crandom()*6;
-		p->vel[2] = random()*20;
+		VectorNegate(dir, dir);
+		vecmul(dir, 16, p->vel);
+		p->vel[0] += crandom()*3;
+		p->vel[1] += crandom()*3;
+		p->vel[2] += crandom()*3;
 
-		// RF, add some gravity/randomness
+		// RF, add some randomness
 		p->accel[0] = crandom()*3;
 		p->accel[1] = crandom()*3;
-		p->accel[2] = -PARTICLE_GRAVITY*0.4;
+		p->accel[2] = crandom()*3;
 
-		vecclear(p->accel);
+		p->rotate = qtrue;
 
-		p->rotate = qfalse;
+		p->roll = Com_Sign(crandom());
+		p->accumroll = crandom()*180;
 
-		p->roll = rand()%179;
-
-		p->alpha = 0.75;
+		p->alpha = 0.2f;
 	}
 }
 
