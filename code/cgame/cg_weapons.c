@@ -1690,9 +1690,9 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		if(cg_oldRocket.integer == 0){
 			// explosion sprite animation
 			vecmad(origin, 24, dir, sprOrg);
-			vecmul(dir, 64, sprVel);
+			vecmul(dir, 20, sprVel);
 
-			CG_ParticleExplosion("explode1", sprOrg, sprVel, 1400, 20, 30);
+			CG_ParticleExplosion("explode1", sprOrg, sprVel, 1400, 60, 200);
 		}
 		break;
 	case WP_RAILGUN:
