@@ -1383,7 +1383,8 @@ CG_PlayerFloatSprite(centity_t *cent, qhandle_t shader)
 
 	memset(&ent, 0, sizeof(ent));
 	veccpy(cent->lerporigin, ent.origin);
-	ent.origin[2] += 48;
+	// offset upward relative to viewer
+	vecmad(ent.origin, 38, cg.refdef.viewaxis[2], ent.origin);
 	ent.reType = RT_SPRITE;
 	ent.customShader = shader;
 	ent.radius = 10;
