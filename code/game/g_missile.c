@@ -657,7 +657,7 @@ fire_rocket(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->splashradius = 120;
 	bolt->meansofdeath = MOD_ROCKET;
 	bolt->splashmeansofdeath = MOD_ROCKET_SPLASH;
-	bolt->clipmask = CONTENTS_TRIGGER;
+	bolt->clipmask = MASK_SHOT;
 	bolt->target_ent = nil;
 
 	bolt->s.pos.trType = TR_LINEAR;
