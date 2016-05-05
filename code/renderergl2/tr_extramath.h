@@ -41,16 +41,6 @@ void Mat4Ortho( float left, float right, float bottom, float top, float znear, f
 void Mat4View(vec3_t axes[3], vec3_t origin, mat4_t out);
 void Mat4SimpleInverse( const mat4_t in, mat4_t out);
 
-#define VectorCopy2(a,b)		((b)[0]=(a)[0],(b)[1]=(a)[1])
-#define VectorSet2(v,x,y)       ((v)[0]=(x),(v)[1]=(y));
-
-#define VectorCopy4(a,b)		((b)[0]=(a)[0],(b)[1]=(a)[1],(b)[2]=(a)[2],(b)[3]=(a)[3])
-#define VectorSet4(v,x,y,z,w)	((v)[0]=(x),(v)[1]=(y),(v)[2]=(z),(v)[3]=(w))
-#define DotProduct4(a,b)        ((a)[0]*(b)[0] + (a)[1]*(b)[1] + (a)[2]*(b)[2] + (a)[3]*(b)[3])
-#define VectorScale4(a,b,c)     ((c)[0]=(a)[0]*(b),(c)[1]=(a)[1]*(b),(c)[2]=(a)[2]*(b),(c)[3]=(a)[3]*(b))
-
-#define VectorCopy5(a,b)		((b)[0]=(a)[0],(b)[1]=(a)[1],(b)[2]=(a)[2],(b)[3]=(a)[3],(b)[4]=(a)[4])
-
 #define OffsetByteToFloat(a)    ((float)(a) * 1.0f/127.5f - 1.0f)
 #define FloatToOffsetByte(a)    (byte)((a) * 127.5f + 128.0f)
 #define ByteToFloat(a)          ((float)(a) * 1.0f/255.0f)

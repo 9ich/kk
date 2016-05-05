@@ -1148,12 +1148,6 @@ addthrustflame(centity_t *cent, refEntity_t *ship, float factor, char *tag, qboo
 	vecmul(flame.axis[2], factor, flame.axis[2]);
 	trap_R_AddRefEntityToScene(&flame);
 
-	r = 0.9f;
-	g = 0.4f;
-	b = 0.0f;
-	a = 0.1f;
-	trap_R_AddLightToScene(flame.origin, 150+crandom()*50, r*0.2f, g*0.2f, b*0.2f);
-
 	if(nothirdperson && !cg_thirdPerson.integer &&
 	   cent->currstate.number == cg.snap->ps.clientNum)
 		return;
@@ -1165,17 +1159,48 @@ addthrustflame(centity_t *cent, refEntity_t *ship, float factor, char *tag, qboo
 }
 
 static void
+calcthrusterlight(centity_t *cent, vec4_t color)
+{
+	if(cent->flicker.interval == 0)
+		cent->flicker.interval = (1000/15.0f);
+
+	if(cent->currstate.forwardmove == 0 &&
+	   cent->currstate.rightmove == 0 &&
+	   cent->currstate.upmove == 0){
+		// initial fade-in
+		VectorSet4(cent->flicker.a, 0, 0, 0, 1.0f);
+		VectorSet4(cent->flicker.b, 0.5f*(0.9f + 0.1*crandom()),
+		   0.5f*(0.4f + 0.05f*crandom()), 0.005f*crandom(), 0.0f);
+		cent->flicker.time = cg.time;
+	}else if(cent->flicker.time + cent->flicker.interval < cg.time){
+		// begin transition to next colour
+		Vector4Copy(cent->flicker.b, cent->flicker.a);
+		VectorSet4(cent->flicker.b, 0.5f*(0.9f + 0.1*crandom()),
+		   0.5f*(0.4f + 0.05f*crandom()), 0.005f*crandom(),
+		   1.0f+0.1f*crandom());
+		cent->flicker.time = cg.time;
+	}
+
+	lerpcolour(cent->flicker.a, cent->flicker.b, color,
+	   (float)(cg.time - cent->flicker.time)/cent->flicker.interval);
+}
+
+static void
 CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 {
 	int i;
 	float forwardmove;
 	int dirs;
 	sfxHandle_t thrustsound, thrustbacksound, idlesound;
+	vec4_t clr;
+	vec3_t v, forward, right, up;
+
+	calcthrusterlight(cent, clr);
+	anglevecs(cent->lerpangles, forward, right, up);
 
 	forwardmove = cent->currstate.forwardmove / 127.0f;
 
 	// rear thrusters
-
 	for(i = 0; i < ARRAY_LEN(rearthrusttags); i++){
 		if(forwardmove <= 0)
 			break;
@@ -1183,7 +1208,6 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 	}
 
 	// forward thrusters
-
 	forwardmove = -forwardmove;
 
 	for(i = 0; i < ARRAY_LEN(frontthrusttags); i++){
@@ -1247,6 +1271,29 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 
 	if(cent->lastplume + PLUME_TIME < cg.time)
 		cent->lastplume = cg.time;
+
+	// add the lights
+	if(cent->currstate.forwardmove > 0){
+		vecmad(cent->lerporigin, -40, forward, v);
+		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
+	}else if(cent->currstate.forwardmove < 0){
+		vecmad(cent->lerporigin, 40, forward, v);
+		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
+	}
+	if(cent->currstate.rightmove > 0){
+		vecmad(cent->lerporigin, -36, right, v);
+		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
+	}else if(cent->currstate.rightmove < 0){
+		vecmad(cent->lerporigin, 36, right, v);
+		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
+	}
+	if(cent->currstate.upmove > 0){
+		vecmad(cent->lerporigin, -36, up, v);
+		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
+	}else if(cent->currstate.upmove < 0){
+		vecmad(cent->lerporigin, 36, up, v);
+		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
+	}
 }
 
 #ifdef MISSIONPACK
@@ -1317,6 +1364,27 @@ CG_PlayerTokens(centity_t *cent, int renderfx)
 
 #endif
 
+static void
+addquadlight(centity_t *cent)
+{
+	vec4_t clr;
+
+	if(cent->quadflicker.interval == 0)
+		cent->quadflicker.interval = (1000/12.0f);
+
+	if(cent->quadflicker.time + cent->quadflicker.interval < cg.time){
+		// begin transition to next colour
+		Vector4Copy(cent->quadflicker.b, cent->quadflicker.a);
+		VectorSet4(cent->quadflicker.b, 0.5f*(0.2f + 0.01f*crandom()),
+		   0.5f*(0.2f + 0.01f*crandom()), 1.0f, 1.0f+0.2f*crandom());
+		cent->quadflicker.time = cg.time;
+	}
+
+	lerpcolour(cent->quadflicker.a, cent->quadflicker.b, clr,
+	   (float)(cg.time - cent->quadflicker.time)/cent->quadflicker.interval);
+	trap_R_AddLightToScene(cent->lerporigin, 300*clr[3], clr[0], clr[1], clr[2]);
+}
+
 /*
 ===============
 CG_PlayerPowerups
@@ -1333,7 +1401,7 @@ CG_PlayerPowerups(centity_t *cent, refEntity_t *torso)
 
 	// quad gives a dlight
 	if(powerups & (1 << PW_QUAD))
-		trap_R_AddLightToScene(cent->lerporigin, 200 + (rand()&31), 0.2f, 0.2f, 1);
+		addquadlight(cent);
 
 	// flight plays a looped sound
 	if(powerups & (1 << PW_FLIGHT))

@@ -105,6 +105,15 @@ typedef enum
 	IMPACTSOUND_FLESH
 } impactSound_t;
 
+// smooth lighting flicker
+typedef struct
+{
+	vec4_t	a;		// lerp src
+	vec4_t	b;		// lerp dst
+	int	time;		// time current phase began
+	float	interval;	// flicker rate
+} flicker_t;
+
 //=================================================
 
 // player entities need to track more information
@@ -170,6 +179,11 @@ typedef struct centity_s
 	int		dusttrailtime;
 	int		misctime;
 
+	int		lastplume;	// last thruster plume time (FIXME: merge into trailtime?)
+
+	flicker_t	flicker;	// player thrusters, ET_ROCKET light, etc.
+	flicker_t	quadflicker;	// player ent holding quad
+
 	int		snapshottime;	// last time this entity was found in a snapshot
 
 	playerEntity_t	pe;
@@ -187,8 +201,6 @@ typedef struct centity_s
 	// exact interpolated position of entity on this frame
 	vec3_t		lerporigin;
 	vec3_t		lerpangles;
-
-	int		lastplume;	// last thruster plume time
 } centity_t;
 
 //======================================================================
