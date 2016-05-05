@@ -1708,7 +1708,6 @@ static void
 CG_DrawAmmoWarning(void)
 {
 	const char *s;
-	int w;
 
 	if(cg_drawAmmoWarning.integer == 0)
 		return;
@@ -1719,9 +1718,10 @@ CG_DrawAmmoWarning(void)
 	if(cg.lowAmmoWarning == 2)
 		s = "OUT OF AMMO";
 	else
-		s = "LOW AMMO WARNING";
-	w = drawstrlen(s) * BIGCHAR_WIDTH;
-	drawbigstr(320 - w / 2, 64, s, 1.0F);
+		s = "LOW AMMO";
+	pushalign("midcenter");
+	drawbigstr(0.5f*screenwidth(), screenheight()-100, s, 0.8f);
+	popalign(1);
 }
 
 #ifdef MISSIONPACK

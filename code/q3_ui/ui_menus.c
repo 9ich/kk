@@ -2,7 +2,8 @@
 
 enum
 {
-	NRES	= 128
+	NRES	= 128,
+	MARGIN	= 30
 };
 
 static char *fallbackres[] = {
@@ -146,10 +147,10 @@ optionsbuttons(void)
 
 	focusorder(".o.v .o.s .o.i .o.d .o.bk");
 
-	setalign("right");
-	x = 160;
+	setalign("left");
+	x = MARGIN;
 	y = 160;
-	if(button(".o.v", 160, y, "Video")){
+	if(button(".o.v", x, y, "Video")){
 		pop();
 		vo.initialized = qfalse;
 		push(videomenu);
@@ -852,26 +853,27 @@ errormenu(void)
 void
 mainmenu(void)
 {
-	const float spc = 35;
-	float y;
+	float spc = 35;
+	float x, y;
 
 
 	uis.fullscreen = qtrue;
 	menubackground();
 
 	focusorder(".mm.mp .mm.opt .mm.q");
-	defaultfocus(".mm.sp");
+	defaultfocus(".mm.mp");
 
-	setalign("center");
+	setalign("left");
 
+	x = MARGIN;
 	y = 190;
-	if(button(".mm.mp", screenwidth()/2, y, "Multiplayer"))
+	if(button(".mm.mp", x, y, "Multiplayer"))
 		push(placeholder);
 	y += spc;
-	if(button(".mm.opt", screenwidth()/2, y, "Options"))
+	if(button(".mm.opt", x, y, "Options"))
 		push(videomenu);
 	y += spc;
-	if(button(".mm.q", screenwidth()/2, y, "Quit"))
+	if(button(".mm.q", x, y, "Quit"))
 		push(quitmenu);
 }
 
@@ -879,26 +881,27 @@ void
 ingamemenu(void)
 {
 	const float spc = 35;
-	float y;
+	float x, y;
 
 	focusorder(".im.r .im.opt .im.qm .im.q");
 	defaultfocus(".im.r");
 
-	setalign("center");
+	setalign("left");
 
+	x = MARGIN;
 	y = 180;
-	if(keydown(K_ESCAPE) || button(".im.r", screenwidth()/2, y, "Resume")){
+	if(keydown(K_ESCAPE) || button(".im.r", x, y, "Resume")){
 		pop();
 		trap_Cvar_Set("cl_paused", "0");
 	}
 	y += spc;
-	if(button(".im.opt", screenwidth()/2, y, "Options"))
+	if(button(".im.opt", x, y, "Options"))
 		push(videomenu);
 	y += spc;
-	if(button(".im.qm", screenwidth()/2, y, "Quit to menu"))
+	if(button(".im.qm", x, y, "Quit to menu"))
 		trap_Cmd_ExecuteText(EXEC_APPEND, "disconnect\n");
 	y += spc;
-	if(button(".im.q", screenwidth()/2, y, "Quit"))
+	if(button(".im.q", x, y, "Quit"))
 		push(quitmenu);
 
 	setalign("");
