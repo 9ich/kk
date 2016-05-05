@@ -648,7 +648,7 @@ registerweap(int weaponNum)
 		weapinfo->firingsound = trap_S_RegisterSound("sound/weapons/lightning/lg_hum.wav", qfalse);
 
 		weapinfo->flashsnd[0] = trap_S_RegisterSound("sound/weapons/lightning/lg_fire.wav", qfalse);
-		cgs.media.lightningShader = trap_R_RegisterShader("lightningBoltNew");
+		cgs.media.lightningShader = trap_R_RegisterShader("lightningBolt");
 		cgs.media.lightningExplosionModel = trap_R_RegisterModel("models/weaphits/crackle.md3");
 		cgs.media.sfx_lghit1 = trap_S_RegisterSound("sound/weapons/lightning/lg_hit.wav", qfalse);
 		cgs.media.sfx_lghit2 = trap_S_RegisterSound("sound/weapons/lightning/lg_hit2.wav", qfalse);
@@ -664,7 +664,7 @@ registerweap(int weaponNum)
 		MAKERGB(weapinfo->missilelightcolor, 0.9f*0.2f, 0.4f*0.2f, 0.0f);
 		weapinfo->rdysound = trap_S_RegisterSound("sound/weapons/melee/fsthum.wav", qfalse);
 		weapinfo->firingsound = trap_S_RegisterSound("sound/weapons/melee/fstrun.wav", qfalse);
-		cgs.media.lightningShader = trap_R_RegisterShader("lightningBoltNew");
+		cgs.media.lightningShader = trap_R_RegisterShader("lightningBolt");
 		break;
 
 #ifdef MISSIONPACK
@@ -1199,6 +1199,18 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team)
 
 
 	memset(&flash, 0, sizeof(flash));
+	rotentontag(&flash, &gun, weapon->model, "tag_flash");
+
+	// add lightning bolt
+	if(ps || cg.thirdperson ||
+	   cent->currstate.number != cg.pps.clientNum){
+		CG_LightningBolt(nonPredictedCent, flash.origin);
+
+		if(weapon->flashcolor[0] || weapon->flashcolor[1] || weapon->flashcolor[2])
+			trap_R_AddLightToScene(flash.origin, 300 + (rand()&31), weapon->flashcolor[0],
+					       weapon->flashcolor[1], weapon->flashcolor[2]);
+	}
+
 	veccpy(parent->lightingOrigin, flash.lightingOrigin);
 	flash.shadowPlane = parent->shadowPlane;
 	flash.renderfx = parent->renderfx;
@@ -1221,18 +1233,7 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team)
 		flash.shaderRGBA[2] = 255 * ci->color1[2];
 	}
 
-	rotentontag(&flash, &gun, weapon->model, "tag_flash");
 	trap_R_AddRefEntityToScene(&flash);
-
-	if(ps || cg.thirdperson ||
-	   cent->currstate.number != cg.pps.clientNum){
-		// add lightning bolt
-		CG_LightningBolt(nonPredictedCent, flash.origin);
-
-		if(weapon->flashcolor[0] || weapon->flashcolor[1] || weapon->flashcolor[2])
-			trap_R_AddLightToScene(flash.origin, 300 + (rand()&31), weapon->flashcolor[0],
-					       weapon->flashcolor[1], weapon->flashcolor[2]);
-	}
 }
 
 /*
