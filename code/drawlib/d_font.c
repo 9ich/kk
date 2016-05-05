@@ -58,6 +58,7 @@ drawstring(float x, float y, const char *str, int font, float size, vec4_t color
 	float w, h;
 	float scale, strwidth;
 	float glyphrow, glyphcol, glyphwidth, glyphheight;
+	vec4_t tmpclr;
 	int c;
 
 	trap_R_SetColor(color);
@@ -79,6 +80,13 @@ drawstring(float x, float y, const char *str, int font, float size, vec4_t color
 	h = 0;
 	p = str;
 	while(*p){
+		if(Q_IsColorString(p)){
+			memcpy(tmpclr, g_color_table[ColorIndex(p[1])], sizeof tmpclr);
+			tmpclr[3] = color[3];
+			trap_R_SetColor(tmpclr);
+			p += 2;
+			continue;
+		}
 		c = *p & 0xFF;
 		if(charmaps[font].map[c][2] != -1){
 			float xx, yy, ww, hh;
