@@ -196,6 +196,10 @@ stringwidth(const char *str, int font, float size, int slicebegin, int sliceend)
 	p = str;
 	while(*p){
 		c = *p & 0xFF;
+		if(Q_IsColorString(p)){
+			p += 2;
+			continue;
+		}
 		if(charmaps[font].map[c][2] != -1){
 			// apply kerning if possible
 			if(*(p+1) != '\0')
