@@ -409,6 +409,50 @@ CG_DrawAttacker(float y)
 	return y + BIGCHAR_HEIGHT + 2;
 }
 
+static float
+drawobituaries(float y)
+{
+	float x, yy, sz, pad;
+	float *clr;
+	int font, i;
+
+	pad = 2;
+	sz = 16;
+	font = FONT2;
+
+	// draw obituaries newest to oldest, bottom to top
+	y += (ARRAY_LEN(cg.obit) - 1) * (sz + pad);
+	yy = y;
+	pushalign("left");
+	for(i = 0; i < ARRAY_LEN(cg.obit); i++){
+		clr = fadecolor(cg.obit[i].time, 4000);
+		if(clr[3] < 0.01f)
+			continue;
+
+		// truncate names that take the piss
+		truncstringtowidth(cg.obit[i].killer, font, sz, 120);
+		truncstringtowidth(cg.obit[i].victim, font, sz, 120);
+
+		x = screenwidth() - 2;
+
+		// killer
+		x -= stringwidth(cg.obit[i].victim, font, sz, 0, -1) + pad;
+		drawstring(x, y, cg.obit[i].victim, font, sz, clr);
+		trap_R_SetColor(clr);
+		// means of death
+		x -= sz + pad + 2;
+		drawpic(x, y, sz, sz, cg.obit[i].icon);
+		// victim
+		x -= stringwidth(cg.obit[i].killer, font, sz, 0, -1) + pad;
+		drawstring(x, y, cg.obit[i].killer, font, sz, clr);
+
+		y -= sz + pad;
+	}
+	popalign(1);
+
+	return yy;
+}
+
 /*
 ==================
 drawsnap
@@ -470,7 +514,7 @@ drawfps(float y)
 		setalign("");
 	}
 
-	return y + BIGCHAR_HEIGHT + 4;
+	return y + 16;
 }
 
 static void
@@ -495,7 +539,6 @@ static float
 drawtimer(float y)
 {
 	char *s;
-	int w;
 	int mins, seconds, tens;
 	int msec;
 
@@ -508,11 +551,12 @@ drawtimer(float y)
 	seconds -= tens * 10;
 
 	s = va("%i:%i%i", mins, tens, seconds);
-	w = drawstrlen(s) * BIGCHAR_WIDTH;
 
-	drawbigstr(635 - w, y + 2, s, 1.0F);
+	pushalign("right");
+	drawfixedstr(screenwidth() - 2, y + 2, s, 1.0F);
+	popalign(1);
 
-	return y + BIGCHAR_HEIGHT + 4;
+	return y + 16;
 }
 
 /*
@@ -697,9 +741,10 @@ drawupperright(stereoFrame_t stereoFrame)
 		y = drawfps(y);
 	if(cg_drawTimer.integer)
 		y = drawtimer(y);
+	if(cg_drawObituaries.integer)
+		y = drawobituaries(y);
 	if(cg_drawAttacker.integer)
-		CG_DrawAttacker(y);
-
+		y = CG_DrawAttacker(y);
 }
 
 /*

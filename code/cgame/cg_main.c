@@ -108,6 +108,7 @@ vmCvar_t cg_shadows;
 vmCvar_t cg_gibs;
 vmCvar_t cg_drawDamageDir;
 vmCvar_t cg_drawTimer;
+vmCvar_t cg_drawObituaries;
 vmCvar_t cg_drawFPS;
 vmCvar_t cg_drawSpeedometer;
 vmCvar_t cg_drawSnapshot;
@@ -225,6 +226,7 @@ static cvarTable_t cvarTable[] = {
 	{&cg_drawStatus, "cg_drawStatus", "1", CVAR_ARCHIVE},
 	{&cg_drawDamageDir, "cg_drawDamageDir", "1", CVAR_ARCHIVE},
 	{&cg_drawTimer, "cg_drawTimer", "0", CVAR_ARCHIVE},
+	{&cg_drawObituaries, "cg_drawObituaries", "1", CVAR_ARCHIVE},
 	{&cg_drawFPS, "cg_drawFPS", "0", CVAR_ARCHIVE},
 	{&cg_drawSpeedometer, "cg_drawSpeedometer", "1", CVAR_ARCHIVE},
 	{&cg_drawSnapshot, "cg_drawSnapshot", "0", CVAR_ARCHIVE},

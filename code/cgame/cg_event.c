@@ -70,6 +70,20 @@ placestr(int rank)
 	return str;
 }
 
+static void
+queueobit(const char *killer, const char *icon, const char *victim)
+{
+	int i;
+
+	// shift older lines up
+	for(i = ARRAY_LEN(cg.obit)-1; i > 0; i--)
+		cg.obit[i] = cg.obit[i-1];
+	cg.obit[0].time = cg.time;
+	Q_strncpyz(cg.obit[0].killer, killer, sizeof cg.obit[0].killer);
+	cg.obit[0].icon = trap_R_RegisterShaderNoMip(icon);
+	Q_strncpyz(cg.obit[0].victim, victim, sizeof cg.obit[0].victim);
+}
+
 /*
 =============
 CG_Obituary
@@ -84,8 +98,9 @@ CG_Obituary(entityState_t *ent)
 	char *message2;
 	const char *targetInfo;
 	const char *attackerInfo;
-	char targetName[32];
-	char attackerName[32];
+	char targetName[MAX_NAME_LENGTH];
+	char attackerName[MAX_NAME_LENGTH];
+	char *icon;
 	gender_t gender;
 	clientInfo_t *ci;
 
@@ -111,96 +126,29 @@ CG_Obituary(entityState_t *ent)
 
 	message2 = "";
 
-	// check for single client messages
+	// check for single client obituary
 
 	switch(mod){
 	case MOD_SUICIDE:
-		message = "suicides";
-		break;
 	case MOD_FALLING:
-		message = "cratered";
-		break;
 	case MOD_CRUSH:
-		message = "was squished";
-		break;
 	case MOD_WATER:
-		message = "sank like a rock";
-		break;
 	case MOD_SLIME:
-		message = "melted";
-		break;
 	case MOD_LAVA:
-		message = "does a back flip into the lava";
-		break;
 	case MOD_TARGET_LASER:
-		message = "saw the light";
-		break;
 	case MOD_TRIGGER_HURT:
-		message = "was in the wrong place";
+		icon = "icons/worlddeath";
 		break;
 	default:
-		message = nil;
+		icon = nil;
 		break;
 	}
 
-	if(attacker == target){
-		gender = ci->gender;
-		switch(mod){
-#ifdef MISSIONPACK
-		case MOD_KAMIKAZE:
-			message = "goes out with a bang";
-			break;
-#endif
-		case MOD_GRENADE_SPLASH:
-			if(gender == GENDER_FEMALE)
-				message = "tripped on her own grenade";
-			else if(gender == GENDER_NEUTER)
-				message = "tripped on its own grenade";
-			else
-				message = "tripped on his own grenade";
-			break;
-		case MOD_ROCKET_SPLASH:
-			if(gender == GENDER_FEMALE)
-				message = "blew herself up";
-			else if(gender == GENDER_NEUTER)
-				message = "blew itself up";
-			else
-				message = "blew himself up";
-			break;
-		case MOD_PLASMA_SPLASH:
-			if(gender == GENDER_FEMALE)
-				message = "melted herself";
-			else if(gender == GENDER_NEUTER)
-				message = "melted itself";
-			else
-				message = "melted himself";
-			break;
-		case MOD_BFG_SPLASH:
-			message = "should have used a smaller gun";
-			break;
-#ifdef MISSIONPACK
-		case MOD_PROXIMITY_MINE:
-			if(gender == GENDER_FEMALE)
-				message = "found her prox mine";
-			else if(gender == GENDER_NEUTER)
-				message = "found its prox mine";
-			else
-				message = "found his prox mine";
-			break;
-#endif
-		default:
-			if(gender == GENDER_FEMALE)
-				message = "killed herself";
-			else if(gender == GENDER_NEUTER)
-				message = "killed itself";
-			else
-				message = "killed himself";
-			break;
-		}
-	}
+	if(attacker == target)
+		icon = "icons/worlddeath";
 
-	if(message){
-		cgprintf("%s %s.\n", targetName, message);
+	if(icon != nil){
+		queueobit("", icon, targetName);
 		return;
 	}
 
@@ -215,9 +163,7 @@ CG_Obituary(entityState_t *ent)
 		else
 			s = va("You fragged %s", targetName);
 
-		centerprint(s, screenheight() * 0.30, BIGCHAR_WIDTH);
-
-		// print the text message as well
+		centerprint(s, screenheight() * 0.30, 16);
 	}
 
 	// check for double client messages
@@ -235,90 +181,66 @@ CG_Obituary(entityState_t *ent)
 	if(attacker != ENTITYNUM_WORLD){
 		switch(mod){
 		case MOD_GRAPPLE:
-			message = "was caught by";
+			icon = finditemforweapon(WP_GRAPPLING_HOOK)->icon;
 			break;
 		case MOD_GAUNTLET:
-			message = "was pummeled by";
+			icon = "icons/weap_gauntlet";
 			break;
 		case MOD_MACHINEGUN:
-			message = "was machinegunned by";
+			icon = finditemforweapon(WP_MACHINEGUN)->icon;
 			break;
 		case MOD_SHOTGUN:
-			message = "was gunned down by";
+			icon = finditemforweapon(WP_SHOTGUN)->icon;
 			break;
 		case MOD_GRENADE:
-			message = "ate";
-			message2 = "'s grenade";
-			break;
 		case MOD_GRENADE_SPLASH:
-			message = "was shredded by";
-			message2 = "'s shrapnel";
+			icon = finditemforweapon(WP_GRAPPLING_HOOK)->icon;
 			break;
 		case MOD_ROCKET:
-			message = "ate";
-			message2 = "'s rocket";
-			break;
 		case MOD_ROCKET_SPLASH:
-			message = "almost dodged";
-			message2 = "'s rocket";
+			icon = finditemforweapon(WP_ROCKET_LAUNCHER)->icon;
 			break;
 		case MOD_PLASMA:
-			message = "was melted by";
-			message2 = "'s plasmagun";
-			break;
 		case MOD_PLASMA_SPLASH:
-			message = "was melted by";
-			message2 = "'s plasmagun";
+			icon = finditemforweapon(WP_PLASMAGUN)->icon;
 			break;
 		case MOD_RAILGUN:
-			message = "was railed by";
+			icon = finditemforweapon(WP_RAILGUN)->icon;
 			break;
 		case MOD_LIGHTNING:
-			message = "was electrocuted by";
+			icon = finditemforweapon(WP_LIGHTNING)->icon;
 			break;
 		case MOD_BFG:
 		case MOD_BFG_SPLASH:
-			message = "was blasted by";
-			message2 = "'s BFG";
+			icon = "";
 			break;
-#ifdef MISSIONPACK
 		case MOD_NAIL:
-			message = "was nailed by";
+			icon = finditemforweapon(WP_NAILGUN)->icon;
 			break;
 		case MOD_CHAINGUN:
-			message = "got lead poisoning from";
-			message2 = "'s Chaingun";
+			icon = "";
 			break;
 		case MOD_PROXIMITY_MINE:
-			message = "was too close to";
-			message2 = "'s Prox Mine";
+			icon = finditemforweapon(WP_PROX_LAUNCHER)->icon;
 			break;
 		case MOD_KAMIKAZE:
-			message = "falls to";
-			message2 = "'s Kamikaze blast";
+			icon = "icons/kamikaze";
 			break;
 		case MOD_JUICED:
-			message = "was juiced by";
+			icon = "";
 			break;
-#endif
 		case MOD_TELEFRAG:
-			message = "tried to invade";
-			message2 = "'s personal space";
-			break;
 		default:
-			message = "was killed by";
+			icon = "icons/worlddeath";
 			break;
 		}
 
-		if(message){
-			cgprintf("%s %s %s%s\n",
-				  targetName, message, attackerName, message2);
-			return;
-		}
+		queueobit(attackerName, icon, targetName);
+		return;
 	}
 
 	// we don't know what it was
-	cgprintf("%s died.\n", targetName);
+	queueobit("", "icons/worlddeath", targetName);
 }
 
 //==========================================================================

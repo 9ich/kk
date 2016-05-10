@@ -114,6 +114,15 @@ typedef struct
 	float	interval;	// flicker rate
 } flicker_t;
 
+// "killer [means-of-death icon] victim"
+typedef struct
+{
+	int		time;
+	char		killer[MAX_NAME_LENGTH];
+	qhandle_t	icon;
+	char		victim[MAX_NAME_LENGTH];
+} obituary_t;
+
 //=================================================
 
 // player entities need to track more information
@@ -444,8 +453,9 @@ typedef struct
 	int	numpositions;
 } skulltrail_t;
 
-#define MAX_REWARDSTACK 10
-#define MAX_SOUNDBUFFER 20
+#define MAX_REWARDSTACK	10
+#define MAX_OBITUARY	4
+#define MAX_SOUNDBUFFER	20
 
 //======================================================================
 
@@ -574,6 +584,9 @@ typedef struct
 	// attacking player
 	int		attackertime;
 	int		voicetime;
+
+	// obituary messages
+	obituary_t	obit[MAX_OBITUARY];
 
 	// reward medals
 	int		rewardstack;
@@ -1088,6 +1101,7 @@ extern vmCvar_t cg_shadows;
 extern vmCvar_t cg_gibs;
 extern vmCvar_t cg_drawDamageDir;
 extern vmCvar_t cg_drawTimer;
+extern vmCvar_t cg_drawObituaries;
 extern vmCvar_t cg_drawFPS;
 extern vmCvar_t cg_drawSpeedometer;
 extern vmCvar_t cg_drawSnapshot;
