@@ -1812,10 +1812,8 @@ drawwarmup
 static void
 drawwarmup(void)
 {
-	int w;
 	int sec;
 	int i;
-	int cw;
 	clientInfo_t *ci1, *ci2;
 	const char *s;
 
@@ -1825,8 +1823,9 @@ drawwarmup(void)
 
 	if(sec < 0){
 		s = "Waiting for players";
-		w = drawstrlen(s) * BIGCHAR_WIDTH;
-		drawbigstr(320 - w / 2, 24, s, 1.0F);
+		pushalign("center");
+		drawbigstr(0.5f*screenwidth(), 24, s, 1.0F);
+		popalign(1);
 		cg.warmupcount = 0;
 		return;
 	}
@@ -1845,38 +1844,30 @@ drawwarmup(void)
 
 		if(ci1 && ci2){
 			s = va("%s vs %s", ci1->name, ci2->name);
-			w = drawstrlen(s);
-			if(w > 640 / GIANT_WIDTH)
-				cw = 640 / w;
-			else
-				cw = GIANT_WIDTH;
-			drawstring(320 - w * cw / 2, 20, s, FONT2, 12,
+			pushalign("center");
+			drawstring(0.5f*screenwidth(), 20, s, FONT2, 23,
 				   colorWhite);
+			popalign(1);
 		}
 	}else{
 		if(cgs.gametype == GT_FFA)
 			s = "Free For All";
 		else if(cgs.gametype == GT_TEAM)
 			s = "Team Deathmatch";
-		else if(cgs.gametype == GT_CTF){
+		else if(cgs.gametype == GT_CTF)
 			s = "Capture the Flag";
-#ifdef MISSIONPACK
-		}else if(cgs.gametype == GT_1FCTF)
+		else if(cgs.gametype == GT_1FCTF)
 			s = "One Flag CTF";
 		else if(cgs.gametype == GT_OBELISK)
 			s = "Overload";
-		else if(cgs.gametype == GT_HARVESTER){
+		else if(cgs.gametype == GT_HARVESTER)
 			s = "Harvester";
-#endif
-		}else
+		else
 			s = "";
 
-		w = drawstrlen(s);
-		if(w > 640 / GIANT_WIDTH)
-			cw = 640 / w;
-		else
-			cw = GIANT_WIDTH;
-		drawstring(320 - w * cw / 2, 25, s, FONT2, 12, colorWhite);
+		pushalign("center");
+		drawstring(0.5f*screenwidth(), 25, s, FONT2, 23, colorWhite);
+		popalign(1);
 	}
 
 	sec = (sec - cg.time) / 1000;
@@ -1902,24 +1893,84 @@ drawwarmup(void)
 		}
 	}
 
-	switch(cg.warmupcount){
-	case 0:
-		cw = 28;
-		break;
-	case 1:
-		cw = 24;
-		break;
-	case 2:
-		cw = 20;
-		break;
-	default:
-		cw = 16;
-		break;
+	pushalign("center");
+	drawstring(0.5f*screenwidth(), 70, s, FONT1, 24, CText);
+	popalign(1);
+}
+
+static void
+drawroundwarmup(void)
+{
+	int sec;
+	int i;
+	const char *s;
+
+	sec = cg.roundwarmup;
+	if(!sec)
+		return;
+
+	if(sec < 0){
+		cg.roundwarmupcount = 0;
+		return;
+	}
+
+	sec = (sec - cg.time) / 1000;
+	if(sec < 0){
+		cg.roundwarmup = 0;
+		sec = 0;
+	}
+	s = va("Round begins in: %i", sec + 1);
+	if(sec != cg.roundwarmupcount){
+		cg.roundwarmupcount = sec;
+		switch(sec){
+		case 0:
+			trap_S_StartLocalSound(cgs.media.count1Sound, CHAN_ANNOUNCER);
+			break;
+		case 1:
+			trap_S_StartLocalSound(cgs.media.count2Sound, CHAN_ANNOUNCER);
+			break;
+		case 2:
+			trap_S_StartLocalSound(cgs.media.count3Sound, CHAN_ANNOUNCER);
+			break;
+		default:
+			break;
+		}
 	}
 
 	pushalign("center");
 	drawstring(0.5f*screenwidth(), 70, s, FONT1, 24, CText);
 	popalign(1);
+}
+
+static void
+drawreadyup(void)
+{
+	static char lastcs[MAX_INFO_STRING];
+	const char *cs, *info, *name, *msg;
+	int i;
+
+	cs = getconfigstr(CS_LAST_READY);
+	if(*cs == '\0')
+		return;
+	if(strcmp(cs, lastcs) == 0)
+		return;
+	Q_strncpyz(lastcs, cs, sizeof lastcs);
+
+	if(Q_strncmp(cs, "ready\\", strlen("ready\\")) == 0){
+		cs += strlen("ready\\");
+		msg = "is ready";
+	}else if(Q_strncmp(cs, "notready\\", strlen("notready\\")) == 0){
+		cs += strlen("notready\\");
+		msg = "is not ready";
+	}
+
+	i = atoi(cs);
+	if(i < 0 || i > MAX_CLIENTS)
+		return;	// bogus data from server
+
+	info = getconfigstr(CS_PLAYERS + cg_entities[i].currstate.number);
+	name = Info_ValueForKey(info, "n");
+	centerprint(va("%s %s", name, msg), 16, BIGCHAR_WIDTH);
 }
 
 //==================================================================================
@@ -1998,6 +2049,10 @@ draw2d(stereoFrame_t stereoFrame)
 
 	if(!drawfollow())
 		drawwarmup();
+	if(!drawfollow())
+		drawroundwarmup();
+
+	drawreadyup();
 
 	// don't draw center string if scoreboard is up
 	cg.scoreboardshown = drawscoreboard();

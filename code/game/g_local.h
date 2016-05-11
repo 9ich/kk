@@ -38,6 +38,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MULTIKILL_TIME			3000	// max interval between each multikill kill
 #define REWARD_SPRITE_TIME		2000
 #define AFK_TIME			10000	// player is inactive but not yet kicked
+#define ROUND_END_WAIT			5000	// wait after a clan arena round has ended
 
 #define INTERMISSION_DELAY_TIME		1000
 #define SP_INTERMISSION_DELAY_TIME	5000
@@ -267,6 +268,7 @@ struct gclient_s
 	clientPersistant_t	pers;
 	clientSession_t		sess;
 
+	qboolean		ready;		// player is ready to start the match
 	qboolean		readytoexit;	// wishes to leave the intermission
 
 	qboolean		noclip;
@@ -359,7 +361,7 @@ typedef struct
 	int			lastteamlocationtime;	// last time of client team location update
 
 	qboolean		newsess;		// don't use any old session data, because
-	// we changed gametype
+							// we changed gametype
 
 	qboolean		restarted;	// waiting for a map_restart to fire
 
@@ -416,6 +418,11 @@ typedef struct
 
 	// total kills for AWARD_FIRSTBLOOD
 	int		totalkills;
+
+	// clan arena
+	qboolean	roundwarmuptime;		// in pre-round countdown
+	int		roundendtime;
+	int		round;
 
 #ifdef MISSIONPACK
 	int		portalSequence;
@@ -584,6 +591,7 @@ void		setleader(int team, int client);
 void		chkteamleader(int team);
 void		runthink(gentity_t *ent);
 void		addtourneyqueue(gclient_t *client);
+void		beginroundwarmup(void);
 void QDECL	logprintf(const char *fmt, ...) __attribute__ ((format(printf, 1, 2)));
 void		sendscoreboardmsgall(void);
 void QDECL	gprintf(const char *fmt, ...) __attribute__ ((format(printf, 1, 2)));
@@ -691,6 +699,7 @@ extern vmCvar_t g_weaponTeamRespawn;
 extern vmCvar_t g_synchronousClients;
 extern vmCvar_t g_motd;
 extern vmCvar_t g_warmup;
+extern vmCvar_t g_roundwarmup;
 extern vmCvar_t g_doWarmup;
 extern vmCvar_t g_blood;
 extern vmCvar_t g_allowVote;

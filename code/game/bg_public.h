@@ -62,7 +62,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CS_MUSIC		2
 #define CS_MESSAGE		3	// from the map worldspawn's message field
 #define CS_MOTD			4	// g_motd string for server message of the day
-#define CS_WARMUP		5	// server time when the match will be restarted
+#define CS_WARMUP		5	// server time when the match will be started/restarted
 #define CS_SCORES1		6
 #define CS_SCORES2		7
 #define CS_VOTE_TIME		8
@@ -84,11 +84,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define CS_ITEMS		27	// string of 0's and 1's that tell which items are present
 
-#define CS_MODELS		32
-#define CS_SOUNDS		(CS_MODELS+MAX_MODELS)
-#define CS_PLAYERS		(CS_SOUNDS+MAX_SOUNDS)
-#define CS_LOCATIONS		(CS_PLAYERS+MAX_CLIENTS)
-#define CS_PARTICLES		(CS_LOCATIONS+MAX_LOCATIONS)
+#define CS_LAST_READY		32	// last client to change /ready state
+					// either "ready\\[clientnum]" or "unready\\[clientnum]"
+#define CS_ROUND		33	// incremented at beginning of each round
+#define CS_ROUNDWARMUP		34
+
+#define CS_MODELS		35				// [MAX_MODELS]
+#define CS_SOUNDS		(CS_MODELS+MAX_MODELS)		// [MAX_SOUNDS]
+#define CS_PLAYERS		(CS_SOUNDS+MAX_SOUNDS)		// [MAX_CLIENTS]
+#define CS_LOCATIONS		(CS_PLAYERS+MAX_CLIENTS)	// [MAX_LOCATIONS]
+#define CS_PARTICLES		(CS_LOCATIONS+MAX_LOCATIONS)	// [MAX_LOCATIONS]
 
 #define CS_MAX			(CS_PARTICLES+MAX_LOCATIONS)
 
@@ -96,18 +101,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #error overflow: (CS_MAX) > MAX_CONFIGSTRINGS
 #endif
 
-typedef enum
-{
+typedef enum {
 	GT_FFA,			// free for all
 	GT_TOURNAMENT,		// one on one tournament
-	GT_SINGLE_PLAYER,	// single player ffa
-
+	GT_SINGLE_PLAYER,	// single player tournament
+	GT_LMS,			// last man standing
 	//-- team games go after this --
 
-	GT_TEAM,	// team deathmatch
-	GT_CTF,		// capture the flag
-	GT_1FCTF,
-	GT_OBELISK,
+	GT_TEAM,		// team deathmatch
+	GT_CTF,			// capture the flag
+	GT_LTS,			// last team standing
+	GT_CA,			// clan arena
+	GT_1FCTF,		// one-flag CTF
+	GT_OBELISK,		// destroy the enemy base
 	GT_HARVESTER,
 	GT_MAX_GAME_TYPE
 } gametype_t;
@@ -158,6 +164,7 @@ typedef enum
 #define PMF_FOLLOW		4096	// spectate following another player
 #define PMF_SCOREBOARD		8192	// spectate as a scoreboard
 #define PMF_INVULEXPAND		16384	// invulnerability sphere set to full size
+#define PMF_WARMUP		32768	// can't fire during warmup
 
 #define PMF_ALL_TIMES		(PMF_TIME_WATERJUMP|PMF_TIME_LAND|PMF_TIME_KNOCKBACK)
 

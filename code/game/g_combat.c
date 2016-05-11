@@ -80,6 +80,10 @@ tossclientitems(gentity_t *self)
 	int i;
 	gentity_t *drop;
 
+	// players drop nothing in CA
+	if(g_gametype.integer == GT_CA)
+		return;
+
 	// drop the weapon if not a gauntlet or machinegun
 	weapon = self->s.weapon;
 
@@ -635,9 +639,15 @@ player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damag
 
 	self->r.maxs[2] = -8;
 
-	// don't allow respawn until the death anim is done
-	// g_forcerespawn may force spawning at some later time
-	self->client->respawntime = level.time + 1700;
+	// respawn wait
+	// in normal CA/LTS/LMS play, players can't respawn until next round
+	// begins. during roundwarmup, however, players do respawn.
+	if((g_gametype.integer == GT_CA || g_gametype.integer == GT_LMS ||
+	   g_gametype.integer == GT_LTS) && numonteam(TEAM_RED) > 0 &&
+	   numonteam(TEAM_BLUE) > 0 && level.time > level.roundwarmuptime)
+		self->client->respawntime = -1;
+	else
+		self->client->respawntime = level.time + 1700;
 
 	// remove powerups
 	memset(self->client->ps.powerups, 0, sizeof(self->client->ps.powerups));

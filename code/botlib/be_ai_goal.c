@@ -89,19 +89,19 @@ typedef struct campspot_s
 
 //FIXME: these are game specific
 typedef enum {
-	GT_FFA,				// free for all
+	GT_FFA,			// free for all
 	GT_TOURNAMENT,		// one on one tournament
 	GT_SINGLE_PLAYER,	// single player tournament
-
+	GT_LMS,			// last man standing
 	//-- team games go after this --
 
-	GT_TEAM,			// team deathmatch
-	GT_CTF,				// capture the flag
-#ifdef MISSIONPACK
-	GT_1FCTF,
-	GT_OBELISK,
+	GT_TEAM,		// team deathmatch
+	GT_CTF,			// capture the flag
+	GT_LTS,			// last team standing
+	GT_CA,			// clan arena
+	GT_1FCTF,		// one-flag CTF
+	GT_OBELISK,		// destroy the enemy base
 	GT_HARVESTER,
-#endif
 	GT_MAX_GAME_TYPE
 } gametype_t;
 

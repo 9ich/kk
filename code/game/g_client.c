@@ -744,7 +744,6 @@ clientuserinfochanged(int clientNum)
 						      client->pers.netname));
 
 	// set max health
-#ifdef MISSIONPACK
 	if(client->ps.powerups[PW_GUARD])
 		client->pers.maxhealth = 200;
 	else{
@@ -752,14 +751,10 @@ clientuserinfochanged(int clientNum)
 		client->pers.maxhealth = health;
 		if(client->pers.maxhealth < 1 || client->pers.maxhealth > 100)
 			client->pers.maxhealth = 100;
+		if(g_gametype.integer == GT_CA)
+			client->pers.maxhealth *= 2;
 	}
-#else
-	health = atoi(Info_ValueForKey(userinfo, "handicap"));
-	client->pers.maxhealth = health;
-	if(client->pers.maxhealth < 1 || client->pers.maxhealth > 100)
-		client->pers.maxhealth = 100;
 
-#endif
 	client->ps.stats[STAT_MAX_HEALTH] = client->pers.maxhealth;
 
 	// set model
@@ -1020,6 +1015,13 @@ clientbegin(int clientNum)
 	calcranks();
 }
 
+static void
+giveweapon(gclient_t *client, int wp, int ammo)
+{
+	client->ps.stats[STAT_WEAPONS] |= (1 << wp);
+	client->ps.ammo[wp] = ammo;
+}
+
 /*
 ===========
 clientspawn
@@ -1109,6 +1111,8 @@ clientspawn(gentity_t *ent)
 	client->pers.maxhealth = atoi(Info_ValueForKey(userinfo, "handicap"));
 	if(client->pers.maxhealth < 1 || client->pers.maxhealth > 100)
 		client->pers.maxhealth = 100;
+	if(g_gametype.integer == GT_CA)
+		client->pers.maxhealth *= 2;
 	// clear entity values
 	client->ps.stats[STAT_MAX_HEALTH] = client->pers.maxhealth;
 	client->ps.eFlags = flags;
@@ -1130,18 +1134,36 @@ clientspawn(gentity_t *ent)
 
 	client->ps.clientNum = index;
 
-	client->ps.stats[STAT_WEAPONS] = (1 << WP_MACHINEGUN);
-	if(g_gametype.integer == GT_TEAM)
-		client->ps.ammo[WP_MACHINEGUN] = 50;
-	else
-		client->ps.ammo[WP_MACHINEGUN] = 100;
+	if(g_gametype.integer == GT_CA){
+		giveweapon(client, WP_MACHINEGUN, 150);
+		giveweapon(client, WP_SHOTGUN, 25);
+		giveweapon(client, WP_GRENADE_LAUNCHER, 20);
+		giveweapon(client, WP_ROCKET_LAUNCHER, 30);
+		giveweapon(client, WP_LIGHTNING, 100);
+		giveweapon(client, WP_RAILGUN, 50);
+		giveweapon(client, WP_PLASMAGUN, 150);
+		giveweapon(client, WP_NAILGUN, 150);
+		giveweapon(client, WP_HOMING_LAUNCHER, 20);		
+	}else{
+		client->ps.stats[STAT_WEAPONS] = (1 << WP_MACHINEGUN);
+		if(g_gametype.integer == GT_TEAM)
+			client->ps.ammo[WP_MACHINEGUN] = 50;
+		else
+			client->ps.ammo[WP_MACHINEGUN] = 100;
+	}
 
 	client->ps.stats[STAT_WEAPONS] |= (1 << WP_GAUNTLET);
 	client->ps.ammo[WP_GAUNTLET] = -1;
 	client->ps.ammo[WP_GRAPPLING_HOOK] = -1;
 
-	// health will count down towards max_health
-	ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH] + 25;
+	// if not in CA, health will count down towards maxhealth
+	if(g_gametype.integer == GT_CA)
+		ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH];
+	else
+		ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH] + 25;
+
+	if(g_gametype.integer == GT_CA)
+		client->ps.stats[STAT_ARMOR] = 200;
 
 	setorigin(ent, spawn_origin);
 	veccpy(spawn_origin, client->ps.origin);

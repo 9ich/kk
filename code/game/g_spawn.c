@@ -282,11 +282,12 @@ G_CallSpawn(gentity_t *ent)
 	}
 
 	// check item spawn functions
-	for(item = bg_itemlist+1; item->classname; item++)
-		if(!strcmp(item->classname, ent->classname)){
-			itemspawn(ent, item);
-			return qtrue;
-		}
+	if(g_gametype.integer != GT_CA)
+		for(item = bg_itemlist+1; item->classname; item++)
+			if(!strcmp(item->classname, ent->classname)){
+				itemspawn(ent, item);
+				return qtrue;
+			}
 
 	// check normal spawn functions
 	for(s = spawns; s->name; s++)
@@ -574,7 +575,7 @@ SP_worldspawn(void)
 
 	trap_SetConfigstring(CS_MOTD, g_motd.string);	// message of the day
 
-	spawnstr("gravity", "800", &s);
+	spawnstr("gravity", "0", &s);
 	trap_Cvar_Set("g_gravity", s);
 
 	spawnstr("enableDust", "0", &s);
@@ -593,9 +594,15 @@ SP_worldspawn(void)
 
 	// see if we want a warmup time
 	trap_SetConfigstring(CS_WARMUP, "");
+	trap_SetConfigstring(CS_ROUNDWARMUP, "");
 	if(g_restarted.integer){
 		trap_Cvar_Set("g_restarted", "0");
 		level.warmuptime = 0;
+		// clan arena roundwarmup
+		if(g_gametype.integer == GT_LMS || g_gametype.integer == GT_CA ||
+		   g_gametype.integer == GT_LTS){
+			beginroundwarmup();
+		}
 	}else if(g_doWarmup.integer){	// Turn it on
 		level.warmuptime = -1;
 		trap_SetConfigstring(CS_WARMUP, va("%i", level.warmuptime));

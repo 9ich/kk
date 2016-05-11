@@ -43,6 +43,7 @@ vmCvar_t g_dmflags;
 vmCvar_t g_fraglimit;
 vmCvar_t g_timelimit;
 vmCvar_t g_capturelimit;
+vmCvar_t g_roundlimit;
 vmCvar_t g_friendlyFire;
 vmCvar_t g_password;
 vmCvar_t g_needpass;
@@ -67,6 +68,7 @@ vmCvar_t g_weaponTeamRespawn;
 vmCvar_t g_motd;
 vmCvar_t g_synchronousClients;
 vmCvar_t g_warmup;
+vmCvar_t g_roundwarmup;
 vmCvar_t g_doWarmup;
 vmCvar_t g_restarted;
 vmCvar_t g_logfile;
@@ -118,6 +120,7 @@ static cvarTable_t gameCvarTable[] = {
 	{&g_fraglimit, "fraglimit", "20", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue},
 	{&g_timelimit, "timelimit", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue},
 	{&g_capturelimit, "capturelimit", "8", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue},
+	{&g_roundlimit, "roundlimit", "10", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue},
 
 	{&g_synchronousClients, "g_synchronousClients", "0", CVAR_SYSTEMINFO, 0, qfalse},
 
@@ -127,6 +130,7 @@ static cvarTable_t gameCvarTable[] = {
 	{&g_teamForceBalance, "g_teamForceBalance", "0", CVAR_ARCHIVE},
 
 	{&g_warmup, "g_warmup", "20", CVAR_ARCHIVE, 0, qtrue},
+	{&g_roundwarmup, "g_roundwarmup", "10", CVAR_ARCHIVE, 0, qtrue},
 	{&g_doWarmup, "g_doWarmup", "0", CVAR_ARCHIVE, 0, qtrue},
 	{&g_logfile, "g_log", "games.log", CVAR_ARCHIVE, 0, qfalse},
 	{&g_logfileSync, "g_logsync", "0", CVAR_ARCHIVE, 0, qfalse},
@@ -192,12 +196,19 @@ static struct
 	vmCvar_t *cv;
 	char *desc;
 } cvardesctab[] = {
-	{&g_gametype, "Gametypes:\n    0: Free For All\n    1: Tournament\n"
-	   "    2: Single Player\n    3: Team Deathmatch\n    "
-	   "4: Capture The Flag\n    5: One Flag CTF\n    6: Overload\n    "
-	   "7: Harvester"}
+	{&g_gametype, "Gametypes:\n"
+		"    0: Free For All\n"
+		"    1: Tournament\n"
+		"    2: Single Player\n"
+		"    3: Last Man Standing\n"
+		"    4: Team Deathmatch\n"
+		"    5: Capture The Flag\n"
+		"    6: Last Team Standing\n"
+		"    7: Clan Arena\n"
+		"    8: One Flag CTF\n"
+		"    9: Overload\n"
+		"    10: Harvester"}
 };
-
 void	G_InitGame(int levelTime, int randomSeed, int restart);
 void	G_RunFrame(int levelTime);
 void	G_ShutdownGame(int restart);
@@ -1307,6 +1318,7 @@ CheckExitRules(void)
 {
 	int i;
 	gclient_t *cl;
+
 	// if at the intermission, wait for all non-bots to
 	// signal ready, then go to next level
 	if(level.intermissiontime){
@@ -1360,6 +1372,21 @@ CheckExitRules(void)
 							      cl->pers.netname));
 				return;
 			}
+		}
+	}
+
+	if((g_gametype.integer == GT_CA || g_gametype.integer == GT_LTS) && g_roundlimit.integer &&
+	   level.time - level.roundendtime > ROUND_END_WAIT){
+		if(level.teamscores[TEAM_RED] >= g_roundlimit.integer){
+			trap_SendServerCommand(-1, "print \"Red hit the roundlimit.\n\"");
+			LogExit("Roundlimit hit.");
+			return;
+		}
+
+		if(level.teamscores[TEAM_BLUE] >= g_roundlimit.integer){
+			trap_SendServerCommand(-1, "print \"Blue hit the roundlimit.\n\"");
+			LogExit("Roundlimit hit.");
+			return;
 		}
 	}
 
@@ -1490,7 +1517,7 @@ CheckTournament(void)
 			return;
 		}
 
-		// if the warmup time has counted down, restart
+		// if the warmup time has counted down, start the match
 		if(level.time > level.warmuptime){
 			level.warmuptime += 10000;
 			trap_Cvar_Set("g_restarted", "1");
@@ -1499,6 +1526,59 @@ CheckTournament(void)
 			return;
 		}
 	}
+}
+
+/*
+ * Handle level.roundwarmuptime for beginning of rounds in certain game types.
+ */
+void
+checkroundwarmup(void)
+{
+	int i;
+
+	if(g_gametype.integer != GT_LMS && g_gametype.integer != GT_CA &&
+	   g_gametype.integer != GT_LTS)
+		return;
+	// main warmup isn't our concern
+	if(level.warmuptime == -1 || level.warmuptime > 0)
+		return;
+	// no longer in roundwarmup
+	if(level.roundwarmuptime == 0)
+		return;
+
+	if(level.time > level.roundwarmuptime){
+		level.roundwarmuptime = 0;
+		trap_SetConfigstring(CS_ROUNDWARMUP, va("%i", level.roundwarmuptime));
+		logprintf("RoundBegin:\n");
+		for(i = 0; i < g_maxclients.integer; i++){
+			if(g_clients[i].pers.connected == CON_DISCONNECTED)
+				continue;
+			g_clients[i].ps.pm_flags &= ~PMF_WARMUP;
+			// force dead clients to respawn
+			if(g_clients[i].ps.stats[STAT_HEALTH] <= 0)
+				clientrespawn(&g_entities[i]);
+		}
+	}else{
+		for(i = 0; i < g_maxclients.integer; i++){
+			if(g_clients[i].pers.connected == CON_DISCONNECTED)
+				continue;
+			g_clients[i].ps.pm_flags |= PMF_WARMUP;
+		}
+	}
+}
+
+/*
+ * If we're in a gametype that has pre-round warmups, start that warmup.
+ */
+void
+beginroundwarmup(void)
+{
+	if(g_gametype.integer != GT_LMS && g_gametype.integer != GT_CA &&
+	   g_gametype.integer != GT_LTS)
+		return;
+	level.roundwarmuptime = level.time + g_roundwarmup.value*1000;
+	trap_SetConfigstring(CS_ROUNDWARMUP, va("%i", level.roundwarmuptime));
+	logprintf("RoundWarmup:\n");
 }
 
 /*
@@ -1702,6 +1782,107 @@ runthink(gentity_t *ent)
 	ent->think(ent);
 }
 
+// see if anyone has just readied up
+static void
+checkreadyplayers(void)
+{
+	char info[MAX_INFO_VALUE];
+	int i;
+	qboolean rdy;
+
+	for(i = 0; i < g_maxclients.integer; i++){
+		if(g_clients[i].pers.connected != CON_CONNECTED)
+			continue;
+
+		trap_GetUserinfo(i, info, sizeof info);
+		rdy = atoi(Info_ValueForKey(info, "cl_ready")) != 0;
+
+		if(!g_clients[i].ready && rdy){
+			g_clients[i].ready = qtrue;
+			trap_SetConfigstring(CS_LAST_READY, va("ready\\%i", i));
+		}else if(g_clients[i].ready && !rdy){
+			g_clients[i].ready = qfalse;
+			trap_SetConfigstring(CS_LAST_READY, va("notready\\%i", i));
+		}
+	}
+}
+
+void
+checkclanarena(void)
+{
+	int i;
+
+	if(g_gametype.integer != GT_LMS &&
+	   g_gametype.integer != GT_CA &&
+	   g_gametype.integer != GT_LTS)
+		return;
+	// if roundlimit was hit
+	if(level.intermissiontime != 0 || level.intermissionqueued != 0)
+		return;
+	if(level.warmuptime != 0 && level.time <= level.warmuptime)
+		return;
+	if(level.roundwarmuptime != 0 && level.time <= level.roundwarmuptime)
+		return;
+
+	if(level.roundendtime != 0){
+		if(level.time - level.roundendtime > ROUND_END_WAIT){
+			// respawn all clients
+			for(i = 0; i < g_maxclients.integer; i++){
+				if(g_clients[i].pers.connected != CON_CONNECTED)
+					continue;
+				clientrespawn(&g_entities[i]);
+			}
+			level.roundendtime = 0;
+			level.round++;
+			trap_SetConfigstring(CS_ROUND, va("%i", level.round));
+			beginroundwarmup();
+		}
+		return;
+	}
+
+	// see if we meet the conditions to end the round
+	switch(g_gametype.integer){
+	case GT_CA:
+	case GT_LTS:
+		if(numonteam(TEAM_BLUE) == 0 || numonteam(TEAM_RED) == 0)
+			return;
+		else if(numaliveonteam(TEAM_RED) == 0){
+			trap_SendServerCommand(-1, "print \"BLUE wins the round\n\"");
+			level.roundendtime = level.time;
+			addteamscore(vec3_origin, TEAM_BLUE, 1);
+		}else if(numaliveonteam(TEAM_BLUE) == 0){
+			trap_SendServerCommand(-1, "print \"RED wins the round\n\"");
+			level.roundendtime = level.time;
+			addteamscore(vec3_origin, TEAM_RED, 1);
+		}else if(numaliveonteam(TEAM_RED) && numaliveonteam(TEAM_BLUE == 0)){
+			trap_SendServerCommand(-1, "print \"Round tied\n\"");
+			level.roundendtime = level.time;
+		}
+		break;
+	case GT_LMS:
+		if(numonteam(TEAM_FREE) >= 2 && numaliveonteam(TEAM_FREE) == 1){
+			level.roundendtime = level.time;
+			// credit the last player standing
+			for(i = 0; i < g_maxclients.integer; i++){
+				if(g_clients[i].pers.connected == CON_CONNECTED &&
+				   g_clients[i].ps.stats[STAT_HEALTH] > 0){
+					addscore(&g_entities[i], g_clients[i].ps.origin, 1);
+					break;
+				}
+			}
+			trap_SendServerCommand(-1, va("print \"%s wins the round\n\"",
+			   g_clients[i].pers.netname));
+		}else if(numonteam(TEAM_FREE) >= 2 && numaliveonteam(TEAM_FREE) == 0){
+			// everyone left died this frame
+			trap_SendServerCommand(-1, "print \"Round tied\n\"");
+			level.roundendtime = level.time;
+		}
+		break;
+	default:
+		break;
+	}
+}
+
 /*
 ================
 G_RunFrame
@@ -1792,11 +1973,17 @@ G_RunFrame(int levelTime)
 	// see if it is time to do a tournement restart
 	CheckTournament();
 
+	// check roundwarmup status
+	checkroundwarmup();
+
 	// see if it is time to end the level
 	CheckExitRules();
 
 	// update to team status?
 	checkteamstatus();
+
+	// see if more players have readied up
+	checkreadyplayers();
 
 	// cancel vote if timed out
 	CheckVote();
@@ -1807,6 +1994,8 @@ G_RunFrame(int levelTime)
 
 	// for tracking changes
 	CheckCvars();
+
+	checkclanarena();
 
 	if(g_listEntity.integer){
 		for(i = 0; i < MAX_GENTITIES; i++)

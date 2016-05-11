@@ -899,7 +899,7 @@ ClientThink_real(gentity_t *ent)
 	// check for respawning
 	if(client->ps.stats[STAT_HEALTH] <= 0){
 		// wait for the attack button to be pressed
-		if(level.time > client->respawntime){
+		if(client->respawntime != -1 && level.time > client->respawntime){
 			// forcerespawn is to prevent users from waiting out powerups
 			if(g_forcerespawn.integer > 0 &&
 			   (level.time - client->respawntime) > g_forcerespawn.integer * 1000){

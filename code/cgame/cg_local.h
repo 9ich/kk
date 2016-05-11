@@ -613,6 +613,10 @@ typedef struct
 	int	warmup;
 	int	warmupcount;
 
+	// CA etc. pre-round warmup
+	int	roundwarmup;
+	int	roundwarmupcount;
+
 	//==========================
 
 	int	itempkup;

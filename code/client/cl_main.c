@@ -1287,6 +1287,8 @@ void CL_MapLoading( void ) {
 		return;
 	}
 
+	Cvar_Set("cl_ready", "0");	// unready the player
+
 	if ( !com_cl_running->integer ) {
 		return;
 	}
@@ -1663,6 +1665,7 @@ CL_Disconnect_f
 void CL_Disconnect_f( void ) {
 	SCR_StopCinematic();
 	Cvar_Set("ui_singlePlayerActive", "0");
+	Cvar_Set("cl_ready", "0");
 	if ( clc.state != CA_DISCONNECTED && clc.state != CA_CINEMATIC ) {
 		Com_Error (ERR_DISCONNECT, "Disconnected from server");
 	}
@@ -1679,6 +1682,7 @@ void CL_Reconnect_f( void ) {
 	if ( !strlen( cl_reconnectArgs ) )
 		return;
 	Cvar_Set("ui_singlePlayerActive", "0");
+	Cvar_Set("cl_ready", "0");
 	Cbuf_AddText( va("connect %s\n", cl_reconnectArgs ) );
 }
 
@@ -1717,6 +1721,7 @@ void CL_Connect_f( void ) {
 	Q_strncpyz( cl_reconnectArgs, Cmd_Args(), sizeof( cl_reconnectArgs ) );
 
 	Cvar_Set("ui_singlePlayerActive", "0");
+	Cvar_Set("cl_ready", "0");
 
 	// fire a message off to the motd server
 	CL_RequestMotd();
@@ -3386,6 +3391,16 @@ void CL_StopVideo_f( void )
   CL_CloseAVI( );
 }
 
+void CL_Ready_f( void )
+{
+	Cvar_Set("cl_ready", "1");
+}
+
+void CL_NotReady_f( void )
+{
+	Cvar_Set("cl_ready", "0");
+}
+
 /*
 ===============
 CL_GenerateQKey
@@ -3625,6 +3640,7 @@ void CL_Init( void ) {
 	Cvar_Get ("teamtask", "0", CVAR_USERINFO );
 	Cvar_Get ("sex", "male", CVAR_USERINFO | CVAR_ARCHIVE );
 	Cvar_Get ("cl_anonymous", "0", CVAR_USERINFO | CVAR_ARCHIVE );
+	Cvar_Get ("cl_ready", "0", CVAR_USERINFO );
 
 	Cvar_Get ("password", "", CVAR_USERINFO);
 	Cvar_Get ("cg_predictItems", "1", CVAR_USERINFO | CVAR_ARCHIVE );
@@ -3682,6 +3698,8 @@ void CL_Init( void ) {
 	Cmd_AddCommand ("model", CL_SetModel_f );
 	Cmd_AddCommand ("video", CL_Video_f );
 	Cmd_AddCommand ("stopvideo", CL_StopVideo_f );
+	Cmd_AddCommand ("ready", CL_Ready_f );
+	Cmd_AddCommand ("notready", CL_NotReady_f);
 	if( !com_dedicated->integer ) {
 		Cmd_AddCommand ("sayto", CL_Sayto_f );
 		Cmd_SetCommandCompletionFunc( "sayto", CL_CompletePlayerName );

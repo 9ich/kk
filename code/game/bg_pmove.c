@@ -828,7 +828,6 @@ PM_Weapon(void)
 	}else
 		pm->ps->pm_flags &= ~PMF_USE_ITEM_HELD;
 
-
 	// make weapon function
 	if(pm->ps->weaponTime > 0)
 		pm->ps->weaponTime -= pml.msec;
@@ -858,6 +857,10 @@ PM_Weapon(void)
 			PM_StartTorsoAnim(TORSO_STAND);
 		return;
 	}
+
+	// can't fire during warmup
+	if(pm->ps->pm_flags & PMF_WARMUP)
+		return;
 
 	// check for fire
 	if(!(pm->cmd.buttons & BUTTON_ATTACK)){

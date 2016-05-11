@@ -53,12 +53,10 @@ teaminitgame(void)
 		teamgame.blueStatus = -1;	// Invalid to force update
 		Team_SetFlagStatus(TEAM_BLUE, FLAG_ATBASE);
 		break;
-#ifdef MISSIONPACK
 	case GT_1FCTF:
 		teamgame.flagStatus = -1;	// Invalid to force update
 		Team_SetFlagStatus(TEAM_FREE, FLAG_ATBASE);
 		break;
-#endif
 	default:
 		break;
 	}
@@ -96,6 +94,38 @@ teamcolorstr(int team)
 	else if(team==TEAM_SPECTATOR)
 		return S_COLOR_YELLOW;
 	return S_COLOR_WHITE;
+}
+
+int
+numaliveonteam(int team)
+{
+	int i, n;
+
+	n = 0;
+	for(i = 0; i < g_maxclients.integer; i++){
+		if(level.clients[i].ps.persistant[PERS_TEAM] != team ||
+		   level.clients[i].pers.connected != CON_CONNECTED ||
+		   level.clients[i].ps.stats[STAT_HEALTH] <= 0)
+			continue;
+		n++;
+	}
+	return n;
+}
+
+
+int
+numonteam(int team)
+{
+	int i, n;
+
+	n = 0;
+	for(i = 0; i < g_maxclients.integer; i++){
+		if(level.clients[i].ps.persistant[PERS_TEAM] != team ||
+		   level.clients[i].pers.connected != CON_CONNECTED)
+			continue;
+		n++;
+	}
+	return n;
 }
 
 // nil for everyone

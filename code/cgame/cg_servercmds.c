@@ -154,17 +154,35 @@ CG_ParseWarmup(void)
 
 	if(warmup == 0 && cg.warmup){
 	}else if(warmup > 0 && cg.warmup <= 0){
-#ifdef MISSIONPACK
 		if(cgs.gametype >= GT_CTF && cgs.gametype <= GT_HARVESTER)
 			trap_S_StartLocalSound(cgs.media.countPrepareTeamSound, CHAN_ANNOUNCER);
 		else
-#endif
-		{
 			trap_S_StartLocalSound(cgs.media.countPrepareSound, CHAN_ANNOUNCER);
-		}
 	}
 
 	cg.warmup = warmup;
+}
+
+static void
+parseroundwarmup(void)
+{
+	const char *info;
+	int warmup;
+
+	info = getconfigstr(CS_ROUNDWARMUP);
+
+	warmup = atoi(info);
+	cg.roundwarmupcount = -1;
+
+	if(warmup == 0 && cg.roundwarmup){
+	}else if(warmup > 0 && cg.roundwarmup <= 0){
+		if(cgs.gametype >= GT_CTF && cgs.gametype <= GT_HARVESTER)
+			trap_S_StartLocalSound(cgs.media.countPrepareTeamSound, CHAN_ANNOUNCER);
+		else
+			trap_S_StartLocalSound(cgs.media.countPrepareSound, CHAN_ANNOUNCER);
+	}
+
+	cg.roundwarmup = warmup;
 }
 
 /*
@@ -194,6 +212,7 @@ setconfigvals(void)
 	}
 #endif
 	cg.warmup = atoi(getconfigstr(CS_WARMUP));
+	cg.roundwarmup = atoi(getconfigstr(CS_ROUNDWARMUP));
 }
 
 /*
@@ -264,6 +283,8 @@ CG_ConfigStringModified(void)
 		parsesrvinfo();
 	else if(num == CS_WARMUP)
 		CG_ParseWarmup();
+	else if(num == CS_ROUNDWARMUP)
+		parseroundwarmup();
 	else if(num == CS_SCORES1)
 		cgs.scores1 = atoi(str);
 	else if(num == CS_SCORES2)
