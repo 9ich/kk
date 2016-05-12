@@ -644,7 +644,8 @@ player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damag
 	// begins. during roundwarmup, however, players do respawn.
 	if((g_gametype.integer == GT_CA || g_gametype.integer == GT_LMS ||
 	   g_gametype.integer == GT_LTS) && numonteam(TEAM_RED) > 0 &&
-	   numonteam(TEAM_BLUE) > 0 && level.time > level.roundwarmuptime)
+	   numonteam(TEAM_BLUE) > 0 && (level.roundwarmuptime != 0 &&
+	   level.time > level.roundwarmuptime))
 		self->client->respawntime = -1;
 	else
 		self->client->respawntime = level.time + 1700;
