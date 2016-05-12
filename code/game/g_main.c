@@ -1830,7 +1830,7 @@ checkclanarena(void)
 			for(i = 0; i < g_maxclients.integer; i++){
 				if(g_clients[i].pers.connected != CON_CONNECTED)
 					continue;
-				clientrespawn(&g_entities[i]);
+				clientspawn(&g_entities[i]);
 			}
 			level.roundendtime = 0;
 			level.round++;
