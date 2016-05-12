@@ -1932,6 +1932,8 @@ drawroundwarmup(void)
 		case 2:
 			trap_S_StartLocalSound(cgs.media.count3Sound, CHAN_ANNOUNCER);
 			break;
+		case 3:
+			trap_S_StartLocalSound(cgs.media.count4Sound, CHAN_ANNOUNCER);
 		default:
 			break;
 		}

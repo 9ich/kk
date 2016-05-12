@@ -951,6 +951,7 @@ typedef struct
 	sfxHandle_t	holyShitSound;
 
 	// tournament sounds
+	sfxHandle_t	count4Sound;
 	sfxHandle_t	count3Sound;
 	sfxHandle_t	count2Sound;
 	sfxHandle_t	count1Sound;

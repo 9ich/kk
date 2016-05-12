@@ -173,15 +173,6 @@ parseroundwarmup(void)
 
 	warmup = atoi(info);
 	cg.roundwarmupcount = -1;
-
-	if(warmup == 0 && cg.roundwarmup){
-	}else if(warmup > 0 && cg.roundwarmup <= 0){
-		if(cgs.gametype >= GT_CTF && cgs.gametype <= GT_HARVESTER)
-			trap_S_StartLocalSound(cgs.media.countPrepareTeamSound, CHAN_ANNOUNCER);
-		else
-			trap_S_StartLocalSound(cgs.media.countPrepareSound, CHAN_ANNOUNCER);
-	}
-
 	cg.roundwarmup = warmup;
 }
 
@@ -459,9 +450,10 @@ CG_MapRestart(void)
 	// we really should clear more parts of cg here and stop sounds
 
 	// play the "fight" sound if this is a restart without warmup
-	if(cg.warmup == 0 /* && cgs.gametype == GT_TOURNAMENT */){
+	if(cg.warmup == 0 && cgs.gametype != GT_LMS && cgs.gametype != GT_CA &&
+	   cgs.gametype != GT_LTS){
 		trap_S_StartLocalSound(cgs.media.countFightSound, CHAN_ANNOUNCER);
-		centerprint("FIGHT!", 120, GIANTCHAR_WIDTH*2);
+		centerprint("FIGHT", 120, GIANTCHAR_WIDTH*2);
 	}
 	trap_Cvar_Set("cg_thirdPerson", "0");
 }

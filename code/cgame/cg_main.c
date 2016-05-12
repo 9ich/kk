@@ -559,6 +559,7 @@ CG_RegisterSounds(void)
 	cgs.media.oneFragSound = trap_S_RegisterSound("sound/feedback/1_frag.wav", qtrue);
 	cgs.media.twoFragSound = trap_S_RegisterSound("sound/feedback/2_frags.wav", qtrue);
 	cgs.media.threeFragSound = trap_S_RegisterSound("sound/feedback/3_frags.wav", qtrue);
+	cgs.media.count4Sound = trap_S_RegisterSound("sound/feedback/roundbegins.wav", qtrue);
 	cgs.media.count3Sound = trap_S_RegisterSound("sound/feedback/three.wav", qtrue);
 	cgs.media.count2Sound = trap_S_RegisterSound("sound/feedback/two.wav", qtrue);
 	cgs.media.count1Sound = trap_S_RegisterSound("sound/feedback/one.wav", qtrue);
