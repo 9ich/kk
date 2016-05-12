@@ -741,7 +741,7 @@ PM_BeginWeaponChange(int weapon)
 
 	pmaddevent(EV_CHANGE_WEAPON);
 	pm->ps->weaponstate = WEAPON_DROPPING;
-	pm->ps->weaponTime += 200;
+	pm->ps->weaponTime += 50;
 	PM_StartTorsoAnim(TORSO_DROP);
 }
 
@@ -764,7 +764,7 @@ PM_FinishWeaponChange(void)
 
 	pm->ps->weapon = weapon;
 	pm->ps->weaponstate = WEAPON_RAISING;
-	pm->ps->weaponTime += 250;
+	pm->ps->weaponTime += 50;
 	PM_StartTorsoAnim(TORSO_RAISE);
 }
 
@@ -891,7 +891,7 @@ PM_Weapon(void)
 	// check for out of ammo
 	if(!pm->ps->ammo[pm->ps->weapon]){
 		pmaddevent(EV_NOAMMO);
-		pm->ps->weaponTime += 500;
+		pm->ps->weaponTime += 200;
 		return;
 	}
 
