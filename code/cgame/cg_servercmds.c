@@ -155,9 +155,9 @@ CG_ParseWarmup(void)
 	if(warmup == 0 && cg.warmup){
 	}else if(warmup > 0 && cg.warmup <= 0){
 		if(cgs.gametype >= GT_CTF && cgs.gametype <= GT_HARVESTER)
-			trap_S_StartLocalSound(cgs.media.countPrepareTeamSound, CHAN_ANNOUNCER);
+			addbufferedsound(cgs.media.countPrepareTeamSound);
 		else
-			trap_S_StartLocalSound(cgs.media.countPrepareSound, CHAN_ANNOUNCER);
+			addbufferedsound(cgs.media.countPrepareSound);
 	}
 
 	cg.warmup = warmup;
@@ -294,7 +294,7 @@ CG_ConfigStringModified(void)
 	}else if(num == CS_VOTE_STRING){
 		Q_strncpyz(cgs.votestr, str, sizeof(cgs.votestr));
 #ifdef MISSIONPACK
-		trap_S_StartLocalSound(cgs.media.voteNow, CHAN_ANNOUNCER);
+		addbufferedsound(cgs.media.voteNow);
 #endif	//MISSIONPACK
 	}else if(num >= CS_TEAMVOTE_TIME && num <= CS_TEAMVOTE_TIME + 1){
 		cgs.teamvotetime[num-CS_TEAMVOTE_TIME] = atoi(str);
@@ -308,7 +308,7 @@ CG_ConfigStringModified(void)
 	}else if(num >= CS_TEAMVOTE_STRING && num <= CS_TEAMVOTE_STRING + 1){
 		Q_strncpyz(cgs.teamvotestr[num-CS_TEAMVOTE_STRING], str, sizeof(cgs.teamvotestr[0]));
 #ifdef MISSIONPACK
-		trap_S_StartLocalSound(cgs.media.voteNow, CHAN_ANNOUNCER);
+		addbufferedsound(cgs.media.voteNow);
 #endif
 	}else if(num == CS_INTERMISSION)
 		cg.intermissionstarted = atoi(str);

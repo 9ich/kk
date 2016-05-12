@@ -1039,7 +1039,7 @@ drawreward(void)
 			cg.rewardstack--;
 			color = fadecolor(cg.rewardtime, REWARD_TIME);
 			if(cg.rewardsounds[0])
-				trap_S_StartLocalSound(cg.rewardsounds[0], CHAN_ANNOUNCER);
+				addbufferedsound(cg.rewardsounds[0]);
 		}else
 			return;
 	}
@@ -1852,10 +1852,16 @@ drawwarmup(void)
 	}else{
 		if(cgs.gametype == GT_FFA)
 			s = "Free For All";
+		else if(cgs.gametype == GT_LMS)
+			s = "Last Man Standing";
 		else if(cgs.gametype == GT_TEAM)
 			s = "Team Deathmatch";
 		else if(cgs.gametype == GT_CTF)
 			s = "Capture the Flag";
+		else if(cgs.gametype == GT_LTS)
+			s = "Last Team Standing";
+		else if(cgs.gametype == GT_CA)
+			s = "Clan Arena";
 		else if(cgs.gametype == GT_1FCTF)
 			s = "One Flag CTF";
 		else if(cgs.gametype == GT_OBELISK)
