@@ -831,7 +831,6 @@ PM_Weapon(void)
 	// make weapon function
 	if(pm->ps->weaponTime > 0)
 		pm->ps->weaponTime -= pml.msec;
-	pm->ps->weaponTime = MAX(0, pm->ps->weaponTime);
 
 	// check for weapon change
 	// can't change if weapon is firing, but can change
