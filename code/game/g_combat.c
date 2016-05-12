@@ -522,8 +522,9 @@ player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damag
 
 	// if victim has died three times in a row without killing anyone,
 	// and is not afk, give them an AWARD_SADDAY
-	if(self->client->killsthislife < 1&&
-	   level.time < self->client->afktime)
+	if(self->client->killsthislife < 1 &&
+	   level.time < self->client->afktime &&
+	   level.roundwarmuptime == 0 && level.warmuptime == 0)
 		self->client->ps.persistant[PERS_NO_KILLS]++;
 	else
 		self->client->ps.persistant[PERS_NO_KILLS] = 0;
