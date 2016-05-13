@@ -1805,12 +1805,11 @@ doplayer(centity_t *cent)
 	int renderfx;
 	qboolean shadow;
 	float shadowPlane;
-#ifdef MISSIONPACK
 	refEntity_t powerup;
 	int t;
 	float c;
 	vec3_t angles;
-#endif
+	vec3_t pos;
 
 	// the client number is stored in clientNum.  It can't be derived
 	// from the entity number, because a single client may have
@@ -1864,8 +1863,9 @@ doplayer(centity_t *cent)
 	torso.hModel = ci->torsomodel;
 	torso.customSkin = ci->torsoskin;
 
-	veccpy(cent->lerporigin, torso.origin);
-	veccpy(cent->lerporigin, torso.lightingOrigin);
+	playerpos(cent, pos);
+	veccpy(pos, torso.origin);
+	veccpy(pos, torso.lightingOrigin);
 
 	torso.shadowPlane = shadowPlane;
 	torso.renderfx = renderfx;
@@ -1919,7 +1919,7 @@ doplayer(centity_t *cent)
 		powerup.customSkin = 0;
 		// always draw
 		powerup.renderfx &= ~RF_THIRD_PERSON;
-		veccpy(cent->lerporigin, powerup.origin);
+		veccpy(pos, powerup.origin);
 
 		if(cg.time - ci->invulnerabilityStartTime < 250)
 			c = (float)(cg.time - ci->invulnerabilityStartTime) / 250;
