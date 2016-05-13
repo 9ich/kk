@@ -45,6 +45,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define VOTE_TIME		30000	// 30 seconds before vote times out
 
+#define WARMUP_NEEDPLAYERS	-1	// waiting for players to connect, for CS_WARMUP
+#define WARMUP_READYUP		-2	// waiting for players to ready up, for CS_WARMUP
+
 #define MAXS_X			30
 #define MAXS_Y			30
 #define MAXS_Z			30

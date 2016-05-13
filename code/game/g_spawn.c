@@ -604,7 +604,7 @@ SP_worldspawn(void)
 			beginroundwarmup();
 		}
 	}else if(g_doWarmup.integer){	// Turn it on
-		level.warmuptime = -1;
+		level.warmuptime = WARMUP_NEEDPLAYERS;
 		trap_SetConfigstring(CS_WARMUP, va("%i", level.warmuptime));
 		logprintf("Warmup:\n");
 	}

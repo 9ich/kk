@@ -1816,13 +1816,25 @@ drawwarmup(void)
 	int i;
 	clientInfo_t *ci1, *ci2;
 	const char *s;
+	char buf[MAX_INFO_STRING];
 
 	sec = cg.warmup;
 	if(!sec)
 		return;
 
-	if(sec < 0){
+	if(sec == WARMUP_NEEDPLAYERS){
 		s = "Waiting for players";
+		pushalign("center");
+		drawbigstr(0.5f*screenwidth(), 24, s, 1.0F);
+		popalign(1);
+		cg.warmupcount = 0;
+		return;
+	}else if(sec == WARMUP_READYUP){
+		trap_Cvar_VariableStringBuffer("cl_ready", buf, sizeof buf);
+		if(!atoi(buf))
+			s = "Press F3 to ready up";
+		else
+			s = "Waiting for players to ready up";
 		pushalign("center");
 		drawbigstr(0.5f*screenwidth(), 24, s, 1.0F);
 		popalign(1);
