@@ -47,9 +47,9 @@ static char		s_backgroundLoop[MAX_QPATH];
 // =======================================================================
 
 // only begin attenuating sound volumes when outside the FULLVOLUME range
-#define		SOUND_FULLVOLUME	80
+#define		SOUND_FULLVOLUME	30
 
-#define		SOUND_ATTENUATE		0.0008f
+#define		SOUND_ATTENUATE		0.00025f
 
 channel_t   s_channels[MAX_CHANNELS];
 channel_t   loop_channels[MAX_CHANNELS];
