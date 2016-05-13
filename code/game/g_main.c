@@ -1838,6 +1838,8 @@ checkreadyplayers(void)
 	int i;
 	qboolean rdy;
 
+	if(level.warmuptime != WARMUP_READYUP)
+		return;
 	for(i = 0; i < g_maxclients.integer; i++){
 		if(g_clients[i].pers.connected != CON_CONNECTED)
 			continue;
