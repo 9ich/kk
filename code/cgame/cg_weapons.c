@@ -521,7 +521,7 @@ grappletrail
 void
 grappletrail(centity_t *ent, const weaponInfo_t *wi)
 {
-	vec3_t origin;
+	vec3_t origin, angles;
 	vec3_t forward, up;
 	refEntity_t beam;
 	centity_t *player;
@@ -534,12 +534,10 @@ grappletrail(centity_t *ent, const weaponInfo_t *wi)
 
 	// if we're drawing our own trail, use our own playerstate
 	// to avoid any prediction errors
-	if(player->currstate.number == cg.snap->ps.clientNum)
-		veccpy(cg.pps.origin, beam.origin);
-	else
-		veccpy(player->lerporigin, beam.origin);
-	anglevecs(player->lerpangles, forward, nil, up);
-	vecmad(beam.origin, -15, up, beam.origin);
+	playerpos(player, beam.origin);
+	playerangles(player, angles);
+	anglevecs(angles, forward, nil, up);
+	vecmad(beam.origin, -12, up, beam.origin);
 	veccpy(origin, beam.oldorigin);
 
 	if(vecdist(beam.origin, beam.oldorigin) < 20)

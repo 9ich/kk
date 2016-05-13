@@ -1030,6 +1030,44 @@ CG_PlayerAngles(centity_t *cent, vec3_t ship[3])
 	AnglesToAxis(shipangles, ship);
 }
 
+/*
+ * Returns position of a player centity_t.
+ * Bypasses prediction if cent is ourself.
+ */
+float*
+playerpos(centity_t *cent, vec3_t out)
+{
+	if(cent->currstate.number == cg.pps.clientNum)
+		veccpy(cg.pps.origin, out);
+	else
+		veccpy(cent->lerporigin, out);
+	return out;
+}
+
+/*
+ * Returns velocity of a player centity_t.
+ * Bypasses prediction if cent is ourself.
+ */
+float*
+playervel(centity_t *cent, vec3_t out)
+{
+	if(cent->currstate.number == cg.pps.clientNum)
+		veccpy(cg.pps.velocity, out);
+	else
+		evaltrajectorydelta(&cent->currstate.pos, cg.time, out);
+	return out;
+}
+
+float*
+playerangles(centity_t *cent, vec3_t out)
+{
+	if(cent->currstate.number == cg.pps.clientNum)
+		veccpy(cg.pps.viewangles, out);
+	else
+		veccpy(cent->lerpangles, out);
+	return out;
+}
+
 //==========================================================================
 
 /*
@@ -1194,6 +1232,7 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 	sfxHandle_t thrustsound, thrustbacksound, idlesound;
 	vec4_t clr;
 	vec3_t v, forward, right, up;
+	vec3_t pos;
 
 	calcthrusterlight(cent, clr);
 	anglevecs(cent->lerpangles, forward, right, up);
@@ -1255,18 +1294,20 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 		idlesound = cgs.media.thrustOtherIdleSound;
 	}
 
+	playerpos(cent, pos);
+
 	if(cent->currstate.forwardmove < 0){
-		trap_S_AddLoopingSound(cent->currstate.number, cent->lerporigin,
-		   vec3_origin, thrustbacksound);
+		trap_S_AddLoopingSound(cent->currstate.number, pos, vec3_origin,
+		   thrustbacksound);
 	}else if(cent->currstate.rightmove != 0 || cent->currstate.upmove != 0){
-		trap_S_AddLoopingSound(cent->currstate.number, cent->lerporigin,
-		   vec3_origin, thrustbacksound);
+		trap_S_AddLoopingSound(cent->currstate.number, pos, vec3_origin,
+		   thrustbacksound);
 	}else if(cent->currstate.forwardmove > 0){
-		trap_S_AddLoopingSound(cent->currstate.number, cent->lerporigin,
-		   vec3_origin, thrustsound);
+		trap_S_AddLoopingSound(cent->currstate.number, pos, vec3_origin,
+		   thrustsound);
 	}else{
-		trap_S_AddLoopingSound(cent->currstate.number, cent->lerporigin,
-		   vec3_origin, idlesound);
+		trap_S_AddLoopingSound(cent->currstate.number, pos, vec3_origin,
+		   idlesound);
 	}
 
 	if(cent->lastplume + PLUME_TIME < cg.time)
@@ -1274,24 +1315,24 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 
 	// add the lights
 	if(cent->currstate.forwardmove > 0){
-		vecmad(cent->lerporigin, -40, forward, v);
+		vecmad(pos, -40, forward, v);
 		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
 	}else if(cent->currstate.forwardmove < 0){
-		vecmad(cent->lerporigin, 40, forward, v);
+		vecmad(pos, 40, forward, v);
 		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
 	}
 	if(cent->currstate.rightmove > 0){
-		vecmad(cent->lerporigin, -36, right, v);
+		vecmad(pos, -36, right, v);
 		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
 	}else if(cent->currstate.rightmove < 0){
-		vecmad(cent->lerporigin, 36, right, v);
+		vecmad(pos, 36, right, v);
 		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
 	}
 	if(cent->currstate.upmove > 0){
-		vecmad(cent->lerporigin, -36, up, v);
+		vecmad(pos, -36, up, v);
 		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
 	}else if(cent->currstate.upmove < 0){
-		vecmad(cent->lerporigin, 36, up, v);
+		vecmad(pos, 36, up, v);
 		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
 	}
 }

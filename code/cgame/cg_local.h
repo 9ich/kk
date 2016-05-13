@@ -1300,6 +1300,9 @@ void		resetplayerent(centity_t *cent);
 void		addrefentitywithpowerups(refEntity_t *ent, entityState_t *state, int team);
 void		newclientinfo(int clientNum);
 sfxHandle_t	customsound(int clientNum, const char *soundName);
+float	*playerpos(centity_t *cent, vec3_t out);
+float	*playervel(centity_t *cent, vec3_t out);
+float	*playerangles(centity_t *cent, vec3_t out);
 
 // cg_predict.c
 void	mksolidlist(void);
