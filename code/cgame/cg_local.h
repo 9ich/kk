@@ -897,8 +897,6 @@ typedef struct
 	sfxHandle_t	oneFragSound;
 
 	sfxHandle_t	hitSound;
-	sfxHandle_t	hitSoundHighArmor;
-	sfxHandle_t	hitSoundLowArmor;
 	sfxHandle_t	hitTeamSound;
 
 	sfxHandle_t	takenLeadSound;

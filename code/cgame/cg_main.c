@@ -661,10 +661,7 @@ CG_RegisterSounds(void)
 	cgs.media.landSound = trap_S_RegisterSound("sound/player/land1.wav", qfalse);
 
 	cgs.media.hitSound = trap_S_RegisterSound("sound/feedback/hit.wav", qfalse);
-#ifdef MISSIONPACK
-	cgs.media.hitSoundHighArmor = trap_S_RegisterSound("sound/feedback/hithi.wav", qfalse);
-	cgs.media.hitSoundLowArmor = trap_S_RegisterSound("sound/feedback/hitlo.wav", qfalse);
-#endif
+	cgs.media.hitTeamSound = trap_S_RegisterSound("sound/feedback/hitteam.wav", qfalse);
 
 	// register award assets
 	for(i = 0; i < ARRAY_LEN(cg_awardlist); i++){
