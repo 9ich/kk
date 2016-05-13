@@ -1419,6 +1419,10 @@ allready(void)
 	int i, n;
 
 	n = 0;
+	if(trap_Cvar_VariableValue("g_allready")){
+		trap_Cvar_Set("g_allready", "0");
+		return qtrue;
+	}
 	for(i = 0; i < g_maxclients.integer; i++){
 		if(g_clients[i].pers.connected != CON_CONNECTED)
 			continue;
@@ -1426,8 +1430,6 @@ allready(void)
 			break;
 		n++;
 	}
-	if(n != 0 && n == level.nplayingclients)
-		gprintf("all players are ready\n");
 	return n == level.nplayingclients;
 }
 

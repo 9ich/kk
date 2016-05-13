@@ -446,6 +446,18 @@ static void SV_KickBots_f( void ) {
 		cl->lastPacketTime = svs.time; // in case there is a funny zombie
 	}
 }
+
+SV_AllReady_f( void ) {
+	// make sure server is running
+	if( !com_sv_running->integer ) {
+		Com_Printf("Server is not running.\n");
+		return;
+	}
+
+	Com_Printf("Forcing all players to ready state.\n");
+	Cvar_Set("g_allready", "1");
+}
+
 /*
 ==================
 SV_KickAll_f
@@ -1566,6 +1578,7 @@ void SV_AddOperatorCommands( void ) {
 	Cmd_AddCommand("bandel", SV_BanDel_f);
 	Cmd_AddCommand("exceptdel", SV_ExceptDel_f);
 	Cmd_AddCommand("flushbans", SV_FlushBans_f);
+	Cmd_AddCommand("allready", SV_AllReady_f);
 }
 
 /*
@@ -1591,6 +1604,7 @@ void SV_RemoveOperatorCommands( void ) {
 	Cmd_RemoveCommand ("map_restart");
 	Cmd_RemoveCommand ("sectorlist");
 	Cmd_RemoveCommand ("say");
+	Cmd_RemoveCommand ("allready", SV_AllReady_f);
 #endif
 }
 
