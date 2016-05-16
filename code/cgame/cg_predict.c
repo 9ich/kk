@@ -354,7 +354,7 @@ CG_TouchTriggerPrediction(void)
 		else if(ent->eType == ET_PUSH_TRIGGER)
 			touchjumppad(&cg.pps, ent);
 		else if(ent->eType == ET_TRIGGER_GRAVITY)
-			BG_TouchTriggerGravity(&cg.pps, ent, cg.frametime);
+			touchtriggergravity(&cg.pps, ent, cg.frametime);
 	}
 
 	// if we didn't touch a jump pad this pmove frame

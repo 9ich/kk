@@ -144,7 +144,7 @@ sessinit(gclient_t *client, char *userinfo)
 	}
 
 	sess->specstate = SPECTATOR_FREE;
-	addtourneyqueue(client);
+	addduelqueue(client);
 
 	G_WriteClientSessionData(client);
 }

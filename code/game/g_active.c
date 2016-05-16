@@ -33,7 +33,7 @@ global pain sound events for all clients.
 ===============
 */
 void
-P_DamageFeedback(gentity_t *player)
+playerdmgfeedback(gentity_t *player)
 {
 	gclient_t *client;
 	float count;
@@ -89,7 +89,7 @@ Check for lava / slime contents and drowning
 =============
 */
 void
-P_WorldEffects(gentity_t *ent)
+playerworldeffects(gentity_t *ent)
 {
 	qboolean envirosuit;
 	int waterlevel;
@@ -156,7 +156,7 @@ G_SetClientSound
 ===============
 */
 void
-G_SetClientSound(gentity_t *ent)
+setclientsound(gentity_t *ent)
 {
 #ifdef MISSIONPACK
 	if(ent->s.eFlags & EF_TICKING)
@@ -177,7 +177,7 @@ ClientImpacts
 ==============
 */
 void
-ClientImpacts(gentity_t *ent, pmove_t *pm)
+clientimpacts(gentity_t *ent, pmove_t *pm)
 {
 	int i, j;
 	trace_t trace;
@@ -327,7 +327,7 @@ Returns qfalse if the client is dropped
 =================
 */
 qboolean
-ClientInactivityTimer(gclient_t *client)
+clientinactivitytimer(gclient_t *client)
 {
 	if(!g_inactivity.integer){
 		// give everyone some time, so if the operator sets g_inactivity during
@@ -362,7 +362,7 @@ Actions that happen once a second
 ==================
 */
 void
-ClientTimerActions(gentity_t *ent, int msec)
+clienttimeractions(gentity_t *ent, int msec)
 {
 	gclient_t *client;
 #ifdef MISSIONPACK
@@ -486,7 +486,7 @@ but any server game effects are handled here
 ================
 */
 void
-ClientEvents(gentity_t *ent, int oldEventSequence)
+clientevents(gentity_t *ent, int oldEventSequence)
 {
 	int i, j;
 	int event;
@@ -587,9 +587,9 @@ ClientEvents(gentity_t *ent, int oldEventSequence)
 
 		case EV_USE_ITEM4:	// portal
 			if(ent->client->portalID)
-				DropPortalSource(ent);
+				dropportalsrc(ent);
 			else
-				DropPortalDestination(ent);
+				dropportaldest(ent);
 			break;
 		case EV_USE_ITEM5:	// invulnerability
 			ent->client->invulnerabilityTime = level.time + 10000;
@@ -609,7 +609,7 @@ StuckInOtherClient
 ==============
 */
 static int
-StuckInOtherClient(gentity_t *ent)
+stuckinotherclient(gentity_t *ent)
 {
 	int i;
 	gentity_t *ent2;
@@ -646,12 +646,10 @@ StuckInOtherClient(gentity_t *ent)
 void BotTestSolid(vec3_t origin);
 
 /*
-==============
-SendPendingPredictableEvents
-==============
-*/
+ * Sends pending predictable events.
+ */
 void
-SendPendingPredictableEvents(playerState_t *ps)
+sendpredictableevents(playerState_t *ps)
 {
 	gentity_t *t;
 	int event, seq;
@@ -751,7 +749,7 @@ ClientThink_real(gentity_t *ent)
 	}
 
 	// check for inactivity timer, but never drop the local client of a non-dedicated server
-	if(!ClientInactivityTimer(client))
+	if(!clientinactivitytimer(client))
 		return;
 
 	// clear the award flags from last frame
@@ -816,7 +814,7 @@ ClientThink_real(gentity_t *ent)
 			veccpy(maxs, ent->r.maxs);
 			trap_LinkEntity(ent);
 			// check if this would get anyone stuck in this player
-			if(!StuckInOtherClient(ent))
+			if(!stuckinotherclient(ent))
 				// set flag so the expanded size will be set in PM_CheckDuck
 				client->ps.pm_flags |= PMF_INVULEXPAND;
 			// set back
@@ -856,7 +854,7 @@ ClientThink_real(gentity_t *ent)
 		playerstate2entstatexerp(&ent->client->ps, &ent->s, ent->client->ps.commandTime, qtrue);
 	else
 		playerstate2entstate(&ent->client->ps, &ent->s, qtrue);
-	SendPendingPredictableEvents(&ent->client->ps);
+	sendpredictableevents(&ent->client->ps);
 
 	if(!(ent->client->ps.eFlags & EF_FIRING))
 		client->fireheld = qfalse;	// for grapple
@@ -871,7 +869,7 @@ ClientThink_real(gentity_t *ent)
 	ent->watertype = pm.watertype;
 
 	// execute client events
-	ClientEvents(ent, oldEventSequence);
+	clientevents(ent, oldEventSequence);
 
 	// link entity now, after any personal teleporters have been used
 	trap_LinkEntity(ent);
@@ -885,7 +883,7 @@ ClientThink_real(gentity_t *ent)
 	BotTestAAS(ent->r.currentOrigin);
 
 	// touch other objects
-	ClientImpacts(ent, &pm);
+	clientimpacts(ent, &pm);
 
 	// save results of triggers and client events
 	if(ent->client->ps.eventSequence != oldEventSequence)
@@ -915,7 +913,7 @@ ClientThink_real(gentity_t *ent)
 	}
 
 	// perform once-a-second actions
-	ClientTimerActions(ent, msec);
+	clienttimeractions(ent, msec);
 }
 
 /*
@@ -957,7 +955,7 @@ SpectatorClientEndFrame
 ==================
 */
 void
-SpectatorClientEndFrame(gentity_t *ent)
+spectatorendframe(gentity_t *ent)
 {
 	gclient_t *cl;
 
@@ -1010,7 +1008,7 @@ clientendframe(gentity_t *ent)
 	int i;
 
 	if(ent->client->sess.team == TEAM_SPECTATOR){
-		SpectatorClientEndFrame(ent);
+		spectatorendframe(ent);
 		return;
 	}
 
@@ -1048,10 +1046,10 @@ clientendframe(gentity_t *ent)
 		return;
 
 	// burn from lava, etc
-	P_WorldEffects(ent);
+	playerworldeffects(ent);
 
 	// apply all the damage taken this frame
-	P_DamageFeedback(ent);
+	playerdmgfeedback(ent);
 
 	// add the EF_CONNECTION flag if we haven't gotten commands recently
 	if(level.time - ent->client->lastcmdtime > 1000)
@@ -1061,14 +1059,14 @@ clientendframe(gentity_t *ent)
 
 	ent->client->ps.stats[STAT_HEALTH] = ent->health;	// FIXME: get rid of ent->health...
 
-	G_SetClientSound(ent);
+	setclientsound(ent);
 
 	// set the latest infor
 	if(g_smoothClients.integer)
 		playerstate2entstatexerp(&ent->client->ps, &ent->s, ent->client->ps.commandTime, qtrue);
 	else
 		playerstate2entstate(&ent->client->ps, &ent->s, qtrue);
-	SendPendingPredictableEvents(&ent->client->ps);
+	sendpredictableevents(&ent->client->ps);
 
 	// set the bit for the reachability area the client is currently in
 //	i = trap_AAS_PointReachabilityAreaIndex( ent->client->ps.origin );

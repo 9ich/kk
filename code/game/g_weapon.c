@@ -223,7 +223,7 @@ Bullet_Fire(gentity_t *ent, float spread, int damage, int mod)
 		if(traceEnt->takedmg){
 #ifdef MISSIONPACK
 			if(traceEnt->client && traceEnt->client->invulnerabilityTime > level.time){
-				if(G_InvulnerabilityEffect(traceEnt, forward, tr.endpos, impactpoint, bouncedir)){
+				if(invulneffect(traceEnt, forward, tr.endpos, impactpoint, bouncedir)){
 					G_BounceProjectile(muzzle, impactpoint, bouncedir, end);
 					veccpy(impactpoint, muzzle);
 					// the player can hit him/herself with the bounced rail
@@ -303,7 +303,7 @@ ShotgunPellet(vec3_t start, vec3_t end, gentity_t *ent)
 			damage = DEFAULT_SHOTGUN_DAMAGE * s_quadFactor;
 #ifdef MISSIONPACK
 			if(traceEnt->client && traceEnt->client->invulnerabilityTime > level.time){
-				if(G_InvulnerabilityEffect(traceEnt, forward, tr.endpos, impactpoint, bouncedir)){
+				if(invulneffect(traceEnt, forward, tr.endpos, impactpoint, bouncedir)){
 					G_BounceProjectile(tr_start, impactpoint, bouncedir, tr_end);
 					veccpy(impactpoint, tr_start);
 					// the player can hit him/herself with the bounced rail
@@ -505,7 +505,7 @@ weapon_railgun_fire(gentity_t *ent)
 		if(traceEnt->takedmg){
 #ifdef MISSIONPACK
 			if(traceEnt->client && traceEnt->client->invulnerabilityTime > level.time){
-				if(G_InvulnerabilityEffect(traceEnt, forward, trace.endpos, impactpoint, bouncedir)){
+				if(invulneffect(traceEnt, forward, trace.endpos, impactpoint, bouncedir)){
 					G_BounceProjectile(muzzle, impactpoint, bouncedir, end);
 					// snap the endpos to integers to save net bandwidth, but nudged towards the line
 					snapvectortowards(trace.endpos, muzzle);
@@ -672,7 +672,7 @@ Weapon_LightningFire(gentity_t *ent)
 		if(traceEnt->takedmg){
 #ifdef MISSIONPACK
 			if(traceEnt->client && traceEnt->client->invulnerabilityTime > level.time){
-				if(G_InvulnerabilityEffect(traceEnt, forward, tr.endpos, impactpoint, bouncedir)){
+				if(invulneffect(traceEnt, forward, tr.endpos, impactpoint, bouncedir)){
 					G_BounceProjectile(muzzle, impactpoint, bouncedir, end);
 					veccpy(impactpoint, muzzle);
 					vecsub(end, impactpoint, forward);

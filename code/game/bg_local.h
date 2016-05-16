@@ -76,5 +76,5 @@ void		pmclipvel(vec3_t in, vec3_t normal, vec3_t out, float overbounce);
 void		pmaddtouchent(int entityNum);
 void		pmaddevent(int newEvent);
 
-qboolean	pmslidemode(qboolean gravity);
+qboolean	pmslidemove(qboolean gravity);
 void		pmstepslidemove(qboolean gravity);

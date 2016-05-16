@@ -582,7 +582,7 @@ setteam(gentity_t *ent, char *s)
 
 	// they go to the end of the line for tournements
 	if(team == TEAM_SPECTATOR && oldTeam != team)
-		addtourneyqueue(client);
+		addduelqueue(client);
 
 	client->sess.team = team;
 	client->sess.specstate = specState;

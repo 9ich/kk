@@ -1425,7 +1425,7 @@ touchjumppad(playerState_t *ps, entityState_t *jumppad)
 }
 
 void
-BG_TouchTriggerGravity(playerState_t *ps, entityState_t *zone, float framedur)
+touchtriggergravity(playerState_t *ps, entityState_t *zone, float framedur)
 {
 	vec3_t grav;
 

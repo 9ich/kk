@@ -447,7 +447,7 @@ static void SV_KickBots_f( void ) {
 	}
 }
 
-SV_AllReady_f( void ) {
+static void SV_AllReady_f( void ) {
 	// make sure server is running
 	if( !com_sv_running->integer ) {
 		Com_Printf("Server is not running.\n");

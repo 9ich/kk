@@ -274,8 +274,8 @@ struct gclient_s
 	qboolean		noclip;
 
 	int			lastcmdtime;	// level.time of last usercmd_t, for EF_CONNECTION
-	// we can't just use pers.lastCommand.time, because
-	// of the g_sycronousclients case
+						// we can't just use pers.lastCommand.time, because
+						// of the g_sycronousclients case
 	int			buttons;
 	int			oldbuttons;
 	int			latchedbuttons;
@@ -286,9 +286,9 @@ struct gclient_s
 	// shotgun blasts give a single big kick
 	int		dmgarmor;		// damage absorbed by armor
 	int		dmgblood;		// damage taken out of health
-	int		dmgknockback;	// impact damage
+	int		dmgknockback;		// impact damage
 	vec3_t		dmgfrom;		// origin for vector calculation
-	qboolean	dmgfromworld;	// if true, don't use the dmgfrom vector
+	qboolean	dmgfromworld;		// if true, don't use the dmgfrom vector
 
 	int		accuratecount;		// for "impressive" reward sound
 
@@ -296,7 +296,7 @@ struct gclient_s
 	int		accuracyhits;		// total number of hits
 
 	int		lastkilledclient;	// last client that this client killed
-	int		lasthurtclient;	// last client that damaged this client
+	int		lasthurtclient;		// last client that damaged this client
 	int		lasthurt_mod;		// type of damage the client did
 
 	// timers
@@ -313,10 +313,10 @@ struct gclient_s
 
 	int		killsthislife;		// number of enemies killed since respawning, for AWARD_SADDAY
 
-	qboolean	fireheld;	// used for hook
-	gentity_t	*hook;		// grapple hook if out
+	qboolean	fireheld;		// used for hook
+	gentity_t	*hook;			// grapple hook if out
 
-	int		switchteamtime;	// time the player switched teams
+	int		switchteamtime;		// time the player switched teams
 
 	// residualtime is used to handle events that happen every second
 	// like health / armor countdowns and regeneration
@@ -363,10 +363,10 @@ typedef struct
 	qboolean		newsess;		// don't use any old session data, because
 							// we changed gametype
 
-	qboolean		restarted;	// waiting for a map_restart to fire
+	qboolean		restarted;		// waiting for a map_restart to fire
 
 	int			nconnectedclients;
-	int			nnonspecclients;	// includes connecting clients
+	int			nnonspecclients;		// includes connecting clients
 	int			nplayingclients;		// connected, non-spectators
 	int			sortedclients[MAX_CLIENTS];	// sorted by score
 	int			follow1, follow2;		// clientNums for auto-follow spectators
@@ -379,17 +379,17 @@ typedef struct
 	char			votestr[MAX_STRING_CHARS];
 	char			votedisplaystr[MAX_STRING_CHARS];
 	int			votetime;		// level.time vote was called
-	int			voteexectime;	// time the vote is executed
+	int			voteexectime;		// time the vote is executed
 	int			voteyes;
 	int			voteno;
-	int			nvoters;	// set by calcranks
+	int			nvoters;		// set by calcranks
 
 	// team voting state
 	char			teamvotestr[2][MAX_STRING_CHARS];
 	int			teamvotetime[2];	// level.time vote was called
 	int			teamvoteyes[2];
 	int			teamvoteno[2];
-	int			nteamvoters[2];// set by calcranks
+	int			nteamvoters[2];		// set by calcranks
 
 	// spawn variables
 	qboolean		spawning;			// the entspawn*() functions are valid
@@ -450,15 +450,15 @@ void		checkteamitems(void);
 void		runitem(gentity_t *ent);
 void		itemrespawn(gentity_t *ent);
 
-void		UseHoldableItem(gentity_t *ent);
-void		PrecacheItem(gitem_t *it);
+void		useholdableitem(gentity_t *ent);
+void		precacheitem(gitem_t *it);
 gentity_t *	itemdrop(gentity_t *ent, gitem_t *item, float angle);
 gentity_t *	itemlaunch(gitem_t *item, vec3_t origin, vec3_t velocity);
 void		setrespawn(gentity_t *ent, float delay);
 void		itemspawn(gentity_t *ent, gitem_t *item);
 void		itemspawnfinish(gentity_t *ent);
 void		weap_think(gentity_t *ent);
-int		ArmorIndex(gentity_t *ent);
+int		armorindex(gentity_t *ent);
 void		addammo(gentity_t *ent, int weapon, int count);
 void		item_touch(gentity_t *ent, gentity_t *other, trace_t *trace);
 
@@ -481,7 +481,7 @@ gentity_t *	entspawn(void);
 gentity_t *	enttemp(vec3_t origin, int event);
 void		mksound(gentity_t *ent, int channel, int soundIndex);
 void		entfree(gentity_t *e);
-qboolean	nentsfree(void);
+qboolean	numentsfree(void);
 
 void		touchtriggers(gentity_t *ent);
 
@@ -499,13 +499,13 @@ const char *	mkshaderstateconfigstr(void);
 qboolean	candamage(gentity_t *targ, vec3_t origin);
 void		entdamage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod);
 qboolean	radiusdamage(vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int mod);
-int		G_InvulnerabilityEffect(gentity_t *targ, vec3_t dir, vec3_t point, vec3_t impactpoint, vec3_t bouncedir);
+int		invulneffect(gentity_t *targ, vec3_t dir, vec3_t point, vec3_t impactpoint, vec3_t bouncedir);
 void		body_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath);
 void		tossclientitems(gentity_t *self);
 #ifdef MISSIONPACK
-void		TossClientPersistantPowerups(gentity_t *self);
+void		tossclientpowerups(gentity_t *self);
 #endif
-void		TossClientCubes(gentity_t *self);
+void		tossclientcubes(gentity_t *self);
 void		giveaward(gclient_t *cl, int award);
 
 // damage flags
@@ -541,8 +541,8 @@ void trigger_teleporter_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 // g_misc.c
 void	teleportentity(gentity_t *player, vec3_t origin, vec3_t angles);
 #ifdef MISSIONPACK
-void	DropPortalSource(gentity_t *ent);
-void	DropPortalDestination(gentity_t *ent);
+void	dropportalsrc(gentity_t *ent);
+void	dropportaldest(gentity_t *ent);
 #endif
 
 // g_weapon.c
@@ -568,7 +568,7 @@ void		clientspawn(gentity_t *ent);
 void		player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod);
 void		addscore(gentity_t *ent, vec3_t origin, int score);
 void		calcranks(void);
-qboolean	possibletelefrag(gentity_t *spot);
+qboolean	maytelefrag(gentity_t *spot);
 
 // g_svcmds.c
 qboolean	consolecmd(void);
@@ -590,10 +590,10 @@ void		findintermissionpoint(void);
 void		setleader(int team, int client);
 void		chkteamleader(int team);
 void		runthink(gentity_t *ent);
-void		addtourneyqueue(gclient_t *client);
+void		addduelqueue(gclient_t *client);
 void		beginroundwarmup(void);
 void QDECL	logprintf(const char *fmt, ...) __attribute__ ((format(printf, 1, 2)));
-void		sendscoreboardmsgall(void);
+void		sendscoreboard(void);
 void QDECL	gprintf(const char *fmt, ...) __attribute__ ((format(printf, 1, 2)));
 void QDECL	errorf(const char *fmt, ...) __attribute__ ((noreturn, format(printf, 1, 2)));
 
@@ -612,7 +612,7 @@ void	runclient(gentity_t *ent);
 // g_team.c
 qboolean	onsameteam(gentity_t *ent1, gentity_t *ent2);
 void		ckhdroppedteamitem(gentity_t *dropped);
-qboolean	CheckObeliskAttack(gentity_t *obelisk, gentity_t *attacker);
+qboolean	chkobeliskattacked(gentity_t *obelisk, gentity_t *attacker);
 
 // g_mem.c
 void *	alloc(int size);
@@ -627,7 +627,7 @@ void	worldsessinit(void);
 void	sesswrite(void);
 
 // g_arenas.c
-void	updatetourney(void);
+void	updateduel(void);
 void	spawnonvictorypads(void);
 void	Svcmd_AbortPodium_f(void);
 

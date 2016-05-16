@@ -72,14 +72,8 @@ SP_info_player_intermission(gentity_t *ent)
 =======================================================================
 */
 
-/*
-================
-possibletelefrag
-
-================
-*/
 qboolean
-possibletelefrag(gentity_t *spot)
+maytelefrag(gentity_t *spot)
 {
 	int i, num;
 	int touch[MAX_GENTITIES];
@@ -153,7 +147,7 @@ SelectRandomDeathmatchSpawnPoint(qboolean isbot)
 	spot = nil;
 
 	while((spot = findent(spot, FOFS(classname), "info_player_deathmatch")) != nil && count < MAX_SPAWN_POINTS){
-		if(possibletelefrag(spot))
+		if(maytelefrag(spot))
 			continue;
 
 		if(((spot->flags & FL_NO_BOTS) && isbot) ||
@@ -193,7 +187,7 @@ SelectRandomFurthestSpawnPoint(vec3_t avoidPoint, vec3_t origin, vec3_t angles, 
 	spot = nil;
 
 	while((spot = findent(spot, FOFS(classname), "info_player_deathmatch")) != nil){
-		if(possibletelefrag(spot))
+		if(maytelefrag(spot))
 			continue;
 
 		if(((spot->flags & FL_NO_BOTS) && isbot) ||
@@ -315,7 +309,7 @@ SelectInitialSpawnPoint(vec3_t origin, vec3_t angles, qboolean isbot)
 			break;
 	}
 
-	if(!spot || possibletelefrag(spot))
+	if(!spot || maytelefrag(spot))
 		return selectspawnpoint(vec3_origin, origin, angles, isbot);
 
 	veccpy(spot->s.origin, origin);
@@ -378,7 +372,7 @@ After sitting around for five seconds, fall into the ground and dissapear
 =============
 */
 void
-BodySink(gentity_t *ent)
+bodysink(gentity_t *ent)
 {
 	if(level.time - ent->timestamp > 6500){
 		// the body ques are never actually freed, they are just unlinked
@@ -482,7 +476,7 @@ copytobodyqueue(gentity_t *ent)
 	body->r.ownerNum = ent->s.number;
 
 	body->nextthink = level.time + 5000;
-	body->think = BodySink;
+	body->think = bodysink;
 
 	body->die = body_die;
 
@@ -633,7 +627,7 @@ ClientCleanName
 ============
 */
 static void
-ClientCleanName(const char *in, char *out, int outSize)
+clientnameclean(const char *in, char *out, int outSize)
 {
 	int outpos = 0, colorlessLen = 0, spaces = 0;
 
@@ -732,7 +726,7 @@ clientuserinfochanged(int clientNum)
 	// set name
 	Q_strncpyz(oldname, client->pers.netname, sizeof(oldname));
 	s = Info_ValueForKey(userinfo, "name");
-	ClientCleanName(s, client->pers.netname, sizeof(client->pers.netname));
+	clientnameclean(s, client->pers.netname, sizeof(client->pers.netname));
 
 	if(client->sess.team == TEAM_SPECTATOR)
 		if(client->sess.specstate == SPECTATOR_SCOREBOARD)
@@ -1056,7 +1050,7 @@ clientspawn(gentity_t *ent)
 			spawn_origin, spawn_angles);
 	else if(g_gametype.integer >= GT_CTF)
 		// all base oriented team games use the CTF spawn points
-		spawnPoint = selctfspawnpoint(
+		spawnPoint = findctfspawnpoint(
 			client->sess.team,
 			client->pers.teamstate.state,
 			spawn_origin, spawn_angles,
@@ -1273,9 +1267,9 @@ clientdisconnect(int clientNum)
 		// Especially important for stuff like CTF flags
 		tossclientitems(ent);
 #ifdef MISSIONPACK
-		TossClientPersistantPowerups(ent);
+		tossclientpowerups(ent);
 		if(g_gametype.integer == GT_HARVESTER)
-			TossClientCubes(ent);
+			tossclientcubes(ent);
 
 #endif
 	}

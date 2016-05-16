@@ -362,7 +362,7 @@ PortalDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage
 }
 
 void
-DropPortalDestination(gentity_t *player)
+dropportaldest(gentity_t *player)
 {
 	gentity_t *ent;
 	vec3_t snapped;
@@ -449,7 +449,7 @@ PortalEnable(gentity_t *self)
 }
 
 void
-DropPortalSource(gentity_t *player)
+dropportalsrc(gentity_t *player)
 {
 	gentity_t *ent;
 	gentity_t *destination;

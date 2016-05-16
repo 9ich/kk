@@ -409,7 +409,7 @@ nentsfree
 =================
 */
 qboolean
-nentsfree(void)
+numentsfree(void)
 {
 	int i;
 	gentity_t *e;

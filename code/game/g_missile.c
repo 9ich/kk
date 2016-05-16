@@ -23,14 +23,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define MISSILE_PRESTEP_TIME 30
 
-/*
-================
-G_BounceMissile
-
-================
-*/
 void
-G_BounceMissile(gentity_t *ent, trace_t *trace)
+bouncemissile(gentity_t *ent, trace_t *trace)
 {
 	vec3_t velocity;
 	float dot;
@@ -58,14 +52,11 @@ G_BounceMissile(gentity_t *ent, trace_t *trace)
 }
 
 /*
-================
-G_ExplodeMissile
-
 Explode a missile without an impact
 ================
 */
 void
-G_ExplodeMissile(gentity_t *ent)
+explodemissile(gentity_t *ent)
 {
 	vec3_t dir;
 	vec3_t origin;
@@ -93,15 +84,11 @@ G_ExplodeMissile(gentity_t *ent)
 }
 
 #ifdef MISSIONPACK
-/*
-================
-ProximityMine_Explode
-================
-*/
+
 static void
 ProximityMine_Explode(gentity_t *mine)
 {
-	G_ExplodeMissile(mine);
+	explodemissile(mine);
 	// if the prox mine has a trigger free it
 	if(mine->activator){
 		entfree(mine->activator);
@@ -109,11 +96,6 @@ ProximityMine_Explode(gentity_t *mine)
 	}
 }
 
-/*
-================
-ProximityMine_Die
-================
-*/
 static void
 ProximityMine_Die(gentity_t *ent, gentity_t *inflictor, gentity_t *attacker, int damage, int mod)
 {
@@ -121,11 +103,6 @@ ProximityMine_Die(gentity_t *ent, gentity_t *inflictor, gentity_t *attacker, int
 	ent->nextthink = level.time + 1;
 }
 
-/*
-================
-ProximityMine_Trigger
-================
-*/
 void
 ProximityMine_Trigger(gentity_t *trigger, gentity_t *other, trace_t *trace)
 {
@@ -159,11 +136,6 @@ ProximityMine_Trigger(gentity_t *trigger, gentity_t *other, trace_t *trace)
 	entfree(trigger);
 }
 
-/*
-================
-ProximityMine_Activate
-================
-*/
 static void
 ProximityMine_Activate(gentity_t *ent)
 {
@@ -200,11 +172,6 @@ ProximityMine_Activate(gentity_t *ent)
 	ent->activator = trigger;
 }
 
-/*
-================
-ProximityMine_ExplodeOnPlayer
-================
-*/
 static void
 ProximityMine_ExplodeOnPlayer(gentity_t *mine)
 {
@@ -222,15 +189,10 @@ ProximityMine_ExplodeOnPlayer(gentity_t *mine)
 		// make sure the explosion gets to the client
 		mine->r.svFlags &= ~SVF_NOCLIENT;
 		mine->splashmeansofdeath = MOD_PROXIMITY_MINE;
-		G_ExplodeMissile(mine);
+		explodemissile(mine);
 	}
 }
 
-/*
-================
-ProximityMine_Player
-================
-*/
 static void
 ProximityMine_Player(gentity_t *mine, gentity_t *player)
 {
@@ -265,13 +227,8 @@ ProximityMine_Player(gentity_t *mine, gentity_t *player)
 
 #endif
 
-/*
-================
-G_MissileImpact
-================
-*/
 void
-G_MissileImpact(gentity_t *ent, trace_t *trace)
+missileimpact(gentity_t *ent, trace_t *trace)
 {
 	gentity_t *other;
 	qboolean hitClient = qfalse;
@@ -284,7 +241,7 @@ G_MissileImpact(gentity_t *ent, trace_t *trace)
 	// check for bounce
 	if(!other->takedmg &&
 	   (ent->s.eFlags & (EF_BOUNCE | EF_BOUNCE_HALF))){
-		G_BounceMissile(ent, trace);
+		bouncemissile(ent, trace);
 		if(ent->s.weapon == WP_GRENADE_LAUNCHER)
 			addevent(ent, EV_GRENADE_BOUNCE, 0);
 		return;
@@ -296,11 +253,11 @@ G_MissileImpact(gentity_t *ent, trace_t *trace)
 			if(other->client && other->client->invulnerabilityTime > level.time){
 				veccpy(ent->s.pos.trDelta, forward);
 				vecnorm(forward);
-				if(G_InvulnerabilityEffect(other, forward, ent->s.pos.trBase, impactpoint, bouncedir)){
+				if(invulneffect(other, forward, ent->s.pos.trBase, impactpoint, bouncedir)){
 					veccpy(bouncedir, trace->plane.normal);
 					eFlags = ent->s.eFlags & EF_BOUNCE_HALF;
 					ent->s.eFlags &= ~EF_BOUNCE_HALF;
-					G_BounceMissile(ent, trace);
+					bouncemissile(ent, trace);
 					ent->s.eFlags |= eFlags;
 				}
 				ent->target_ent = other;
@@ -436,11 +393,6 @@ G_MissileImpact(gentity_t *ent, trace_t *trace)
 	trap_LinkEntity(ent);
 }
 
-/*
-================
-runmissile
-================
-*/
 void
 runmissile(gentity_t *ent)
 {
@@ -485,7 +437,7 @@ runmissile(gentity_t *ent)
 			entfree(ent);
 			return;
 		}
-		G_MissileImpact(ent, &tr);
+		missileimpact(ent, &tr);
 		if(ent->s.eType != ET_MISSILE)
 			return;	// exploded
 	}
@@ -504,12 +456,6 @@ runmissile(gentity_t *ent)
 
 //=============================================================================
 
-/*
-=================
-fire_plasma
-
-=================
-*/
 gentity_t *
 fire_plasma(gentity_t *self, vec3_t start, vec3_t dir)
 {
@@ -520,7 +466,7 @@ fire_plasma(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt = entspawn();
 	bolt->classname = "plasma";
 	bolt->nextthink = level.time + 10000;
-	bolt->think = G_ExplodeMissile;
+	bolt->think = explodemissile;
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_PLASMAGUN;
@@ -547,11 +493,6 @@ fire_plasma(gentity_t *self, vec3_t start, vec3_t dir)
 
 //=============================================================================
 
-/*
-=================
-fire_grenade
-=================
-*/
 gentity_t *
 fire_grenade(gentity_t *self, vec3_t start, vec3_t dir)
 {
@@ -562,7 +503,7 @@ fire_grenade(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt = entspawn();
 	bolt->classname = "grenade";
 	bolt->nextthink = level.time + 3500;
-	bolt->think = G_ExplodeMissile;
+	bolt->think = explodemissile;
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_GRENADE_LAUNCHER;
@@ -590,11 +531,6 @@ fire_grenade(gentity_t *self, vec3_t start, vec3_t dir)
 
 //=============================================================================
 
-/*
-=================
-fire_bfg
-=================
-*/
 gentity_t *
 fire_bfg(gentity_t *self, vec3_t start, vec3_t dir)
 {
@@ -605,7 +541,7 @@ fire_bfg(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt = entspawn();
 	bolt->classname = "bfg";
 	bolt->nextthink = level.time + 10000;
-	bolt->think = G_ExplodeMissile;
+	bolt->think = explodemissile;
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_BFG;
@@ -631,11 +567,6 @@ fire_bfg(gentity_t *self, vec3_t start, vec3_t dir)
 
 //=============================================================================
 
-/*
-=================
-fire_rocket
-=================
-*/
 gentity_t *
 fire_rocket(gentity_t *self, vec3_t start, vec3_t dir)
 {
@@ -646,7 +577,7 @@ fire_rocket(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt = entspawn();
 	bolt->classname = "rocket";
 	bolt->nextthink = level.time + 15000;
-	bolt->think = G_ExplodeMissile;
+	bolt->think = explodemissile;
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_ROCKET_LAUNCHER;
@@ -771,11 +702,6 @@ fire_homingrocket(gentity_t *self, vec3_t start, vec3_t dir)
 	return bolt;
 }
 
-/*
-=================
-fire_grapple
-=================
-*/
 gentity_t *
 fire_grapple(gentity_t *self, vec3_t start, vec3_t dir)
 {
@@ -810,11 +736,7 @@ fire_grapple(gentity_t *self, vec3_t start, vec3_t dir)
 }
 
 #ifdef MISSIONPACK
-/*
-=================
-fire_nail
-=================
-*/
+
 gentity_t *
 fire_nail(gentity_t *self, vec3_t start, vec3_t dir)
 {
@@ -823,7 +745,7 @@ fire_nail(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt = entspawn();
 	bolt->classname = "nail";
 	bolt->nextthink = level.time + 5000;
-	bolt->think = G_ExplodeMissile;
+	bolt->think = explodemissile;
 	bolt->s.eType = ET_MISSILE;
 	bolt->s.eFlags = EF_BOUNCE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
@@ -845,11 +767,6 @@ fire_nail(gentity_t *self, vec3_t start, vec3_t dir)
 	return bolt;
 }
 
-/*
-=================
-fire_prox
-=================
-*/
 gentity_t *
 fire_prox(gentity_t *self, vec3_t start, vec3_t dir)
 {
@@ -860,7 +777,7 @@ fire_prox(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt = entspawn();
 	bolt->classname = "prox mine";
 	bolt->nextthink = level.time + 3000;
-	bolt->think = G_ExplodeMissile;
+	bolt->think = explodemissile;
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_PROX_LAUNCHER;

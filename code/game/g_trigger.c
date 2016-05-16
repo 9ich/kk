@@ -159,7 +159,7 @@ trigger_gravity_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 {
 	if(other->client == nil)
 		return;
-	BG_TouchTriggerGravity(&other->client->ps, &self->s, level.time - level.prevtime);
+	touchtriggergravity(&other->client->ps, &self->s, level.time - level.prevtime);
 }
 
 /*

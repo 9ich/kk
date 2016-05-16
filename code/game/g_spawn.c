@@ -271,7 +271,7 @@ returning qfalse if not found
 ===============
 */
 qboolean
-G_CallSpawn(gentity_t *ent)
+callspawn(gentity_t *ent)
 {
 	spawn_t *s;
 	gitem_t *item;
@@ -344,7 +344,7 @@ in a gentity
 ===============
 */
 void
-G_ParseField(const char *key, const char *value, gentity_t *ent)
+parsefield(const char *key, const char *value, gentity_t *ent)
 {
 	field_t *f;
 	byte *b;
@@ -405,7 +405,7 @@ level.spawnvars[], then call the class specfic spawn function
 ===================
 */
 void
-G_SpawnGEntityFromSpawnVars(void)
+spawnfromspawnvars(void)
 {
 	int i;
 	gentity_t *ent;
@@ -416,7 +416,7 @@ G_SpawnGEntityFromSpawnVars(void)
 	ent = entspawn();
 
 	for(i = 0; i < level.nspawnvars; i++)
-		G_ParseField(level.spawnvars[i][0], level.spawnvars[i][1], ent);
+		parsefield(level.spawnvars[i][0], level.spawnvars[i][1], ent);
 
 	// check for "notsingle" flag
 	if(g_gametype.integer == GT_SINGLE_PLAYER){
@@ -468,7 +468,7 @@ G_SpawnGEntityFromSpawnVars(void)
 	veccpy(ent->s.origin, ent->r.currentOrigin);
 
 	// if we didn't get a classname, don't bother spawning anything
-	if(!G_CallSpawn(ent))
+	if(!callspawn(ent))
 		entfree(ent);
 }
 
@@ -478,7 +478,7 @@ G_AddSpawnVarToken
 ====================
 */
 char *
-G_AddSpawnVarToken(const char *string)
+addspawnvartok(const char *string)
 {
 	int l;
 	char *dest;
@@ -506,7 +506,7 @@ This does not actually spawn an entity.
 ====================
 */
 qboolean
-G_ParseSpawnVars(void)
+parsespawnvars(void)
 {
 	char keyname[MAX_TOKEN_CHARS];
 	char com_token[MAX_TOKEN_CHARS];
@@ -538,8 +538,8 @@ G_ParseSpawnVars(void)
 			errorf("G_ParseSpawnVars: closing brace without data");
 		if(level.nspawnvars == MAX_SPAWN_VARS)
 			errorf("G_ParseSpawnVars: MAX_SPAWN_VARS");
-		level.spawnvars[level.nspawnvars][0] = G_AddSpawnVarToken(keyname);
-		level.spawnvars[level.nspawnvars][1] = G_AddSpawnVarToken(com_token);
+		level.spawnvars[level.nspawnvars][0] = addspawnvartok(keyname);
+		level.spawnvars[level.nspawnvars][1] = addspawnvartok(com_token);
 		level.nspawnvars++;
 	}
 
@@ -627,13 +627,13 @@ spawnall(void)
 	// the worldspawn is not an actual entity, but it still
 	// has a "spawn" function to perform any global setup
 	// needed by a level (setting configstrings or cvars, etc)
-	if(!G_ParseSpawnVars())
+	if(!parsespawnvars())
 		errorf("SpawnEntities: no entities");
 	SP_worldspawn();
 
 	// parse ents
-	while(G_ParseSpawnVars())
-		G_SpawnGEntityFromSpawnVars();
+	while(parsespawnvars())
+		spawnfromspawnvars();
 
 	level.spawning = qfalse;	// any future calls to entspawn*() will be errors
 }

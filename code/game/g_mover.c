@@ -250,7 +250,7 @@ G_TryPushingProxMine(gentity_t *check, gentity_t *pusher, vec3_t move, vec3_t am
 	return ret;
 }
 
-void G_ExplodeMissile(gentity_t *ent);
+void explodemissile(gentity_t *ent);
 
 /*
 ============
@@ -327,7 +327,7 @@ G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **obstacle)
 						//explode
 						check->s.loopSound = 0;
 						addevent(check, EV_PROXIMITY_MINE_TRIGGER, 0);
-						G_ExplodeMissile(check);
+						explodemissile(check);
 						if(check->activator){
 							entfree(check->activator);
 							check->activator = nil;
@@ -340,7 +340,7 @@ G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **obstacle)
 					//explode
 					check->s.loopSound = 0;
 					addevent(check, EV_PROXIMITY_MINE_TRIGGER, 0);
-					G_ExplodeMissile(check);
+					explodemissile(check);
 					if(check->activator){
 						entfree(check->activator);
 						check->activator = nil;
@@ -774,7 +774,7 @@ Blocked_Door(gentity_t *ent, gentity_t *other)
 	if(!other->client){
 		// except CTF flags!!!!
 		if(other->s.eType == ET_ITEM && other->item->type == IT_TEAM){
-			teamdroppedflag_think(other);
+			droppedflag_think(other);
 			return;
 		}
 		enttemp(other->s.origin, EV_ITEM_POP);

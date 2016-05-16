@@ -209,10 +209,10 @@ static struct
 		"    9: Overload\n"
 		"    10: Harvester"}
 };
-void	G_InitGame(int levelTime, int randomSeed, int restart);
-void	G_RunFrame(int levelTime);
-void	G_ShutdownGame(int restart);
-void	CheckExitRules(void);
+void	gameinit(int levelTime, int randomSeed, int restart);
+void	runframe(int levelTime);
+void	gameshutdown(int restart);
+void	chkexitrules(void);
 
 /*
 ================
@@ -227,10 +227,10 @@ vmMain(int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, 
 {
 	switch(command){
 	case GAME_INIT:
-		G_InitGame(arg0, arg1, arg2);
+		gameinit(arg0, arg1, arg2);
 		return 0;
 	case GAME_SHUTDOWN:
-		G_ShutdownGame(arg0);
+		gameshutdown(arg0);
 		return 0;
 	case GAME_CLIENT_CONNECT:
 		return (intptr_t)clientconnect(arg0, arg1, arg2);
@@ -250,7 +250,7 @@ vmMain(int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, 
 		clientcmd(arg0);
 		return 0;
 	case GAME_RUN_FRAME:
-		G_RunFrame(arg0);
+		runframe(arg0);
 		return 0;
 	case GAME_CONSOLE_COMMAND:
 		return consolecmd();
@@ -288,18 +288,14 @@ errorf(const char *fmt, ...)
 }
 
 /*
-================
-G_FindTeams
-
 Chain together all entities with a matching team field.
 Entity teams are used for item groups and multi-entity mover groups.
 
 All but the first will have the FL_TEAMSLAVE flag set and teammaster field set
 All but the last will have the teamchain field set to the next one
-================
 */
 void
-G_FindTeams(void)
+findteams(void)
 {
 	gentity_t *e, *e2;
 	int i, j;
@@ -344,7 +340,7 @@ G_FindTeams(void)
 }
 
 void
-G_RemapTeamShaders(void)
+remapteamshaders(void)
 {
 #ifdef MISSIONPACK
 	char string[1024];
@@ -359,13 +355,8 @@ G_RemapTeamShaders(void)
 #endif
 }
 
-/*
-=================
-G_RegisterCvars
-=================
-*/
 void
-G_RegisterCvars(void)
+registercvars(void)
 {
 	int i;
 	cvarTable_t *cv;
@@ -385,7 +376,7 @@ G_RegisterCvars(void)
 		trap_Cvar_SetDescription(cvardesctab[i].cv, cvardesctab[i].desc);
 
 	if(remapped)
-		G_RemapTeamShaders();
+		remapteamshaders();
 
 	// check some things
 	if(g_gametype.integer < 0 || g_gametype.integer >= GT_MAX_GAME_TYPE){
@@ -397,13 +388,8 @@ G_RegisterCvars(void)
 	level.warmupmodificationcount = g_warmup.modificationCount;
 }
 
-/*
-=================
-G_UpdateCvars
-=================
-*/
 void
-G_UpdateCvars(void)
+updatecvars(void)
 {
 	int i;
 	cvarTable_t *cv;
@@ -426,17 +412,11 @@ G_UpdateCvars(void)
 		}
 
 	if(remapped)
-		G_RemapTeamShaders();
+		remapteamshaders();
 }
 
-/*
-============
-G_InitGame
-
-============
-*/
 void
-G_InitGame(int levelTime, int randomSeed, int restart)
+gameinit(int levelTime, int randomSeed, int restart)
 {
 	int i;
 
@@ -446,7 +426,7 @@ G_InitGame(int levelTime, int randomSeed, int restart)
 
 	srand(randomSeed);
 
-	G_RegisterCvars();
+	registercvars();
 
 	processipbans();
 
@@ -513,7 +493,7 @@ G_InitGame(int levelTime, int randomSeed, int restart)
 	spawnall();
 
 	// general initialization
-	G_FindTeams();
+	findteams();
 
 	// make sure we have flags for CTF, etc
 	if(g_gametype.integer >= GT_TEAM)
@@ -532,18 +512,13 @@ G_InitGame(int levelTime, int randomSeed, int restart)
 		initbots(restart);
 	}
 
-	G_RemapTeamShaders();
+	remapteamshaders();
 
 	trap_SetConfigstring(CS_INTERMISSION, "");
 }
 
-/*
-=================
-G_ShutdownGame
-=================
-*/
 void
-G_ShutdownGame(int restart)
+gameshutdown(int restart)
 {
 	gprintf("==== ShutdownGame ====\n");
 
@@ -598,15 +573,11 @@ PLAYER COUNTING / SCORE SORTING
 */
 
 /*
-=============
-AddTournamentPlayer
-
 If there are less than two tournament players, put a
 spectator in the game and restart
-=============
 */
 void
-AddTournamentPlayer(void)
+addduelplayer(void)
 {
 	int i;
 	gclient_t *client;
@@ -646,15 +617,10 @@ AddTournamentPlayer(void)
 }
 
 /*
-=======================
-addtourneyqueue
-
 Add client to end of tournament queue
-=======================
 */
-
 void
-addtourneyqueue(gclient_t *client)
+addduelqueue(gclient_t *client)
 {
 	int index;
 	gclient_t *curclient;
@@ -672,14 +638,10 @@ addtourneyqueue(gclient_t *client)
 }
 
 /*
-=======================
-RemoveTournamentLoser
-
 Make the loser a spectator at the back of the line
-=======================
 */
 void
-RemoveTournamentLoser(void)
+removeduelloser(void)
 {
 	int clientNum;
 
@@ -695,13 +657,8 @@ RemoveTournamentLoser(void)
 	setteam(&g_entities[clientNum], "s");
 }
 
-/*
-=======================
-RemoveTournamentWinner
-=======================
-*/
 void
-RemoveTournamentWinner(void)
+removeduelwinner(void)
 {
 	int clientNum;
 
@@ -717,13 +674,8 @@ RemoveTournamentWinner(void)
 	setteam(&g_entities[clientNum], "s");
 }
 
-/*
-=======================
-AdjustTournamentScores
-=======================
-*/
 void
-AdjustTournamentScores(void)
+adjustduelscores(void)
 {
 	int clientNum;
 
@@ -740,14 +692,8 @@ AdjustTournamentScores(void)
 	}
 }
 
-/*
-=============
-SortRanks
-
-=============
-*/
 int QDECL
-SortRanks(const void *a, const void *b)
+sortranks(const void *a, const void *b)
 {
 	gclient_t *ca, *cb;
 
@@ -791,13 +737,9 @@ SortRanks(const void *a, const void *b)
 }
 
 /*
-============
-calcranks
-
 Recalculates the score ranks of all players
 This will be called on every client connect, begin, disconnect, death,
 and team change.
-============
 */
 void
 calcranks(void)
@@ -845,7 +787,7 @@ calcranks(void)
 		}
 
 	qsort(level.sortedclients, level.nconnectedclients,
-	      sizeof(level.sortedclients[0]), SortRanks);
+	      sizeof(level.sortedclients[0]), sortranks);
 
 	// set the rank value for all clients that are connected and not spectators
 	if(g_gametype.integer >= GT_TEAM)
@@ -898,11 +840,11 @@ calcranks(void)
 	}
 
 	// see if it is time to end the level
-	CheckExitRules();
+	chkexitrules();
 
 	// if we are at the intermission, send the new info to everyone
 	if(level.intermissiontime)
-		sendscoreboardmsgall();
+		sendscoreboard();
 }
 
 /*
@@ -914,15 +856,11 @@ MAP CHANGING
 */
 
 /*
-========================
-sendscoreboardmsgall
-
 Do this at intermission time and whenever ranks are recalculated
 due to enters/exits/forced team changes
-========================
 */
 void
-sendscoreboardmsgall(void)
+sendscoreboard(void)
 {
 	int i;
 
@@ -932,12 +870,8 @@ sendscoreboardmsgall(void)
 }
 
 /*
-========================
-clientintermission
-
 When the intermission starts, this will be called for all players.
 If a new client connects, this will be called after the spawn function.
-========================
 */
 void
 clientintermission(gentity_t *ent)
@@ -966,11 +900,7 @@ clientintermission(gentity_t *ent)
 }
 
 /*
-==================
-findintermissionpoint
-
 This is also used for spectator spawns
-==================
 */
 void
 findintermissionpoint(void)
@@ -996,11 +926,6 @@ findintermissionpoint(void)
 	}
 }
 
-/*
-==================
-intermission
-==================
-*/
 void
 intermission(void)
 {
@@ -1012,7 +937,7 @@ intermission(void)
 
 	// if in tournement mode, change the wins / losses
 	if(g_gametype.integer == GT_TOURNAMENT)
-		AdjustTournamentScores();
+		adjustduelscores();
 
 	level.intermissiontime = level.time;
 	// move all clients to the intermission point
@@ -1027,24 +952,19 @@ intermission(void)
 	}
 	// if single player game
 	if(g_gametype.integer == GT_SINGLE_PLAYER){
-		updatetourney();
+		updateduel();
 		spawnonvictorypads();
 	}
 	// send the current scoring to all clients
-	sendscoreboardmsgall();
+	sendscoreboard();
 }
 
 /*
-=============
-ExitLevel
-
 When the intermission has been exited, the server is either killed
 or moved to a new level based on the "nextmap" cvar
-
-=============
 */
 void
-ExitLevel(void)
+exitlevel(void)
 {
 	int i;
 	gclient_t *cl;
@@ -1058,7 +978,7 @@ ExitLevel(void)
 	// which will automatically grab the next spectator and restart
 	if(g_gametype.integer == GT_TOURNAMENT){
 		if(!level.restarted){
-			RemoveTournamentLoser();
+			removeduelloser();
 			trap_SendConsoleCommand(EXEC_APPEND, "map_restart 0\n");
 			level.restarted = qtrue;
 			level.changemap = nil;
@@ -1101,11 +1021,7 @@ ExitLevel(void)
 }
 
 /*
-=================
-logprintf
-
 Print to the logfile with a time stamp if it is open
-=================
 */
 void QDECL
 logprintf(const char *fmt, ...)
@@ -1137,14 +1053,10 @@ logprintf(const char *fmt, ...)
 }
 
 /*
-================
-LogExit
-
 Append information about this game to the log file
-================
 */
 void
-LogExit(const char *string)
+logexit(const char *string)
 {
 	int i, numSorted;
 	gclient_t *cl;
@@ -1199,17 +1111,13 @@ LogExit(const char *string)
 }
 
 /*
-=================
-CheckIntermissionExit
-
 The level will stay at the intermission for a minimum of 5 seconds
 If all players wish to continue, the level will then exit.
 If one or more players have not acknowledged the continue, the game will
 wait 10 seconds before going on.
-=================
 */
 void
-CheckIntermissionExit(void)
+chkintermissionexit(void)
 {
 	int ready, notReady, playerCount;
 	int i;
@@ -1263,7 +1171,7 @@ CheckIntermissionExit(void)
 
 		// if everyone wants to go, go now
 		if(!notReady){
-			ExitLevel();
+			exitlevel();
 			return;
 		}
 	}
@@ -1279,16 +1187,11 @@ CheckIntermissionExit(void)
 	if(level.time < level.exittime + 10000)
 		return;
 
-	ExitLevel();
+	exitlevel();
 }
 
-/*
-=============
-ScoreIsTied
-=============
-*/
 qboolean
-ScoreIsTied(void)
+scoretied(void)
 {
 	int a, b;
 
@@ -1305,16 +1208,12 @@ ScoreIsTied(void)
 }
 
 /*
-=================
-CheckExitRules
-
 There will be a delay between the time the exit is qualified for
 and the time everyone is moved to the intermission spot, so you
 can see the last frag.
-=================
 */
 void
-CheckExitRules(void)
+chkexitrules(void)
 {
 	int i;
 	gclient_t *cl;
@@ -1322,7 +1221,7 @@ CheckExitRules(void)
 	// if at the intermission, wait for all non-bots to
 	// signal ready, then go to next level
 	if(level.intermissiontime){
-		CheckIntermissionExit();
+		chkintermissionexit();
 		return;
 	}
 
@@ -1335,27 +1234,27 @@ CheckExitRules(void)
 	}
 
 	// check for sudden death
-	if(ScoreIsTied())
+	if(scoretied())
 		// always wait for sudden death
 		return;
 
 	if(g_timelimit.integer && !level.warmuptime)
 		if(level.time - level.starttime >= g_timelimit.integer*60000){
 			trap_SendServerCommand(-1, "print \"Timelimit hit.\n\"");
-			LogExit("Timelimit hit.");
+			logexit("Timelimit hit.");
 			return;
 		}
 
 	if(g_gametype.integer < GT_CTF && g_fraglimit.integer){
 		if(level.teamscores[TEAM_RED] >= g_fraglimit.integer){
 			trap_SendServerCommand(-1, "print \"Red hit the fraglimit.\n\"");
-			LogExit("Fraglimit hit.");
+			logexit("Fraglimit hit.");
 			return;
 		}
 
 		if(level.teamscores[TEAM_BLUE] >= g_fraglimit.integer){
 			trap_SendServerCommand(-1, "print \"Blue hit the fraglimit.\n\"");
-			LogExit("Fraglimit hit.");
+			logexit("Fraglimit hit.");
 			return;
 		}
 
@@ -1367,7 +1266,7 @@ CheckExitRules(void)
 				continue;
 
 			if(cl->ps.persistant[PERS_SCORE] >= g_fraglimit.integer){
-				LogExit("Fraglimit hit.");
+				logexit("Fraglimit hit.");
 				trap_SendServerCommand(-1, va("print \"%s" S_COLOR_WHITE " hit the fraglimit.\n\"",
 							      cl->pers.netname));
 				return;
@@ -1379,13 +1278,13 @@ CheckExitRules(void)
 	   level.time - level.roundendtime > ROUND_END_WAIT){
 		if(level.teamscores[TEAM_RED] >= g_roundlimit.integer){
 			trap_SendServerCommand(-1, "print \"Red hit the roundlimit.\n\"");
-			LogExit("Roundlimit hit.");
+			logexit("Roundlimit hit.");
 			return;
 		}
 
 		if(level.teamscores[TEAM_BLUE] >= g_roundlimit.integer){
 			trap_SendServerCommand(-1, "print \"Blue hit the roundlimit.\n\"");
-			LogExit("Roundlimit hit.");
+			logexit("Roundlimit hit.");
 			return;
 		}
 	}
@@ -1393,13 +1292,13 @@ CheckExitRules(void)
 	if(g_gametype.integer >= GT_CTF && g_capturelimit.integer){
 		if(level.teamscores[TEAM_RED] >= g_capturelimit.integer){
 			trap_SendServerCommand(-1, "print \"Red hit the capturelimit.\n\"");
-			LogExit("Capturelimit hit.");
+			logexit("Capturelimit hit.");
 			return;
 		}
 
 		if(level.teamscores[TEAM_BLUE] >= g_capturelimit.integer){
 			trap_SendServerCommand(-1, "print \"Blue hit the capturelimit.\n\"");
-			LogExit("Capturelimit hit.");
+			logexit("Capturelimit hit.");
 			return;
 		}
 	}
@@ -1435,14 +1334,10 @@ allready(void)
 
 
 /*
-=============
-CheckTournament
-
 Once a frame, check for changes in tournement player state
-=============
 */
 void
-CheckTournament(void)
+chkduel(void)
 {
 	// check because we run 3 game frames before calling Connect and/or clientbegin
 	// for clients on a map_restart
@@ -1452,7 +1347,7 @@ CheckTournament(void)
 	if(g_gametype.integer == GT_TOURNAMENT){
 		// pull in a spectator if needed
 		if(level.nplayingclients < 2)
-			AddTournamentPlayer();
+			addduelplayer();
 
 		// if we don't have two players, go back to "waiting for players"
 		if(level.nplayingclients != 2){
@@ -1631,13 +1526,8 @@ beginroundwarmup(void)
 	logprintf("RoundWarmup:\n");
 }
 
-/*
-==================
-CheckVote
-==================
-*/
 void
-CheckVote(void)
+chkvote(void)
 {
 	if(level.voteexectime && level.voteexectime < level.time){
 		level.voteexectime = 0;
@@ -1664,13 +1554,8 @@ CheckVote(void)
 	trap_SetConfigstring(CS_VOTE_TIME, "");
 }
 
-/*
-==================
-PrintTeam
-==================
-*/
 void
-PrintTeam(int team, char *message)
+teamprint(int team, char *message)
 {
 	int i;
 
@@ -1681,22 +1566,17 @@ PrintTeam(int team, char *message)
 	}
 }
 
-/*
-==================
-setleader
-==================
-*/
 void
 setleader(int team, int client)
 {
 	int i;
 
 	if(level.clients[client].pers.connected == CON_DISCONNECTED){
-		PrintTeam(team, va("print \"%s is not connected\n\"", level.clients[client].pers.netname));
+		teamprint(team, va("print \"%s is not connected\n\"", level.clients[client].pers.netname));
 		return;
 	}
 	if(level.clients[client].sess.team != team){
-		PrintTeam(team, va("print \"%s is not on the team anymore\n\"", level.clients[client].pers.netname));
+		teamprint(team, va("print \"%s is not on the team anymore\n\"", level.clients[client].pers.netname));
 		return;
 	}
 	for(i = 0; i < level.maxclients; i++){
@@ -1709,14 +1589,9 @@ setleader(int team, int client)
 	}
 	level.clients[client].sess.teamleader = qtrue;
 	clientuserinfochanged(client);
-	PrintTeam(team, va("print \"%s is the new team leader\n\"", level.clients[client].pers.netname));
+	teamprint(team, va("print \"%s is the new team leader\n\"", level.clients[client].pers.netname));
 }
 
-/*
-==================
-chkteamleader
-==================
-*/
 void
 chkteamleader(int team)
 {
@@ -1748,13 +1623,8 @@ chkteamleader(int team)
 	}
 }
 
-/*
-==================
-CheckTeamVote
-==================
-*/
 void
-CheckTeamVote(int team)
+chkteamvote(int team)
 {
 	int cs_offset;
 
@@ -1789,13 +1659,8 @@ CheckTeamVote(int team)
 	trap_SetConfigstring(CS_TEAMVOTE_TIME + cs_offset, "");
 }
 
-/*
-==================
-CheckCvars
-==================
-*/
 void
-CheckCvars(void)
+chkcvars(void)
 {
 	static int lastMod = -1;
 
@@ -1809,11 +1674,7 @@ CheckCvars(void)
 }
 
 /*
-=============
-runthink
-
 Runs thinking code for this frame if necessary
-=============
 */
 void
 runthink(gentity_t *ent)
@@ -1832,9 +1693,11 @@ runthink(gentity_t *ent)
 	ent->think(ent);
 }
 
-// see if anyone has just readied up
+/*
+ * Checks if anyone has just readied up.
+ */
 static void
-checkreadyplayers(void)
+chkreadyplayers(void)
 {
 	char info[MAX_INFO_VALUE];
 	int i;
@@ -1860,7 +1723,7 @@ checkreadyplayers(void)
 }
 
 void
-checkclanarena(void)
+chkround(void)
 {
 	int i;
 
@@ -1938,14 +1801,10 @@ checkclanarena(void)
 }
 
 /*
-================
-G_RunFrame
-
 Advances the non-player objects in the world
-================
 */
 void
-G_RunFrame(int levelTime)
+runframe(int levelTime)
 {
 	int i;
 	gentity_t *ent;
@@ -1959,7 +1818,7 @@ G_RunFrame(int levelTime)
 	level.time = levelTime;
 
 	// get any cvar changes
-	G_UpdateCvars();
+	updatecvars();
 
 	// go through all allocated objects
 	ent = &g_entities[0];
@@ -2025,31 +1884,31 @@ G_RunFrame(int levelTime)
 			clientendframe(ent);
 
 	// see if it is time to do a tournement restart
-	CheckTournament();
+	chkduel();
 
 	// check roundwarmup status
 	checkroundwarmup();
 
 	// see if it is time to end the level
-	CheckExitRules();
+	chkexitrules();
 
 	// update to team status?
 	checkteamstatus();
 
 	// see if more players have readied up
-	checkreadyplayers();
+	chkreadyplayers();
 
 	// cancel vote if timed out
-	CheckVote();
+	chkvote();
 
 	// check team votes
-	CheckTeamVote(TEAM_RED);
-	CheckTeamVote(TEAM_BLUE);
+	chkteamvote(TEAM_RED);
+	chkteamvote(TEAM_BLUE);
 
 	// for tracking changes
-	CheckCvars();
+	chkcvars();
 
-	checkclanarena();
+	chkround();
 
 	if(g_listEntity.integer){
 		for(i = 0; i < MAX_GENTITIES; i++)

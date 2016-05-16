@@ -29,7 +29,7 @@ ScorePlum
 ============
 */
 void
-ScorePlum(gentity_t *ent, vec3_t origin, int score)
+scoreplum(gentity_t *ent, vec3_t origin, int score)
 {
 	gentity_t *plum;
 
@@ -57,7 +57,7 @@ addscore(gentity_t *ent, vec3_t origin, int score)
 	if(level.warmuptime)
 		return;
 	// show score plum
-	ScorePlum(ent, origin, score);
+	scoreplum(ent, origin, score);
 	ent->client->ps.persistant[PERS_SCORE] += score;
 	if(g_gametype.integer == GT_TEAM)
 		level.teamscores[ent->client->ps.persistant[PERS_TEAM]] += score;
@@ -135,7 +135,7 @@ TossClientCubes
 extern gentity_t *neutralObelisk;
 
 void
-TossClientCubes(gentity_t *self)
+tossclientcubes(gentity_t *self)
 {
 	gitem_t *item;
 	gentity_t *drop;
@@ -147,7 +147,7 @@ TossClientCubes(gentity_t *self)
 
 	// this should never happen but we should never
 	// get the server to crash due to skull being spawned in
-	if(!nentsfree())
+	if(!numentsfree())
 		return;
 
 	if(self->client->sess.team == TEAM_RED)
@@ -182,7 +182,7 @@ TossClientPersistantPowerups
 =================
 */
 void
-TossClientPersistantPowerups(gentity_t *ent)
+tossclientpowerups(gentity_t *ent)
 {
 	gentity_t *powerup;
 
@@ -211,7 +211,7 @@ LookAtKiller
 ==================
 */
 void
-LookAtKiller(gentity_t *self, gentity_t *inflictor, gentity_t *attacker)
+lookatkiller(gentity_t *self, gentity_t *inflictor, gentity_t *attacker)
 {
 	vec3_t dir;
 
@@ -233,7 +233,7 @@ GibEntity
 ==================
 */
 void
-GibEntity(gentity_t *self, int killer)
+entgib(gentity_t *self, int killer)
 {
 	gentity_t *ent;
 	int i;
@@ -273,7 +273,7 @@ body_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage,
 		return;
 	}
 
-	GibEntity(self, 0);
+	entgib(self, 0);
 }
 
 // these are just for logging, the client prints its own messages
@@ -352,7 +352,7 @@ CheckAlmostCapture
 ==================
 */
 void
-CheckAlmostCapture(gentity_t *self, gentity_t *attacker)
+chkalmostcaptured(gentity_t *self, gentity_t *attacker)
 {
 	gentity_t *ent;
 	vec3_t dir;
@@ -397,7 +397,7 @@ CheckAlmostScored
 ==================
 */
 void
-CheckAlmostScored(gentity_t *self, gentity_t *attacker)
+chkalmostscored(gentity_t *self, gentity_t *attacker)
 {
 	gentity_t *ent;
 	vec3_t dir;
@@ -468,9 +468,9 @@ player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damag
 		return;
 
 	// check for an almost capture
-	CheckAlmostCapture(self, attacker);
+	chkalmostcaptured(self, attacker);
 	// check for a player that almost brought in cubes
-	CheckAlmostScored(self, attacker);
+	chkalmostscored(self, attacker);
 
 	if(self->client && self->client->hook)
 		weapon_hook_free(self->client->hook);
@@ -585,27 +585,27 @@ player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damag
 		addscore(self, self->r.currentOrigin, -1);
 
 	// Add team bonuses
-	teamfragbonuses(self, inflictor, attacker);
+	fragbonuses(self, inflictor, attacker);
 
 	// if I committed suicide, the flag does not fall, it returns.
 	if(meansOfDeath == MOD_SUICIDE){
 		if(self->client->ps.powerups[PW_NEUTRALFLAG]){	// only happens in One Flag CTF
-			teamreturnflag(TEAM_FREE);
+			flagreturn(TEAM_FREE);
 			self->client->ps.powerups[PW_NEUTRALFLAG] = 0;
 		}else if(self->client->ps.powerups[PW_REDFLAG]){	// only happens in standard CTF
-			teamreturnflag(TEAM_RED);
+			flagreturn(TEAM_RED);
 			self->client->ps.powerups[PW_REDFLAG] = 0;
 		}else if(self->client->ps.powerups[PW_BLUEFLAG]){	// only happens in standard CTF
-			teamreturnflag(TEAM_BLUE);
+			flagreturn(TEAM_BLUE);
 			self->client->ps.powerups[PW_BLUEFLAG] = 0;
 		}
 	}
 
 	tossclientitems(self);
 #ifdef MISSIONPACK
-	TossClientPersistantPowerups(self);
+	tossclientpowerups(self);
 	if(g_gametype.integer == GT_HARVESTER)
-		TossClientCubes(self);
+		tossclientcubes(self);
 
 #endif
 
@@ -632,7 +632,7 @@ player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damag
 
 	self->s.angles[0] = 0;
 	self->s.angles[2] = 0;
-	LookAtKiller(self, inflictor, attacker);
+	lookatkiller(self, inflictor, attacker);
 
 	veccpy(self->s.angles, self->client->ps.viewangles);
 
@@ -659,7 +659,7 @@ player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damag
 
 	if((self->health <= GIB_HEALTH && !(contents & CONTENTS_NODROP) && g_blood.integer) || meansOfDeath == MOD_SUICIDE)
 		// gib death
-		GibEntity(self, killer);
+		entgib(self, killer);
 	else{
 		// normal death
 		static int i;
@@ -711,7 +711,7 @@ CheckArmor
 ================
 */
 int
-CheckArmor(gentity_t *ent, int damage, int dflags)
+chkarmor(gentity_t *ent, int damage, int dflags)
 {
 	gclient_t *client;
 	int save;
@@ -787,7 +787,7 @@ G_InvulnerabilityEffect
 ================
 */
 int
-G_InvulnerabilityEffect(gentity_t *targ, vec3_t dir, vec3_t point, vec3_t impactpoint, vec3_t bouncedir)
+invulneffect(gentity_t *targ, vec3_t dir, vec3_t point, vec3_t impactpoint, vec3_t bouncedir)
 {
 	gentity_t *impact;
 	vec3_t intersections[2], vec;
@@ -867,7 +867,7 @@ entdamage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	if(targ->client && mod != MOD_JUICED)
 		if(targ->client->invulnerabilityTime > level.time){
 			if(dir && point)
-				G_InvulnerabilityEffect(targ, dir, point, impactpoint, bouncedir);
+				invulneffect(targ, dir, point, impactpoint, bouncedir);
 			return;
 		}
 
@@ -884,7 +884,7 @@ entdamage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		return;
 	}
 #ifdef MISSIONPACK
-	if(g_gametype.integer == GT_OBELISK && CheckObeliskAttack(targ, attacker))
+	if(g_gametype.integer == GT_OBELISK && chkobeliskattacked(targ, attacker))
 		return;
 
 #endif
@@ -1001,7 +1001,7 @@ entdamage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	take = damage;
 
 	// save some from armor
-	asave = CheckArmor(targ, take, dflags);
+	asave = chkarmor(targ, take, dflags);
 	take -= asave;
 
 	if(g_debugDamage.integer)
@@ -1034,7 +1034,7 @@ entdamage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 #else
 	if(g_gametype.integer == GT_CTF){
 #endif
-		teamcheckhurtcarrier(targ, attacker);
+		chkhurtcarrier(targ, attacker);
 	}
 
 	if(targ->client){

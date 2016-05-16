@@ -70,11 +70,11 @@ Use_target_remove_powerups(gentity_t *ent, gentity_t *other, gentity_t *activato
 		return;
 
 	if(activator->client->ps.powerups[PW_REDFLAG])
-		teamreturnflag(TEAM_RED);
+		flagreturn(TEAM_RED);
 	else if(activator->client->ps.powerups[PW_BLUEFLAG])
-		teamreturnflag(TEAM_BLUE);
+		flagreturn(TEAM_BLUE);
 	else if(activator->client->ps.powerups[PW_NEUTRALFLAG])
-		teamreturnflag(TEAM_FREE);
+		flagreturn(TEAM_FREE);
 
 	memset(activator->client->ps.powerups, 0, sizeof(activator->client->ps.powerups));
 }

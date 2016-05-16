@@ -33,7 +33,7 @@ updatetourney
 ==================
 */
 void
-updatetourney(void)
+updateduel(void)
 {
 	int i;
 	gentity_t *player;

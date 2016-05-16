@@ -567,7 +567,7 @@ itemlaunch(gitem_t *item, vec3_t origin, vec3_t velocity)
 #else
 	if(g_gametype.integer == GT_CTF && item->type == IT_TEAM){								// Special case for CTF flags
 #endif
-		dropped->think = teamdroppedflag_think;
+		dropped->think = droppedflag_think;
 		dropped->nextthink = level.time + 30000;
 		ckhdroppedteamitem(dropped);
 	}else{	// auto-remove after 30 seconds
@@ -698,7 +698,7 @@ void
 checkteamitems(void)
 {
 	// Set up team stuff
-	teaminitgame();
+	teamgameinit();
 
 	if(g_gametype.integer == GT_CTF){
 		gitem_t *item;
@@ -835,7 +835,7 @@ G_ItemDisabled
 ============
 */
 int
-G_ItemDisabled(gitem_t *item)
+itemdisabled(gitem_t *item)
 {
 	char name[128];
 
@@ -860,7 +860,7 @@ itemspawn(gentity_t *ent, gitem_t *item)
 	spawnfloat("wait", "0", &ent->wait);
 
 	registeritem(item);
-	if(G_ItemDisabled(item))
+	if(itemdisabled(item))
 		return;
 
 	ent->item = item;
@@ -890,7 +890,7 @@ G_BounceItem
 ================
 */
 void
-G_BounceItem(gentity_t *ent, trace_t *trace)
+itembounce(gentity_t *ent, trace_t *trace)
 {
 	vec3_t velocity;
 	float dot;
@@ -980,5 +980,5 @@ runitem(gentity_t *ent)
 		return;
 	}
 
-	G_BounceItem(ent, &tr);
+	itembounce(ent, &tr);
 }

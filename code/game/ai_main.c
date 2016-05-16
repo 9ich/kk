@@ -78,7 +78,7 @@ vmCvar_t bot_interbreedbots;
 vmCvar_t bot_interbreedcycle;
 vmCvar_t bot_interbreedwrite;
 
-void ExitLevel(void);
+void exitlevel(void);
 
 /*
 ==================
@@ -651,7 +651,7 @@ BotInterbreeding(void)
 	//make sure we are in tournament mode
 	if(gametype != GT_TOURNAMENT){
 		trap_Cvar_Set("g_gametype", va("%d", GT_TOURNAMENT));
-		ExitLevel();
+		exitlevel();
 		return;
 	}
 	//shutdown all the bots

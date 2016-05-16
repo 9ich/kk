@@ -717,7 +717,7 @@ void		evaltrajectorydelta(const trajectory_t *tr, int atTime, vec3_t result);
 void		bgaddpredictableevent(int newEvent, int eventParm, playerState_t *ps);
 
 void		touchjumppad(playerState_t *ps, entityState_t *jumppad);
-void		BG_TouchTriggerGravity(playerState_t *ps, entityState_t *zone, float framedur);
+void		touchtriggergravity(playerState_t *ps, entityState_t *zone, float framedur);
 
 void		playerstate2entstate(playerState_t *ps, entityState_t *s, qboolean snap);
 void		playerstate2entstatexerp(playerState_t *ps, entityState_t *s, int time, qboolean snap);

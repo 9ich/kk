@@ -422,7 +422,7 @@ PM_WaterMove(void)
 		vecmul(pm->ps->velocity, vel, pm->ps->velocity);
 	}
 
-	pmslidemode(qfalse);
+	pmslidemove(qfalse);
 }
 
 #ifdef MISSIONPACK
@@ -528,7 +528,7 @@ PM_AirMove(void)
 	PM_Friction();
 	_airmove(&pm->cmd, wishvel, wishdir, &wishspeed);
 	PM_Accelerate(wishdir, wishspeed, pm->ps->airAccel);
-	pmslidemode(qtrue);
+	pmslidemove(qtrue);
 }
 
 /*

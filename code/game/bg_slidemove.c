@@ -35,14 +35,14 @@ output: origin, velocity, impacts, stairup boolean
 
 /*
 ==================
-pmslidemode
+pmslidemove
 
 Returns qtrue if the velocity was clipped in some way
 ==================
 */
 #define MAX_CLIP_PLANES 5
 qboolean
-pmslidemode(qboolean gravity)
+pmslidemove(qboolean gravity)
 {
 	int bumpcount, numbumps;
 	vec3_t dir;
@@ -225,7 +225,7 @@ pmstepslidemove(qboolean gravity)
 	veccpy(pm->ps->origin, start_o);
 	veccpy(pm->ps->velocity, start_v);
 
-	if(pmslidemode(gravity) == 0)
+	if(pmslidemove(gravity) == 0)
 		return;	// we got exactly where we wanted to go first try
 
 	veccpy(start_o, down);
@@ -256,7 +256,7 @@ pmstepslidemove(qboolean gravity)
 	veccpy(trace.endpos, pm->ps->origin);
 	veccpy(start_v, pm->ps->velocity);
 
-	pmslidemode(gravity);
+	pmslidemove(gravity);
 
 	// push down the final amount
 	veccpy(pm->ps->origin, down);
