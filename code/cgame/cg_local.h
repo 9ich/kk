@@ -596,6 +596,10 @@ typedef struct
 	qhandle_t	rewardsounds[MAX_REWARDSTACK];
 	char		rewardmsgs[MAX_REWARDSTACK][MAX_STRING_CHARS];
 
+	// brightskins
+	byte		enemyRGBA[4];
+	byte		teamRGBA[4];
+
 	// sound buffer mainly for announcer sounds
 	int		sndbufin;
 	int		sndbufout;
@@ -1159,6 +1163,9 @@ extern vmCvar_t cg_teamChatTime;
 extern vmCvar_t cg_teamChatHeight;
 extern vmCvar_t cg_stats;
 extern vmCvar_t cg_forceModel;
+extern vmCvar_t cg_brightskins;
+extern vmCvar_t cg_enemyColor;
+extern vmCvar_t cg_teamColor;
 extern vmCvar_t cg_buildScript;
 extern vmCvar_t cg_paused;
 extern vmCvar_t cg_blood;

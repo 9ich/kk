@@ -292,7 +292,7 @@ CG_FindClientModelFile
 static qboolean
 CG_FindClientModelFile(char *filename, int length, clientInfo_t *ci, const char *teamName, const char *modelname, const char *skinname, const char *base, const char *ext)
 {
-	char *team, *charactersFolder;
+	char *team;
 	int i;
 
 	if(cgs.gametype >= GT_TEAM){
@@ -308,41 +308,43 @@ CG_FindClientModelFile(char *filename, int length, clientInfo_t *ci, const char 
 		}
 	}else
 		team = "default";
-	charactersFolder = "";
-	while(1){
-		for(i = 0; i < 2; i++){
+
+	if(cg_brightskins.integer){
+		skinname = "bright";
+		// "models/players/griever/hull_bright.skin"
+		Com_sprintf(filename, length, "models/players/%s/%s_%s.%s", modelname, base, skinname, ext);
+		if(CG_FileExists(filename))
+			return qtrue;
+	}
+
+	for(i = 0; i < 2; i++){
+		if(i == 0 && teamName && *teamName)
+			// "models/players/james/stroggs/lower_lily_red.skin"
+			Com_sprintf(filename, length, "models/players/%s/%s%s_%s_%s.%s", modelname, teamName, base, skinname, team, ext);
+		else
+			// "models/players/james/lower_lily_red.skin"
+			Com_sprintf(filename, length, "models/players/%s/%s_%s_%s.%s", modelname, base, skinname, team, ext);
+		if(CG_FileExists(filename))
+			return qtrue;
+		if(cgs.gametype >= GT_TEAM){
 			if(i == 0 && teamName && *teamName)
-				//								"models/players/characters/james/stroggs/lower_lily_red.skin"
-				Com_sprintf(filename, length, "models/players/%s%s/%s%s_%s_%s.%s", charactersFolder, modelname, teamName, base, skinname, team, ext);
+				// "models/players/james/stroggs/lower_red.skin"
+				Com_sprintf(filename, length, "models/players/%s/%s%s_%s.%s", modelname, teamName, base, team, ext);
 			else
-				//								"models/players/characters/james/lower_lily_red.skin"
-				Com_sprintf(filename, length, "models/players/%s%s/%s_%s_%s.%s", charactersFolder, modelname, base, skinname, team, ext);
-			if(CG_FileExists(filename))
-				return qtrue;
-			if(cgs.gametype >= GT_TEAM){
-				if(i == 0 && teamName && *teamName)
-					//								"models/players/characters/james/stroggs/lower_red.skin"
-					Com_sprintf(filename, length, "models/players/%s%s/%s%s_%s.%s", charactersFolder, modelname, teamName, base, team, ext);
-				else
-					//								"models/players/characters/james/lower_red.skin"
-					Com_sprintf(filename, length, "models/players/%s%s/%s_%s.%s", charactersFolder, modelname, base, team, ext);
-			}else{
-				if(i == 0 && teamName && *teamName)
-					//								"models/players/characters/james/stroggs/lower_lily.skin"
-					Com_sprintf(filename, length, "models/players/%s%s/%s%s_%s.%s", charactersFolder, modelname, teamName, base, skinname, ext);
-				else
-					//								"models/players/characters/james/lower_lily.skin"
-					Com_sprintf(filename, length, "models/players/%s%s/%s_%s.%s", charactersFolder, modelname, base, skinname, ext);
-			}
-			if(CG_FileExists(filename))
-				return qtrue;
-			if(!teamName || !*teamName)
-				break;
+				//"models/players/james/lower_red.skin"
+				Com_sprintf(filename, length, "models/players/%s/%s_%s.%s", modelname, base, team, ext);
+		}else{
+			if(i == 0 && teamName && *teamName)
+				// "models/players/james/stroggs/lower_lily.skin"
+				Com_sprintf(filename, length, "models/players/%s/%s%s_%s.%s", modelname, teamName, base, skinname, ext);
+			else
+				// "models/players/james/lower_lily.skin"
+				Com_sprintf(filename, length, "models/players/%s/%s_%s.%s", modelname, base, skinname, ext);
 		}
-		// if tried the heads folder first
-		if(charactersFolder[0])
+		if(CG_FileExists(filename))
+			return qtrue;
+		if(!teamName || !*teamName)
 			break;
-		charactersFolder = "characters/";
 	}
 
 	return qfalse;
@@ -1862,8 +1864,18 @@ doplayer(centity_t *cent)
 	// add the torso
 	torso.hModel = ci->torsomodel;
 	torso.customSkin = ci->torsoskin;
+	if(cg_brightskins.integer){
+		if(cgs.gametype >= GT_TEAM){
+			if(ci->team == cgs.clientinfo[cg.pps.clientNum].team)
+				Byte4Copy(cg.teamRGBA, torso.shaderRGBA);
+			else
+				Byte4Copy(cg.enemyRGBA, torso.shaderRGBA);
+		}else
+			Byte4Copy(cg.enemyRGBA, torso.shaderRGBA);
+	}
 
 	playerpos(cent, pos);
+	
 	veccpy(pos, torso.origin);
 	veccpy(pos, torso.lightingOrigin);
 

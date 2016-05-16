@@ -161,6 +161,9 @@ vmCvar_t cg_teamChatHeight;
 vmCvar_t cg_stats;
 vmCvar_t cg_buildScript;
 vmCvar_t cg_forceModel;
+vmCvar_t cg_brightskins;
+vmCvar_t cg_enemyColor;
+vmCvar_t cg_teamColor;
 vmCvar_t cg_paused;
 vmCvar_t cg_blood;
 vmCvar_t cg_predictItems;
@@ -270,6 +273,9 @@ static cvarTable_t cvarTable[] = {
 	{&cg_teamChatTime, "cg_teamChatTime", "3000", CVAR_ARCHIVE},
 	{&cg_teamChatHeight, "cg_teamChatHeight", "0", CVAR_ARCHIVE},
 	{&cg_forceModel, "cg_forceModel", "0", CVAR_ARCHIVE},
+	{&cg_brightskins, "cg_brightskins", "1", CVAR_ARCHIVE},
+	{&cg_enemyColor, "cg_enemyColor", "00FF00FF", CVAR_ARCHIVE},
+	{&cg_teamColor, "cg_teamColor", "AAAAAAFF", CVAR_ARCHIVE},
 	{&cg_predictItems, "cg_predictItems", "1", CVAR_ARCHIVE},
 #ifdef MISSIONPACK
 	{&cg_deferPlayers, "cg_deferPlayers", "0", CVAR_ARCHIVE},
@@ -383,6 +389,7 @@ updatecvars(void)
 {
 	int i;
 	cvarTable_t *cv;
+	vec4_t clr;
 
 	for(i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++)
 		trap_Cvar_Update(cv->vmCvar);
@@ -405,6 +412,12 @@ updatecvars(void)
 		forceModelModificationCount = cg_forceModel.modificationCount;
 		CG_ForceModelChange();
 	}
+
+	// make brightskin rgba arrays
+	Com_HexStrToColor(cg_enemyColor.string, clr);
+	MAKERGBA(cg.enemyRGBA, clr[0]*0xFF, clr[1]*0xFF, clr[2]*0xFF, clr[3]*0xFF);
+	Com_HexStrToColor(cg_teamColor.string, clr);
+	MAKERGBA(cg.teamRGBA, clr[0]*0xFF, clr[1]*0xFF, clr[2]*0xFF, clr[3]*0xFF);
 }
 
 int
