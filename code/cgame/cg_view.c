@@ -301,8 +301,11 @@ CG_OffsetThirdPersonView(void)
 	focusDist = sqrt(focusPoint[0] * focusPoint[0] + focusPoint[1] * focusPoint[1]);
 	if(focusDist < 1)
 		focusDist = 1;	// should never happen
-	cg.refdefviewangles[PITCH] = -180 / M_PI * atan2(focusPoint[2], focusDist);
-	cg.refdefviewangles[YAW] -= cg_thirdPersonAngle.value;
+	if(cg_thirdPerson.integer == 1){
+		cg.refdefviewangles[PITCH] = -180 / M_PI*atan2(focusPoint[2],
+			focusDist);
+		cg.refdefviewangles[YAW] -= cg_thirdPersonAngle.value;
+	}
 }
 
 /*
@@ -539,7 +542,10 @@ CG_CalcViewValues(void)
 	}
 
 	veccpy(ps->origin, cg.refdef.vieworg);
-	veccpy(ps->viewangles, cg.refdefviewangles);
+	if(cg_thirdPerson.integer != 2)
+		veccpy(ps->viewangles, cg.refdefviewangles);
+	if(cg_thirdPerson.integer == 3)
+		vecset(ps->viewangles, 0, 0, 0);
 
 	if(cg_cameraOrbit.integer)
 		if(cg.time > cg.nextorbittime){
