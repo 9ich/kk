@@ -958,8 +958,6 @@ void Com_TouchMemory( void );
 
 // commandLine should not include the executable name (argv[0])
 void Com_Init( char *commandLine );
-int Com_BeginFrame( void );
-void Com_LimitFPS( void );
 void Com_Frame( void );
 void Com_Shutdown( void );
 

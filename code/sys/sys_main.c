@@ -684,12 +684,10 @@ int main( int argc, char **argv )
 
 	while( 1 )
 	{
-                if(Com_BeginFrame() != 0)
-                        continue;
-                Com_LimitFPS();
 		IN_Frame( );
 		Com_Frame( );
 	}
 
 	return 0;
 }
+

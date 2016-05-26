@@ -3039,6 +3039,13 @@ int Com_TimeVal(int minMsec)
 	return timeVal;
 }
 
+/*
+=================
+Com_Frame
+=================
+*/
+void Com_Frame( void ) {
+
 	int		msec, minMsec;
 	int		timeVal, timeValSV;
 	static int	lastTime = 0, bias = 0;
@@ -3048,25 +3055,20 @@ int Com_TimeVal(int minMsec)
 	int		timeBeforeEvents;
 	int		timeBeforeClient;
 	int		timeAfter;
+  
 
-/*
-=================
-Com_Frame
-=================
-*/
-int Com_BeginFrame(void){
 	if ( setjmp (abortframe) ) {
-		return -1;			// an ERR_DROP was thrown
+		return;			// an ERR_DROP was thrown
 	}
-        return 0;
-}
 
-void Com_LimitFPS(void){
-	timeBeforeFirstEvents = 0;
-	timeBeforeServer = 0;
-	timeBeforeEvents = 0;
+	timeBeforeFirstEvents =0;
+	timeBeforeServer =0;
+	timeBeforeEvents =0;
 	timeBeforeClient = 0;
 	timeAfter = 0;
+
+	// write config file if anything changed
+	Com_WriteConfiguration(); 
 
 	//
 	// main event loop
@@ -3124,16 +3126,11 @@ void Com_LimitFPS(void){
 		else
 			NET_Sleep(timeVal - 1);
 	} while(Com_TimeVal(minMsec));
-}
-
-void Com_Frame(void){
+	
 	lastTime = com_frameTime;
 	com_frameTime = Com_EventLoop();
 	
 	msec = com_frameTime - lastTime;
-
-	// write config file if anything changed
-	Com_WriteConfiguration();
 
 	Cbuf_Execute ();
 
@@ -3203,6 +3200,7 @@ void Com_Frame(void){
 		timeBeforeClient = timeAfter;
 	}
 #endif
+
 
 	NET_FlushPacketQueue();
 
