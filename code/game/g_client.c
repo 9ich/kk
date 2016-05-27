@@ -264,17 +264,17 @@ selectspawnpoint(vec3_t avoidPoint, vec3_t origin, vec3_t angles, qboolean isbot
 
 	spot = SelectRandomDeathmatchSpawnPoint ( );
 	if ( spot == nearestSpot ) {
-	        // roll again if it would be real close to point of death
-	        spot = SelectRandomDeathmatchSpawnPoint ( );
-	        if ( spot == nearestSpot ) {
-	                // last try
-	                spot = SelectRandomDeathmatchSpawnPoint ( );
-	        }
+		// roll again if it would be real close to point of death
+		spot = SelectRandomDeathmatchSpawnPoint ( );
+		if ( spot == nearestSpot ) {
+			// last try
+			spot = SelectRandomDeathmatchSpawnPoint ( );
+		}
 	}
 
 	// find a single player start spot
 	if (!spot) {
-	        errorf( "Couldn't find a spawn point" );
+		errorf( "Couldn't find a spawn point" );
 	}
 
 	veccpy (spot->s.origin, origin);
@@ -610,14 +610,14 @@ Forces a client's skin (for teamplay)
 */
 /*
 static void ForceClientSkin( gclient_t *client, char *model, const char *skin ) {
-        char *p;
+	char *p;
 
-        if ((p = strrchr(model, '/')) != 0) {
-                *p = 0;
-        }
+	if ((p = strrchr(model, '/')) != 0) {
+		*p = 0;
+	}
 
-        Q_strcat(model, MAX_QPATH, "/");
-        Q_strcat(model, MAX_QPATH, skin);
+	Q_strcat(model, MAX_QPATH, "/");
+	Q_strcat(model, MAX_QPATH, skin);
 }
 */
 
@@ -775,23 +775,23 @@ clientuserinfochanged(int clientNum)
 
 /*	NOTE: all client side now
 
-        // team
-        switch( team ) {
-        case TEAM_RED:
-                ForceClientSkin(client, model, "red");
+	// team
+	switch( team ) {
+	case TEAM_RED:
+		ForceClientSkin(client, model, "red");
 //		ForceClientSkin(client, headmodel, "red");
-                break;
-        case TEAM_BLUE:
-                ForceClientSkin(client, model, "blue");
+		break;
+	case TEAM_BLUE:
+		ForceClientSkin(client, model, "blue");
 //		ForceClientSkin(client, headmodel, "blue");
-                break;
-        }
-        // don't ever use a default skin in teamplay, it would just waste memory
-        // however bots will always join a team but they spawn in as spectator
-        if ( g_gametype.integer >= GT_TEAM && team == TEAM_SPECTATOR) {
-                ForceClientSkin(client, model, "red");
+		break;
+	}
+	// don't ever use a default skin in teamplay, it would just waste memory
+	// however bots will always join a team but they spawn in as spectator
+	if ( g_gametype.integer >= GT_TEAM && team == TEAM_SPECTATOR) {
+		ForceClientSkin(client, model, "red");
 //		ForceClientSkin(client, headmodel, "red");
-        }
+	}
 */
 
 	// teaminfo
@@ -804,10 +804,10 @@ clientuserinfochanged(int clientNum)
 	/*
 	s = Info_ValueForKey( userinfo, "cg_pmove_fixed" );
 	if ( !*s || atoi( s ) == 0 ) {
-	        client->pers.pmovefixed = qfalse;
+		client->pers.pmovefixed = qfalse;
 	}
 	else {
-	        client->pers.pmovefixed = qtrue;
+		client->pers.pmovefixed = qtrue;
 	}
 	*/
 

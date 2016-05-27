@@ -1050,12 +1050,12 @@ drawreward(void)
 	count = cg.nrewards[0]/10;				// number of big rewards to draw
 
 	if (count) {
-	        y = 4;
-	        x = 320 - count * ICON_SIZE;
-	        for ( i = 0 ; i < count ; i++ ) {
-	                drawpic( x, y, (ICON_SIZE*2)-4, (ICON_SIZE*2)-4, cg.rewardshaders[0] );
-	                x += (ICON_SIZE*2);
-	        }
+		y = 4;
+		x = 320 - count * ICON_SIZE;
+		for ( i = 0 ; i < count ; i++ ) {
+			drawpic( x, y, (ICON_SIZE*2)-4, (ICON_SIZE*2)-4, cg.rewardshaders[0] );
+			x += (ICON_SIZE*2);
+		}
 	}
 
 	count = cg.nrewards[0] - count*10;		// number of small rewards to draw
@@ -2081,9 +2081,9 @@ draw2d(stereoFrame_t stereoFrame)
 	}
 
 /*
-        if (cg.cameramode) {
-                return;
-        }
+	if (cg.cameramode) {
+		return;
+	}
 */
 
 	if(cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR){

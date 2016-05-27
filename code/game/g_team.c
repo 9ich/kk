@@ -1112,7 +1112,7 @@ clientcmp(const void *a, const void *b)
 TeamplayLocationsMessage
 
 Format:
-        clientNum location health armor weapon powerups
+	clientNum location health armor weapon powerups
 
 ==================
 */
