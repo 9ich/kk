@@ -128,6 +128,51 @@ numonteam(int team)
 	return n;
 }
 
+/*
+ * Finds the number of clients occupying a control point.
+ * Returns the total.
+ */
+int
+numclientsoncp(const gentity_t *cp, int *red, int *blue)
+{
+	gentity_t *clients[MAX_CLIENTS];
+	int i, n;
+
+	*red = *blue = 0;
+	n = clientsoncp(cp, clients, ARRAY_LEN(clients));
+	for(i = 0; i < n; i++){
+		if(clients[i]->client->sess.team == TEAM_RED)
+			(*red)++;
+		else if(clients[i]->client->sess.team == TEAM_BLUE)
+			(*blue)++;
+	}
+	return *red + *blue;
+}
+
+/*
+ * Finds the clients occupying a control point.
+ * Returns the total.
+ */
+int
+clientsoncp(const gentity_t *cp, gentity_t **clients, int nclients)
+{
+	int i, n;
+
+	n = 0;
+	for(i = 0; i < g_maxclients.integer; i++){
+		if(n >= nclients)
+			break;
+		if(level.clients[i].pers.connected != CON_CONNECTED)
+			continue;
+		if(level.clients[i].ps.stats[STAT_HEALTH] <= 0)
+			continue;
+		if(vecdist(cp->s.pos.trBase, level.clients[i].ps.origin) > 64)
+			continue;
+		clients[n++] = g_entities + i;
+	}
+	return n;
+}
+
 // nil for everyone
 static __attribute__ ((format(printf, 2, 3))) void QDECL
 PrintMsg(gentity_t *ent, const char *fmt, ...)
@@ -958,16 +1003,16 @@ findteamspawnpoint(int teamstate, team_t team)
 
 	if(teamstate == TEAM_BEGIN){
 		if(team == TEAM_RED)
-			classname = "team_CTF_redplayer";
+			classname = "team_ctf_redplayer";
 		else if(team == TEAM_BLUE)
-			classname = "team_CTF_blueplayer";
+			classname = "team_ctf_blueplayer";
 		else
 			return nil;
 	}else{
 		if(team == TEAM_RED)
-			classname = "team_CTF_redspawn";
+			classname = "team_ctf_redspawn";
 		else if(team == TEAM_BLUE)
-			classname = "team_CTF_bluespawn";
+			classname = "team_ctf_bluespawn";
 		else
 			return nil;
 	}
@@ -1001,10 +1046,57 @@ findctfspawnpoint(team_t team, int teamstate, vec3_t origin, vec3_t angles, qboo
 		return selectspawnpoint(vec3_origin, origin, angles, isbot);
 
 	veccpy(spot->s.origin, origin);
-	origin[2] += 9;
 	veccpy(spot->s.angles, angles);
 
 	return spot;
+}
+
+gentity_t*
+findcpspawnpoint(team_t team, int teamstate, vec3_t origin, vec3_t angles, qboolean isbot)
+{
+	gentity_t *spot;
+	int count;
+	int selection;
+	gentity_t *spots[MAX_TEAM_SPAWN_POINTS];
+	char *classname;
+
+	if(teamstate == TEAM_BEGIN){
+		if(team == TEAM_RED)
+			classname = "team_ctf_redplayer";
+		else if(team == TEAM_BLUE)
+			classname = "team_ctf_blueplayer";
+		else
+			return nil;
+	}else{
+		if(team == TEAM_RED)
+			classname = "team_ctf_redspawn";
+		else if(team == TEAM_BLUE)
+			classname = "team_ctf_bluespawn";
+		else
+			return nil;
+	}
+
+	count = 0;
+	spot = nil;
+
+	while((spot = findent(spot, FOFS(classname), classname)) != nil){
+		if(spot->cpround != level.round)
+			continue;
+		if(maytelefrag(spot))
+			continue;
+		spots[count] = spot;
+		if(++count == MAX_TEAM_SPAWN_POINTS)
+			break;
+	}
+
+	if(count == 0)
+		Com_Error(ERR_DROP, va("map has no %s spawnpoints assigned to this round",
+		   teamname(team)));
+
+	selection = rand() % count;
+	veccpy(spots[selection]->s.origin, origin);
+	veccpy(spots[selection]->s.angles, angles);
+	return spots[selection];
 }
 
 /*---------------------------------------------------------------------------*/
@@ -1094,7 +1186,7 @@ teamplayinfomsg(gentity_t *ent)
 }
 
 void
-checkteamstatus(void)
+chkteamstatus(void)
 {
 	int i;
 	gentity_t *loc, *ent;
@@ -1137,6 +1229,9 @@ Only in CTF games.  Red players spawn here at game start.
 void
 SP_team_CTF_redplayer(gentity_t *ent)
 {
+	spawnint("round", "1", &ent->cpround);
+	ent->r.svFlags |= SVF_NOCLIENT;
+	trap_LinkEntity(ent);
 }
 
 /*QUAKED team_CTF_blueplayer (0 0 1) (-16 -16 -16) (16 16 32)
@@ -1145,6 +1240,9 @@ Only in CTF games.  Blue players spawn here at game start.
 void
 SP_team_CTF_blueplayer(gentity_t *ent)
 {
+	spawnint("round", "1", &ent->cpround);
+	ent->r.svFlags |= SVF_NOCLIENT;
+	trap_LinkEntity(ent);
 }
 
 /*QUAKED team_CTF_redspawn (1 0 0) (-16 -16 -24) (16 16 32)
@@ -1154,6 +1252,9 @@ Targets will be fired when someone spawns in on them.
 void
 SP_team_CTF_redspawn(gentity_t *ent)
 {
+	spawnint("round", "1", &ent->cpround);
+	ent->r.svFlags |= SVF_NOCLIENT;
+	trap_LinkEntity(ent);
 }
 
 /*QUAKED team_CTF_bluespawn (0 0 1) (-16 -16 -24) (16 16 32)
@@ -1163,6 +1264,9 @@ Targets will be fired when someone spawns in on them.
 void
 SP_team_CTF_bluespawn(gentity_t *ent)
 {
+	spawnint("round", "1", &ent->cpround);
+	ent->r.svFlags |= SVF_NOCLIENT;
+	trap_LinkEntity(ent);
 }
 
 #ifdef MISSIONPACK
@@ -1449,3 +1553,101 @@ chkobeliskattacked(gentity_t *obelisk, gentity_t *attacker)
 }
 
 #endif
+
+/*QUAKED team_cp_config (0 0 1) (-8 -8 -8) (8 8 8)
+ * 
+ * Controls CP game parameters.
+ * 
+ * numrounds            number of CP rounds in this map (1 default)
+ */
+void
+SP_team_cp_config(gentity_t *ent)
+{
+	if(g_gametype.integer != GT_CP){
+		entfree(ent);
+		return;
+	}
+	ent->r.svFlags |= SVF_NOCLIENT;
+	spawnint("numrounds", "1", &level.numcprounds);
+	trap_LinkEntity(ent);
+}
+
+/*QUAKED team_cp_round_timer (0 0 1) (-8 -8 -8) (8 8 8)
+ *
+ * Configures timing for one stage of a CP game.
+ * Also activates targets when the setup period ends, which is used to open
+ * spawnroom gates.
+ * 
+ * round		round to which this timer is relevant (1 default)
+ * timelimit		initial time limit for this round, in seconds (180 default)
+ * maxtimelimit		maximum the time limit can be bumped for overtime etc. (240 default)
+ * setuptime		setup time before gates open, in seconds (20 default)
+ * attackingteam	attacking team this round ("blue" default)
+ */
+void
+SP_team_cp_round_timer(gentity_t *ent)
+{
+	if(g_gametype.integer != GT_CP){
+		entfree(ent);
+		return;
+	}
+	ent->r.svFlags |= SVF_NOCLIENT;
+	spawnint("round", "1", &ent->cpround);
+	spawnint("timelimit", "180", &ent->cptimelimit);
+	spawnint("setuptime", "20", &ent->cpsetuptime);
+	spawnint("maxtimelimit", "240", &ent->cpmaxtimelimit);
+	spawnstr("attackingteam", "blue", &ent->cpattackingteam);
+	trap_LinkEntity(ent);
+}
+
+/*QUAKED team_cp_round_end (0 0 1) (-8 -8 -8) (8 8 8)
+ * 
+ * Triggers its targets when a GT_CP round ends.
+ * 
+ * onredwin		triggered if red won (1 default)
+ * onbluewin		triggered if blue won (1 default)
+ * onstalemate		triggered if there was a stalemate (1 default)
+ * onround		triggered only on round n (-1 default)
+ */
+void
+SP_team_cp_round_end(gentity_t *ent)
+{
+	if(g_gametype.integer != GT_CP){
+		entfree(ent);
+		return;
+	}
+	ent->r.svFlags |= SVF_NOCLIENT;
+	trap_LinkEntity(ent);
+}
+
+/*QUAKED team_cp_controlpoint (0 0 1) (-8 -8 -8) (8 8 8)
+ * 
+ * capturerate		capture time in seconds (12 default)
+ * captureorder		capture order of this control point relative to others (0 default (= master))
+ * round		round in which this control point is active (0 default)
+ */
+void
+SP_team_cp_controlpoint(gentity_t *ent)
+{
+	int i;
+
+	if(g_gametype.integer != GT_CP){
+		entfree(ent);
+		return;
+	}
+	spawnfloat("capturerate", "6", &ent->cpcaprate);
+	spawnint("captureorder", "0", &ent->cporder);
+	spawnint("round", "0", &ent->cpround);
+	// insert ourself into control point array
+	for(i = 0; i < ARRAY_LEN(level.cp); i++){
+		if(level.cp[i] == nil){
+			level.cp[i] = ent;
+			break;
+		}
+	}
+	// tell clients to precache all the models
+	ent->s.modelindex = getmodelindex("models/powerups/controlpoint_free.md3");
+	getmodelindex("models/powerups/controlpoint_red.md3");
+	getmodelindex("models/powerups/controlpoint_blue.md3");
+	trap_LinkEntity(ent);
+}

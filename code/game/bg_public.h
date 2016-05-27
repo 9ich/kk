@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define ARMOR_PROTECTION	0.66
 
 #define MAX_ITEMS		256
+#define MAX_CONTROLPOINTS	32
 
 #define RANK_TIED_FLAG		0x4000
 
@@ -92,7 +93,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CS_ROUND		33	// incremented at beginning of each round
 #define CS_ROUNDWARMUP		34
 
-#define CS_MODELS		35				// [MAX_MODELS]
+#define CS_CPS			35	// control point ent indices
+#define CS_CPSTATUS		36	// control points' status (CP_IDLE etc.)
+#define CS_CPOWNER		37	// team that owns each control point
+#define CS_CPCAPTURE		38	// capture progress of each control point
+#define CS_CPPLAYERS		39	// infostring of players on each control point (keys "r" and "b")
+
+#define CS_MODELS		100				// [MAX_MODELS]
 #define CS_SOUNDS		(CS_MODELS+MAX_MODELS)		// [MAX_SOUNDS]
 #define CS_PLAYERS		(CS_SOUNDS+MAX_SOUNDS)		// [MAX_CLIENTS]
 #define CS_LOCATIONS		(CS_PLAYERS+MAX_CLIENTS)	// [MAX_LOCATIONS]
@@ -117,6 +124,7 @@ typedef enum {
 	GT_CA,			// clan arena
 	GT_1FCTF,		// one-flag CTF
 	GT_OBELISK,		// destroy the enemy base
+	GT_CP,			// control points
 	GT_HARVESTER,
 	GT_MAX_GAME_TYPE
 } gametype_t;
@@ -484,7 +492,13 @@ typedef enum
 	GTS_REDTEAM_TOOK_LEAD,
 	GTS_BLUETEAM_TOOK_LEAD,
 	GTS_TEAMS_ARE_TIED,
-	GTS_KAMIKAZE
+	GTS_KAMIKAZE,
+	GTS_CP_SETUP_TIME_OVER,
+	GTS_CP_NEUTRAL_CONTESTED,
+	GTS_CP_RED_CONTESTED,
+	GTS_CP_BLUE_CONTESTED,
+	GTS_CP_RED_CAPTURE,
+	GTS_CP_BLUE_CAPTURE,
 } global_team_sound_t;
 
 // animations
@@ -567,6 +581,17 @@ typedef enum
 
 	TEAM_NUM_TEAMS
 } team_t;
+
+// GT_CP control point status
+typedef enum
+{
+	CP_IDLE,		// no one is occupying CP
+	CP_INACTIVE,            // not active in this round
+	CP_LOCKED,		// preceding points not captured
+	CP_CONTESTED,		// one team is occupying CP
+	CP_DEADLOCK,		// both teams are occupying CP
+	CP_DECAYING		// capture progress decaying
+} cpstatus_t;
 
 // Time between location updates
 #define TEAM_LOCATION_UPDATE_TIME	1000

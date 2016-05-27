@@ -169,6 +169,16 @@ typedef struct
 	qboolean	barrelspin;
 } playerEntity_t;
 
+// GT_CP control point
+typedef struct
+{
+	int		status;
+	int		owner;
+	float		progress;
+	int		redplayers;
+	int		blueplayers;
+} cpEntity_t;
+
 //=================================================
 
 // centity_t have a direct corespondence with gentity_t in the game, but
@@ -196,6 +206,8 @@ typedef struct centity_s
 	int		snapshottime;	// last time this entity was found in a snapshot
 
 	playerEntity_t	pe;
+
+	cpEntity_t	cp;		// if this is a GT_CP control point
 
 	int		errtime;	// decay the error from this time
 	vec3_t		errorigin;
@@ -1086,6 +1098,10 @@ typedef struct
 	int		acceptTask;
 	int		acceptLeader;
 	char		acceptVoice[MAX_NAME_LENGTH];
+
+	// GT_CP control points
+	centity_t	*cp[MAX_CONTROLPOINTS];
+	int		numcp;
 
 	// media
 	cgMedia_t	media;

@@ -1048,6 +1048,12 @@ clientspawn(gentity_t *ent)
 	if(client->sess.team == TEAM_SPECTATOR)
 		spawnPoint = SelectSpectatorSpawnPoint(
 			spawn_origin, spawn_angles);
+	else if(g_gametype.integer == GT_CP)
+		spawnPoint = findcpspawnpoint(
+			client->sess.team,
+			client->pers.teamstate.state,
+			spawn_origin, spawn_angles,
+			!!(ent->r.svFlags & SVF_BOT));
 	else if(g_gametype.integer >= GT_CTF)
 		// all base oriented team games use the CTF spawn points
 		spawnPoint = findctfspawnpoint(

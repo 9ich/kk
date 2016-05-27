@@ -179,6 +179,24 @@ struct gentity_s
 	gitem_t		*item;	// for bonus items
 
 	int		homingtarget;	// hominglauncher
+
+	// team_controlpoint
+	float		cpcaprate;	// capturerate field
+	int		cpstatus;	// CP_IDLE, etc.
+	int		cpowner;	// team that owns this point
+	float		cpprogress;	// progress towards a capture
+	int		cplastredtime;	// last time that red was occupying this control point
+	int		cplastbluetime;	// last time that blue was occupying this
+	int		cpredplayers;	// number of red players occupying this
+	int		cpblueplayers;	// number of blue players occupying this
+	int		cporder;
+	int		cpround;
+	char		*cpattackingteam;
+
+	// team_cp_round_timer
+	int		cptimelimit;
+	int		cpmaxtimelimit;
+	int		cpsetuptime;
 };
 
 typedef enum
@@ -419,14 +437,21 @@ typedef struct
 	// total kills for AWARD_FIRSTBLOOD
 	int		totalkills;
 
-	// clan arena
-	qboolean	roundwarmuptime;		// in pre-round countdown
+	// rounded game types
+	qboolean	roundwarmuptime;	// in pre-round countdown
+	int		roundbegintime;		// time that pre-round countdown ended, if any
 	int		roundendtime;
 	int		round;
 
-#ifdef MISSIONPACK
+	// GT_CP
+	int		attackingteam;
+	int		numcprounds;
+	int		roundtimelimit;
+	int		maxroundtimelimit;
+	int		setuptime;
+	gentity_t	*cp[MAX_CONTROLPOINTS];
+
 	int		portalSequence;
-#endif
 } level_locals_t;
 
 // g_spawn.c
@@ -613,6 +638,8 @@ void	runclient(gentity_t *ent);
 qboolean	onsameteam(gentity_t *ent1, gentity_t *ent2);
 void		ckhdroppedteamitem(gentity_t *dropped);
 qboolean	chkobeliskattacked(gentity_t *obelisk, gentity_t *attacker);
+int		numclientsoncp(const gentity_t *cp, int *red, int *blue);
+int		clientsoncp(const gentity_t *cp, gentity_t **clients, int nclients);
 
 // g_mem.c
 void *	alloc(int size);

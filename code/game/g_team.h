@@ -80,9 +80,10 @@ void		teamgameinit(void);
 void		flagreturn(int team);
 void		teamfreeent(gentity_t *ent);
 gentity_t *	findctfspawnpoint(team_t team, int teamstate, vec3_t origin, vec3_t angles, qboolean isbot);
+gentity_t *	findcpspawnpoint(team_t team, int teamstate, vec3_t origin, vec3_t angles, qboolean isbot);
 gentity_t *	teamgetlocation(gentity_t *ent);
 qboolean	teamgetlocationmsg(gentity_t *ent, char *loc, int loclen);
 void		teamplayinfomsg(gentity_t *ent);
-void		checkteamstatus(void);
+void		chkteamstatus(void);
 
 int		pickupteam(gentity_t *ent, gentity_t *other);

@@ -207,7 +207,8 @@ static struct
 		"    7: Clan Arena\n"
 		"    8: One Flag CTF\n"
 		"    9: Overload\n"
-		"    10: Harvester"}
+		"    10: Control Point\n"
+		"    11: Harvester"}
 };
 void	gameinit(int levelTime, int randomSeed, int restart);
 void	runframe(int levelTime);
@@ -339,6 +340,29 @@ findteams(void)
 	gprintf("%i teams with %i entities\n", c, c2);
 }
 
+/*
+ * Writes the indices of all control point entities in the level.
+ */
+void
+mkcpconfigstr(void)
+{
+	char buf[MAX_INFO_STRING], *p;
+	int i;
+
+	if(g_gametype.integer != GT_CP)
+		return;
+
+	*buf = '\0';
+	for(i = 0; i < ARRAY_LEN(level.cp); i++){
+		if(level.cp[i] == nil)
+			break;
+		Q_strcat(buf, sizeof buf, va("%i ", level.cp[i]->s.number));
+	}
+	if((p = strrchr(buf, ' ')) != nil)
+		*p = '\0';
+	trap_SetConfigstring(CS_CPS, buf);
+}
+
 void
 remapteamshaders(void)
 {
@@ -413,6 +437,66 @@ updatecvars(void)
 
 	if(remapped)
 		remapteamshaders();
+}
+
+void
+setupround(void)
+{
+	int i;
+
+	if(level.round > 1){
+		// respawn all clients
+		for(i = 0; i < g_maxclients.integer; i++){
+			if(g_clients[i].pers.connected != CON_CONNECTED)
+				continue;
+			clientspawn(&g_entities[i]);
+		}
+	}
+
+	beginroundwarmup();
+}
+
+void
+setupcpround(void)
+{
+	int i;
+	gentity_t *ent;
+
+	// find the team_cp_round_timer for the new round and apply its
+	// settings
+	ent = nil;
+	while((ent = findent(ent, FOFS(classname), "team_cp_round_timer")) != nil){
+		if(ent->cpround == level.round){
+			level.roundtimelimit = level.time + 1000*ent->cptimelimit;
+			level.maxroundtimelimit = level.time + 1000*ent->cpmaxtimelimit;
+			level.setuptime = level.time + 1000*ent->cpsetuptime;
+			if(Q_stricmp(ent->cpattackingteam, teamname(TEAM_BLUE)) == 0)
+				level.attackingteam = TEAM_BLUE;
+			else
+				level.attackingteam = TEAM_RED;
+			break;
+		}
+	}		
+	if(ent == nil)
+		Com_Error(ERR_DROP, "map has no team_cp_round_timer for this round");
+
+	// disable all control points
+	for(i = 0; i < ARRAY_LEN(level.cp); i++){
+		if(level.cp[i] == nil)
+			break;
+		level.cp[i]->cpstatus = CP_LOCKED;
+	}
+
+	if(level.round > 1){
+		// respawn all clients
+		for(i = 0; i < g_maxclients.integer; i++){
+			if(g_clients[i].pers.connected != CON_CONNECTED)
+				continue;
+			clientspawn(&g_entities[i]);
+		}
+	}
+
+	beginroundwarmup();
 }
 
 void
@@ -492,8 +576,27 @@ gameinit(int levelTime, int randomSeed, int restart)
 	// parse the key/value pairs and spawn entities
 	spawnall();
 
+	level.round = 1;
+	if(g_restarted.integer){
+		trap_Cvar_Set("g_restarted", "0");
+		level.warmuptime = 0;
+		// roundwarmup
+		if(g_gametype.integer == GT_LMS || g_gametype.integer == GT_CA ||
+		   g_gametype.integer == GT_LTS){
+			setupround();
+		}else if(g_gametype.integer == GT_CP){
+			setupcpround();
+		}
+	}else if(g_doWarmup.integer){	// Turn it on
+		level.warmuptime = WARMUP_NEEDPLAYERS;
+		trap_SetConfigstring(CS_WARMUP, va("%i", level.warmuptime));
+		logprintf("Warmup:\n");
+	}
+
 	// general initialization
 	findteams();
+
+	mkcpconfigstr();
 
 	// make sure we have flags for CTF, etc
 	if(g_gametype.integer >= GT_TEAM)
@@ -1239,7 +1342,7 @@ chkexitrules(void)
 		return;
 
 	if(g_timelimit.integer && !level.warmuptime)
-		if(level.time - level.starttime >= g_timelimit.integer*60000){
+		if(level.time - level.roundbegintime >= g_timelimit.integer*60000){
 			trap_SendServerCommand(-1, "print \"Timelimit hit.\n\"");
 			logexit("Timelimit hit.");
 			return;
@@ -1334,7 +1437,8 @@ allready(void)
 
 
 /*
-Once a frame, check for changes in tournement player state
+Once a frame, check for changes in tournement player state.
+This needs a better name.
 */
 void
 chkduel(void)
@@ -1477,12 +1581,12 @@ chkduel(void)
  * Handle level.roundwarmuptime for beginning of rounds in certain game types.
  */
 void
-checkroundwarmup(void)
+chkroundwarmup(void)
 {
 	int i;
 
 	if(g_gametype.integer != GT_LMS && g_gametype.integer != GT_CA &&
-	   g_gametype.integer != GT_LTS)
+	   g_gametype.integer != GT_LTS && g_gametype.integer != GT_CP)
 		return;
 	// main warmup isn't our concern
 	if(level.warmuptime != 0)
@@ -1493,6 +1597,7 @@ checkroundwarmup(void)
 
 	if(level.time > level.roundwarmuptime){
 		level.roundwarmuptime = 0;
+		level.roundbegintime = level.time;
 		trap_SetConfigstring(CS_ROUNDWARMUP, va("%i", level.roundwarmuptime));
 		logprintf("RoundBegin:\n");
 		for(i = 0; i < g_maxclients.integer; i++){
@@ -1502,6 +1607,30 @@ checkroundwarmup(void)
 			// force dead clients to respawn
 			if(g_clients[i].ps.stats[STAT_HEALTH] <= 0)
 				clientrespawn(&g_entities[i]);
+		}
+
+		if(g_gametype.integer == GT_CP){
+			gentity_t *ent;
+
+			// enable the relevant control points for this round
+			for(i = 0; i < ARRAY_LEN(level.cp); i++){
+				if(level.cp[i] == nil)
+					break;
+				if(level.cp[i]->cpround == level.round)
+					level.cp[i]->cpstatus = CP_IDLE;
+				else
+					level.cp[i]->cpstatus = CP_INACTIVE;
+			}
+
+			// activate the targets of this round's
+			// team_cp_round_timer
+			ent = nil;
+			while((ent = findent(ent, FOFS(classname), "team_cp_round_timer")) != nil){
+				if(ent->cpround == level.round)
+					break;
+			}
+			if(ent != nil)
+				usetargets(ent, ent);
 		}
 	}else{
 		for(i = 0; i < g_maxclients.integer; i++){
@@ -1519,11 +1648,143 @@ void
 beginroundwarmup(void)
 {
 	if(g_gametype.integer != GT_LMS && g_gametype.integer != GT_CA &&
-	   g_gametype.integer != GT_LTS)
+	   g_gametype.integer != GT_LTS && g_gametype.integer != GT_CP)
 		return;
-	level.roundwarmuptime = level.time + g_roundwarmup.value*1000;
+	if(g_gametype.integer == GT_CP)
+		level.roundwarmuptime = level.setuptime;
+	else
+		level.roundwarmuptime = level.time + g_roundwarmup.value*1000;
 	trap_SetConfigstring(CS_ROUNDWARMUP, va("%i", level.roundwarmuptime));
 	logprintf("RoundWarmup:\n");
+}
+
+/*
+ * Returns the CP capture rate for this frame, given nplayers of a certain team
+ * contesting the point.  Grows as a harmonic series with nplayers terms.
+ */
+static float
+capturerate(float baserate, int nplayers)
+{
+	int n;
+	float x;
+
+	x = 0;
+	for(n = 1; n <= nplayers; n++)
+		x += 1.0f/(float)n;
+	return x*baserate;
+}
+
+/*
+ * Handles GT_CP capture progress.
+ */
+void
+chkcp(void)
+{
+	gentity_t *cp, *e;
+	int i, ncp;
+	char buf[MAX_INFO_STRING], info[MAX_INFO_STRING];
+	char *p;
+	float baserate, decayrate;
+
+	ncp = 0;
+	for(i = 0; i < ARRAY_LEN(level.cp); i++){
+		if(level.cp[i] == nil)
+			break;
+		ncp++;
+
+		cp = level.cp[i];
+
+		if(cp->cpstatus == CP_LOCKED || cp->cpstatus == CP_INACTIVE){
+			cp->cpprogress = 0.0f;
+			continue;
+		}
+
+		numclientsoncp(cp, &cp->cpredplayers, &cp->cpblueplayers);
+		baserate = (level.time-level.prevtime)/(1000*cp->cpcaprate);
+		decayrate = (level.time-level.prevtime)/(1000*(1/cp->cpcaprate * 540));
+
+		if(cp->cpredplayers > 0 && cp->cpblueplayers > 0){
+			cp->cpstatus = CP_DEADLOCK;
+		}else if(cp->cpstatus != CP_LOCKED && cp->cpstatus != CP_INACTIVE &&
+		   cp->cpredplayers > 0 && cp->cpowner != TEAM_RED){
+			// red is contesting
+			cp->cpstatus = CP_CONTESTED;
+			cp->cpprogress += capturerate(baserate, cp->cpredplayers);
+			cp->cpprogress = MIN(1.0f, cp->cpprogress);
+			if(cp->cpprogress >= 1){
+				// red captures the control point
+				cp->cpprogress = 0.0f;
+				if(cp->cpowner != TEAM_FREE){
+					cp->cpowner = TEAM_FREE;
+					cp->s.modelindex = getmodelindex("models/powerups/controlpoint_free.md3");
+				}else{
+					cp->cpowner = TEAM_RED;
+					cp->s.modelindex = getmodelindex("models/powerups/controlpoint_red.md3");
+				}
+			}
+		}else if(cp->cpstatus != CP_LOCKED && cp->cpstatus != CP_INACTIVE &&
+		   cp->cpblueplayers > 0 && cp->cpowner != TEAM_BLUE){
+			// blue is contesting
+			cp->cpstatus = CP_CONTESTED;
+			cp->cpprogress += capturerate(baserate, cp->cpblueplayers);
+			cp->cpprogress = MIN(1.0f, cp->cpprogress);
+			if(cp->cpprogress >= 1){
+				// blue captures the control point
+				cp->cpprogress = 0.0f;
+				if(cp->cpowner != TEAM_FREE){
+					cp->cpowner = TEAM_FREE;
+					cp->s.modelindex = getmodelindex("models/powerups/controlpoint_free.md3");
+				}else{
+					cp->cpowner = TEAM_BLUE;
+					cp->s.modelindex = getmodelindex("models/powerups/controlpoint_blue.md3");
+				}
+			}
+		}else if(cp->cpprogress > 0){
+			if((cp->cpredplayers == 0 && cp->cpowner != TEAM_RED) ||
+			   (cp->cpblueplayers == 0 && cp->cpowner != TEAM_BLUE)){
+				// a team was contesting but got interrupted
+				cp->cpstatus = CP_DECAYING;
+				cp->cpprogress -= decayrate;
+				cp->cpprogress = MAX(0, cp->cpprogress);
+			}
+		}else{
+			cp->cpstatus = CP_IDLE;
+		}
+	}
+
+	// write configstrings
+	*buf = '\0';
+	for(i = 0; i < ncp; i++)
+		Q_strcat(buf, sizeof buf, va("%i ", level.cp[i]->cpstatus));
+	// chop off trailing space
+	if((p = strrchr(buf, ' ')) != nil)
+		*p = '\0';
+	trap_SetConfigstring(CS_CPSTATUS, buf);
+	
+	*buf = '\0';
+	for(i = 0; i < ncp; i++)
+		Q_strcat(buf, sizeof buf, va("%i ", level.cp[i]->cpowner));
+	if((p = strrchr(buf, ' ')) != nil)
+		*p = '\0';
+	trap_SetConfigstring(CS_CPOWNER, buf);
+
+	*buf = '\0';
+	for(i = 0; i < ncp; i++)
+		Q_strcat(buf, sizeof buf, va("%.4f ", level.cp[i]->cpprogress));
+	if((p = strrchr(buf, ' ')) != nil)
+		*p = '\0';
+	trap_SetConfigstring(CS_CPCAPTURE, buf);
+
+	*buf = '\0';
+	for(i = 0; i < ncp; i++){
+		*info = '\0';
+		Info_SetValueForKey(info, "r", va("%i", level.cp[i]->cpredplayers));
+		Info_SetValueForKey(info, "b", va("%i", level.cp[i]->cpblueplayers));
+		Q_strcat(buf, sizeof buf, va("%s ", info));
+	}
+	if((p = strrchr(buf, ' ')) != nil)
+		*p = '\0';
+	trap_SetConfigstring(CS_CPPLAYERS, buf);
 }
 
 void
@@ -1722,14 +1983,39 @@ chkreadyplayers(void)
 	}
 }
 
+qboolean
+allpointsowned(int team)
+{
+	int i, n;
+	
+	n = 0;
+	for(i = 0; i < ARRAY_LEN(level.cp); i++){
+		if(level.cp[i] == nil)
+			break;
+		if(level.cp[i]->cpround != level.round)
+			continue;
+		n++;
+		if(level.cp[i]->cpstatus == CP_INACTIVE ||
+		   level.cp[i]->cpstatus == CP_LOCKED)
+			return qfalse;
+		if(level.cp[i]->cpowner != team)
+			return qfalse;
+	}
+	// return false if there aren't actually any control points
+	// for this round
+	return n > 0;
+}
+
+/*
+ * For gametypes that use normal rounds.
+ */
 void
 chkround(void)
 {
 	int i;
 
-	if(g_gametype.integer != GT_LMS &&
-	   g_gametype.integer != GT_CA &&
-	   g_gametype.integer != GT_LTS)
+	if(g_gametype.integer != GT_LMS && g_gametype.integer != GT_CA &&
+	   g_gametype.integer != GT_LTS && g_gametype.integer != GT_CP)
 		return;
 	// if roundlimit was hit
 	if(level.intermissiontime != 0 || level.intermissionqueued != 0)
@@ -1743,16 +2029,15 @@ chkround(void)
 
 	if(level.roundendtime != 0){
 		if(level.time - level.roundendtime > ROUND_END_WAIT){
-			// respawn all clients
-			for(i = 0; i < g_maxclients.integer; i++){
-				if(g_clients[i].pers.connected != CON_CONNECTED)
-					continue;
-				clientspawn(&g_entities[i]);
-			}
+			// waited long enough at end of round; setup the next
+			// round and respawn everyone
 			level.roundendtime = 0;
 			level.round++;
 			trap_SetConfigstring(CS_ROUND, va("%i", level.round));
-			beginroundwarmup();
+			if(g_gametype.integer == GT_CP)
+				setupcpround();
+			else
+				setupround();
 		}
 		return;
 	}
@@ -1792,6 +2077,21 @@ chkround(void)
 		}else if(numonteam(TEAM_FREE) >= 2 && numaliveonteam(TEAM_FREE) == 0){
 			// everyone left died this frame
 			trap_SendServerCommand(-1, "print \"Round tied\n\"");
+			level.roundendtime = level.time;
+		}
+		break;
+	case GT_CP:
+		if(allpointsowned(level.attackingteam)){
+			// attacking team holds all control points
+			trap_SendServerCommand(-1, va("print \"%s wins the round\n\"",
+			   teamname(level.attackingteam)));
+			addteamscore(vec3_origin, level.attackingteam, 1);
+			level.roundendtime = level.time;
+		}else if(level.time - level.roundbegintime > level.roundtimelimit){
+			// defending team successfully defended until timelimit
+			trap_SendServerCommand(-1, va("print \"%s wins the round\n\"",
+			   teamname(getotherteam(level.attackingteam))));
+			addteamscore(vec3_origin, getotherteam(level.attackingteam), 1);
 			level.roundendtime = level.time;
 		}
 		break;
@@ -1887,13 +2187,16 @@ runframe(int levelTime)
 	chkduel();
 
 	// check roundwarmup status
-	checkroundwarmup();
+	chkroundwarmup();
+
+	// check control points & send any changes
+	chkcp();
 
 	// see if it is time to end the level
 	chkexitrules();
 
 	// update to team status?
-	checkteamstatus();
+	chkteamstatus();
 
 	// see if more players have readied up
 	chkreadyplayers();

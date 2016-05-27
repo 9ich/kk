@@ -177,11 +177,14 @@ void	SP_team_CTF_blueplayer(gentity_t *ent);
 void	SP_team_CTF_redspawn(gentity_t *ent);
 void	SP_team_CTF_bluespawn(gentity_t *ent);
 
-#ifdef MISSIONPACK
 void	SP_team_blueobelisk(gentity_t *ent);
 void	SP_team_redobelisk(gentity_t *ent);
 void	SP_team_neutralobelisk(gentity_t *ent);
-#endif
+
+void	SP_team_cp_config(gentity_t *ent);
+void	SP_team_cp_round_timer(gentity_t *ent);
+void	SP_team_cp_controlpoint(gentity_t *ent);
+
 void
 SP_item_botroam(gentity_t *ent) { }
 
@@ -246,17 +249,20 @@ spawn_t spawns[] = {
 	{"shooter_grenade", SP_shooter_grenade},
 	{"shooter_plasma", SP_shooter_plasma},
 
-	{"team_CTF_redplayer", SP_team_CTF_redplayer},
-	{"team_CTF_blueplayer", SP_team_CTF_blueplayer},
+	{"team_ctf_redplayer", SP_team_CTF_redplayer},
+	{"team_ctf_blueplayer", SP_team_CTF_blueplayer},
 
-	{"team_CTF_redspawn", SP_team_CTF_redspawn},
-	{"team_CTF_bluespawn", SP_team_CTF_bluespawn},
+	{"team_ctf_redspawn", SP_team_CTF_redspawn},
+	{"team_ctf_bluespawn", SP_team_CTF_bluespawn},
 
-#ifdef MISSIONPACK
 	{"team_redobelisk", SP_team_redobelisk},
 	{"team_blueobelisk", SP_team_blueobelisk},
 	{"team_neutralobelisk", SP_team_neutralobelisk},
-#endif
+
+	{"team_cp_config", SP_team_cp_config},
+	{"team_cp_round_timer", SP_team_cp_round_timer},
+	{"team_cp_controlpoint", SP_team_cp_controlpoint},
+
 	{"item_botroam", SP_item_botroam},
 
 	{nil, 0}
@@ -284,7 +290,7 @@ callspawn(gentity_t *ent)
 	// check item spawn functions
 	if(g_gametype.integer != GT_CA)
 		for(item = bg_itemlist+1; item->classname; item++)
-			if(!strcmp(item->classname, ent->classname)){
+			if(!Q_stricmp(item->classname, ent->classname)){
 				itemspawn(ent, item);
 				return qtrue;
 			}
@@ -410,7 +416,7 @@ spawnfromspawnvars(void)
 	int i;
 	gentity_t *ent;
 	char *s, *value, *gametypeName;
-	static char *gametypeNames[] = {"ffa", "tournament", "single", "team", "ctf", "oneflag", "obelisk", "harvester"};
+	static char *gametypeNames[] = {"ffa", "tournament", "single", "lms", "team", "ctf", "lts", "ca", "oneflag", "obelisk", "cp", "harvester"};
 
 	// get the next free entity
 	ent = entspawn();
@@ -595,19 +601,6 @@ SP_worldspawn(void)
 	// see if we want a warmup time
 	trap_SetConfigstring(CS_WARMUP, "");
 	trap_SetConfigstring(CS_ROUNDWARMUP, "");
-	if(g_restarted.integer){
-		trap_Cvar_Set("g_restarted", "0");
-		level.warmuptime = 0;
-		// clan arena roundwarmup
-		if(g_gametype.integer == GT_LMS || g_gametype.integer == GT_CA ||
-		   g_gametype.integer == GT_LTS){
-			beginroundwarmup();
-		}
-	}else if(g_doWarmup.integer){	// Turn it on
-		level.warmuptime = WARMUP_NEEDPLAYERS;
-		trap_SetConfigstring(CS_WARMUP, va("%i", level.warmuptime));
-		logprintf("Warmup:\n");
-	}
 }
 
 /*

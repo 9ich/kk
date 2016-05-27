@@ -1878,6 +1878,8 @@ drawwarmup(void)
 			s = "One Flag CTF";
 		else if(cgs.gametype == GT_OBELISK)
 			s = "Overload";
+		else if(cgs.gametype == GT_CP)
+			s = "Control Point";
 		else if(cgs.gametype == GT_HARVESTER)
 			s = "Harvester";
 		else
@@ -1993,6 +1995,70 @@ drawreadyup(void)
 	centerprint(va("%s %s", name, msg), 16, BIGCHAR_WIDTH);
 }
 
+/*
+ * Draws GT_CP control point statuses.
+ */
+static void
+drawcp(void)
+{
+	centity_t *cp;
+	int font;
+	float sz, x, y;
+	int i;
+	char *s, *status, *team;
+
+	pushalign("topleft");
+
+	font = FONT4;
+	sz = 12;
+
+	x = 0;
+	y = screenheight()/2;
+	if(cgs.gametype != GT_CP)
+		return;
+	for(i = 0; i < cgs.numcp; i++){
+		cp = cgs.cp[i];
+		switch(cp->cp.status){
+		case CP_IDLE:
+			status = "idle";
+			break;
+		case CP_INACTIVE:
+			status = "disabled";
+			break;
+		case CP_LOCKED:
+			status = "locked";
+			break;
+		case CP_CONTESTED:
+			status = "contested";
+			break;
+		case CP_DECAYING:
+			status = "decaying";
+			break;
+		case CP_DEADLOCK:
+			status = "deadlocked";
+			break;
+		default:
+			status = "what";
+		}
+		switch(cp->cp.owner){
+		case TEAM_RED:
+			team = "red";
+			break;
+		case TEAM_BLUE:
+			team = "blue";
+			break;
+		default:
+			team = "nobody";
+		}
+		s = va("Control point %d is %s, owned by %s, %d%% captured", i, status,
+		   team, (int)(cp->cp.progress*100));
+		drawstring(x, y, s, font, sz, CPaleVioletRed);
+		y += sz;
+	}
+
+	popalign(1);
+}
+
 //==================================================================================
 /*
 =================
@@ -2078,6 +2144,8 @@ draw2d(stereoFrame_t stereoFrame)
 	cg.scoreboardshown = drawscoreboard();
 	if(!cg.scoreboardshown)
 		drawcenterstr();
+
+	drawcp();
 }
 
 static void

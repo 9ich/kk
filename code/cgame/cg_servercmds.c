@@ -136,11 +136,6 @@ parsesrvinfo(void)
 	trap_Cvar_Set("g_blueTeam", cgs.blueteam);
 }
 
-/*
-==================
-CG_ParseWarmup
-==================
-*/
 static void
 CG_ParseWarmup(void)
 {
@@ -176,6 +171,96 @@ parseroundwarmup(void)
 	cg.roundwarmup = warmup;
 }
 
+static void
+parsecps(void)
+{
+	char buf[MAX_INFO_STRING], *p, *tok;
+	int j;
+
+	// take the indices of all control points in this level
+	*buf = '\0';
+	Q_strncpyz(buf, getconfigstr(CS_CPS), sizeof buf);
+	p = buf;
+	cgs.numcp = 0;
+	for(tok = COM_Parse(&p); *tok != '\0'; tok = COM_Parse(&p)){
+		j = atoi(tok);
+		if(j < 0 || j >= ARRAY_LEN(cg_entities))
+			continue;	// bad data from server
+		cgs.cp[cgs.numcp++] = &cg_entities[j];
+		if(cgs.numcp >= ARRAY_LEN(cgs.cp))
+			break;
+	}
+}
+
+static void
+parsecpstatus(void)
+{
+	char buf[MAX_INFO_STRING], *p, *tok;
+	int i;
+
+	*buf = '\0';
+	Q_strncpyz(buf, getconfigstr(CS_CPSTATUS), sizeof buf);
+	p = buf;
+	i = 0;
+	for(tok = COM_Parse(&p); *tok != '\0'; tok = COM_Parse(&p)){
+		cgs.cp[i++]->cp.status = atoi(tok);
+		if(i >= ARRAY_LEN(cgs.cp))
+			break;
+	}
+}
+
+static void
+parsecpowner(void)
+{
+	char buf[MAX_INFO_STRING], *p, *tok;
+	int i;
+
+	*buf = '\0';
+	Q_strncpyz(buf, getconfigstr(CS_CPOWNER), sizeof buf);
+	p = buf;
+	i = 0;
+	for(tok = COM_Parse(&p); *tok != '\0'; tok = COM_Parse(&p)){
+		cgs.cp[i++]->cp.owner = atoi(tok);
+		if(i >= ARRAY_LEN(cgs.cp))
+			break;
+	}
+}
+
+static void
+parsecpprogress(void)
+{
+	char buf[MAX_INFO_STRING], *p, *tok;
+	int i;
+
+	*buf = '\0';
+	Q_strncpyz(buf, getconfigstr(CS_CPCAPTURE), sizeof buf);
+	p = buf;
+	i = 0;
+	for(tok = COM_Parse(&p); *tok != '\0'; tok = COM_Parse(&p)){
+		cgs.cp[i++]->cp.progress = atof(tok);
+		if(i >= ARRAY_LEN(cgs.cp))
+			break;
+	}
+}
+
+static void
+parsecpplayers(void)
+{
+	char buf[MAX_INFO_STRING], *p, *tok;
+	int i;
+
+	*buf = '\0';
+	Q_strncpyz(buf, getconfigstr(CS_CPPLAYERS), sizeof buf);
+	p = buf;
+	i = 0;
+	for(tok = COM_Parse(&p); *tok != '\0'; tok = COM_Parse(&p)){
+		cgs.cp[i]->cp.redplayers = atoi(Info_ValueForKey(tok, "r"));
+		cgs.cp[i]->cp.blueplayers = atoi(Info_ValueForKey(tok, "b"));
+		if(++i >= ARRAY_LEN(cgs.cp))
+			break;
+	}
+}
+
 /*
 ================
 setconfigvals
@@ -195,15 +280,19 @@ setconfigvals(void)
 		s = getconfigstr(CS_FLAGSTATUS);
 		cgs.redflag = s[0] - '0';
 		cgs.blueflag = s[1] - '0';
-	}
-#ifdef MISSIONPACK
-	else if(cgs.gametype == GT_1FCTF){
+	}else if(cgs.gametype == GT_1FCTF){
 		s = getconfigstr(CS_FLAGSTATUS);
 		cgs.flagStatus = s[0] - '0';
 	}
-#endif
+
 	cg.warmup = atoi(getconfigstr(CS_WARMUP));
 	cg.roundwarmup = atoi(getconfigstr(CS_ROUNDWARMUP));
+
+	parsecps();
+	parsecpstatus();
+	parsecpowner();
+	parsecpprogress();
+	parsecpplayers();
 }
 
 /*
@@ -276,6 +365,16 @@ CG_ConfigStringModified(void)
 		CG_ParseWarmup();
 	else if(num == CS_ROUNDWARMUP)
 		parseroundwarmup();
+	else if(num == CS_CPS)
+		parsecps();
+	else if(num == CS_CPSTATUS)
+		parsecpstatus();
+	else if(num == CS_CPOWNER)
+		parsecpowner();
+	else if(num == CS_CPCAPTURE)
+		parsecpprogress();
+	else if(num == CS_CPPLAYERS)
+		parsecpplayers();
 	else if(num == CS_SCORES1)
 		cgs.scores1 = atoi(str);
 	else if(num == CS_SCORES2)
@@ -293,9 +392,7 @@ CG_ConfigStringModified(void)
 		cgs.votemodified = qtrue;
 	}else if(num == CS_VOTE_STRING){
 		Q_strncpyz(cgs.votestr, str, sizeof(cgs.votestr));
-#ifdef MISSIONPACK
 		addbufferedsound(cgs.media.voteNow);
-#endif	//MISSIONPACK
 	}else if(num >= CS_TEAMVOTE_TIME && num <= CS_TEAMVOTE_TIME + 1){
 		cgs.teamvotetime[num-CS_TEAMVOTE_TIME] = atoi(str);
 		cgs.teamVoteModified[num-CS_TEAMVOTE_TIME] = qtrue;
@@ -307,9 +404,7 @@ CG_ConfigStringModified(void)
 		cgs.teamVoteModified[num-CS_TEAMVOTE_NO] = qtrue;
 	}else if(num >= CS_TEAMVOTE_STRING && num <= CS_TEAMVOTE_STRING + 1){
 		Q_strncpyz(cgs.teamvotestr[num-CS_TEAMVOTE_STRING], str, sizeof(cgs.teamvotestr[0]));
-#ifdef MISSIONPACK
 		addbufferedsound(cgs.media.voteNow);
-#endif
 	}else if(num == CS_INTERMISSION)
 		cg.intermissionstarted = atoi(str);
 	else if(num >= CS_MODELS && num < CS_MODELS+MAX_MODELS)
@@ -325,12 +420,9 @@ CG_ConfigStringModified(void)
 			// format is rb where its red/blue, 0 is at base, 1 is taken, 2 is dropped
 			cgs.redflag = str[0] - '0';
 			cgs.blueflag = str[1] - '0';
-		}
-#ifdef MISSIONPACK
-		else if(cgs.gametype == GT_1FCTF)
+		}else if(cgs.gametype == GT_1FCTF){
 			cgs.flagStatus = str[0] - '0';
-
-#endif
+		}
 	}else if(num == CS_SHADERSTATE)
 		shaderstatechanged();
 
