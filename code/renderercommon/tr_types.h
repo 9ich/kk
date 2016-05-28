@@ -79,6 +79,7 @@ typedef enum {
 	RT_RAIL_CORE,
 	RT_RAIL_RINGS,
 	RT_LIGHTNING,
+	RT_TRACER,
 	RT_PORTALSURFACE,		// doesn't draw anything, just info for portals
 
 	RT_MAX_REF_ENTITY_TYPE

@@ -1951,73 +1951,42 @@ CG_Tracer
 ===============
 */
 void
-CG_Tracer(vec3_t source, vec3_t dest)
+CG_Tracer(vec3_t start, vec3_t end)
 {
-	vec3_t forward, right;
-	polyVert_t verts[4];
-	vec3_t line;
-	float len, begin, end;
-	vec3_t start, finish;
 	vec3_t midpoint;
+	localEntity_t *le;
+	refEntity_t *re;
 
-	// tracer
-	vecsub(dest, source, forward);
-	len = vecnorm(forward);
+	le = alloclocalent();
+	re = &le->refEntity;
 
-	// start at least a little ways from the muzzle
-	begin = 50 + random() * (len - 60);
-	end = begin + cg_tracerLength.value;
-	if(end > len)
-		end = len;
-	vecmad(source, begin, forward, start);
-	vecmad(source, end, forward, finish);
+	le->type = LE_FADE_RGB;
+	le->starttime = cg.time;
+	le->endtime = cg.time + 16;
+	le->liferate = 1.0 / (le->endtime - le->starttime);
 
-	line[0] = vecdot(forward, cg.refdef.viewaxis[1]);
-	line[1] = vecdot(forward, cg.refdef.viewaxis[2]);
+	re->shaderTime = cg.time / 1000.0f;
+	re->reType = RT_TRACER;
+	re->customShader = cgs.media.tracerShader;
 
-	vecmul(cg.refdef.viewaxis[1], line[1], right);
-	vecmad(right, -line[0], cg.refdef.viewaxis[2], right);
-	vecnorm(right);
+	re->shaderRGBA[0] = 255;
+	re->shaderRGBA[1] = 255;
+	re->shaderRGBA[2] = 255;
+	re->shaderRGBA[3] = 255;
 
-	vecmad(finish, cg_tracerWidth.value, right, verts[0].xyz);
-	verts[0].st[0] = 0;
-	verts[0].st[1] = 1;
-	verts[0].modulate[0] = 255;
-	verts[0].modulate[1] = 255;
-	verts[0].modulate[2] = 255;
-	verts[0].modulate[3] = 255;
+	le->color[0] = 1.0f;
+	le->color[1] = 1.0f;
+	le->color[2] = 1.0f;
+	le->color[3] = 1.0f;
 
-	vecmad(finish, -cg_tracerWidth.value, right, verts[1].xyz);
-	verts[1].st[0] = 1;
-	verts[1].st[1] = 0;
-	verts[1].modulate[0] = 255;
-	verts[1].modulate[1] = 255;
-	verts[1].modulate[2] = 255;
-	verts[1].modulate[3] = 255;
+	veccpy(start, re->origin);
+	veccpy(end, re->oldorigin);
 
-	vecmad(start, -cg_tracerWidth.value, right, verts[2].xyz);
-	verts[2].st[0] = 1;
-	verts[2].st[1] = 1;
-	verts[2].modulate[0] = 255;
-	verts[2].modulate[1] = 255;
-	verts[2].modulate[2] = 255;
-	verts[2].modulate[3] = 255;
-
-	vecmad(start, cg_tracerWidth.value, right, verts[3].xyz);
-	verts[3].st[0] = 0;
-	verts[3].st[1] = 0;
-	verts[3].modulate[0] = 255;
-	verts[3].modulate[1] = 255;
-	verts[3].modulate[2] = 255;
-	verts[3].modulate[3] = 255;
-
-	trap_R_AddPolyToScene(cgs.media.tracerShader, 4, verts);
-
-	midpoint[0] = (start[0] + finish[0]) * 0.5;
-	midpoint[1] = (start[1] + finish[1]) * 0.5;
-	midpoint[2] = (start[2] + finish[2]) * 0.5;
+	AxisClear(re->axis);
 
 	// add the tracer sound
+	vecadd(start, end, midpoint);
+	vecmul(midpoint, 0.5f, midpoint);
 	trap_S_StartSound(midpoint, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.tracerSound);
 }
 
@@ -2029,19 +1998,20 @@ CG_CalcMuzzlePoint
 static qboolean
 CG_CalcMuzzlePoint(int entityNum, vec3_t muzzle)
 {
-	vec3_t forward;
+	vec3_t forward, up;
 	centity_t *cent;
 	int anim;
 
+	cent = &cg_entities[entityNum];
+
 	if(entityNum == cg.snap->ps.clientNum){
-		veccpy(cg.snap->ps.origin, muzzle);
-		muzzle[2] += cg.snap->ps.viewheight;
-		anglevecs(cg.snap->ps.viewangles, forward, nil, nil);
+		playerpos(cent, muzzle);
+		anglevecs(cg.pps.viewangles, forward, nil, up);
+		vecmad(muzzle, -14, up, muzzle);
 		vecmad(muzzle, 14, forward, muzzle);
 		return qtrue;
 	}
 
-	cent = &cg_entities[entityNum];
 	if(!cent->currvalid)
 		return qfalse;
 

@@ -841,6 +841,41 @@ static void RB_SurfaceLightningBolt( void ) {
 	}
 }
 
+static void RB_SurfaceTracer( void ) {
+	refEntity_t *e;
+	int			len;
+	vec3_t		right;
+	vec3_t		vec;
+	vec3_t		start, end;
+	vec3_t		v1, v2;
+	int			i;
+
+	e = &backEnd.currentEntity->e;
+
+	VectorCopy( e->oldorigin, end );
+	VectorCopy( e->origin, start );
+
+	// compute variables
+	VectorSubtract( end, start, vec );
+	len = VectorNormalize( vec );
+
+	// compute side vector
+	VectorSubtract( start, backEnd.viewParms.or.origin, v1 );
+	VectorNormalize( v1 );
+	VectorSubtract( end, backEnd.viewParms.or.origin, v2 );
+	VectorNormalize( v2 );
+	CrossProduct( v1, v2, right );
+	VectorNormalize( right );
+
+	for ( i = 0 ; i < 4 ; i++ ) {
+		vec3_t	temp;
+
+		DoRailCore( start, end, right, len, 2 );
+		RotatePointAroundVector( temp, vec, right, 45 );
+		VectorCopy( temp, right );
+	}
+}
+
 #if 0
 /*
 ** VectorArrayNormalize
@@ -1561,6 +1596,9 @@ static void RB_SurfaceEntity( surfaceType_t *surfType ) {
 		break;
 	case RT_LIGHTNING:
 		RB_SurfaceLightningBolt();
+		break;
+	case RT_TRACER:
+		RB_SurfaceTracer();
 		break;
 	default:
 		RB_SurfaceAxis();

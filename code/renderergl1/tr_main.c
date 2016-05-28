@@ -1215,6 +1215,7 @@ void R_AddEntitySurfaces (void) {
 		case RT_SPRITE:
 		case RT_BEAM:
 		case RT_LIGHTNING:
+		case RT_TRACER:
 		case RT_RAIL_CORE:
 		case RT_RAIL_RINGS:
 			// self blood sprites, talk balloons, etc should not be drawn in the primary

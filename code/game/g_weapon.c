@@ -798,8 +798,8 @@ set muzzle location relative to pivoting eye
 void
 calcmuzzlepoint(gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint)
 {
-	veccpy(ent->s.pos.trBase, muzzlePoint);
-	muzzlePoint[2] += ent->client->ps.viewheight;
+	veccpy(ent->client->ps.origin, muzzlePoint);
+	vecmad(muzzlePoint, -14, up, muzzlePoint);
 	vecmad(muzzlePoint, 14, forward, muzzlePoint);
 	// snap to integer coordinates for more efficient network bandwidth usage
 	SnapVector(muzzlePoint);
@@ -815,8 +815,8 @@ set muzzle location relative to pivoting eye
 void
 calcmuzzlepointorigin(gentity_t *ent, vec3_t origin, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint)
 {
-	veccpy(ent->s.pos.trBase, muzzlePoint);
-	muzzlePoint[2] += ent->client->ps.viewheight;
+	veccpy(ent->client->ps.origin, muzzlePoint);
+	vecmad(muzzlePoint, -14, up, muzzlePoint);
 	vecmad(muzzlePoint, 14, forward, muzzlePoint);
 	// snap to integer coordinates for more efficient network bandwidth usage
 	SnapVector(muzzlePoint);
