@@ -24,6 +24,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define _QCOMMON_H_
 
 #include "../qcommon/cm_public.h"
+// for qssl_t
+#include "../polarssl-1.2.3/include/polarssl/net.h"
+#include "../polarssl-1.2.3/include/polarssl/ssl.h"
+#include "../polarssl-1.2.3/include/polarssl/entropy.h"
+#include "../polarssl-1.2.3/include/polarssl/error.h"
+#include "../polarssl-1.2.3/include/polarssl/ctr_drbg.h"
+#include "../polarssl-1.2.3/include/polarssl/certs.h"
 
 //Ignore __attribute__ on non-gcc platforms
 #ifndef __GNUC__
@@ -166,6 +173,16 @@ typedef struct {
 	unsigned long	scope_id;	// Needed for IPv6 link-local addresses
 } netadr_t;
 
+typedef struct
+{
+	int			serverfd;
+	struct timeval		timeout;
+	ssl_context		ssl;
+	entropy_context		entropy;
+	ctr_drbg_context	ctr;
+	x509_cert		cacert;
+} qssl_t;
+
 void		NET_Init( void );
 void		NET_Shutdown( void );
 void		NET_Restart_f( void );
@@ -186,6 +203,12 @@ qboolean	NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, msg_t *net_messag
 void		NET_JoinMulticast6(void);
 void		NET_LeaveMulticast6(void);
 void		NET_Sleep(int msec);
+
+const char	*NET_SSLOpen(qssl_t *ssl, const char *srvname, int srvport);
+void		NET_SSLClose(qssl_t *ssl);
+void		NET_SSLFree(qssl_t *ssl);
+const char	*NET_SSLWrite(qssl_t *ssl, uchar *buf, int len);
+const char	*NET_SSLRead(qssl_t *ssl, uchar *buf, int len, int *nread);
 
 
 #define	MAX_MSGLEN				16384		// max length of a message, which may
@@ -276,8 +299,11 @@ extern int demo_protocols[];
   #endif
 #endif
 
+#define	ACCOUNT_SERVER_NAME		"192.168.1.2"	// FIXME
+
 #define	PORT_MASTER			27950
 #define	PORT_UPDATE			27951
+#define	PORT_ACCOUNT			27959
 #define	PORT_SERVER			27960
 #define	NUM_SERVER_PORTS	4		// broadcast scan this many ports after
 									// PORT_SERVER so a single machine can
@@ -881,6 +907,9 @@ extern	cvar_t	*com_protocol;
 #ifdef LEGACY_PROTOCOL
 extern	cvar_t	*com_legacyprotocol;
 #endif
+
+extern cvar_t	*net_accountServer;
+extern cvar_t	*net_accountPort;
 
 // com_speeds times
 extern	int		time_game;

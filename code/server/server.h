@@ -149,6 +149,7 @@ typedef struct client_s {
 	char			lastClientCommandString[MAX_STRING_CHARS];
 	sharedEntity_t	*gentity;			// SV_GentityNum(clientnum)
 	char			name[MAX_NAME_LENGTH];			// extracted from userinfo, high bits masked
+	char			stattoken[STATTOKEN_LEN];		// stat-tracking token, from userinfo
 
 	// downloading
 	char			downloadName[MAX_QPATH]; // if not empty string, we are downloading
@@ -398,6 +399,14 @@ void SV_WriteFrameToClient (client_t *client, msg_t *msg);
 void SV_SendMessageToClient( msg_t *msg, client_t *client );
 void SV_SendClientMessages( void );
 void SV_SendClientSnapshot( client_t *client );
+
+//
+// sv_stats.c
+//
+void SV_StatInit(void);
+void SV_StatAdd(int clientnum, int stat, int incr);
+void SV_Putstats_f(void);
+void SV_Stressstats_f(void);
 
 //
 // sv_game.c

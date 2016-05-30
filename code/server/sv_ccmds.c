@@ -1521,6 +1521,17 @@ static void SV_CompletePlayerName( char *args, int argNum ) {
 	}
 }
 
+void
+SV_TestStat_f(void)
+{
+	if(Cmd_Argc() != 4){
+		Com_Printf("usage: teststat [clientnum] [stat] [incr]\n");
+		return;
+	}
+
+	SV_StatAdd(atoi(Cmd_Argv(1)), atoi(Cmd_Argv(2)), atoi(Cmd_Argv(3)));
+}
+
 /*
 ==================
 SV_AddOperatorCommands
@@ -1579,6 +1590,9 @@ void SV_AddOperatorCommands( void ) {
 	Cmd_AddCommand("exceptdel", SV_ExceptDel_f);
 	Cmd_AddCommand("flushbans", SV_FlushBans_f);
 	Cmd_AddCommand("allready", SV_AllReady_f);
+	Cmd_AddCommand("putstats", SV_Putstats_f);
+	Cmd_AddCommand("teststat", SV_TestStat_f);
+	Cmd_AddCommand("stressstats", SV_Stressstats_f);
 }
 
 /*
@@ -1604,7 +1618,10 @@ void SV_RemoveOperatorCommands( void ) {
 	Cmd_RemoveCommand ("map_restart");
 	Cmd_RemoveCommand ("sectorlist");
 	Cmd_RemoveCommand ("say");
-	Cmd_RemoveCommand ("allready", SV_AllReady_f);
+	Cmd_RemoveCommand ("allready");
+	Cmd_RemoveCommand ("putstats");
+	Cmd_RemoveCommand ("teststat");
+	Cmd_RemoveCommand ("stressstats");
 #endif
 }
 

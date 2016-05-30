@@ -534,10 +534,12 @@ player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damag
 	if(attacker && attacker->client){
 		attacker->client->lastkilledclient = self->s.number;
 
-		if(attacker == self || onsameteam(self, attacker))
+		if(attacker == self || onsameteam(self, attacker)){
 			addscore(attacker, self->r.currentOrigin, -1);
-		else{
+			trap_StatAdd(attacker->s.number, QSTAT_DEATHS, 1);
+		}else{
 			addscore(attacker, self->r.currentOrigin, 1);
+			trap_StatAdd(attacker->s.number, QSTAT_KILLS, 1);
 			attacker->client->killsthislife++;
 			if(level.totalkills < 1)
 				giveaward(attacker->client, AWARD_FIRSTBLOOD);
@@ -581,8 +583,10 @@ player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damag
 			}
 			attacker->client->lastkilltime = level.time;
 		}
-	}else
+	}else{
 		addscore(self, self->r.currentOrigin, -1);
+		trap_StatAdd(self->s.number, QSTAT_DEATHS, 1);
+	}
 
 	// Add team bonuses
 	fragbonuses(self, inflictor, attacker);

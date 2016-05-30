@@ -1445,6 +1445,14 @@ static qboolean NET_GetCvars( void ) {
 	modified += net_port6->modified;
 	net_port6->modified = qfalse;
 
+	net_accountPort = Cvar_Get( "net_accountPort", va( "%i", PORT_ACCOUNT ), CVAR_PROTECTED | CVAR_LATCH );
+	modified += net_accountPort->modified;
+	net_accountPort->modified = qfalse;
+
+	net_accountServer = Cvar_Get( "net_accountServer", ACCOUNT_SERVER_NAME, CVAR_PROTECTED | CVAR_LATCH );
+	modified += net_accountServer->modified;
+	net_accountServer->modified = qfalse;
+
 	// Some cvars for configuring multicast options which facilitates scanning for servers on local subnets.
 	net_mcast6addr = Cvar_Get( "net_mcast6addr", NET_MULTICAST_IP6, CVAR_LATCH | CVAR_ARCHIVE );
 	modified += net_mcast6addr->modified;

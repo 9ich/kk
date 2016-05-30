@@ -47,6 +47,7 @@ equ trap_TraceCapsule		-44
 equ trap_EntityContactCapsule	-45
 equ trap_FS_Seek -46
 equ	trap_Cvar_SetDescription	-47
+equ	trap_StatAdd			-48
 
 equ	memset					-101
 equ	memcpy					-102

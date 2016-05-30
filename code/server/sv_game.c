@@ -316,6 +316,9 @@ intptr_t SV_GameSystemCalls( intptr_t *args ) {
 	case G_CVAR_SETDESCRIPTION:
 		Cvar_VMSetDescription( VMA(1), VMA(2) );
 		return 0;
+	case G_STATADD:
+		SV_StatAdd(args[1], args[2], args[3]);
+		return 0;
 	case G_ARGC:
 		return Cmd_Argc();
 	case G_ARGV:

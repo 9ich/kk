@@ -118,6 +118,12 @@ trap_Cvar_SetDescription(vmCvar_t *cv, const char *desc)
 }
 
 void
+trap_StatAdd(int clientnum, int stat, int incr)
+{
+	syscall(G_STATADD, stat, incr);
+}
+
+void
 trap_SendConsoleCommand(int exec_when, const char *text)
 {
 	syscall(G_SEND_CONSOLE_COMMAND, exec_when, text);

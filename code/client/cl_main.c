@@ -3401,6 +3401,206 @@ void CL_NotReady_f( void )
 	Cvar_Set("cl_ready", "0");
 }
 
+void CL_Auth_f( void )
+{
+	qssl_t ssl;
+	int len, nread, then;
+	uchar buf[1024];
+	char token[STATTOKEN_LEN];
+	char *p;
+	const char *username, *pass, *err;
+	char *srvname;
+	int srvport;
+
+	if(Cmd_Argc() != 3){
+		Com_Printf("usage: auth [username] [password]");
+		return;
+	}
+
+	username = Cmd_Argv(1);
+	pass = Cmd_Argv(2);
+
+	srvname = net_accountServer->string;
+	if(srvname == nil || srvname[0] == '\0')
+		srvname = ACCOUNT_SERVER_NAME;
+
+	srvport = net_accountPort->integer;
+	if(srvport == 0)
+		srvport = PORT_ACCOUNT;
+
+	then = Sys_Milliseconds();
+
+	err = NET_SSLOpen(&ssl, srvname, srvport);
+	if(err != nil){
+		Com_Printf("auth: %s\n", err);
+		return;
+	}
+
+	*buf = 0;
+	len = Com_sprintf((char*)buf, sizeof buf, "auth %s\\%s\n", username, pass);
+	err = NET_SSLWrite(&ssl, buf, len);
+	if(err != nil){
+		Com_Printf("auth: %s\n", err);
+		NET_SSLClose(&ssl);
+		NET_SSLFree(&ssl);
+		return;
+	}
+
+	nread = 0;
+	err = NET_SSLRead(&ssl, buf, sizeof(buf)-1, &nread);
+	if(err != nil){
+		Com_Printf("auth: %s\n", err);
+		NET_SSLClose(&ssl);
+		NET_SSLFree(&ssl);
+		return;
+	}
+	buf[nread] = '\0';
+
+	if(nread < 1){
+		Com_Printf("auth: bad server response\n");
+		NET_SSLClose(&ssl);
+		NET_SSLFree(&ssl);
+		return;
+	}
+	if(strstr((char*)buf, "token ") != (char*)buf){
+		Com_Printf("auth error: %s\n", (char*)buf);
+		NET_SSLClose(&ssl);
+		NET_SSLFree(&ssl);
+		return;
+	}
+	p = strstr((char*)buf, " ") + 1;
+	Q_strncpyz(token, p, sizeof token);
+	Cvar_Set("stattoken", token);
+
+	NET_SSLClose(&ssl);
+	NET_SSLFree(&ssl);
+	Com_Printf("authed ok in %d msec\n", Sys_Milliseconds() - then);
+}
+
+void CL_AuthRegister_f( void )
+{
+	qssl_t ssl;
+	int len, nread;
+	uchar buf[1024];
+	const char *username, *pass, *err;
+	char *srvname;
+	int srvport;
+
+	if(Cmd_Argc() != 3){
+		Com_Printf("usage: register [username] [password]");
+		return;
+	}
+
+	username = Cmd_Argv(1);
+	pass = Cmd_Argv(2);
+
+	srvname = net_accountServer->string;
+	if(srvname == nil || srvname[0] == '\0')
+		srvname = ACCOUNT_SERVER_NAME;
+
+	srvport = net_accountPort->integer;
+	if(srvport == 0)
+		srvport = PORT_ACCOUNT;
+
+	err = NET_SSLOpen(&ssl, srvname, srvport);
+	if(err != nil){
+		Com_Printf("register: %s\n", err);
+		return;
+	}
+
+	*buf = 0;
+	len = Com_sprintf((char*)buf, sizeof buf, "register %s\\%s\n", username, pass);
+	err = NET_SSLWrite(&ssl, buf, len);
+	if(err != nil){
+		Com_Printf("register: %s\n", err);
+		NET_SSLClose(&ssl);
+		NET_SSLFree(&ssl);
+		return;
+	}
+
+	nread = 0;
+	err = NET_SSLRead(&ssl, buf, sizeof(buf)-1, &nread);
+	if(err != nil){
+		Com_Printf("register: %s\n", err);
+		NET_SSLClose(&ssl);
+		NET_SSLFree(&ssl);
+		return;
+	}
+	buf[nread] = '\0';
+
+	if(nread < 1){
+		Com_Printf("register: bad server response\n");
+		NET_SSLClose(&ssl);
+		NET_SSLFree(&ssl);
+		return;
+	}
+	Com_Printf("register: %s\n", (char*)buf);
+	NET_SSLClose(&ssl);
+	NET_SSLFree(&ssl);
+}
+
+void CL_AuthDelaccount_f( void )
+{
+	qssl_t ssl;
+	int len, nread;
+	uchar buf[1024];
+	const char *username, *pass, *err;
+	char *srvname;
+	int srvport;
+
+	if(Cmd_Argc() != 3){
+		Com_Printf("usage: delaccount [username] [password]");
+		return;
+	}
+
+	username = Cmd_Argv(1);
+	pass = Cmd_Argv(2);
+
+	srvname = net_accountServer->string;
+	if(srvname == nil || srvname[0] == '\0')
+		srvname = ACCOUNT_SERVER_NAME;
+
+	srvport = net_accountPort->integer;
+	if(srvport == 0)
+		srvport = PORT_ACCOUNT;
+
+	err = NET_SSLOpen(&ssl, srvname, srvport);
+	if(err != nil){
+		Com_Printf("delaccount: %s\n", err);
+		return;
+	}
+
+	*buf = 0;
+	len = Com_sprintf((char*)buf, sizeof buf, "delete %s\\%s\n", username, pass);
+	err = NET_SSLWrite(&ssl, buf, len);
+	if(err != nil){
+		Com_Printf("delaccount: %s\n", err);
+		NET_SSLClose(&ssl);
+		NET_SSLFree(&ssl);
+		return;
+	}
+
+	nread = 0;
+	err = NET_SSLRead(&ssl, buf, sizeof(buf)-1, &nread);
+	if(err != nil){
+		Com_Printf("delaccount: %s\n", err);
+		NET_SSLClose(&ssl);
+		NET_SSLFree(&ssl);
+		return;
+	}
+	buf[nread] = '\0';
+
+	if(nread < 1){
+		Com_Printf("delaccount: bad server response\n");
+		NET_SSLClose(&ssl);
+		NET_SSLFree(&ssl);
+		return;
+	}
+	Com_Printf("delaccount: %s\n", (char*)buf);
+	NET_SSLClose(&ssl);
+	NET_SSLFree(&ssl);
+}
+
 /*
 ===============
 CL_GenerateQKey
@@ -3645,6 +3845,8 @@ void CL_Init( void ) {
 	Cvar_Get ("password", "", CVAR_USERINFO);
 	Cvar_Get ("cg_predictItems", "1", CVAR_USERINFO | CVAR_ARCHIVE );
 
+	Cvar_Get ("stattoken", "", CVAR_USERINFO | CVAR_PROTECTED);
+
 #ifdef USE_MUMBLE
 	cl_useMumble = Cvar_Get ("cl_useMumble", "0", CVAR_ARCHIVE | CVAR_LATCH);
 	cl_mumbleScale = Cvar_Get ("cl_mumbleScale", "0.0254", CVAR_ARCHIVE);
@@ -3699,7 +3901,10 @@ void CL_Init( void ) {
 	Cmd_AddCommand ("video", CL_Video_f );
 	Cmd_AddCommand ("stopvideo", CL_StopVideo_f );
 	Cmd_AddCommand ("ready", CL_Ready_f );
-	Cmd_AddCommand ("notready", CL_NotReady_f);
+	Cmd_AddCommand ("notready", CL_NotReady_f );
+	Cmd_AddCommand ("auth", CL_Auth_f );
+	Cmd_AddCommand ("register", CL_AuthRegister_f );
+	Cmd_AddCommand ("delaccount", CL_AuthDelaccount_f );
 	if( !com_dedicated->integer ) {
 		Cmd_AddCommand ("sayto", CL_Sayto_f );
 		Cmd_SetCommandCompletionFunc( "sayto", CL_CompletePlayerName );
@@ -3773,6 +3978,11 @@ void CL_Shutdown(char *finalmsg, qboolean disconnect, qboolean quit)
 	Cmd_RemoveCommand ("model");
 	Cmd_RemoveCommand ("video");
 	Cmd_RemoveCommand ("stopvideo");
+	Cmd_RemoveCommand ("ready");
+	Cmd_RemoveCommand ("unready");
+	Cmd_RemoveCommand ("auth");
+	Cmd_RemoveCommand ("register");
+	Cmd_RemoveCommand ("delaccount");
 
 	CL_ShutdownInput();
 	Con_Shutdown();

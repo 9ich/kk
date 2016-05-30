@@ -266,6 +266,8 @@ typedef unsigned long	ulong;
 
 #define	MAX_NAME_LENGTH		32		// max length of a client name
 
+#define STATTOKEN_LEN		8		// the length of a stat-tracking token sent to clients by auth server
+
 #define	MAX_SAY_TEXT	150
 
 // paramters for command buffer stuffing
@@ -1530,5 +1532,7 @@ typedef enum _flag_status {
 
 #define LERP( a, b, w ) ( ( a ) * ( 1.0f - ( w ) ) + ( b ) * ( w ) )
 #define LUMA( red, green, blue ) ( 0.2126f * ( red ) + 0.7152f * ( green ) + 0.0722f * ( blue ) )
+
+#include "qstats.h"
 
 #endif	// __Q_SHARED_H

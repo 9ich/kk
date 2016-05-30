@@ -409,6 +409,9 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 	// shut down the existing game if it is running
 	SV_ShutdownGameProgs();
 
+	// send any stats to the accounts server
+	SV_Putstats_f();
+
 	Com_Printf ("------ Server Initialization ------\n");
 	Com_Printf ("Server: %s\n",server);
 
@@ -616,6 +619,8 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 		CL_StartHunkUsers( qtrue );
 	}
 #endif
+
+	SV_StatInit();
 
 	Com_Printf ("-----------------------------------\n");
 }

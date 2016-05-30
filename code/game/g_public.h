@@ -224,6 +224,8 @@ typedef enum
 
 	G_CVAR_SETDESCRIPTION,	// (vmCvar_t *cv, const char *desc);
 
+	G_STATADD,		// (int clientnum, int stat, int incr);
+
 	BOTLIB_SETUP = 200,	// ( void );
 	BOTLIB_SHUTDOWN,	// ( void );
 	BOTLIB_LIBVAR_SET,

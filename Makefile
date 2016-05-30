@@ -256,6 +256,7 @@ VORBISDIR=$(MOUNT_DIR)/libvorbis-1.3.4
 OPUSDIR=$(MOUNT_DIR)/opus-1.1
 OPUSFILEDIR=$(MOUNT_DIR)/opusfile-0.5
 ZDIR=$(MOUNT_DIR)/zlib
+POLARSSLDIR=$(MOUNT_DIR)/polarssl-1.2.3
 Q3ASMDIR=$(MOUNT_DIR)/tools/asm
 LBURGDIR=$(MOUNT_DIR)/tools/lcc/lburg
 Q3CPPDIR=$(MOUNT_DIR)/tools/lcc/cpp
@@ -1295,10 +1296,12 @@ makedirs:
 	@if [ ! -d $(B)/client ];then $(MKDIR) $(B)/client;fi
 	@if [ ! -d $(B)/client/opus ];then $(MKDIR) $(B)/client/opus;fi
 	@if [ ! -d $(B)/client/vorbis ];then $(MKDIR) $(B)/client/vorbis;fi
+	@if [ ! -d $(B)/client/polarssl ];then $(MKDIR) $(B)/client/polarssl;fi
 	@if [ ! -d $(B)/renderergl1 ];then $(MKDIR) $(B)/renderergl1;fi
 	@if [ ! -d $(B)/renderergl2 ];then $(MKDIR) $(B)/renderergl2;fi
 	@if [ ! -d $(B)/renderergl2/glsl ];then $(MKDIR) $(B)/renderergl2/glsl;fi
 	@if [ ! -d $(B)/ded ];then $(MKDIR) $(B)/ded;fi
+	@if [ ! -d $(B)/ded/polarssl ];then $(MKDIR) $(B)/ded/polarssl;fi
 	@if [ ! -d $(B)/$(BASEGAME) ];then $(MKDIR) $(B)/$(BASEGAME);fi
 	@if [ ! -d $(B)/$(BASEGAME)/cgame ];then $(MKDIR) $(B)/$(BASEGAME)/cgame;fi
 	@if [ ! -d $(B)/$(BASEGAME)/game ];then $(MKDIR) $(B)/$(BASEGAME)/game;fi
@@ -1501,6 +1504,7 @@ Q3OBJ = \
   $(B)/client/msg.o \
   $(B)/client/net_chan.o \
   $(B)/client/net_ip.o \
+  $(B)/client/net_ssl.o \
   $(B)/client/huffman.o \
   \
   $(B)/client/snd_adpcm.o \
@@ -1528,6 +1532,7 @@ Q3OBJ = \
   $(B)/client/sv_main.o \
   $(B)/client/sv_net_chan.o \
   $(B)/client/sv_snapshot.o \
+  $(B)/client/sv_stats.o \
   $(B)/client/sv_world.o \
   \
   $(B)/client/q_math.o \
@@ -1961,6 +1966,55 @@ Q3OBJ += \
   $(B)/client/zutil.o
 endif
 
+# PolarSSL
+Q3OBJ += \
+  $(B)/client/polarssl/aes.o \
+  $(B)/client/polarssl/arc4.o \
+  $(B)/client/polarssl/asn1parse.o \
+  $(B)/client/polarssl/asn1write.o \
+  $(B)/client/polarssl/base64.o \
+  $(B)/client/polarssl/bignum.o \
+  $(B)/client/polarssl/blowfish.o \
+  $(B)/client/polarssl/camellia.o \
+  $(B)/client/polarssl/certs.o \
+  $(B)/client/polarssl/cipher.o \
+  $(B)/client/polarssl/cipher_wrap.o \
+  $(B)/client/polarssl/ctr_drbg.o \
+  $(B)/client/polarssl/debug.o \
+  $(B)/client/polarssl/des.o \
+  $(B)/client/polarssl/dhm.o \
+  $(B)/client/polarssl/entropy.o \
+  $(B)/client/polarssl/entropy_poll.o \
+  $(B)/client/polarssl/error.o \
+  $(B)/client/polarssl/gcm.o \
+  $(B)/client/polarssl/havege.o \
+  $(B)/client/polarssl/md.o \
+  $(B)/client/polarssl/md2.o \
+  $(B)/client/polarssl/md4.o \
+  $(B)/client/polarssl/md5.o \
+  $(B)/client/polarssl/md_wrap.o \
+  $(B)/client/polarssl/net.o \
+  $(B)/client/polarssl/padlock.o \
+  $(B)/client/polarssl/pbkdf2.o \
+  $(B)/client/polarssl/pem.o \
+  $(B)/client/polarssl/pkcs11.o \
+  $(B)/client/polarssl/rsa.o \
+  $(B)/client/polarssl/sha1.o \
+  $(B)/client/polarssl/sha2.o \
+  $(B)/client/polarssl/sha4.o \
+  $(B)/client/polarssl/ssl_cache.o \
+  $(B)/client/polarssl/ssl_cli.o \
+  $(B)/client/polarssl/ssl_srv.o \
+  $(B)/client/polarssl/ssl_tls.o \
+  $(B)/client/polarssl/timing.o \
+  $(B)/client/polarssl/version.o \
+  $(B)/client/polarssl/x509parse.o \
+  $(B)/client/polarssl/x509write.o \
+  $(B)/client/polarssl/xtea.o
+
+POLARSSL_CFLAGS = -I$(POLARSSLDIR)/include
+CLIENT_CFLAGS += $(POLARSSL_CFLAGS)
+
 ifeq ($(HAVE_VM_COMPILED),true)
   ifneq ($(findstring $(ARCH),x86 x86_64),)
     Q3OBJ += \
@@ -2061,6 +2115,7 @@ Q3DOBJ = \
   $(B)/ded/msg.o \
   $(B)/ded/net_chan.o \
   $(B)/ded/net_ip.o \
+  $(B)/ded/net_ssl.o \
   $(B)/ded/huffman.o \
   \
   $(B)/ded/q_math.o \
@@ -2118,6 +2173,55 @@ ifeq ($(ARCH),x86_64)
       $(B)/ded/snapvector.o \
       $(B)/ded/ftola.o
 endif
+
+# PolarSSL
+Q3DOBJ += \
+  $(B)/ded/polarssl/aes.o \
+  $(B)/ded/polarssl/arc4.o \
+  $(B)/ded/polarssl/asn1parse.o \
+  $(B)/ded/polarssl/asn1write.o \
+  $(B)/ded/polarssl/base64.o \
+  $(B)/ded/polarssl/bignum.o \
+  $(B)/ded/polarssl/blowfish.o \
+  $(B)/ded/polarssl/camellia.o \
+  $(B)/ded/polarssl/certs.o \
+  $(B)/ded/polarssl/cipher.o \
+  $(B)/ded/polarssl/cipher_wrap.o \
+  $(B)/ded/polarssl/ctr_drbg.o \
+  $(B)/ded/polarssl/debug.o \
+  $(B)/ded/polarssl/des.o \
+  $(B)/ded/polarssl/dhm.o \
+  $(B)/ded/polarssl/entropy.o \
+  $(B)/ded/polarssl/entropy_poll.o \
+  $(B)/ded/polarssl/error.o \
+  $(B)/ded/polarssl/gcm.o \
+  $(B)/ded/polarssl/havege.o \
+  $(B)/ded/polarssl/md.o \
+  $(B)/ded/polarssl/md2.o \
+  $(B)/ded/polarssl/md4.o \
+  $(B)/ded/polarssl/md5.o \
+  $(B)/ded/polarssl/md_wrap.o \
+  $(B)/ded/polarssl/net.o \
+  $(B)/ded/polarssl/padlock.o \
+  $(B)/ded/polarssl/pbkdf2.o \
+  $(B)/ded/polarssl/pem.o \
+  $(B)/ded/polarssl/pkcs11.o \
+  $(B)/ded/polarssl/rsa.o \
+  $(B)/ded/polarssl/sha1.o \
+  $(B)/ded/polarssl/sha2.o \
+  $(B)/ded/polarssl/sha4.o \
+  $(B)/ded/polarssl/ssl_cache.o \
+  $(B)/ded/polarssl/ssl_cli.o \
+  $(B)/ded/polarssl/ssl_srv.o \
+  $(B)/ded/polarssl/ssl_tls.o \
+  $(B)/ded/polarssl/timing.o \
+  $(B)/ded/polarssl/version.o \
+  $(B)/ded/polarssl/x509parse.o \
+  $(B)/ded/polarssl/x509write.o \
+  $(B)/ded/polarssl/xtea.o
+
+POLARSSL_CFLAGS = -I$(POLARSSLDIR)/include
+SERVER_CFLAGS += $(POLARSSL_CFLAGS)
 
 ifeq ($(USE_INTERNAL_ZLIB),1)
 Q3DOBJ += \
@@ -2334,6 +2438,9 @@ $(B)/client/%.o: $(OPUSFILEDIR)/src/%.c
 $(B)/client/%.o: $(ZDIR)/%.c
 	$(DO_CC)
 
+$(B)/client/polarssl/%.o: $(POLARSSLDIR)/library/%.c
+	$(DO_CC)
+
 $(B)/client/%.o: $(SDLDIR)/%.c
 	$(DO_CC)
 
@@ -2387,6 +2494,9 @@ $(B)/ded/%.o: $(SDIR)/%.c
 
 $(B)/ded/%.o: $(CMDIR)/%.c
 	$(DO_DED_CC)
+
+$(B)/ded/polarssl/%.o: $(POLARSSLDIR)/library/%.c
+	$(DO_CC)
 
 $(B)/ded/%.o: $(ZDIR)/%.c
 	$(DO_DED_CC)

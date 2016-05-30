@@ -1400,6 +1400,9 @@ void SV_UserinfoChanged( client_t *cl ) {
 	// name for C code
 	Q_strncpyz( cl->name, Info_ValueForKey (cl->userinfo, "name"), sizeof(cl->name) );
 
+	// stat-tracking token the client got from the auth server
+	Q_strncpyz( cl->stattoken, Info_ValueForKey (cl->userinfo, "stattoken"), sizeof(cl->stattoken) );
+
 	// rate command
 
 	// if the client is on the same subnet as the server and we aren't running an
