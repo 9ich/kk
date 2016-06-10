@@ -164,6 +164,7 @@ void	SP_path_corner(gentity_t *self);
 
 void	SP_misc_teleporter_dest(gentity_t *self);
 void	SP_misc_model(gentity_t *ent);
+void	SP_misc_mesh(gentity_t *ent);
 void	SP_misc_portal_camera(gentity_t *ent);
 void	SP_misc_portal_surface(gentity_t *ent);
 
@@ -242,6 +243,7 @@ spawn_t spawns[] = {
 
 	{"misc_teleporter_dest", SP_misc_teleporter_dest},
 	{"misc_model", SP_misc_model},
+	{"misc_mesh", SP_misc_mesh},
 	{"misc_portal_surface", SP_misc_portal_surface},
 	{"misc_portal_camera", SP_misc_portal_camera},
 

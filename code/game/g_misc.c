@@ -159,6 +159,21 @@ SP_misc_model(gentity_t *ent)
 #endif
 }
 
+/*QUAKED misc_mesh (1 0 0) (-16 -16 -16) (16 16 16)
+"model"		arbitrary .md3 file to display
+*/
+void
+SP_misc_mesh(gentity_t *ent)
+{
+	ent->s.modelindex = getmodelindex(ent->model);
+	vecset(ent->r.mins, -16, -16, -16);
+	vecset(ent->r.maxs, 16, 16, 16);
+	trap_LinkEntity(ent);
+
+	setorigin(ent, ent->s.origin);
+	veccpy(ent->s.angles, ent->s.apos.trBase);
+}
+
 //===========================================================
 
 void
