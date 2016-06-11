@@ -257,14 +257,19 @@ fillrect(float x, float y, float width, float height, const float *color)
 void
 drawrect(float x, float y, float width, float height, const float *color)
 {
+	float thickness, dummy;
+
+	thickness = 1;	// border thickness, adjusted to real screen coords
+	dummy = 1;
 	trap_R_SetColor(color);
 
 	adjustcoords(&x, &y, &width, &height);
+	scalecoords(&thickness, &dummy, &dummy, &dummy);
 
-	trap_R_DrawStretchPic(x, y, width, 1, 0, 0, 0, 0, draw.whiteShader);
-	trap_R_DrawStretchPic(x, y, 1, height, 0, 0, 0, 0, draw.whiteShader);
-	trap_R_DrawStretchPic(x, y + height - 1, width, 1, 0, 0, 0, 0, draw.whiteShader);
-	trap_R_DrawStretchPic(x + width - 1, y, 1, height, 0, 0, 0, 0, draw.whiteShader);
+	trap_R_DrawStretchPic(x, y, width, thickness, 0, 0, 0, 0, draw.whiteShader);
+	trap_R_DrawStretchPic(x, y, thickness, height, 0, 0, 0, 0, draw.whiteShader);
+	trap_R_DrawStretchPic(x, y + height - thickness, width, thickness, 0, 0, 0, 0, draw.whiteShader);
+	trap_R_DrawStretchPic(x + width - thickness, y, thickness, height, 0, 0, 0, 0, draw.whiteShader);
 
 	trap_R_SetColor(nil);
 }
