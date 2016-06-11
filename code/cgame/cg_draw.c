@@ -236,6 +236,24 @@ drawteambg(int x, int y, int w, int h, float alpha, int team)
 	trap_R_SetColor(nil);
 }
 
+// this should go to common
+static float
+sawtoothwave(int time, float hz, float phase, float amp)
+{
+	time *= hz;
+	return amp * (((time + (int)(phase*time)) % 1000) / 1000.0f);
+}
+
+void
+drawweapontime(void)
+{
+	vec4_t clr;
+
+	Vector4Copy(CRed, clr);
+	clr[3] = sawtoothwave(cg.pps.weaponTime, 8, 0, 1);
+	fillrect(0.5f*screenwidth() + 79, 314, 6, 6, clr);
+}
+
 /*
 ================
 drawstatusbar
@@ -304,11 +322,11 @@ drawstatusbar(void)
 	if(cent->currstate.weapon){
 		value = ps->ammo[cent->currstate.weapon];
 		if(value > -1){
-			if(cg.pps.weaponstate == WEAPON_FIRING
-			   && cg.pps.weaponTime > 100)
+			if(cg.pps.weaponTime > 100){
 				// draw as dark grey when reloading
 				color = 2;	// dark grey
-			else{
+				drawweapontime();
+			}else{
 				if(value >= 0)
 					color = 0;	// green
 				else
