@@ -321,7 +321,7 @@ drawstatusbar(void)
 	if(value > 0){
 		drawhudfield(0.5f*screenwidth() - 75, 358, va("%d", value), CWhite);
 		// if we didn't draw a 3D icon, draw a 2D icon for armor
-		if(cg_drawIcons.integer)
+		if(0 && cg_drawIcons.integer)
 			drawpic(370 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE, cgs.media.armorIcon);
 
 	}
