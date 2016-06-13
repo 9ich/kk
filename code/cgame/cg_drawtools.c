@@ -54,7 +54,7 @@ drawbigstr(int x, int y, const char *s, float alpha)
 
 	color[0] = color[1] = color[2] = 1.0;
 	color[3] = alpha;
-	drawstring(x, y, s, FONT2, 16, color);
+	drawstring(x, y, s, FONT3, 16, color);
 }
 
 // fixed-width
@@ -65,13 +65,13 @@ drawfixedstr(int x, int y, const char *s, float alpha)
 
 	color[0] = color[1] = color[2] = 1.0;
 	color[3] = alpha;
-	drawstring(x, y, s, FONT4, 16, color);
+	drawstring(x, y, s, FONT3, 16, color);
 }
 
 void
 drawbigstrcolor(int x, int y, const char *s, vec4_t color)
 {
-	drawstring(x, y, s, FONT2, 16, color);
+	drawstring(x, y, s, FONT3, 16, color);
 }
 
 void

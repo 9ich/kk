@@ -244,16 +244,6 @@ sawtoothwave(int time, float hz, float phase, float amp)
 	return amp * (((time + (int)(phase*time)) % 1000) / 1000.0f);
 }
 
-void
-drawweapontime(void)
-{
-	vec4_t clr;
-
-	Vector4Copy(CRed, clr);
-	clr[3] = sawtoothwave(cg.pps.weaponTime, 8, 0, 1);
-	fillrect(0.5f*screenwidth() + 79, 314, 6, 6, clr);
-}
-
 /*
 ================
 drawstatusbar
@@ -263,42 +253,19 @@ drawstatusbar
 static void
 drawstatusbar(void)
 {
-	int color;
 	centity_t *cent;
 	playerState_t *ps;
 	int value;
-	vec4_t hcolor;
-	vec3_t angles;
-	vec3_t origin;
-
-	static float colors[4][4] = {
-//		{ 0.2, 1.0, 0.2, 1.0 } , { 1.0, 0.2, 0.2, 1.0 }, {0.5, 0.5, 0.5, 1} };
-		{1.0f, 0.69f, 0.0f, 1.0f},	// normal
-		{1.0f, 0.2f, 0.2f, 1.0f},	// low health
-		{0.5f, 0.5f, 0.5f, 1.0f},	// weapon firing
-		{1.0f, 1.0f, 1.0f, 1.0f}
-	};					// health > 100
+	vec4_t clr;
 
 	if(cg_drawStatus.integer == 0)
 		return;
 
 	// draw the team background
-	drawteambg(0, 420, 640, 60, 0.33f, cg.snap->ps.persistant[PERS_TEAM]);
+	//drawteambg(0, 420, 640, 60, 0.33f, cg.snap->ps.persistant[PERS_TEAM]);
 
 	cent = &cg_entities[cg.snap->ps.clientNum];
 	ps = &cg.snap->ps;
-
-	vecclear(angles);
-
-	// draw any 3D icons first, so the changes back to 2D are minimized
-	if(cent->currstate.weapon && cg_weapons[cent->currstate.weapon].ammomodel){
-		origin[0] = 70;
-		origin[1] = 0;
-		origin[2] = 0;
-		angles[YAW] = 90 + 20 * sin(cg.time / 1000.0);
-		drawmodel(CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE,
-			       cg_weapons[cent->currstate.weapon].ammomodel, 0, origin, angles);
-	}
 
 	if(cg.pps.powerups[PW_REDFLAG])
 		CG_DrawStatusBarFlag(185 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ICON_SIZE, TEAM_RED);
@@ -307,78 +274,59 @@ drawstatusbar(void)
 	else if(cg.pps.powerups[PW_NEUTRALFLAG])
 		CG_DrawStatusBarFlag(185 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ICON_SIZE, TEAM_FREE);
 
-	if(ps->stats[STAT_ARMOR]){
-		origin[0] = 90;
-		origin[1] = 0;
-		origin[2] = -10;
-		angles[YAW] = (cg.time & 2047) * 360 / 2048.0;
-		drawmodel(370 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE,
-			       cgs.media.armorModel, 0, origin, angles);
-	}
-
 	setalign("left");
 
 	// ammo
 	if(cent->currstate.weapon){
+		if(cg.pps.weaponTime > 100){
+			// draw weapontime indicator
+			coloralpha(clr, CWhite, sawtoothwave(cg.pps.weaponTime, 8, 0, 1));
+			fillrect(0.5f*screenwidth() + 65, 304.5f, 6, 6, clr);
+		}
+
 		value = ps->ammo[cent->currstate.weapon];
-		if(value > -1){
-			if(cg.pps.weaponTime > 100){
-				// draw as dark grey when reloading
-				color = 2;	// dark grey
-				drawweapontime();
-			}else{
-				if(value >= 0)
-					color = 0;	// green
-				else
-					color = 1;	// red
-			}
-			trap_R_SetColor(colors[color]);
-
-			//drawfield(0, 432, 3, value);
+		if(value > -1)
 			drawhudfield(0.5f*screenwidth() + 75, 320, va("%d", value), CWhite);
-			trap_R_SetColor(nil);
+		
+		trap_R_SetColor(nil);
 
-			// if we didn't draw a 3D icon, draw a 2D icon for ammo
-			if(!cg_draw3dIcons.integer && cg_drawIcons.integer){
-				qhandle_t icon;
-
-				icon = cg_weapons[cg.pps.weapon].ammoicon;
-				if(icon)
-					drawpic(CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE, icon);
-			}
+		// draw a 2D icon for ammo
+		if(cg_drawIcons.integer){
+			drawpic(0.5f*screenwidth() + 74 - 2, 300 - 2, 16 + 4, 16 + 4, cgs.media.selectShader);
+			drawpic(0.5f*screenwidth() + 74, 300, 16, 16, cg_weapons[cg.pps.weapon].ammoicon);
+			drawstring(0.5f*screenwidth() + 100, 316, cg_weapons[cg.pps.weapon].item->pickupname, FONT3, 7, CWhite);
 		}
 	}
+
+	setalign("right");
 
 	// health
 	value = ps->stats[STAT_HEALTH];
 	if(value > 100)
-		trap_R_SetColor(colors[3]);	// white
+		VectorCopy4(CMediumSlateBlue, clr);
 	else if(value > 25)
-		trap_R_SetColor(colors[0]);	// green
+		VectorCopy4(CWhite, clr);
 	else if(value > 0){
-		color = (cg.time >> 8) & 1;	// flash
-		trap_R_SetColor(colors[color]);
+		// flash red to white
+		clr[0] = 1.0f;
+		clr[1] = sawtoothwave(cg.time, 4, 0, 1);
+		clr[2] = sawtoothwave(cg.time, 4, 0, 1);
+		clr[3] = 1-sawtoothwave(cg.time, 4, 0, 0.5f);
 	}else
-		trap_R_SetColor(colors[1]);	// red
-
-	setalign("right");
-
-	// stretch the health up when taking damage
-	drawhudfield(0.5f*screenwidth() - 75, 320, va("%d", value), CWhite);
-	colorforhealth(hcolor);
-	trap_R_SetColor(hcolor);
+		VectorCopy4(CRed, clr);
+	drawhudfield(0.5f*screenwidth() - 75, 320, va("%d", value), clr);
 
 	// armor
 	value = ps->stats[STAT_ARMOR];
 	if(value > 0){
-		trap_R_SetColor(colors[0]);
 		drawhudfield(0.5f*screenwidth() - 75, 358, va("%d", value), CWhite);
-		trap_R_SetColor(nil);
 		// if we didn't draw a 3D icon, draw a 2D icon for armor
-		if(!cg_draw3dIcons.integer && cg_drawIcons.integer)
+		if(cg_drawIcons.integer)
 			drawpic(370 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE, cgs.media.armorIcon);
 
 	}
+
+	setalign("");
 }
 
 
@@ -558,13 +506,13 @@ drawspeedometer(void)
 	setalign("center");
 
 	// draw instantaneous speed
-	s = va("%iu/s", (int)speed);
+	s = va("%4i u/s", (int)speed);
 	drawfixedstr(0.5f*screenwidth(), 330, s, 1.0f);
 
 	setalign("left");
 
 	x = 0.5f*screenwidth();
-	y = 345;
+	y = 348;
 
 	x -= 0.5f*width;	// centre
 
@@ -1281,6 +1229,7 @@ drawlagometer(void)
 	float ax, ay, aw, ah, mid, range;
 	int color;
 	float vscale;
+	vec4_t clr;
 
 	if(!cg_lagometer.integer){
 		drawdisconnect();
@@ -1294,7 +1243,9 @@ drawlagometer(void)
 	y = screenheight();
 
 	trap_R_SetColor(nil);
-	drawpic(x, y, 48, 48, cgs.media.lagometerShader);
+	//drawpic(x, y, 48, 48, cgs.media.lagometerShader);
+	VectorSet4(clr, 1, 1, 1, 20/255.0f);
+	fillrect(x, y, 48, 48, clr);
 
 	ax = x;
 	ay = y;
@@ -1317,7 +1268,7 @@ drawlagometer(void)
 		if(v > 0){
 			if(color != 1){
 				color = 1;
-				trap_R_SetColor(g_color_table[ColorIndex(COLOR_YELLOW)]);
+				trap_R_SetColor(CGold);
 			}
 			if(v > range)
 				v = range;
@@ -1325,7 +1276,7 @@ drawlagometer(void)
 		}else if(v < 0){
 			if(color != 2){
 				color = 2;
-				trap_R_SetColor(g_color_table[ColorIndex(COLOR_BLUE)]);
+				trap_R_SetColor(CBlack);
 			}
 			v = -v;
 			if(v > range)
@@ -1345,11 +1296,11 @@ drawlagometer(void)
 			if(lagometer.snapshotFlags[i] & SNAPFLAG_RATE_DELAYED){
 				if(color != 5){
 					color = 5;	// YELLOW for rate delay
-					trap_R_SetColor(g_color_table[ColorIndex(COLOR_YELLOW)]);
+					trap_R_SetColor(CGold);
 				}
 			}else  if(color != 3){
 				color = 3;
-				trap_R_SetColor(g_color_table[ColorIndex(COLOR_GREEN)]);
+				trap_R_SetColor(CPaleGreen);
 			}
 			v = v * vscale;
 			if(v > range)
@@ -1358,7 +1309,7 @@ drawlagometer(void)
 		}else if(v < 0){
 			if(color != 4){
 				color = 4;	// RED for dropped snapshots
-				trap_R_SetColor(g_color_table[ColorIndex(COLOR_RED)]);
+				trap_R_SetColor(CRed);
 			}
 			trap_R_DrawStretchPic(ax + aw - a, ay + ah - range, 1, range, 0, 0, 0, 0, cgs.media.whiteShader);
 		}
@@ -1367,7 +1318,7 @@ drawlagometer(void)
 	trap_R_SetColor(nil);
 
 	if(cg_nopredict.integer || cg_synchronousClients.integer)
-		drawbigstr(x, y, "snc", 1.0);
+		drawbigstr(x, y, "sync", 1.0);
 
 	setalign("");
 
