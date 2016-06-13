@@ -21,11 +21,11 @@ drawlibinit(void)
 	draw.charset = trap_R_RegisterShaderNoMip("gfx/2d/bigchars");
 	draw.charsetProp = trap_R_RegisterShaderNoMip("menu/art/font1_prop");
 
-	registercharmap(FONT1, 512, 512, 64, 3, "fonts/font1", (int**)font1map,
-	   font1kernings, ARRAY_LEN(font1kernings));
+	registercharmap(FONT1, 1024, 512, 85, 3, "fonts/font1", (int**)font1map,
+	   nil, 0);
 	registercharmap(FONT2, 512, 512, 64, 3, "fonts/font2", (int**)font2map,
 	   font2kernings, ARRAY_LEN(font2kernings));
-	registercharmap(FONT3, 1024, 512, 84, 3, "fonts/font3", (int**)font3map,
+	registercharmap(FONT3, 1024, 512, 85, 3, "fonts/font3", (int**)font3map,
 	   nil, 0);
 	registercharmap(FONT4, 1024, 512, 64, 3, "fonts/font4", (int**)font4map,
 	   nil, 0);
