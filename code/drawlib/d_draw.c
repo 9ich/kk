@@ -295,6 +295,9 @@ lerpcolour(vec4_t a, vec4_t b, vec4_t c, float t)
 	}
 }
 
+/*
+ * Makes a new colour by mixing a + b in equal proportion.
+ */
 void
 colormix(vec4_t a, vec4_t b, vec4_t dst)
 {
@@ -302,4 +305,14 @@ colormix(vec4_t a, vec4_t b, vec4_t dst)
 	dst[1] = 0.5f*(a[1] + b[1]);
 	dst[2] = 0.5f*(a[2] + b[2]);
 	dst[3] = 0.5f*(a[3] + b[3]);
+}
+
+/*
+ * Makes a new colour from src with the desired transparency.
+ */
+void
+coloralpha(vec4_t dst, vec4_t src, float alpha)
+{
+	VectorCopy4(src, dst);
+	dst[3] = alpha;
 }

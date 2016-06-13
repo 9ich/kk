@@ -48,6 +48,7 @@ void	stretchcoords(float *x, float *y, float *w, float *h);
 void	setcolour(const float *rgba);
 void	lerpcolour(vec4_t a, vec4_t b, vec4_t c, float t);
 void	colormix(vec4_t a, vec4_t b, vec4_t dst);
+void	coloralpha(vec4_t dst, vec4_t src, float alpha);
 void	drawnamedpic(float x, float y, float w, float h, const char *picname);
 void	drawpic(float x, float y, float w, float h, qhandle_t hShader);
 void	fillrect(float x, float y, float width, float height, const float *color);
