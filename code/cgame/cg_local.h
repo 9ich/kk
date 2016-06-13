@@ -1291,7 +1291,6 @@ void		lagometerframeinfo(void);
 void		lagometersnapinfo(snapshot_t *snap);
 void		centerprint(const char *str, int y, int charWidth);
 void		drawactive(stereoFrame_t stereoview);
-void		drawflag(float x, float y, float w, float h, int team, qboolean force2D);
 void		drawteambg(int x, int y, int w, int h, float alpha, int team);
 void		ownerdraw(float x, float y, float w, float h, float text_x, float text_y, int ownerDraw, int ownerDrawFlags, int align, float special, float scale, vec4_t color, qhandle_t shader, int textStyle);
 void		CG_Text_Paint(float x, float y, float scale, vec4_t color, const char *text, float adjust, int limit, int style);

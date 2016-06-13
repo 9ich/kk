@@ -137,75 +137,63 @@ drawdmgindicator(void)
 	setalign("");
 }
 
-/*
-================
-drawflag
-
-Used for both the status bar and the scoreboard
-================
-*/
-void
-drawflag(float x, float y, float w, float h, int team, qboolean force2D)
-{
-	qhandle_t cm;
-	float len;
-	vec3_t origin, angles;
-	vec3_t mins, maxs;
-	qhandle_t handle;
-
-	if(!force2D && cg_draw3dIcons.integer){
-		vecclear(angles);
-
-		cm = cgs.media.redFlagModel;
-
-		// offset the origin y and z to center the flag
-		trap_R_ModelBounds(cm, mins, maxs);
-
-		origin[2] = -0.5 * (mins[2] + maxs[2]);
-		origin[1] = 0.5 * (mins[1] + maxs[1]);
-
-		// calculate distance so the flag nearly fills the box
-		// assume heads are taller than wide
-		len = 0.5 * (maxs[2] - mins[2]);
-		origin[0] = len / 0.268;	// len / tan( fov/2 )
-
-		angles[YAW] = 60 * sin(cg.time / 2000.0);;
-
-		if(team == TEAM_RED)
-			handle = cgs.media.redFlagModel;
-		else if(team == TEAM_BLUE)
-			handle = cgs.media.blueFlagModel;
-		else if(team == TEAM_FREE)
-			handle = cgs.media.neutralFlagModel;
-		else
-			return;
-		drawmodel(x, y, w, h, handle, 0, origin, angles);
-	}else if(cg_drawIcons.integer){
-		gitem_t *item;
-
-		if(team == TEAM_RED)
-			item = finditemforpowerup(PW_REDFLAG);
-		else if(team == TEAM_BLUE)
-			item = finditemforpowerup(PW_BLUEFLAG);
-		else if(team == TEAM_FREE)
-			item = finditemforpowerup(PW_NEUTRALFLAG);
-		else
-			return;
-		if(item)
-			drawpic(x, y, w, h, cg_items[ITEM_INDEX(item)].icon);
-	}
-}
-
-/*
-================
-CG_DrawStatusBarFlag
-
-================
-*/
 static void
-CG_DrawStatusBarFlag(float x, int team)
+drawflagstatus(void)
 {
-	drawflag(x, 480 - ICON_SIZE, ICON_SIZE, ICON_SIZE, team, qfalse);
+	const float sz = 12;
+	const float spc = 2;
+	const float bgalpha = 20/255.0f;
+	const int font = FONT3;
+	float x, y, xtext, maxtextwidth;
+	vec4_t clr;
+
+	maxtextwidth = stringwidth("at base", font, sz, 0, -1);
+	x = screenwidth() - maxtextwidth - sz - spc;
+	y = 50;
+	xtext = x + sz + spc;
+
+	// draw background
+	coloralpha(clr, CWhite, bgalpha);
+	fillrect(x-spc, y-spc, maxtextwidth+sz+2*spc, 2*(sz+spc)+spc, clr);
+
+	// draw flag status
+	switch(cgs.gametype){
+	case GT_CTF:
+		drawnamedpic(x, y, sz, sz, "icons/flag_red2");
+		if(cg.pps.powerups[PW_REDFLAG])
+			drawstring(xtext, y, "held", font, sz, CLightGreen);
+		else if(cgs.redflag == FLAG_ATBASE)
+			drawstring(xtext, y, "at base", font, sz, CWhite);
+		else if(cgs.redflag == FLAG_TAKEN)
+			drawstring(xtext, y, "taken", font, sz, CRed);
+		else if(cgs.redflag == FLAG_DROPPED)
+			drawstring(xtext, y, "dropped", font, sz, CYellow);
+
+		y += sz + spc;
+		drawnamedpic(x, y, sz, sz, "icons/flag_blu2");
+		if(cg.pps.powerups[PW_BLUEFLAG])
+			drawstring(xtext, y, "held", font, sz, CLightGreen);
+		else if(cgs.blueflag == FLAG_ATBASE)
+			drawstring(xtext, y, "at base", font, sz, CWhite);
+		else if(cgs.blueflag == FLAG_TAKEN)
+			drawstring(xtext, y, "taken", font, sz, CRed);
+		else if(cgs.blueflag == FLAG_DROPPED)
+			drawstring(xtext, y, "dropped", font, sz, CYellow);
+		break;
+	case GT_1FCTF:
+		drawnamedpic(x, y, sz, sz, "icons/flag_red2");
+		if(cg.pps.powerups[PW_NEUTRALFLAG])
+			drawstring(xtext, y, "held", font, sz, CLightGreen);
+		else if(cgs.flagStatus == FLAG_ATBASE)
+			drawstring(xtext, y, "at base", font, sz, CWhite);
+		else if(cgs.flagStatus == FLAG_TAKEN)
+			drawstring(xtext, y, "taken", font, sz, CRed);
+		else if(cgs.flagStatus == FLAG_DROPPED)
+			drawstring(xtext, y, "dropped", font, sz, CYellow);
+		break;
+	default:
+		break;
+	}
 }
 
 
@@ -267,12 +255,8 @@ drawstatusbar(void)
 	cent = &cg_entities[cg.snap->ps.clientNum];
 	ps = &cg.snap->ps;
 
-	if(cg.pps.powerups[PW_REDFLAG])
-		CG_DrawStatusBarFlag(185 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ICON_SIZE, TEAM_RED);
-	else if(cg.pps.powerups[PW_BLUEFLAG])
-		CG_DrawStatusBarFlag(185 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ICON_SIZE, TEAM_BLUE);
-	else if(cg.pps.powerups[PW_NEUTRALFLAG])
-		CG_DrawStatusBarFlag(185 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ICON_SIZE, TEAM_FREE);
+	if(cgs.gametype == GT_CTF || cgs.gametype == GT_1FCTF)
+		drawflagstatus();
 
 	setalign("left");
 

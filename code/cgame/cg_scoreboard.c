@@ -86,48 +86,6 @@ CG_DrawClientScore(int y, score_t *score, float *color, float fade, qboolean lar
 
 	iconx = SB_BOTICON_X + (SB_RATING_WIDTH / 2);
 
-	// draw the handicap or bot skill marker (unless player has flag)
-	if(ci->powerups & (1 << PW_NEUTRALFLAG)){
-		if(largeFormat)
-			drawflag(iconx, y - (32 - BIGCHAR_HEIGHT) / 2, 32, 32, TEAM_FREE, qfalse);
-		else
-			drawflag(iconx, y, 16, 16, TEAM_FREE, qfalse);
-	}else if(ci->powerups & (1 << PW_REDFLAG)){
-		if(largeFormat)
-			drawflag(iconx, y - (32 - BIGCHAR_HEIGHT) / 2, 32, 32, TEAM_RED, qfalse);
-		else
-			drawflag(iconx, y, 16, 16, TEAM_RED, qfalse);
-	}else if(ci->powerups & (1 << PW_BLUEFLAG)){
-		if(largeFormat)
-			drawflag(iconx, y - (32 - BIGCHAR_HEIGHT) / 2, 32, 32, TEAM_BLUE, qfalse);
-		else
-			drawflag(iconx, y, 16, 16, TEAM_BLUE, qfalse);
-	}else{
-		if(ci->botskill > 0 && ci->botskill <= 5){
-			if(cg_drawIcons.integer){
-				if(largeFormat)
-					drawpic(iconx, y - (32 - BIGCHAR_HEIGHT) / 2, 32, 32, cgs.media.botSkillShaders[ci->botskill - 1]);
-				else
-					drawpic(iconx, y, 16, 16, cgs.media.botSkillShaders[ci->botskill - 1]);
-			}
-		}else if(ci->handicap < 100){
-			Com_sprintf(string, sizeof(string), "%i", ci->handicap);
-			if(cgs.gametype == GT_TOURNAMENT)
-				drawsmallstrcolor(iconx, y - SMALLCHAR_HEIGHT/2, string, color);
-			else
-				drawsmallstrcolor(iconx, y, string, color);
-		}
-
-		// draw the wins / losses
-		if(cgs.gametype == GT_TOURNAMENT){
-			Com_sprintf(string, sizeof(string), "%i/%i", ci->wins, ci->losses);
-			if(ci->handicap < 100 && !ci->botskill)
-				drawsmallstrcolor(iconx, y + SMALLCHAR_HEIGHT/2, string, color);
-			else
-				drawsmallstrcolor(iconx, y, string, color);
-		}
-	}
-
 	// draw the score line
 	if(score->ping == -1)
 		Com_sprintf(string, sizeof(string),
