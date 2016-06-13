@@ -338,43 +338,6 @@ drawstatusbar(void)
 ===========================================================================================
 */
 
-/*
-================
-CG_DrawAttacker
-
-================
-*/
-static float
-CG_DrawAttacker(float y)
-{
-	const char *info;
-	const char *name;
-	int clientNum;
-
-	if(cg.pps.stats[STAT_HEALTH] <= 0)
-		return y;
-
-	if(!cg.attackertime)
-		return y;
-
-	clientNum = cg.pps.persistant[PERS_ATTACKER];
-	if(clientNum < 0 || clientNum >= MAX_CLIENTS || clientNum == cg.snap->ps.clientNum)
-		return y;
-
-	if(!cgs.clientinfo[clientNum].infovalid){
-		cg.attackertime = 0;
-		return y;
-	}
-
-	info = getconfigstr(CS_PLAYERS + clientNum);
-	name = Info_ValueForKey(info, "n");
-	pushalign("right");
-	drawbigstr(screenwidth(), y, name, 0.5);
-	popalign(1);
-
-	return y + BIGCHAR_HEIGHT + 2;
-}
-
 static float
 drawobituaries(float y)
 {
@@ -771,8 +734,6 @@ drawupperright(stereoFrame_t stereoFrame)
 		y = drawtimer(y);
 	if(cg_drawObituaries.integer)
 		y = drawobituaries(y);
-	if(cg_drawAttacker.integer)
-		y = CG_DrawAttacker(y);
 }
 
 /*
