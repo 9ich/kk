@@ -384,7 +384,7 @@ drawobituaries(float y)
 
 	pad = 2;
 	sz = 16;
-	font = FONT2;
+	font = FONT3;
 
 	// draw obituaries newest to oldest, bottom to top
 	y += (ARRAY_LEN(cg.obit) - 1) * (sz + pad);
