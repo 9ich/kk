@@ -281,7 +281,7 @@ drawstatusbar(void)
 		if(cg.pps.weaponTime > 100){
 			// draw weapontime indicator
 			coloralpha(clr, CWhite, sawtoothwave(cg.pps.weaponTime, 8, 0, 1));
-			fillrect(0.5f*screenwidth() + 65, 304.5f, 6, 6, clr);
+			fillrect(0.5f*screenwidth() + 100, 305, 6, 6, clr);
 		}
 
 		value = ps->ammo[cent->currstate.weapon];
