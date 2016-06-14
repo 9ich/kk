@@ -1576,11 +1576,13 @@ drawspec
 static void
 drawspec(void)
 {
-	drawbigstr(320 - 9 * 8, 440, "SPECTATOR", 1.0F);
+	pushalign("center");
+	drawbigstr(screenwidth()*0.5f, 440, "Spectating", 1.0F);
 	if(cgs.gametype == GT_TOURNAMENT)
-		drawbigstr(320 - 15 * 8, 460, "waiting to play", 1.0F);
+		drawbigstr(screenwidth()*0.5f, 460, "waiting to play", 1.0F);
 	else if(cgs.gametype >= GT_TEAM)
-		drawbigstr(320 - 39 * 8, 460, "press ESC and use the JOIN menu to play", 1.0F);
+		drawbigstr(screenwidth()*0.5f, 460, "press ESC and use the JOIN menu to play", 1.0F);
+	popalign(1);
 }
 
 static void
