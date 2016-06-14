@@ -445,9 +445,9 @@ name:						default:			module(s):			description:
 
 "phys_friction"				"6"					be_aas_move.c		ground friction
 "phys_stopspeed"			"100"				be_aas_move.c		stop speed
-"phys_gravity"				"800"				be_aas_move.c		gravity value
+"phys_gravity"				"0"				be_aas_move.c		gravity value
 "phys_waterfriction"		"1"					be_aas_move.c		water friction
-"phys_watergravity"			"400"				be_aas_move.c		gravity in water
+"phys_watergravity"			"0"				be_aas_move.c		gravity in water
 "phys_maxvelocity"			"320"				be_aas_move.c		maximum velocity
 "phys_maxwalkvelocity"		"320"				be_aas_move.c		maximum walk velocity
 "phys_maxcrouchvelocity"	"100"				be_aas_move.c		maximum crouch velocity

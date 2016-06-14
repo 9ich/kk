@@ -70,9 +70,9 @@ void AAS_InitSettings(void)
 	aassettings.phys_gravitydirection[2]	= -1;
 	aassettings.phys_friction				= LibVarValue("phys_friction", "6");
 	aassettings.phys_stopspeed				= LibVarValue("phys_stopspeed", "100");
-	aassettings.phys_gravity				= LibVarValue("phys_gravity", "800");
+	aassettings.phys_gravity				= LibVarValue("phys_gravity", "0");
 	aassettings.phys_waterfriction			= LibVarValue("phys_waterfriction", "1");
-	aassettings.phys_watergravity			= LibVarValue("phys_watergravity", "400");
+	aassettings.phys_watergravity			= LibVarValue("phys_watergravity", "0");
 	aassettings.phys_maxvelocity			= LibVarValue("phys_maxvelocity", "320");
 	aassettings.phys_maxwalkvelocity		= LibVarValue("phys_maxwalkvelocity", "320");
 	aassettings.phys_maxcrouchvelocity		= LibVarValue("phys_maxcrouchvelocity", "100");
@@ -197,7 +197,7 @@ int AAS_Swimming(vec3_t origin)
 
 	VectorCopy(origin, testorg);
 	testorg[2] -= 2;
-	if (AAS_PointContents(testorg) & (CONTENTS_LAVA|CONTENTS_SLIME|CONTENTS_WATER)) return qtrue;
+	if (AAS_PointContents(testorg) == 0 || (AAS_PointContents(testorg) & (CONTENTS_LAVA|CONTENTS_SLIME|CONTENTS_WATER))) return qtrue;
 	return qfalse;
 }
 //===========================================================================
@@ -873,7 +873,7 @@ int AAS_ClientMovementPrediction(struct aas_clientmove_s *move,
 				//if it is a gap (lower than one step height)
 				if (gaptrace.endpos[2] < org[2] - aassettings.phys_maxstep - 1)
 				{
-					if (!(AAS_PointContents(end) & CONTENTS_WATER))
+					if (AAS_PointContents(end) != 0 && !(AAS_PointContents(end) & CONTENTS_WATER))
 					{
 						VectorCopy(lastorg, move->endpos);
 						move->endarea = AAS_PointAreaNum(lastorg);
