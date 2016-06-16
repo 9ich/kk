@@ -160,7 +160,7 @@ PM_Friction(void)
 	if(speed < 0.01f){
 		vel[0] = 0;
 		vel[1] = 0;
-		vec[2] = 0;
+		vel[2] = 0;
 		return;
 	}
 
