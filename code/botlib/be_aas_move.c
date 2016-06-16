@@ -71,15 +71,15 @@ void AAS_InitSettings(void)
 	aassettings.phys_friction				= LibVarValue("phys_friction", "6");
 	aassettings.phys_stopspeed				= LibVarValue("phys_stopspeed", "100");
 	aassettings.phys_gravity				= LibVarValue("phys_gravity", "0");
-	aassettings.phys_waterfriction			= LibVarValue("phys_waterfriction", "1");
+	aassettings.phys_waterfriction			= LibVarValue("phys_waterfriction", "1.12");	// g_airFriction
 	aassettings.phys_watergravity			= LibVarValue("phys_watergravity", "0");
 	aassettings.phys_maxvelocity			= LibVarValue("phys_maxvelocity", "320");
 	aassettings.phys_maxwalkvelocity		= LibVarValue("phys_maxwalkvelocity", "320");
 	aassettings.phys_maxcrouchvelocity		= LibVarValue("phys_maxcrouchvelocity", "100");
-	aassettings.phys_maxswimvelocity		= LibVarValue("phys_maxswimvelocity", "150");
+	aassettings.phys_maxswimvelocity		= LibVarValue("phys_maxswimvelocity", "320");	// g_speed
 	aassettings.phys_walkaccelerate			= LibVarValue("phys_walkaccelerate", "10");
 	aassettings.phys_airaccelerate			= LibVarValue("phys_airaccelerate", "1");
-	aassettings.phys_swimaccelerate			= LibVarValue("phys_swimaccelerate", "4");
+	aassettings.phys_swimaccelerate			= LibVarValue("phys_swimaccelerate", "5.0");	// g_airAccel
 	aassettings.phys_maxstep				= LibVarValue("phys_maxstep", "19");
 	aassettings.phys_maxsteepness			= LibVarValue("phys_maxsteepness", "0.7");
 	aassettings.phys_maxwaterjump			= LibVarValue("phys_maxwaterjump", "18");
@@ -171,6 +171,8 @@ int AAS_OnGround(vec3_t origin, int presencetype, int passent)
 	vec3_t end, up = {0, 0, 1};
 	aas_plane_t *plane;
 
+	return qfalse;
+
 	VectorCopy(origin, end);
 	end[2] -= 10;
 
@@ -196,7 +198,6 @@ int AAS_Swimming(vec3_t origin)
 	vec3_t testorg;
 
 	VectorCopy(origin, testorg);
-	testorg[2] -= 2;
 	if (AAS_PointContents(testorg) == 0 || (AAS_PointContents(testorg) & (CONTENTS_LAVA|CONTENTS_SLIME|CONTENTS_WATER))) return qtrue;
 	return qfalse;
 }
@@ -231,11 +232,11 @@ void AAS_JumpReachRunStart(aas_reachability_t *reach, vec3_t runstart)
 
 	hordir[0] = reach->start[0] - reach->end[0];
 	hordir[1] = reach->start[1] - reach->end[1];
-	hordir[2] = 0;
+	hordir[2] = reach->start[2] - reach->end[2];
 	VectorNormalize(hordir);
 	//start point
 	VectorCopy(reach->start, start);
-	start[2] += 1;
+	//start[2] += 1;
 	//get command movement
 	VectorScale(hordir, 400, cmdmove);
 	AAS_PredictClientMovement(&move, -1, start, PRESENCE_NORMAL, qtrue,
@@ -257,8 +258,8 @@ float AAS_WeaponJumpZVelocity(vec3_t origin, float radiusdamage)
 	vec3_t kvel, v, start, end, forward, right, viewangles, dir;
 	float	mass, knockback, points;
 	vec3_t rocketoffset = {8, 8, -8};
-	vec3_t botmins = {-16, -16, -24};
-	vec3_t botmaxs = {16, 16, 32};
+	vec3_t botmins = {MINS_X, MINS_Y, MINS_Z};
+	vec3_t botmaxs = {MAXS_X, MAXS_Y, MAXS_Z};
 	bsp_trace_t bsptrace;
 
 	//look down (90 degrees)
@@ -315,42 +316,44 @@ float AAS_BFGJumpZVelocity(vec3_t origin)
 //===========================================================================
 void AAS_Accelerate(vec3_t velocity, float frametime, vec3_t wishdir, float wishspeed, float accel)
 {
-	// q2 style
-	int			i;
-	float		addspeed, accelspeed, currentspeed;
+	int i;
+	float accelspeed;
 
-	currentspeed = DotProduct(velocity, wishdir);
-	addspeed = wishspeed - currentspeed;
-	if (addspeed <= 0) {
-		return;
-	}
 	accelspeed = accel*frametime*wishspeed;
-	if (accelspeed > addspeed) {
-		accelspeed = addspeed;
-	}
-	
-	for (i=0 ; i<3 ; i++) {
-		velocity[i] += accelspeed*wishdir[i];	
-	}
+	for(i = 0; i<3; i++)
+		velocity[i] += accelspeed*wishdir[i];
 }
 //===========================================================================
 // applies ground friction to the given velocity
 //===========================================================================
 void AAS_ApplyFriction(vec3_t vel, float friction, float stopspeed,
-													float frametime)
+   float frametime)
 {
 	float speed, control, newspeed;
+	float drop;
 
+	drop = 0;
 	//horizontal speed
 	speed = sqrt(vel[0] * vel[0] + vel[1] * vel[1]);
+	if(speed < 0.01f){
+		vel[0] = 0;
+		vel[1] = 0;
+		vel[2] = 0;
+		return;
+	}
 	if (speed)
 	{
 		control = speed < stopspeed ? stopspeed : speed;
-		newspeed = speed - frametime * control * friction;
-		if (newspeed < 0) newspeed = 0;
+		drop += control*friction*frametime;
+		// scale the velocity
+		newspeed = speed - drop;
+		if(newspeed < 0)
+			newspeed = 0;
 		newspeed /= speed;
-		vel[0] *= newspeed;
-		vel[1] *= newspeed;
+
+		vel[0] = vel[0] * newspeed;
+		vel[1] = vel[1] * newspeed;
+		vel[2] = vel[2] * newspeed;
 	}
 }
 //===========================================================================
@@ -476,7 +479,7 @@ int AAS_ClientMovementPrediction(struct aas_clientmove_s *move,
 	Com_Memset(&trace, 0, sizeof(aas_trace_t));
 	//start at the current origin
 	VectorCopy(origin, org);
-	org[2] += 0.25;
+	//org[2] += 0.25;
 	//velocity to test for the first frame
 	VectorScale(velocity, frametime, frame_test_vel);
 	jump_frame = -1;
@@ -535,7 +538,7 @@ int AAS_ClientMovementPrediction(struct aas_clientmove_s *move,
 			}
 			else
 			{
-				wishdir[2] = 0;
+				//wishdir[2] = 0;
 			}
 			wishspeed = VectorNormalize(wishdir);
 			if (wishspeed > maxvel) wishspeed = maxvel;
@@ -748,7 +751,7 @@ int AAS_ClientMovementPrediction(struct aas_clientmove_s *move,
 					//check for a landing on an almost horizontal floor
 					if (DotProduct(plane->normal, up) > phys_maxsteepness)
 					{
-						onground = qtrue;
+						;//onground = qtrue;
 					}
 					if (stopevent & SE_HITGROUNDDAMAGE)
 					{
@@ -939,10 +942,10 @@ void AAS_TestMovementPrediction(int entnum, vec3_t origin, vec3_t dir)
 	aas_clientmove_t move;
 
 	VectorClear(velocity);
-	if (!AAS_Swimming(origin)) dir[2] = 0;
+	//if (!AAS_Swimming(origin)) dir[2] = 0;
 	VectorNormalize(dir);
 	VectorScale(dir, 400, cmdmove);
-	cmdmove[2] = 224;
+	//cmdmove[2] = 224;
 	AAS_ClearShownDebugLines();
 	AAS_PredictClientMovement(&move, entnum, origin, PRESENCE_NORMAL, qtrue,
 									velocity, cmdmove, 13, 13, 0.1f, SE_HITGROUND, 0, qtrue);//SE_LEAVEGROUND);

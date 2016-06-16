@@ -162,9 +162,9 @@ BotGoForAir(bot_state_t *bs, int tfl, bot_goal_t *ltg, float range)
 
 	//if the bot needs air
 	if(bs->lastair_time < FloatTime() - 6){
-#ifdef DEBUG
-		//BotAI_Print(PRT_MESSAGE, "going for air\n");
-#endif	//DEBUG
+//#ifdef DEBUG
+		BotAI_Print(PRT_MESSAGE, "going for air\n");
+//#endif	//DEBUG
 		//if we can find an air goal
 		if(BotGetAirGoal(bs, &goal)){
 			trap_BotPushGoal(bs->gs, &goal);
@@ -276,9 +276,10 @@ int
 BotGetItemLongTermGoal(bot_state_t *bs, int tfl, bot_goal_t *goal)
 {
 	//if the bot has no goal
-	if(!trap_BotGetTopGoal(bs->gs, goal))
-		//BotAI_Print(PRT_MESSAGE, "no ltg on stack\n");
+	if(!trap_BotGetTopGoal(bs->gs, goal)){
+		BotAI_Print(PRT_MESSAGE, "no ltg on stack\n");
 		bs->ltg_time = 0;
+	}
 	//if the bot touches the current goal
 	else if(BotReachedGoal(bs, goal)){
 		BotChooseWeapon(bs);
@@ -290,7 +291,7 @@ BotGetItemLongTermGoal(bot_state_t *bs, int tfl, bot_goal_t *goal)
 		trap_BotPopGoal(bs->gs);
 		//BotAI_Print(PRT_MESSAGE, "%s: choosing new ltg\n", ClientName(bs->client, netname, sizeof(netname)));
 		//choose a new goal
-		//BotAI_Print(PRT_MESSAGE, "%6.1f client %d: BotChooseLTGItem\n", FloatTime(), bs->client);
+		BotAI_Print(PRT_MESSAGE, "%6.1f client %d: BotChooseLTGItem\n", FloatTime(), bs->client);
 		if(trap_BotChooseLTGItem(bs->gs, bs->origin, bs->inventory, tfl))
 			/*
 			char buf[128];
@@ -304,7 +305,7 @@ BotGetItemLongTermGoal(bot_state_t *bs, int tfl, bot_goal_t *goal)
 #ifdef DEBUG
 			char netname[128];
 
-			BotAI_Print(PRT_MESSAGE, "%s: no valid ltg (probably stuck)\n", ClientName(bs->client, netname, sizeof(netname)));
+			BotAI_Print(PRT_MESSAGE, "client %d: no valid ltg (probably stuck)\n", bs->client);
 #endif
 			//trap_BotDumpAvoidGoals(bs->gs);
 			//reset the avoid goals and the avoid reach
@@ -471,7 +472,7 @@ BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 					//get the goal at the top of the stack
 					//trap_BotGetTopGoal(bs->gs, &tmpgoal);
 					//trap_BotGoalName(tmpgoal.number, buf, 144);
-					//BotAI_Print(PRT_MESSAGE, "new nearby goal %s\n", buf);
+					BotAI_Print(PRT_MESSAGE, "new nearby goal %s\n", buf);
 					//time the bot gets to pick up the nearby goal item
 					bs->nbg_time = FloatTime() + 8;
 					AIEnter_Seek_NBG(bs, "BotLongTermGoal: go for air");
@@ -1789,7 +1790,7 @@ AINode_Seek_LTG(bot_state_t *bs)
 	if(moveresult.failure){
 		//reset the avoid reach, otherwise bot is stuck in current area
 		trap_BotResetAvoidReach(bs->ms);
-		//BotAI_Print(PRT_MESSAGE, "movement failure %d\n", moveresult.traveltype);
+		BotAI_Print(PRT_MESSAGE, "movement failure %d\n", moveresult.traveltype);
 		bs->ltg_time = 0;
 	}
 	BotAIBlocked(bs, &moveresult, qtrue);
@@ -1983,7 +1984,7 @@ AINode_Battle_Fight(bot_state_t *bs)
 	if(moveresult.failure){
 		//reset the avoid reach, otherwise bot is stuck in current area
 		trap_BotResetAvoidReach(bs->ms);
-		//BotAI_Print(PRT_MESSAGE, "movement failure %d\n", moveresult.traveltype);
+		BotAI_Print(PRT_MESSAGE, "movement failure %d\n", moveresult.traveltype);
 		bs->ltg_time = 0;
 	}
 	BotAIBlocked(bs, &moveresult, qfalse);
@@ -2102,7 +2103,7 @@ AINode_Battle_Chase(bot_state_t *bs)
 	if(moveresult.failure){
 		//reset the avoid reach, otherwise bot is stuck in current area
 		trap_BotResetAvoidReach(bs->ms);
-		//BotAI_Print(PRT_MESSAGE, "movement failure %d\n", moveresult.traveltype);
+		BotAI_Print(PRT_MESSAGE, "movement failure %d\n", moveresult.traveltype);
 		bs->ltg_time = 0;
 	}
 	BotAIBlocked(bs, &moveresult, qfalse);
@@ -2282,7 +2283,7 @@ AINode_Battle_Retreat(bot_state_t *bs)
 	if(moveresult.failure){
 		//reset the avoid reach, otherwise bot is stuck in current area
 		trap_BotResetAvoidReach(bs->ms);
-		//BotAI_Print(PRT_MESSAGE, "movement failure %d\n", moveresult.traveltype);
+		BotAI_Print(PRT_MESSAGE, "movement failure %d\n", moveresult.traveltype);
 		bs->ltg_time = 0;
 	}
 	BotAIBlocked(bs, &moveresult, qfalse);
@@ -2416,7 +2417,7 @@ AINode_Battle_NBG(bot_state_t *bs)
 	if(moveresult.failure){
 		//reset the avoid reach, otherwise bot is stuck in current area
 		trap_BotResetAvoidReach(bs->ms);
-		//BotAI_Print(PRT_MESSAGE, "movement failure %d\n", moveresult.traveltype);
+		BotAI_Print(PRT_MESSAGE, "movement failure %d\n", moveresult.traveltype);
 		bs->nbg_time = 0;
 	}
 	BotAIBlocked(bs, &moveresult, qfalse);

@@ -1221,7 +1221,10 @@ int BotChooseLTGItem(int goalstate, vec3_t origin, int *inventory, int travelfla
 	//if no goal item found
 	if (!bestitem)
 	{
-		/*
+		// roam around sometimes so the bot doesn't sit still forever
+		if(random() >= 0.01f){
+			return qfalse;
+		}
 		//if not in lava or slime
 		if (!AAS_AreaLava(areanum) && !AAS_AreaSlime(areanum))
 		{
@@ -1231,17 +1234,16 @@ int BotChooseLTGItem(int goalstate, vec3_t origin, int *inventory, int travelfla
 				VectorSet(goal.maxs, 15, 15, 15);
 				goal.entitynum = 0;
 				goal.number = 0;
-				goal.flags = GFL_ROAM;
+				goal.flags |= GFL_ROAM;
 				goal.iteminfo = 0;
 				//push the goal on the stack
 				BotPushGoal(goalstate, &goal);
-#ifdef DEBUG
+//#ifdef DEBUG
 				botimport.Print(PRT_MESSAGE, "chosen roam goal area %d\n", goal.areanum);
-#endif //DEBUG
+//#endif //DEBUG
 				return qtrue;
 			}
 		}
-		*/
 		return qfalse;
 	}
 	//create a bot goal for this item

@@ -1775,7 +1775,7 @@ int AAS_RandomGoalArea(int areanum, int travelflags, int *goalareanum, vec3_t go
 				{
 					*goalareanum = n;
 					VectorCopy(aasworld.areas[n].center, goalorigin);
-					//botimport.Print(PRT_MESSAGE, "found random goal area %d\n", *goalareanum);
+					botimport.Print(PRT_MESSAGE, "found random swim goal area %d %s\n", *goalareanum, vtos(goalorigin));
 					return qtrue;
 				}
 				VectorCopy(aasworld.areas[n].center, start);
@@ -1790,7 +1790,7 @@ int AAS_RandomGoalArea(int areanum, int travelflags, int *goalareanum, vec3_t go
 					{
 						*goalareanum = n;
 						VectorCopy(trace.endpos, goalorigin);
-						//botimport.Print(PRT_MESSAGE, "found random goal area %d\n", *goalareanum);
+						botimport.Print(PRT_MESSAGE, "found random goal area %d %s\n", *goalareanum, vtos(goalorigin));
 						return qtrue;
 					}
 				}

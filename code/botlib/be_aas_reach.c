@@ -3521,7 +3521,7 @@ int AAS_Reachability_Grapple(int area1num, int area2num)
 void AAS_SetWeaponJumpAreaFlags(void)
 {
 	int ent, i;
-	vec3_t mins = {-15, -15, -15}, maxs = {15, 15, 15};
+	vec3_t mins = {MINS_X, MINS_Y, MINS_Z}, maxs = {MAXS_X, MAXS_Y, MAXS_Z};
 	vec3_t origin;
 	int areanum, weaponjumpareas, spawnflags;
 	char classname[MAX_EPAIRKEY];

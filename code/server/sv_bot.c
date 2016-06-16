@@ -135,8 +135,11 @@ BotImport_Print
 */
 static __attribute__ ((format (printf, 2, 3))) void QDECL BotImport_Print(int type, char *fmt, ...)
 {
+	cvar_t *bot_debug = nil;
 	char str[2048];
 	va_list ap;
+	
+	if (!bot_debug) bot_debug = Cvar_Get("bot_debug", "0", 0);
 
 	va_start(ap, fmt);
 	Q_vsnprintf(str, sizeof(str), fmt, ap);
@@ -144,7 +147,8 @@ static __attribute__ ((format (printf, 2, 3))) void QDECL BotImport_Print(int ty
 
 	switch(type) {
 		case PRT_MESSAGE: {
-			Com_Printf("%s", str);
+			if(bot_debug->integer)
+				Com_Printf("%s", str);
 			break;
 		}
 		case PRT_WARNING: {

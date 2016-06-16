@@ -1131,8 +1131,8 @@ void AAS_AddTeleporterPortals(void)
 			{
 				aasworld.areasettings[j].cluster = 0;
 			}
-			VectorSet(mins, -8, -8, 8);
-			VectorSet(maxs, 8, 8, 24);
+			VectorSet(mins, MINS_X, MINS_Y, MINS_Z);	// FIXME
+			VectorSet(maxs, MAXS_X, MAXS_Y, MAXS_Z);
 			AAS_PresenceTypeBoundingBox(PRESENCE_CROUCH, bbmins, bbmaxs);
 			VectorAdd(origin, mins, mins);
 			VectorAdd(origin, maxs, maxs);

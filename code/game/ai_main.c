@@ -65,6 +65,7 @@ float floattime;
 float regularupdate_time;
 int bot_interbreed;
 int bot_interbreedmatchcount;
+vmCvar_t bot_debug;
 vmCvar_t bot_thinktime;
 vmCvar_t bot_memorydump;
 vmCvar_t bot_saveroutingcache;
@@ -97,7 +98,8 @@ BotAI_Print(int type, char *fmt, ...)
 
 	switch(type){
 	case PRT_MESSAGE: {
-		gprintf("%s", str);
+		if(bot_debug.integer)
+			gprintf("%s", str);
 		break;
 	}
 	case PRT_WARNING: {
@@ -792,7 +794,7 @@ BotChangeViewAngles(bot_state_t *bs, float thinktime)
 			//demping
 			bs->viewanglespeed[i] *= 0.45 * (1 - factor);
 		}
-		//BotAI_Print(PRT_MESSAGE, "ideal_angles %f %f\n", bs->ideal_viewangles[0], bs->ideal_viewangles[1], bs->ideal_viewangles[2]);`
+		BotAI_Print(PRT_MESSAGE, "ideal_angles %f %f %f\n", bs->ideal_viewangles[0], bs->ideal_viewangles[1], bs->ideal_viewangles[2]);
 		//bs->viewangles[i] = bs->ideal_viewangles[i];
 	}
 	//bs->viewangles[PITCH] = 0;
@@ -1253,7 +1255,7 @@ BotAIShutdownClient(int client, qboolean restart)
 
 	bs = botstates[client];
 	if(!bs || !bs->inuse)
-		//BotAI_Print(PRT_ERROR, "BotAIShutdownClient: client %d already shutdown\n", client);
+		BotAI_Print(PRT_ERROR, "BotAIShutdownClient: client %d already shutdown\n", client);
 		return qfalse;
 
 	if(restart)
@@ -1580,6 +1582,8 @@ BotInitLibrary(void)
 	trap_Cvar_VariableStringBuffer("g_gametype", buf, sizeof(buf));
 	if(!strlen(buf)) strcpy(buf, "0");
 	trap_BotLibVarSet("g_gametype", buf);
+	// bot_debug
+	trap_BotLibVarSet("bot_debug", bot_debug.string);
 	//bot developer mode and log file
 	trap_BotLibVarSet("bot_developer", bot_developer.string);
 	trap_Cvar_VariableStringBuffer("logfile", buf, sizeof(buf));
@@ -1641,6 +1645,7 @@ BotAISetup(int restart)
 	trap_Cvar_Register(&bot_report, "bot_report", "0", CVAR_CHEAT);
 	trap_Cvar_Register(&bot_testsolid, "bot_testsolid", "0", CVAR_CHEAT);
 	trap_Cvar_Register(&bot_testclusters, "bot_testclusters", "0", CVAR_CHEAT);
+	trap_Cvar_Register(&bot_debug, "bot_debug", "0", CVAR_CHEAT);
 	trap_Cvar_Register(&bot_developer, "bot_developer", "0", CVAR_CHEAT);
 	trap_Cvar_Register(&bot_interbreedchar, "bot_interbreedchar", "", 0);
 	trap_Cvar_Register(&bot_interbreedbots, "bot_interbreedbots", "10", 0);

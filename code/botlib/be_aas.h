@@ -28,6 +28,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * $Archive: /source/code/botlib/be_aas.h $
  *
  *****************************************************************************/
+ 
+// player bounds from game
+#define MAXS_X			30
+#define MAXS_Y			30
+#define MAXS_Z			30
+#define MINS_X			(-MAXS_X)
+#define MINS_Y			(-MAXS_Y)
+#define MINS_Z			(-MAXS_Z)
 
 #ifndef MAX_STRINGFIELD
 #define MAX_STRINGFIELD				80

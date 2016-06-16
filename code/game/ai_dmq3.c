@@ -76,6 +76,7 @@ vmCvar_t bot_predictobstacles;
 vmCvar_t g_spSkill;
 
 extern vmCvar_t bot_developer;
+extern vmCvar_t bot_debug;
 
 vec3_t lastteleport_origin;	//last teleport event origin
 float lastteleport_time;	//last teleport event time
@@ -1512,7 +1513,7 @@ BotChooseWeapon(bot_state_t *bs)
 		newweaponnum = trap_BotChooseBestFightWeapon(bs->ws, bs->inventory);
 		if(bs->weaponnum != newweaponnum) bs->weaponchange_time = FloatTime();
 		bs->weaponnum = newweaponnum;
-		//BotAI_Print(PRT_MESSAGE, "bs->weaponnum = %d\n", bs->weaponnum);
+		BotAI_Print(PRT_MESSAGE, "bs->weaponnum = %d\n", bs->weaponnum);
 		trap_EA_SelectWeapon(bs->client, bs->weaponnum);
 	}
 }
@@ -2649,7 +2650,7 @@ BotAttackMove(bot_state_t *bs, int tfl)
 	for(i = 0; i < 2; i++){
 		hordir[0] = forward[0];
 		hordir[1] = forward[1];
-		hordir[2] = 0;
+		hordir[2] = forward[2];
 		vecnorm(hordir);
 		//get the sideward vector
 		veccross(hordir, up, sideward);
@@ -3184,7 +3185,7 @@ BotAimAtEnemy(bot_state_t *bs)
 		veccpy(target, bs->aimtarget);
 		return;
 	}
-	//BotAI_Print(PRT_MESSAGE, "client %d: aiming at client %d\n", bs->entitynum, bs->enemy);
+	BotAI_Print(PRT_MESSAGE, "client %d: aiming at client %d\n", bs->entitynum, bs->enemy);
 	aim_skill = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_AIM_SKILL, 0, 1);
 	aim_accuracy = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_AIM_ACCURACY, 0, 1);
 	if(aim_skill > 0.95){
@@ -3286,7 +3287,7 @@ BotAimAtEnemy(bot_state_t *bs)
 								       dir, cmdmove, 0,
 								       dist * 10 / wi.speed, 0.1f, 0, 0, qfalse);
 					veccpy(move.endpos, bestorigin);
-					//BotAI_Print(PRT_MESSAGE, "%1.1f predicted speed = %f, frames = %f\n", FloatTime(), veclen(dir), dist * 10 / wi.speed);
+					BotAI_Print(PRT_MESSAGE, "%1.1f predicted speed = %f, frames = %f\n", FloatTime(), veclen(dir), dist * 10 / wi.speed);
 				}
 				//if not that skilled do linear prediction
 				else if(aim_skill > 0.4){
@@ -4270,7 +4271,7 @@ BotAIBlocked(bot_state_t *bs, bot_moveresult_t *moveresult, int activate)
 	// just some basic dynamic obstacle avoidance code
 	hordir[0] = moveresult->movedir[0];
 	hordir[1] = moveresult->movedir[1];
-	hordir[2] = 0;
+	hordir[2] = moveresult->movedir[2];
 	// if no direction just take a random direction
 	if(vecnorm(hordir) < 0.1){
 		vecset(angles, 0, 360 * random(), 0);
@@ -4359,7 +4360,7 @@ BotAIPredictObstacles(bot_state_t *bs, bot_goal_t *goal)
 							bs->activatestack = nil;
 						// if not already trying to activate this entity
 						if(!BotIsGoingToActivateEntity(bs, activategoal.goal.entitynum)){
-							//BotAI_Print(PRT_MESSAGE, "blocked by mover model %d, entity %d ?\n", modelnum, entitynum);
+							BotAI_Print(PRT_MESSAGE, "blocked by mover model %d, entity %d ?\n", modelnum, entitynum);
 							BotGoForActivateGoal(bs, &activategoal);
 							return qtrue;
 						}else
@@ -4823,7 +4824,7 @@ BotAlternateRoute(bot_state_t *bs, bot_goal_t *goal)
 		// travel time towards alternative route goal
 		t = trap_AAS_AreaTravelTimeToGoalArea(bs->areanum, bs->origin, bs->altroutegoal.areanum, bs->tfl);
 		if(t && t < 20)
-			//BotAI_Print(PRT_MESSAGE, "reached alternate route goal\n");
+			BotAI_Print(PRT_MESSAGE, "reached alternate route goal\n");
 			bs->reachedaltroutegoal_time = FloatTime();
 		memcpy(goal, &bs->altroutegoal, sizeof(bot_goal_t));
 		return &bs->altroutegoal;
