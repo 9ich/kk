@@ -864,6 +864,13 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			} else if ( !Q_stricmp( token, "blend" ) ) {
 				blendSrcBits = GLS_SRCBLEND_SRC_ALPHA;
 				blendDstBits = GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+			} else if ( !Q_stricmp( token, "multiply" ) ) {
+				blendSrcBits = GLS_SRCBLEND_DST_COLOR;
+				blendDstBits = GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+			} else if ( !Q_stricmp( token, "alphaadd") ) {
+				// like add but handles alpha as you'd expect
+				blendSrcBits = GLS_SRCBLEND_SRC_ALPHA;
+				blendDstBits = GLS_DSTBLEND_ONE;
 			} else {
 				// complex double blends
 				blendSrcBits = NameToSrcBlendMode( token );
