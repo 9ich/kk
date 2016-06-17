@@ -656,7 +656,7 @@ registerweap(int weaponNum)
 
 	case WP_GRAPPLING_HOOK:
 		MAKERGB(weapinfo->flashcolor, 0.6f, 0.6f, 1.0f);
-		weapinfo->missilemodel = trap_R_RegisterModel("models/ammo/rocket/rocket.md3");
+		weapinfo->missilemodel = trap_R_RegisterModel("models/missiles/rocket.md3");
 		weapinfo->missileTrailFunc = grappletrail;
 		weapinfo->missilelight = 200;
 		MAKERGB(weapinfo->missilelightcolor, 0.9f*0.2f, 0.4f*0.2f, 0.0f);
@@ -693,7 +693,7 @@ registerweap(int weaponNum)
 
 	case WP_ROCKET_LAUNCHER:
 	case WP_HOMING_LAUNCHER:
-		weapinfo->missilemodel = trap_R_RegisterModel("models/ammo/rocket/rocket.md3");
+		weapinfo->missilemodel = trap_R_RegisterModel("models/missiles/rocket.md3");
 		weapinfo->missilesound = trap_S_RegisterSound("sound/weapons/rocket/rockfly.wav", qfalse);
 		weapinfo->missileTrailFunc = CG_RocketTrail;
 		weapinfo->missilelight = 200;
@@ -733,7 +733,7 @@ registerweap(int weaponNum)
 	case WP_NAILGUN:
 		weapinfo->ejectbrass = CG_NailgunEjectBrass;
 //		weapinfo->missilesound = trap_S_RegisterSound( "sound/weapons/nailgun/wnalflit.wav", qfalse );
-		weapinfo->missilemodel = trap_R_RegisterModel("models/ammo/rocket/rocket.md3");
+		weapinfo->missilemodel = trap_R_RegisterModel("models/missiles/rocket.md3");
 		MAKERGB(weapinfo->flashcolor, 1, 0.75f, 0);
 		weapinfo->flashsnd[0] = trap_S_RegisterSound("sound/weapons/nailgun/wnalfire.wav", qfalse);
 		break;
