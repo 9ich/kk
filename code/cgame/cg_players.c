@@ -1033,21 +1033,35 @@ CG_PlayerAngles(centity_t *cent, vec3_t ship[3])
 }
 
 /*
- * Returns position of a player centity_t.
- * Bypasses prediction if cent is ourself.
+ * Returns position of a player's centity_t.
+ * Correctly deals with errordecay if cent is ourself.
  */
 float*
 playerpos(centity_t *cent, vec3_t out)
 {
-	if(cent->currstate.number == cg.pps.clientNum)
+	int t;
+	float f;
+
+	if(cent->currstate.number == cg.pps.clientNum){
 		veccpy(cg.pps.origin, out);
-	else
+
+		// add errordecay
+		if(cg_errorDecay.value > 0){
+			t = cg.time - cg.predictederrtime;
+			f = (cg_errorDecay.value - t) / cg_errorDecay.value;
+			if(f > 0 && f < 1)
+				vecmad(out, f, cg.predictederr, out);
+			else
+				cg.predictederrtime = 0;
+		}
+	}else{
 		veccpy(cent->lerporigin, out);
+	}
 	return out;
 }
 
 /*
- * Returns velocity of a player centity_t.
+ * Returns velocity of a player's centity_t.
  * Bypasses prediction if cent is ourself.
  */
 float*
