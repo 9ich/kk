@@ -371,21 +371,13 @@ CG_RocketTrail(centity_t *ent, const weaponInfo_t *wi)
 	int starttime, contents;
 	int lastContents;
 	entityState_t *es;
-	vec3_t up;
 	localEntity_t *smoke;
 
 	if(cg_noProjectileTrail.integer)
 		return;
 
-	up[0] = 0;
-	up[1] = 0;
-	up[2] = 0;
-
-	step = 25;
-
 	es = &ent->currstate;
 	starttime = ent->trailtime;
-	t = step * ((starttime + step) / step);
 
 	evaltrajectory(&es->pos, cg.time, origin);
 	contents = pointcontents(origin, -1);
@@ -407,17 +399,28 @@ CG_RocketTrail(centity_t *ent, const weaponInfo_t *wi)
 		return;
 	}
 
+	// flame
+	step = 4;	// 4 msec interval
+	t = step * ((starttime + step) / step);
+	for(; t <= ent->trailtime + 0.5f*step; t += step){
+		vec3_t ofs;
+
+		evaltrajectory(&es->pos, t, lastPos);
+		vecset(ofs, crandom(), crandom(), crandom());
+		vecnorm(ofs);
+		vecmul(ofs, 0.5f, ofs);
+		vecadd(lastPos, ofs, lastPos);
+		CG_ParticleExplosion("explode1", lastPos, ofs, 80, 2, 14);
+	}
+	// smoke plume
+	step = 33;	// 33 msec interval
+	t = step * ((starttime + step) / step);
 	for(; t <= ent->trailtime; t += step){
 		evaltrajectory(&es->pos, t, lastPos);
 
-		smoke = smokepuff(lastPos, up,
-				     wi->trailradius,
-				     1, 1, 1, 0.20f,
-				     wi->trailtime,
-				     t,
-				     0,
-				     0,
-				     cgs.media.smokePuffShader);
+		smoke = smokepuff(lastPos, vec3_origin, wi->trailradius,
+		   1, 1, 1, 0.40f, wi->trailtime, t, 0, 0,
+		   cgs.media.smokePuffShader);
 		// use the optimized local entity add
 		smoke->type = LE_SCALE_FADE;
 	}
@@ -1615,6 +1618,7 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 	int duration;
 	vec3_t sprOrg;
 	vec3_t sprVel;
+	int i;
 
 	mod = 0;
 	shader = 0;
@@ -1686,6 +1690,16 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		lightcolor[0] = 0.9f;
 		lightcolor[1] = 0.45f;
 		lightcolor[2] = 0.0f;
+
+		for(i = 0; i < 10; i++){
+			vec3_t pt;
+
+			vecset(pt, crandom(), crandom(), crandom());
+			vecmul(pt, 20, pt);
+			vecadd(pt, origin, pt);
+			le = explosion(pt, dir, mod, shader, duration, isSprite);
+		}
+
 		if(cg_oldRocket.integer == 0){
 			// explosion sprite animation
 			vecmad(origin, 24, dir, sprOrg);
