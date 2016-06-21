@@ -236,6 +236,10 @@ vao_t *R_CreateVao(const char *name, byte *vertexes, int vertexesSize, byte *ind
 			glUsage = GL_DYNAMIC_DRAW_ARB;
 			break;
 
+		case VAO_USAGE_STREAM:
+			glUsage = GL_STREAM_DRAW_ARB;
+			break;
+
 		default:
 			Com_Error(ERR_FATAL, "bad vaoUsage_t given: %i", usage);
 			return NULL;

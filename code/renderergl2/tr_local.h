@@ -107,7 +107,8 @@ typedef struct {
 typedef enum
 {
 	VAO_USAGE_STATIC,
-	VAO_USAGE_DYNAMIC
+	VAO_USAGE_DYNAMIC,
+	VAO_USAGE_STREAM
 } vaoUsage_t;
 
 typedef struct vaoAttrib_s
