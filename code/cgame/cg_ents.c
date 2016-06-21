@@ -468,7 +468,7 @@ domissile(centity_t *cent)
 	// flicker between two skins
 	ent.skinNum = cg.clframe & 1;
 	ent.hModel = weapon->missilemodel;
-	ent.renderfx = weapon->missilerenderfx | RF_NOSHADOW;
+	ent.renderfx = weapon->missilerenderfx | RF_MINLIGHT;
 
 
 	// convert direction of travel into axis
@@ -477,7 +477,7 @@ domissile(centity_t *cent)
 
 	// spin as it moves
 	if(s1->pos.trType != TR_STATIONARY)
-		RotateAroundDirection(ent.axis, cg.time / 4);
+		RotateAroundDirection(ent.axis, cg.time / 16);
 	else{
 		{
 			RotateAroundDirection(ent.axis, s1->time);
