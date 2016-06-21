@@ -3145,30 +3145,44 @@ void R_AssignCubemapsToWorldSurfaces(void)
 
 void R_LoadCubemaps(void)
 {
-	int i;
+	int i, start;
 	imgFlags_t flags = IMGFLAG_CLAMPTOEDGE | IMGFLAG_MIPMAP | IMGFLAG_NOLIGHTSCALE | IMGFLAG_CUBEMAP;
+
+	start = 0;
+	if(r_speeds->integer)
+		start = ri.Milliseconds();
 
 	for (i = 0; i < tr.numCubemaps; i++)
 	{
 		char filename[MAX_QPATH];
 		cubemap_t *cubemap = &tr.cubemaps[i];
 
+		tr.pc.c_cubemapload++;
+
 		Com_sprintf(filename, MAX_QPATH, "cubemaps/%s/%03d.dds", tr.world->baseName, i);
 
 		cubemap->image = R_FindImageFile(filename, IMGTYPE_COLORALPHA, flags);
 	}
+
+	if(r_speeds->integer)
+		tr.pc.t_cubemapload += ri.Milliseconds() - start;
 }
 
 
 void R_RenderMissingCubemaps(void)
 {
-	int i, j;
+	int i, j, start;
 	imgFlags_t flags = IMGFLAG_NO_COMPRESSION | IMGFLAG_CLAMPTOEDGE | IMGFLAG_MIPMAP | IMGFLAG_NOLIGHTSCALE | IMGFLAG_CUBEMAP;
+
+	start = 0;
+	if(r_speeds->integer)
+		start = ri.Milliseconds();
 
 	for (i = 0; i < tr.numCubemaps; i++)
 	{
 		if (!tr.cubemaps[i].image)
 		{
+			tr.pc.c_cubemaprender++;
 			tr.cubemaps[i].image = R_CreateImage(va("*cubeMap%d", i), NULL, r_cubemapSize->integer, r_cubemapSize->integer, IMGTYPE_COLORALPHA, flags, GL_RGBA8);
 
 			for (j = 0; j < 6; j++)
@@ -3180,6 +3194,9 @@ void R_RenderMissingCubemaps(void)
 			}
 		}
 	}
+	
+	if(r_speeds->integer)
+		tr.pc.t_cubemaprender += ri.Milliseconds() - start;
 }
 
 

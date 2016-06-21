@@ -71,6 +71,13 @@ void R_PerformanceCounters( void ) {
 		ri.Printf( PRINT_ALL, "GLSL binds: %i  draws: gen %i light %i fog %i dlight %i\n",
 			backEnd.pc.c_glslShaderBinds, backEnd.pc.c_genericDraws, backEnd.pc.c_lightallDraws, backEnd.pc.c_fogDraws, backEnd.pc.c_dlightDraws);
 	}
+	else if (r_speeds->integer == 8)
+	{
+		ri.Printf( PRINT_ALL, "cubemap load:%i (%i ms) cubemap render:%i (%i ms) cubemapforpoint:%i (%i ms)\n",
+		   tr.pc.c_cubemapload, tr.pc.t_cubemapload,
+		   tr.pc.c_cubemaprender, tr.pc.t_cubemaprender,
+		   tr.pc.c_cubemapforpoint, tr.pc.t_cubemapforpoint );
+	}
 
 	Com_Memset( &tr.pc, 0, sizeof( tr.pc ) );
 	Com_Memset( &backEnd.pc, 0, sizeof( backEnd.pc ) );

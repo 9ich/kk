@@ -460,6 +460,12 @@ int R_LightDirForPoint( vec3_t point, vec3_t lightDir, vec3_t normal, world_t *w
 int R_CubemapForPoint( vec3_t point )
 {
 	int cubemapIndex = -1;
+	int start;
+
+	tr.pc.c_cubemapforpoint++;
+	start = 0;
+	if(r_speeds->integer)
+		start = ri.Milliseconds();
 
 	if (r_cubeMapping->integer && tr.numCubemaps)
 	{
@@ -481,6 +487,9 @@ int R_CubemapForPoint( vec3_t point )
 			}
 		}
 	}
+
+	if(r_speeds->integer)
+		tr.pc.t_cubemapforpoint += ri.Milliseconds() - start;
 
 	return cubemapIndex + 1;
 }

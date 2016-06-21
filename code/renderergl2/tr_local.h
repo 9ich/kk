@@ -1342,6 +1342,9 @@ typedef struct {
 	int		c_leafs;
 	int		c_dlightSurfaces;
 	int		c_dlightSurfacesCulled;
+
+	int		c_cubemapload, c_cubemaprender, c_cubemapforpoint;
+	int		t_cubemapload, t_cubemaprender, t_cubemapforpoint; 
 } frontEndCounters_t;
 
 #define	FOG_TABLE_SIZE		256
