@@ -707,7 +707,7 @@ registerweap(int weaponNum)
 		MAKERGB(weapinfo->flashcolor, 0.9f, 0.4f, 0.0f);
 
 		weapinfo->flashsnd[0] = trap_S_RegisterSound("sound/weapons/rocket/rocklf1a.wav", qfalse);
-		cgs.media.rocketExplosionShader = trap_R_RegisterShader("rocketExplosion");
+		cgs.media.rocketExplosionShader = trap_R_RegisterShader("explode2");
 		break;
 
 #ifdef MISSIONPACK

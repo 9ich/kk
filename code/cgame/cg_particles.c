@@ -99,7 +99,7 @@ static char *shaderAnimNames[MAX_SHADER_ANIMS] = {
 };
 static qhandle_t shaderAnims[MAX_SHADER_ANIMS][MAX_SHADER_ANIM_FRAMES];
 static int shaderAnimCounts[MAX_SHADER_ANIMS] = {
-	23
+	48
 };
 static float shaderAnimSTRatio[MAX_SHADER_ANIMS] = {
 	1.0f
