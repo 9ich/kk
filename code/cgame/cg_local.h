@@ -465,6 +465,17 @@ typedef struct
 	int	numpositions;
 } skulltrail_t;
 
+typedef struct
+{
+	char	*typ;
+	char	shader[MAX_STRING_CHARS];
+	vec3_t	pos;
+	vec3_t	vel;
+	float	dur;
+	float	startsize;
+	float	endsize;
+} testparticles_t;
+
 #define MAX_REWARDSTACK	10
 #define MAX_OBITUARY	4
 #define MAX_SOUNDBUFFER	20
@@ -661,6 +672,7 @@ typedef struct
 	refEntity_t	testmodelent;
 	char		testmodelname[MAX_QPATH];
 	qboolean	testgun;
+	testparticles_t	testparticles;
 } cg_t;
 
 typedef struct
@@ -1250,6 +1262,7 @@ void		mkspecstr(void);
 // cg_view.c
 void	CG_TestModel_f(void);
 void	CG_TestGun_f(void);
+void	CG_TestExplosion_f(void);
 void	CG_TestModelNextFrame_f(void);
 void	CG_TestModelPrevFrame_f(void);
 void	CG_TestModelNextSkin_f(void);

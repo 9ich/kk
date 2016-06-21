@@ -109,6 +109,24 @@ CG_TestModel_f(void)
 	cg.testgun = qfalse;
 }
 
+void
+CG_TestExplosion_f(void)
+{
+	memset(&cg.testparticles, 0, sizeof cg.testparticles);
+	if(trap_Argc() != 6){
+		cgprintf("usage: testparticleexplosion [shader] [speed] [dur] [startsize] [endsize]\n");
+		return;
+	}
+
+	cg.testparticles.typ = "explosion";
+	Q_strncpyz(cg.testparticles.shader, cgargv(1), sizeof cg.testparticles.shader);
+	vecmad(cg.refdef.vieworg, 100, cg.refdef.viewaxis[0], cg.testparticles.pos);
+	vecmul(cg.refdef.viewaxis[1], atof(cgargv(2)), cg.testparticles.vel);
+	cg.testparticles.dur = atof(cgargv(3));
+	cg.testparticles.startsize = atof(cgargv(4));
+	cg.testparticles.endsize = atof(cgargv(5));
+}
+
 /*
 =================
 CG_TestGun_f
@@ -207,6 +225,21 @@ CG_AddTestModel(void)
 	}
 
 	trap_R_AddRefEntityToScene(&cg.testmodelent);
+}
+
+static void
+CG_AddTestParticles(void)
+{
+	testparticles_t *p;
+
+	if(cg.testparticles.typ == nil)
+		return;
+
+	p = &cg.testparticles;
+	if(strcmp(p->typ, "explosion") == 0){
+		CG_ParticleExplosion(p->shader, p->pos, p->vel, p->dur,
+		   p->startsize, p->endsize);
+	}
 }
 
 //============================================================================
@@ -766,6 +799,7 @@ drawframe(int serverTime, stereoFrame_t stereoview, qboolean demoplayback)
 	// finish up the rest of the refdef
 	if(cg.testmodelent.hModel)
 		CG_AddTestModel();
+	CG_AddTestParticles();
 	cg.refdef.time = cg.time;
 	memcpy(cg.refdef.areamask, cg.snap->areamask, sizeof(cg.refdef.areamask));
 

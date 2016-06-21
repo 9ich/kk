@@ -195,6 +195,7 @@ static consoleCommand_t commands[] = {
 	{"nextskin", CG_TestModelNextSkin_f},
 	{"prevskin", CG_TestModelPrevSkin_f},
 	{"testlight", CG_TestLight_f},
+	{"testparticleexplosion", CG_TestExplosion_f},
 	{"viewpos", CG_Viewpos_f},
 	{"+scores", CG_ScoresDown_f},
 	{"-scores", CG_ScoresUp_f},
