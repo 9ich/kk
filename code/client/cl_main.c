@@ -871,6 +871,7 @@ void CL_DemoCompleted( void )
 {
 	char buffer[ MAX_STRING_CHARS ];
 
+	*buffer = '\0';
 	if( cl_timedemo && cl_timedemo->integer )
 	{
 		int	time;
@@ -881,7 +882,7 @@ void CL_DemoCompleted( void )
 			// Millisecond times are frame durations:
 			// minimum/average/maximum/std deviation
 			Com_sprintf( buffer, sizeof( buffer ),
-					"%i frames %3.1f seconds %3.1f fps %d.0/%.1f/%d.0/%.1f ms\n",
+					"%i frames  %3.1f seconds  %3.1f avg fps  %d.0 ms min  %.1f ms avg  %d.0 ms max  %.1f ms std deviation  ",
 					clc.timeDemoFrames,
 					time/1000.0,
 					clc.timeDemoFrames*1000.0 / time,
@@ -889,7 +890,7 @@ void CL_DemoCompleted( void )
 					time / (float)clc.timeDemoFrames,
 					clc.timeDemoMaxDuration,
 					CL_DemoFrameDurationSDev( ) );
-			Com_Printf( "%s", buffer );
+			Com_Printf( "%s\n", buffer );
 
 			// Write a log of all the frame durations
 			if( cl_timedemoLog && strlen( cl_timedemoLog->string ) > 0 )
@@ -909,7 +910,7 @@ void CL_DemoCompleted( void )
 					FS_Printf( f, "# %s", buffer );
 
 					for( i = 0; i < numFrames; i++ )
-						FS_Printf( f, "%d\n", clc.timeDemoDurations[ i ] );
+						FS_Printf( f, "%d\t%d\n", i, clc.timeDemoDurations[ i ] );
 
 					FS_FCloseFile( f );
 					Com_Printf( "%s written\n", cl_timedemoLog->string );
@@ -921,6 +922,9 @@ void CL_DemoCompleted( void )
 				}
 			}
 		}
+		// show the info fullscreen if no more demos remain
+		if(strcmp(Cvar_VariableString("nextdemo"), "") == 0 && buffer[0] != '\0')
+			Cvar_Set("com_errorMessage", buffer);
 	}
 
 	CL_Disconnect( qtrue );
