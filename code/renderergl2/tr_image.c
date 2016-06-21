@@ -149,16 +149,16 @@ R_ImageList_f
 void R_ImageList_f( void ) {
 	int i;
 	int estTotalSize = 0;
+	float displaySize;
+	char *sizeSuffix;
 
-	ri.Printf(PRINT_ALL, "\n      -w-- -h-- type  -size- --name-------\n");
+	ri.Printf(PRINT_ALL, "\n      -w-- -h-- type  -size-- --name-------\n");
 
 	for ( i = 0 ; i < tr.numImages ; i++ )
 	{
 		image_t *image = tr.images[i];
 		char *format = "???? ";
-		char *sizeSuffix;
 		int estSize;
-		int displaySize;
 
 		estSize = image->uploadHeight * image->uploadWidth;
 
@@ -263,30 +263,50 @@ void R_ImageList_f( void ) {
 		sizeSuffix = "b ";
 		displaySize = estSize;
 
-		if (displaySize > 1024)
+		if (displaySize >= 1024)
 		{
 			displaySize /= 1024;
 			sizeSuffix = "kb";
 		}
 
-		if (displaySize > 1024)
+		if (displaySize >= 1024)
 		{
 			displaySize /= 1024;
 			sizeSuffix = "Mb";
 		}
 
-		if (displaySize > 1024)
+		if (displaySize >= 1024)
 		{
 			displaySize /= 1024;
 			sizeSuffix = "Gb";
 		}
 
-		ri.Printf(PRINT_ALL, "%4i: %4ix%4i %s %4i%s %s\n", i, image->uploadWidth, image->uploadHeight, format, displaySize, sizeSuffix, image->imgName);
+		ri.Printf(PRINT_ALL, "%4i: %4i %4i %s %7.2f %s %s\n", i, image->uploadWidth, image->uploadHeight, format, displaySize, sizeSuffix, image->imgName);
 		estTotalSize += estSize;
 	}
 
+	displaySize = estTotalSize;
+	sizeSuffix = "b ";
+
+	if (displaySize >= 1024)
+	{
+		displaySize /= 1024;
+		sizeSuffix = "kb";
+	}
+
+	if (displaySize >= 1024)
+	{
+		displaySize /= 1024;
+		sizeSuffix = "Mb";
+	}
+
+	if (displaySize >= 1024)
+	{
+		displaySize /= 1024;
+		sizeSuffix = "Gb";
+	}
 	ri.Printf (PRINT_ALL, " ---------\n");
-	ri.Printf (PRINT_ALL, " approx %i bytes\n", estTotalSize);
+	ri.Printf (PRINT_ALL, " approx %7.2f %s\n", displaySize, sizeSuffix);
 	ri.Printf (PRINT_ALL, " %i total images\n\n", tr.numImages );
 }
 
