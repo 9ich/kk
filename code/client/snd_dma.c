@@ -454,6 +454,12 @@ void S_SpatializeOrigin (vec3_t origin, int master_vol, int *left_vol, int *righ
 	{
 		rscale = 0.5 * (1.0 + dot);
 		lscale = 0.5 * (1.0 - dot);
+		// sources we're actually facing get attenuated less
+		// than sources behind us
+		if(vec[0] > 0){
+			rscale += 0.5f*vec[0];
+			lscale += 0.5f*vec[0];
+		}
 		if ( rscale < 0 ) {
 			rscale = 0;
 		}
