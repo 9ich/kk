@@ -417,98 +417,94 @@ static void S_PaintChannelFrom16_altivec( channel_t *ch, const sfx_t *sc, int co
 }
 #endif
 
-static void S_PaintChannelFrom16_scalar( channel_t *ch, const sfx_t *sc, int count, int sampleOffset, int bufferOffset ) {
-	int						data, aoff, boff;
-	int						leftvol, rightvol;
-	int						i, j;
-	portable_samplepair_t	*samp;
-	sndBuffer				*chunk;
-	short					*samples;
-	float					ooff, fdata[2], fdiv, fleftvol, frightvol;
+static void
+S_PaintChannelFrom16_scalar(channel_t *ch, const sfx_t *sfx, int nsamp, int sampofs, int bufofs)
+{
+	int data, aofs, bofs;
+	int leftvol, rightvol;
+	int i, j;
+	portable_samplepair_t *outsamp;
+	sndBuffer *chunk;
+	short *samples;
+	float ofs, fdata[2], div, fleftvol, frightvol;
 
-	if (sc->soundChannels <= 0) {
+	if(sfx->soundChannels <= 0)
 		return;
+
+	outsamp = &paintbuffer[bufofs];
+
+	if(ch->doppler)
+		sampofs = sampofs*ch->oldDopplerScale;
+
+	if(sfx->soundChannels == 2){
+		sampofs *= sfx->soundChannels;
+		if(sampofs & 1)
+			sampofs &= ~1;
 	}
 
-	samp = &paintbuffer[ bufferOffset ];
-
-	if (ch->doppler) {
-		sampleOffset = sampleOffset*ch->oldDopplerScale;
-	}
-
-	if ( sc->soundChannels == 2 ) {
-		sampleOffset *= sc->soundChannels;
-
-		if ( sampleOffset & 1 ) {
-			sampleOffset &= ~1;
-		}
-	}
-
-	chunk = sc->soundData;
-	while (sampleOffset>=SND_CHUNK_SIZE) {
+	// advance through the ring buffer until we're painting from the correct
+	// chunk
+	chunk = sfx->soundData;
+	while(sampofs >= SND_CHUNK_SIZE){
 		chunk = chunk->next;
-		sampleOffset -= SND_CHUNK_SIZE;
-		if (!chunk) {
-			chunk = sc->soundData;
-		}
+		if(!chunk)
+			chunk = sfx->soundData;
+		sampofs -= SND_CHUNK_SIZE;
 	}
 
-	if (!ch->doppler || ch->dopplerScale==1.0f) {
+	if(!ch->doppler || ch->dopplerScale == 1.0f){
+		// mix normally, no doppler effect
 		leftvol = ch->leftvol*snd_vol;
 		rightvol = ch->rightvol*snd_vol;
 		samples = chunk->sndChunk;
-		for ( i=0 ; i<count ; i++ ) {
-			data  = samples[sampleOffset++];
-			samp[i].left += (data * leftvol)>>8;
+		for(i = 0; i < nsamp; i++){
+			data = samples[sampofs++];
+			outsamp[i].left += (data * leftvol) / (MAXVOL+1);
 
-			if ( sc->soundChannels == 2 ) {
-				data = samples[sampleOffset++];
-			}
-			samp[i].right += (data * rightvol)>>8;
+			if(sfx->soundChannels == 2)
+				data = samples[sampofs++];
+			outsamp[i].right += (data * rightvol) / (MAXVOL+1);
 
-			if (sampleOffset == SND_CHUNK_SIZE) {
+			if(sampofs == SND_CHUNK_SIZE){
 				chunk = chunk->next;
 				samples = chunk->sndChunk;
-				sampleOffset = 0;
+				sampofs = 0;
 			}
 		}
-	} else {
-		fleftvol = ch->leftvol*snd_vol;
-		frightvol = ch->rightvol*snd_vol;
+		return;
+	}
 
-		ooff = sampleOffset;
-		samples = chunk->sndChunk;
-		
+	fleftvol = ch->leftvol*snd_vol;
+	frightvol = ch->rightvol*snd_vol;
+	ofs = sampofs;	// the read pointer
+	samples = chunk->sndChunk;
 
-
-
-		for ( i=0 ; i<count ; i++ ) {
-
-			aoff = ooff;
-			ooff = ooff + ch->dopplerScale * sc->soundChannels;
-			boff = ooff;
-			fdata[0] = fdata[1] = 0;
-			for (j=aoff; j<boff; j += sc->soundChannels) {
-				if (j == SND_CHUNK_SIZE) {
-					chunk = chunk->next;
-					if (!chunk) {
-						chunk = sc->soundData;
-					}
-					samples = chunk->sndChunk;
-					ooff -= SND_CHUNK_SIZE;
-				}
-				if ( sc->soundChannels == 2 ) {
-					fdata[0] += samples[j&(SND_CHUNK_SIZE-1)];
-					fdata[1] += samples[(j+1)&(SND_CHUNK_SIZE-1)];
-				} else {
-					fdata[0] += samples[j&(SND_CHUNK_SIZE-1)];
-					fdata[1] += samples[j&(SND_CHUNK_SIZE-1)];
-				}
+	for(i = 0; i < nsamp; i++){
+		aofs = ofs;
+		ofs += ch->dopplerScale * sfx->soundChannels;
+		bofs = ofs;
+		fdata[0] = fdata[1] = 0;
+		for(j = aofs; j < bofs; j += sfx->soundChannels){
+			if(j == SND_CHUNK_SIZE){
+				// advance ring buffer
+				chunk = chunk->next;
+				if(!chunk)
+					chunk = sfx->soundData;
+				samples = chunk->sndChunk;
+				ofs -= SND_CHUNK_SIZE;
 			}
-			fdiv = 256 * (boff-aoff) / sc->soundChannels;
-			samp[i].left += (fdata[0] * fleftvol)/fdiv;
-			samp[i].right += (fdata[1] * frightvol)/fdiv;
+
+			if(sfx->soundChannels == 2){
+				fdata[0] += samples[j&(SND_CHUNK_SIZE-1)];
+				fdata[1] += samples[(j+1)&(SND_CHUNK_SIZE-1)];
+			}else{
+				fdata[0] += samples[j&(SND_CHUNK_SIZE-1)];
+				fdata[1] += samples[j&(SND_CHUNK_SIZE-1)];
+			}
 		}
+		div = (MAXVOL+1) * (bofs - aofs) / sfx->soundChannels;
+		outsamp[i].left += (fdata[0] * fleftvol) / div;
+		outsamp[i].right += (fdata[1] * frightvol) / div;
 	}
 }
 
