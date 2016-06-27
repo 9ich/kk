@@ -28,9 +28,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define	PAINTBUFFER_SIZE		4096					// this is in samples
 
-#define SND_CHUNK_SIZE			1024					// samples
+#define SND_CHUNK_SIZE			1024			// sfx ring buffer chunk size (samples)
 #define SND_CHUNK_SIZE_FLOAT	(SND_CHUNK_SIZE/2)		// floats
-#define SND_CHUNK_SIZE_BYTE		(SND_CHUNK_SIZE*2)		// floats
+#define SND_CHUNK_SIZE_BYTE		(SND_CHUNK_SIZE*2)	// floats
+
+#define MAXVOL				255			// max for leftvol, rightvol, master_vol
 
 typedef struct {
 	int			left;	// the final values will be clamped to +/- 0x00ffff00 and shifted down
@@ -96,9 +98,9 @@ typedef struct
 	int			startSample;	// START_SAMPLE_IMMEDIATE = set immediately on next mix
 	int			entnum;			// to allow overriding a specific sound
 	int			entchannel;		// to allow overriding a specific sound
-	int			leftvol;		// 0-255 volume after spatialization
-	int			rightvol;		// 0-255 volume after spatialization
-	int			master_vol;		// 0-255 volume before spatialization
+	int			leftvol;		// 0-MAXVOL volume after spatialization
+	int			rightvol;		// 0-MAXVOL volume after spatialization
+	int			master_vol;		// 0-MAXVOL volume before spatialization
 	float		dopplerScale;
 	float		oldDopplerScale;
 	vec3_t		origin;			// only use if fixed_origin is set

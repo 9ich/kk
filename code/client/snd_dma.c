@@ -633,7 +633,7 @@ static void S_Base_StartSoundEx( vec3_t origin, int entityNum, int entchannel, s
 		ch->fixed_origin = qfalse;
 	}
 
-	ch->master_vol = 127;
+	ch->master_vol = MAXVOL/2;
 	ch->entnum = entityNum;
 	ch->thesfx = sfx;
 	ch->startSample = START_SAMPLE_IMMEDIATE;
@@ -885,7 +885,7 @@ void S_AddLoopSounds (void) {
 		}
 
 		if (loop->kill) {
-			S_SpatializeOrigin( loop->origin, 127, &left_total, &right_total);			// 3d
+			S_SpatializeOrigin( loop->origin, MAXVOL/2, &left_total, &right_total);			// 3d
 		} else {
 			S_SpatializeOrigin( loop->origin, 90,  &left_total, &right_total);			// sphere
 		}
@@ -900,7 +900,7 @@ void S_AddLoopSounds (void) {
 			loop2->mergeFrame = loopFrame;
 
 			if (loop2->kill) {
-				S_SpatializeOrigin( loop2->origin, 127, &left, &right);				// 3d
+				S_SpatializeOrigin( loop2->origin, MAXVOL/2, &left, &right);				// 3d
 			} else {
 				S_SpatializeOrigin( loop2->origin, 90,  &left, &right);				// sphere
 			}
@@ -916,14 +916,14 @@ void S_AddLoopSounds (void) {
 		// allocate a channel
 		ch = &loop_channels[numLoopChannels];
 		
-		if (left_total > 255) {
-			left_total = 255;
+		if (left_total > MAXVOL) {
+			left_total = MAXVOL;
 		}
-		if (right_total > 255) {
-			right_total = 255;
+		if (right_total > MAXVOL) {
+			right_total = MAXVOL;
 		}
-		
-		ch->master_vol = 127;
+
+		ch->master_vol = MAXVOL/2;
 		ch->leftvol = left_total;
 		ch->rightvol = right_total;
 		ch->thesfx = loop->sfx;

@@ -683,7 +683,7 @@ void S_PaintChannels( int endtime ) {
 	if(s_muted->integer)
 		snd_vol = 0;
 	else
-		snd_vol = s_volume->value*255;
+		snd_vol = s_volume->value*MAXVOL;
 
 //Com_Printf ("%i to %i\n", s_paintedtime, endtime);
 	while ( s_paintedtime < endtime ) {
@@ -712,7 +712,7 @@ void S_PaintChannels( int endtime ) {
 		// paint in the channels.
 		ch = s_channels;
 		for ( i = 0; i < MAX_CHANNELS ; i++, ch++ ) {		
-			if ( !ch->thesfx || (ch->leftvol<0.25 && ch->rightvol<0.25 )) {
+			if ( !ch->thesfx || (ch->leftvol<0.05 && ch->rightvol<0.05 )) {
 				continue;
 			}
 
