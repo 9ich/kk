@@ -1669,19 +1669,11 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		break;
 #endif
 	case WP_GRENADE_LAUNCHER:
-		mod = cgs.media.dishFlashModel;
-		shader = cgs.media.grenadeExplosionShader;
-		sfx = cgs.media.sfx_rockexp;
-		mark = cgs.media.burnMarkShader;
-		radius = 64;
-		light = 300;
-		isSprite = qtrue;
-		break;
 	case WP_ROCKET_LAUNCHER:
 	case WP_HOMING_LAUNCHER:
 		mod = cgs.media.dishFlashModel;
 		shader = cgs.media.rocketExplosionShader;
-		sfx = cgs.media.sfx_rockexp;
+		sfx = PICKRANDOM(cgs.media.sfx_rockexp);
 		mark = cgs.media.burnMarkShader;
 		radius = 64;
 		light = 300;
@@ -1735,7 +1727,7 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 	case WP_BFG:
 		mod = cgs.media.dishFlashModel;
 		shader = cgs.media.bfgExplosionShader;
-		sfx = cgs.media.sfx_rockexp;
+		sfx = PICKRANDOM(cgs.media.sfx_rockexp);
 		mark = cgs.media.burnMarkShader;
 		radius = 32;
 		isSprite = qtrue;

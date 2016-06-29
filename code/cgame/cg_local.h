@@ -85,6 +85,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DEFAULT_REDTEAM_NAME		"Stroggs"
 #define DEFAULT_BLUETEAM_NAME		"Pagans"
 
+// used to pick random sound effects
+#define PICKRANDOM(arr)	((arr)[rand() % (ARRAY_LEN(arr))])
+
 typedef enum
 {
 	FOOTSTEP_NORMAL,
@@ -878,7 +881,7 @@ typedef struct
 	sfxHandle_t	sfx_ric2;
 	sfxHandle_t	sfx_ric3;
 	//sfxHandle_t	sfx_railg;
-	sfxHandle_t	sfx_rockexp;
+	sfxHandle_t	sfx_rockexp[2];
 	sfxHandle_t	sfx_plasmaexp;
 #ifdef MISSIONPACK
 	sfxHandle_t	sfx_proxexp;
