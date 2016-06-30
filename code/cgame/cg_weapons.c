@@ -1678,16 +1678,17 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		radius = 64;
 		light = 300;
 		isSprite = qtrue;
-		duration = 16*20;
+		duration = 16*33.333f;
 		lightcolor[0] = 0.9f;
 		lightcolor[1] = 0.45f;
 		lightcolor[2] = 0.0f;
 
+		// flame
 		for(i = 0; i < 10; i++){
 			vec3_t pt;
 
 			vecset(pt, crandom(), crandom(), crandom());
-			vecmul(pt, 30, pt);
+			vecmul(pt, 45, pt);
 			vecadd(pt, origin, pt);
 			le = explosion(pt, dir, mod, shader, duration, isSprite);
 		}
@@ -1700,14 +1701,27 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 			CG_ParticleExplosion("explode1", sprOrg, sprVel, 17*20, 60, 200);
 		}
 
+		// upper flame
 		for(i = 0; i < 10; i++){
 			vec3_t pt;
 
 			vecset(pt, crandom(), crandom(), crandom());
-			vecmul(pt, 40, pt);
-			vecadd(pt, origin, pt);
-			smokepuff(pt, dir, 120, .5, .5, .5, 1, 10*duration, cg.time-300, 0, 0, cgs.media.shotgunSmokePuffShader);
+			vecmad(dir, 0.7f, pt, pt);
+			vecmul(pt, 60, pt);
+			vecadd(origin, pt, pt);
+			le = explosion(pt, dir, mod, shader, duration, isSprite);
 		}
+
+		// smoke
+		for(i = 0; i < 14; i++){
+			vec3_t pt;
+
+			vecset(pt, crandom(), crandom(), crandom());
+			vecmul(pt, 70, pt);
+			vecadd(pt, origin, pt);
+			smokepuff(pt, dir, 120, .5, .5, .5, 1, 5*duration, cg.time-300, 0, 0, cgs.media.shotgunSmokePuffShader);
+		}
+
 		break;
 	case WP_RAILGUN:
 		mod = cgs.media.ringFlashModel;
