@@ -18,8 +18,6 @@ void
 drawlibinit(void)
 {
 	draw.whiteShader = trap_R_RegisterShaderNoMip("white");
-	draw.charset = trap_R_RegisterShaderNoMip("gfx/2d/bigchars");
-	draw.charsetProp = trap_R_RegisterShaderNoMip("menu/art/font1_prop");
 
 	registercharmap(FONT1, 1024, 512, 85, 3, "fonts/font1", (int**)font1map,
 	   nil, 0);
