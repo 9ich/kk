@@ -2100,6 +2100,7 @@ Q3DOBJ = \
   $(B)/ded/sv_main.o \
   $(B)/ded/sv_net_chan.o \
   $(B)/ded/sv_snapshot.o \
+  $(B)/ded/sv_stats.o \
   $(B)/ded/sv_world.o \
   \
   $(B)/ded/cm_load.o \
