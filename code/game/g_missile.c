@@ -585,7 +585,7 @@ fire_rocket(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->parent = self;
 	bolt->damage = 100;
 	bolt->splashdmg = 100;
-	bolt->splashradius = 120;
+	bolt->splashradius = 300;
 	bolt->meansofdeath = MOD_ROCKET;
 	bolt->splashmeansofdeath = MOD_ROCKET_SPLASH;
 	bolt->clipmask = MASK_SHOT;
@@ -594,7 +594,7 @@ fire_rocket(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
 	veccpy(start, bolt->s.pos.trBase);
-	vecmul(dir, 900, bolt->s.pos.trDelta);
+	vecmul(dir, 1400, bolt->s.pos.trDelta);
 //	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
 	veccpy(start, bolt->r.currentOrigin);
 
