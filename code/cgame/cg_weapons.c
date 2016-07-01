@@ -400,7 +400,7 @@ CG_RocketTrail(centity_t *ent, const weaponInfo_t *wi)
 	}
 
 	// flame
-	step = 4;	// 4 msec interval
+	step = 4;	// msec interval
 	t = step * ((starttime + step) / step);
 	for(; t <= ent->trailtime + 0.5f*step; t += step){
 		vec3_t ofs;
@@ -413,7 +413,7 @@ CG_RocketTrail(centity_t *ent, const weaponInfo_t *wi)
 		CG_ParticleExplosion("explode1", lastPos, ofs, 80, 2, 14);
 	}
 	// smoke plume
-	step = 33;	// 33 msec interval
+	step = 16;	// msec interval
 	t = step * ((starttime + step) / step);
 	for(; t <= ent->trailtime; t += step){
 		evaltrajectory(&es->pos, t, lastPos);
