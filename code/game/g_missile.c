@@ -567,6 +567,35 @@ fire_bfg(gentity_t *self, vec3_t start, vec3_t dir)
 
 //=============================================================================
 
+#define ROCKET_THINKTIME 200
+
+void
+rocket_think(gentity_t *self)
+{
+	vec3_t dir;
+	float spd;
+
+	// if lifespan of this rocket is up, explode
+	if(!self->count--){
+		explodemissile(self);
+		return;
+	}
+
+	// add constant acceleration
+	evaltrajectory(&self->s.pos, level.time, self->s.pos.trBase);
+	veccpy(self->s.pos.trBase, self->r.currentOrigin);
+
+	veccpy(self->s.pos.trDelta, dir);
+	spd = vecnorm(dir);
+	spd += 300;
+	vecmul(dir, spd, self->s.pos.trDelta);
+	//SnapVector(self->s.pos.trDelta);	// save net bandwidth
+	self->s.pos.trTime = level.time;
+
+	self->nextthink = level.time + ROCKET_THINKTIME;
+	self->think = rocket_think;
+}
+
 gentity_t *
 fire_rocket(gentity_t *self, vec3_t start, vec3_t dir)
 {
@@ -576,8 +605,11 @@ fire_rocket(gentity_t *self, vec3_t start, vec3_t dir)
 
 	bolt = entspawn();
 	bolt->classname = "rocket";
-	bolt->nextthink = level.time + 15000;
-	bolt->think = explodemissile;
+	bolt->nextthink = level.time + ROCKET_THINKTIME;
+	bolt->think = rocket_think;
+	// bolt->count is decremented with each call to rocket_think
+	// rocket detonates when bolt->count reaches 0
+	bolt->count = 15000 / ROCKET_THINKTIME;
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_ROCKET_LAUNCHER;
@@ -594,12 +626,15 @@ fire_rocket(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
 	veccpy(start, bolt->s.pos.trBase);
-	vecmul(dir, 1400, bolt->s.pos.trDelta);
+	vecmul(dir, 700, bolt->s.pos.trDelta);
 //	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
 	veccpy(start, bolt->r.currentOrigin);
 
 	return bolt;
 }
+
+#define HOMINGROCKET_LIFESPAN		15000
+#define HOMINGROCKET_THINKTIME		100
 
 void
 homingrocket_pain(gentity_t *ent, gentity_t *attacker, int dmg)
@@ -626,39 +661,41 @@ homingrocket_think(gentity_t *ent)
 {
 	vec3_t olddir, dir;
 	gentity_t *targ;
-	float dot;
+	float dot, t, spd;
+
+	// if lifespan of this rocket is up, explode
+	if(!ent->count--){
+		explodemissile(ent);
+		return;
+	}
 
 	targ = &g_entities[ent->homingtarget];
 
 	evaltrajectory(&ent->s.pos, level.time, ent->r.currentOrigin);
 	veccpy(ent->s.pos.trDelta, olddir);
-	vecnorm(olddir);
+	spd = vecnorm(olddir);
 
 	vecsub(targ->r.currentOrigin, ent->r.currentOrigin, dir);
 	vecnorm(dir);
+
+	veccpy(ent->r.currentOrigin, ent->s.pos.trBase);
+	ent->s.pos.trTime = level.time;
+
 	dot = vecdot(olddir, dir);
 	if(dot >= 0.707f){
-		float t;
-
-		t = 0.66f;
-		veccpy(ent->r.currentOrigin, ent->s.pos.trBase);
+		// adjust trajectory towards target
+		t = 0.66f;	// tracking speed, 1.0 = perfect tracking
 		dir[0] = (1-t)*olddir[0] + t*dir[0];
 		dir[1] = (1-t)*olddir[1] + t*dir[1];
 		dir[2] = (1-t)*olddir[2] + t*dir[2];
-		vecmul(dir, 200, ent->s.pos.trDelta);
-		ent->s.pos.trType = TR_LINEAR;
-		ent->s.pos.trTime = level.time;
+		vecmul(dir, spd + 10, ent->s.pos.trDelta);	// accel
 	}else{
 		// lost track
-		ent->nextthink = 0;
-		ent->think = nil;
-		veccpy(ent->r.currentOrigin, ent->s.pos.trBase);
-		vecmul(olddir, 200, ent->s.pos.trDelta);
-		ent->s.pos.trTime = level.time;
+		vecmul(olddir, spd + 10, ent->s.pos.trDelta);	// accel
 	}
 
 	ent->think = homingrocket_think;
-	ent->nextthink = level.time + 100;
+	ent->nextthink = level.time + HOMINGROCKET_THINKTIME;
 }
 
 gentity_t *
@@ -673,7 +710,10 @@ fire_homingrocket(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->pain = homingrocket_pain;
 	bolt->die = homingrocket_die;
 	bolt->think = homingrocket_think;
-	bolt->nextthink = level.time + 100;
+	// bolt->count is decremented with each call to rocket_think
+	// rocket detonates when bolt->count reaches 0
+	bolt->count = HOMINGROCKET_LIFESPAN / HOMINGROCKET_THINKTIME;
+	bolt->nextthink = level.time + HOMINGROCKET_THINKTIME;
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_HOMING_LAUNCHER;
@@ -681,7 +721,7 @@ fire_homingrocket(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->parent = self;
 	bolt->damage = 100;
 	bolt->splashdmg = 100;
-	bolt->splashradius = 120;
+	bolt->splashradius = 300;
 	bolt->meansofdeath = MOD_ROCKET;
 	bolt->splashmeansofdeath = MOD_ROCKET_SPLASH;
 	bolt->clipmask = MASK_SHOT;
@@ -694,7 +734,7 @@ fire_homingrocket(gentity_t *self, vec3_t start, vec3_t dir)
 
 	veccpy(start, bolt->s.pos.trBase);
 	vecmul(dir, 100, bolt->s.pos.trDelta);
-//	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
+	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time;
 	veccpy(start, bolt->r.currentOrigin);
