@@ -269,6 +269,170 @@ CG_ParseAnimationFile(const char *filename, clientInfo_t *ci)
 }
 
 /*
+ * A thruster file has entries like this, one per line:
+ * //	tagname		movekeys	shader		color		dur	vel	startsize	endsize
+ * 	tag_thrustXDL	( r !rd )	explode1	( 1 0 .9 .9 )	70	1000	4		8
+ *
+ * tagname gives the name of the MD3 tag that this line corresponds to. This
+ * can be any text (except spaces) as long as the tag is present in the
+ * accompanying MD3.
+ * 
+ * movekeys controls which combinations of movement keys fire the thruster.
+ * The combinations are inclusive, so "fr" will make the thruster fire only if
+ * both "f" and "r" are held.
+ * Prefixing any combination of movement keys with "!"  instead makes the
+ * thruster stop firing when that combination of keys is held.
+ * 
+ * dur controls the duration of the thruster's particle effect, and vel its
+ * velocity.
+ */
+static void
+parsethrustersfile(const char *filename, clientInfo_t *ci)
+{
+	char buf[20000], *tok, *bufp;
+	fileHandle_t f;
+	thrusterparms_t *tp;
+	int i, j, len;
+
+	ci->nthrusttab = 0;
+
+	// load the file
+	len = trap_FS_FOpenFile(filename, &f, FS_READ);
+	if(len <= 0)
+		return;
+	if(len >= sizeof(buf) - 1){
+		cgprintf("%s: file too long\n", filename);
+		trap_FS_FCloseFile(f);
+		return;
+	}
+	trap_FS_Read(buf, len, f);
+	buf[len] = 0;
+	trap_FS_FCloseFile(f);
+
+	bufp = buf;
+
+	for(i = 0; i < ARRAY_LEN(ci->thrusttab); i++){
+		tp = &ci->thrusttab[i];
+		memset(tp, 0, sizeof tp);
+
+		//
+		// tagname
+		//
+		tok = COM_Parse(&bufp);
+		if(*tok == '\0')
+			break;
+		Q_strncpyz(tp->tagname, tok, sizeof tp->tagname);
+
+		//
+		// movekeys
+		//
+		tok = COM_Parse(&bufp);
+		if(*tok == '\0'){
+			cgprintf(S_COLOR_RED "%s: unexpected end of file\n", filename);
+			break;
+		}
+		if(*tok != '('){
+			cgprintf(S_COLOR_RED "%s: expected '(', got '%s'\n", filename, tok);
+			break;
+		}
+		// leave a sentinel: tp->dirs[len-1] == '\0'
+		for(j = 0; j < ARRAY_LEN(tp->dirs)-1; j++){
+			tok = COM_Parse(&bufp);
+			if(*tok == '\0'){
+				cgprintf(S_COLOR_RED "%s: unexpected end of file\n", filename);
+				break;
+			}
+			if(*tok == ')'){	// end of movekeys
+				break;
+			}
+			Q_strncpyz(tp->dirs[j], tok, sizeof tp->dirs[j]);
+		}
+
+		//
+		// shader
+		//
+		tok = COM_Parse(&bufp);
+		if(*tok == '\0'){
+			cgprintf(S_COLOR_RED "%s: unexpected end of file\n", filename);
+			break;
+		}
+		Q_strncpyz(tp->shader, tok, sizeof tp->shader);
+
+		//
+		// color
+		//
+		tok = COM_Parse(&bufp);
+		if(*tok == '\0'){
+			cgprintf(S_COLOR_RED "%s: unexpected end of file\n", filename);
+			break;
+		}
+		if(*tok != '('){
+			cgprintf(S_COLOR_RED "%s: expected '(', got '%s'\n", filename, tok);
+			break;
+		}
+		for(j = 0; j < 4; j++){
+			tok = COM_Parse(&bufp);
+			if(*tok == '\0'){
+				cgprintf(S_COLOR_RED "%s: unexpected end of file\n", filename);
+				break;
+			}
+			tp->color[j] = atof(tok);
+		}
+		tok = COM_Parse(&bufp);		// closing rparen
+		if(*tok == '\0'){
+			cgprintf(S_COLOR_RED "%s: unexpected end of file\n", filename);
+			break;
+		}
+		if(*tok != ')'){
+			cgprintf(S_COLOR_RED "%s: expected ')', got '%s'\n", filename, tok);
+			break;
+		}
+
+		//
+		// dur
+		//
+		tok = COM_Parse(&bufp);
+		if(*tok == '\0'){
+			cgprintf(S_COLOR_RED "%s: unexpected end of file\n", filename);
+			break;
+		}
+		tp->dur = atoi(tok);
+
+		//
+		// vel
+		//
+		tok = COM_Parse(&bufp);
+		if(*tok == '\0'){
+			cgprintf(S_COLOR_RED "%s: unexpected end of file\n", filename);
+			break;
+		}
+		tp->vel = atof(tok);
+
+		//
+		// startsize
+		//
+		tok = COM_Parse(&bufp);
+		if(*tok == '\0'){
+			cgprintf(S_COLOR_RED "%s: unexpected end of file\n", filename);
+			break;
+		}
+		tp->startsize = atof(tok);
+
+		//
+		// endsize
+		//
+		tok = COM_Parse(&bufp);
+		if(*tok == '\0'){
+			cgprintf(S_COLOR_RED "%s: unexpected end of file\n", filename);
+			break;
+		}
+		tp->endsize = atof(tok);
+
+		ci->nthrusttab++;
+	}
+}
+
+/*
 ==========================
 CG_FileExists
 ==========================
@@ -407,6 +571,10 @@ CG_RegisterClientModelname(clientInfo_t *ci, const char *modelname, const char *
 		}
 	}
 
+	// load the thruster params
+	Com_sprintf(filename, sizeof(filename), "models/players/%s/thrusters.cfg", modelname);
+	parsethrustersfile(filename, ci);
+
 	// load the animations
 	Com_sprintf(filename, sizeof(filename), "models/players/%s/animation.cfg", modelname);
 	if(!CG_ParseAnimationFile(filename, ci)){
@@ -534,6 +702,8 @@ CG_CopyClientInfoModel(clientInfo_t *from, clientInfo_t *to)
 	to->modelicon = from->modelicon;
 
 	memcpy(to->animations, from->animations, sizeof(to->animations));
+	memcpy(to->thrusttab, from->thrusttab, sizeof(to->thrusttab));
+	to->nthrusttab = from->nthrusttab;
 	memcpy(to->sounds, from->sounds, sizeof(to->sounds));
 }
 
@@ -1154,64 +1324,6 @@ CG_PlayerFlag(centity_t *cent, refEntity_t *torso, qhandle_t flagmodel)
 	trap_R_AddRefEntityToScene(&flag);
 }
 
-static char *rearthrusttags[] = {
-	"tag_thrustTL",
-	"tag_thrustTR",
-	"tag_thrustBL",
-	"tag_thrustBR"
-};
-static char *frontthrusttags[] = {
-	"tag_thrustFTL",
-	"tag_thrustFTR",
-	"tag_thrustFBL",
-	"tag_thrustFBR"
-};
-
-#define PLUME_TIME	(1000/30.0f)
-
-enum
-{
-	XUL	= (1<<0),	// diagonal thrust flags
-	XUR	= (1<<1),
-	XDL	= (1<<2),
-	XDR	= (1<<3)
-};
-
-static void
-addthrustflame(centity_t *cent, refEntity_t *ship, float factor, char *tag, qboolean nothirdperson)
-{
-	vec3_t angles, plumepos;
-	refEntity_t flame;
-	float r, g, b, a;
-
-	memset(&flame, 0, sizeof(flame));
-	flame.hModel = cgs.media.thrustFlameModel;
-	veccpy(ship->lightingOrigin, flame.lightingOrigin);
-	flame.nonNormalizedAxes = qtrue;
-
-	if(nothirdperson && !cg_thirdPerson.integer &&
-	   cent->currstate.number == cg.snap->ps.clientNum)
-		flame.renderfx = RF_THIRD_PERSON;	// only show in mirrors
-
-	vecclear(angles);
-	angles[ROLL] = crandom() * 7777;
-	AnglesToAxis(angles, flame.axis);
-	rotentontag(&flame, ship, ship->hModel, tag);
-	vecmul(flame.axis[0], factor, flame.axis[0]);
-	vecmul(flame.axis[1], factor, flame.axis[1]);
-	vecmul(flame.axis[2], factor, flame.axis[2]);
-	trap_R_AddRefEntityToScene(&flame);
-
-	if(nothirdperson && !cg_thirdPerson.integer &&
-	   cent->currstate.number == cg.snap->ps.clientNum)
-		return;
-
-	if(cent->lastplume + PLUME_TIME < cg.time){
-		vecmad(flame.origin, 10, flame.axis[0], plumepos);
-		CG_ParticleThrustPlume(cent, plumepos, flame.axis[0]);
-	}
-}
-
 static void
 calcthrusterlight(centity_t *cent, vec4_t color)
 {
@@ -1242,64 +1354,27 @@ calcthrusterlight(centity_t *cent, vec4_t color)
 static void
 CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 {
-	int i;
-	float forwardmove;
-	int dirs;
+	clientInfo_t *ci;
+	qboolean f, b, u, d, l, r;
+	thrusterparms_t *tp;
 	sfxHandle_t thrustsound, thrustbacksound, idlesound;
+	vec3_t forward, right, up;
+	vec3_t pos, v;
 	vec4_t clr;
-	vec3_t v, forward, right, up;
-	vec3_t pos;
+	int i, j;
 
-	calcthrusterlight(cent, clr);
-	anglevecs(cent->lerpangles, forward, right, up);
+	ci = &cgs.clientinfo[cent->currstate.clientNum];
+	f = cent->currstate.forwardmove > 0;
+	b = cent->currstate.forwardmove < 0;
+	u = cent->currstate.upmove > 0;
+	d = cent->currstate.upmove < 0;
+	l = cent->currstate.rightmove < 0;
+	r = cent->currstate.rightmove > 0;
+	playerpos(cent, pos);
 
-	forwardmove = cent->currstate.forwardmove / 127.0f;
-
-	// rear thrusters
-	for(i = 0; i < ARRAY_LEN(rearthrusttags); i++){
-		if(forwardmove <= 0)
-			break;
-		addthrustflame(cent, ship, forwardmove, rearthrusttags[i], qfalse);
-	}
-
-	// forward thrusters
-	forwardmove = -forwardmove;
-
-	for(i = 0; i < ARRAY_LEN(frontthrusttags); i++){
-		if(forwardmove <= 0)
-			break;
-		addthrustflame(cent, ship, forwardmove, frontthrusttags[i], qtrue);
-	}
-
-	dirs = 0;
-	if(cent->currstate.rightmove < 0 && cent->currstate.upmove < 0)
-		dirs |= XUR;
-	else if(cent->currstate.rightmove < 0 && cent->currstate.upmove > 0)
-		dirs |= XDR;
-	else if(cent->currstate.rightmove > 0 && cent->currstate.upmove < 0)
-		dirs |= XUL;
-	else if(cent->currstate.rightmove > 0 && cent->currstate.upmove > 0)
-		dirs |= XDL;
-	else{
-		if(cent->currstate.rightmove < 0)
-			dirs |= (XUR | XDR);
-		if(cent->currstate.rightmove > 0)
-			dirs |= (XUL | XDL);
-		if(cent->currstate.upmove < 0)
-			dirs |= (XUL | XUR);
-		if(cent->currstate.upmove > 0)
-			dirs |= (XDL | XDR);
-	}
-
-	if(dirs & XUL)
-		addthrustflame(cent, ship, 1.0f, "tag_thrustXUL", qfalse);
-	if(dirs & XDL)
-		addthrustflame(cent, ship, 1.0f, "tag_thrustXDL", qfalse);
-	if(dirs & XUR)
-		addthrustflame(cent, ship, 1.0f, "tag_thrustXUR", qfalse);
-	if(dirs & XDR)
-		addthrustflame(cent, ship, 1.0f, "tag_thrustXDR", qfalse);
-
+	//
+	// thruster sounds
+	//
 	if(cent->currstate.number == cg.snap->ps.clientNum){
 		thrustsound = cgs.media.thrustSound;
 		thrustbacksound = cgs.media.thrustBackSound;
@@ -1310,15 +1385,11 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 		idlesound = cgs.media.thrustOtherIdleSound;
 	}
 
-	playerpos(cent, pos);
 
-	if(cent->currstate.forwardmove < 0){
+	if(b || (l || r) || (u || d)){
 		trap_S_AddLoopingSound(cent->currstate.number, pos, vec3_origin,
 		   thrustbacksound);
-	}else if(cent->currstate.rightmove != 0 || cent->currstate.upmove != 0){
-		trap_S_AddLoopingSound(cent->currstate.number, pos, vec3_origin,
-		   thrustbacksound);
-	}else if(cent->currstate.forwardmove > 0){
+	}else if(f){
 		trap_S_AddLoopingSound(cent->currstate.number, pos, vec3_origin,
 		   thrustsound);
 	}else{
@@ -1326,30 +1397,105 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 		   idlesound);
 	}
 
-	if(cent->lastplume + PLUME_TIME < cg.time)
-		cent->lastplume = cg.time;
-
-	// add the lights
-	if(cent->currstate.forwardmove > 0){
+	//
+	// lights
+	//
+	calcthrusterlight(cent, clr);
+	anglevecs(cent->lerpangles, forward, right, up);
+	if(f){
 		vecmad(pos, -40, forward, v);
 		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
-	}else if(cent->currstate.forwardmove < 0){
+	}else if(b){
 		vecmad(pos, 40, forward, v);
 		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
 	}
-	if(cent->currstate.rightmove > 0){
+	if(r){
 		vecmad(pos, -36, right, v);
 		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
-	}else if(cent->currstate.rightmove < 0){
+	}else if(l){
 		vecmad(pos, 36, right, v);
 		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
 	}
-	if(cent->currstate.upmove > 0){
+	if(u){
 		vecmad(pos, -36, up, v);
 		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
-	}else if(cent->currstate.upmove < 0){
+	}else if(d){
 		vecmad(pos, 36, up, v);
 		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
+	}
+
+	//
+	// thruster plumes
+	//
+	if(!cg.thirdperson && cent->currstate.clientNum == cg.pps.clientNum)
+		return;
+
+	if(cg.time - cent->trailtime < 16)
+		return;
+	cent->trailtime = cg.time;
+
+	for(i = 0; i < ci->nthrusttab; i++){
+		qboolean enable;
+
+		enable = qfalse;
+		tp = &ci->thrusttab[i];
+		for(j = 0; tp->dirs[j][0] != '\0'; j++){
+			int ok, total;
+			qboolean invert;
+			char *p;
+
+			ok = total = 0;
+			invert = qfalse;
+			for(p = tp->dirs[j]; *p != '\0'; p++){
+				switch(*p){
+				case '!':
+					invert = qtrue;
+					break;
+				case 'f':
+					total++;
+					if(f) ok++;
+					break;
+				case 'b':
+					total++;
+					if(b) ok++;
+					break;
+				case 'u':
+					total++;
+					if(u) ok++;
+					break;
+				case 'd':
+					total++;
+					if(d) ok++;
+					break;
+				case 'l':
+					total++;
+					if(l) ok++;
+					break;
+				case 'r':
+					total++;
+					if(r) ok++;
+					break;
+				default:
+					break;
+				}
+			}
+			if(ok == total)
+				enable = invert? qfalse : qtrue;
+		}
+		if(enable){
+			refEntity_t dummy;
+			vec3_t vel, smokepos;
+
+			// flame
+			rotentontag(&dummy, ship, ship->hModel, tp->tagname);
+			vecmul(dummy.axis[0], tp->vel, vel);
+			if(veclensq(dummy.origin) != 0){
+				CG_ParticleExplosion(tp->shader, dummy.origin,
+				   vel, tp->dur, tp->startsize, tp->endsize);
+				vecmad(dummy.origin, 10, dummy.axis[0], smokepos);
+				CG_ParticleThrustPlume(cent, smokepos, vel);
+			}
+		}
 	}
 }
 

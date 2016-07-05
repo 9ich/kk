@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 #include "../qcommon/q_shared.h"
+#include "../qcommon/qfiles.h"
 #include "../renderercommon/tr_types.h"
 #include "../game/bg_public.h"
 #include "cg_public.h"
@@ -201,8 +202,6 @@ typedef struct centity_s
 	int		dusttrailtime;
 	int		misctime;
 
-	int		lastplume;	// last thruster plume time (FIXME: merge into trailtime?)
-
 	flicker_t	flicker;	// player thrusters, ET_ROCKET light, etc.
 	flicker_t	quadflicker;	// player ent holding quad
 
@@ -335,6 +334,23 @@ typedef struct
 	int		team;
 } score_t;
 
+/*
+ * A thrusterparms_t is an entry in the clientInfo_t->thrusttab table.
+ * These paramaters are loaded from thrusters.cfg.
+ * See parsethrustersfile.
+ */
+typedef struct
+{
+	char	tagname[64];
+	char	dirs[16][8];	// table of dir expressions like "!rd"
+	vec4_t	color;
+	char	shader[MAX_QPATH];
+	int	dur;
+	float	vel;
+	float	startsize;
+	float	endsize;
+} thrusterparms_t;
+
 // each client has an associated clientInfo_t
 // that contains media references necessary to present the
 // client model and other color coded effects
@@ -401,6 +417,9 @@ typedef struct
 	qhandle_t	modelicon;
 
 	animation_t	animations[MAX_TOTALANIMATIONS];
+
+	thrusterparms_t	thrusttab[MD3_MAX_TAGS];
+	int		nthrusttab;
 
 	sfxHandle_t	sounds[MAX_CUSTOM_SOUNDS];
 } clientInfo_t;
