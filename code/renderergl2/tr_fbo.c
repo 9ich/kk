@@ -326,6 +326,14 @@ void FBO_Init(void)
 		R_CheckFBO(tr.sunRaysFbo);
 	}
 
+	if (tr.bloomImage)
+	{
+		tr.bloomFbo = FBO_Create("bloom", tr.bloomImage->width, tr.bloomImage->height);
+		FBO_AttachImage(tr.bloomFbo, tr.bloomImage, GL_COLOR_ATTACHMENT0_EXT, 0);
+		FBO_AttachImage(tr.bloomFbo, tr.bloomImage, GL_DEPTH_ATTACHMENT_EXT, 0);
+		R_CheckFBO(tr.bloomFbo);
+	}
+
 	// FIXME: Don't use separate color/depth buffers for a shadow buffer
 	if (MAX_DRAWN_PSHADOWS && tr.pshadowMaps[0])
 	{

@@ -1522,6 +1522,7 @@ typedef struct {
 
 	image_t					*renderImage;
 	image_t					*sunRaysImage;
+	image_t					*bloomImage;
 	image_t					*renderDepthImage;
 	image_t					*pshadowMaps[MAX_DRAWN_PSHADOWS];
 	image_t					*screenScratchImage;
@@ -1541,6 +1542,7 @@ typedef struct {
 	FBO_t					*renderFbo;
 	FBO_t					*msaaResolveFbo;
 	FBO_t					*sunRaysFbo;
+	FBO_t					*bloomFbo;
 	FBO_t					*depthFbo;
 	FBO_t					*pshadowFbos[MAX_DRAWN_PSHADOWS];
 	FBO_t					*screenScratchFbo;
@@ -1590,6 +1592,7 @@ typedef struct {
 	shaderProgram_t shadowmapShader;
 	shaderProgram_t pshadowShader;
 	shaderProgram_t down4xShader;
+	shaderProgram_t bloomShader;
 	shaderProgram_t bokehShader;
 	shaderProgram_t tonemapShader;
 	shaderProgram_t calclevels4xShader[2];
@@ -1785,6 +1788,8 @@ extern  cvar_t  *r_cameraExposure;
 
 extern  cvar_t  *r_depthPrepass;
 extern  cvar_t  *r_ssao;
+
+extern	cvar_t	*r_bloom;
 
 extern  cvar_t  *r_normalMapping;
 extern  cvar_t  *r_specularMapping;

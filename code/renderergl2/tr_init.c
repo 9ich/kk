@@ -115,6 +115,8 @@ cvar_t  *r_mergeLeafSurfaces;
 
 cvar_t  *r_cameraExposure;
 
+cvar_t	*r_bloom;
+
 cvar_t  *r_externalGLSL;
 
 cvar_t  *r_hdr;
@@ -1221,6 +1223,8 @@ void R_Register( void )
 	r_forceAutoExposureMax = ri.Cvar_Get( "r_forceAutoExposureMax", "2.0", CVAR_CHEAT );
 
 	r_cameraExposure = ri.Cvar_Get( "r_cameraExposure", "0", CVAR_CHEAT );
+
+	r_bloom = ri.Cvar_Get( "r_bloom", "1", CVAR_ARCHIVE );
 
 	r_depthPrepass = ri.Cvar_Get( "r_depthPrepass", "1", CVAR_ARCHIVE );
 	r_ssao = ri.Cvar_Get( "r_ssao", "0", CVAR_LATCH | CVAR_ARCHIVE );

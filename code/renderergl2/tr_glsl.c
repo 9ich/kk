@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "tr_dsa.h"
 
+extern const char *fallbackShader_bloom_vp;
+extern const char *fallbackShader_bloom_fp;
 extern const char *fallbackShader_bokeh_vp;
 extern const char *fallbackShader_bokeh_fp;
 extern const char *fallbackShader_calclevels4x_vp;
@@ -1185,6 +1187,23 @@ void GLSL_InitGPUShaders(void)
 	GLSL_SetUniformInt(&tr.down4xShader, UNIFORM_TEXTUREMAP, TB_DIFFUSEMAP);
 
 	GLSL_FinishGPUShader(&tr.down4xShader);
+
+	numEtcShaders++;
+
+
+	attribs = ATTR_POSITION | ATTR_TEXCOORD;
+	extradefines[0] = '\0';
+
+	if (!GLSL_InitGPUShader(&tr.bloomShader, "bloom", attribs, qtrue, extradefines, qtrue, fallbackShader_bloom_vp, fallbackShader_bloom_fp))
+	{
+		ri.Error(ERR_FATAL, "Could not load bloom shader!");
+	}
+
+	GLSL_InitUniforms(&tr.bloomShader);
+
+	GLSL_SetUniformInt(&tr.bloomShader, UNIFORM_TEXTUREMAP, TB_DIFFUSEMAP);
+
+	GLSL_FinishGPUShader(&tr.bloomShader);
 
 	numEtcShaders++;
 
