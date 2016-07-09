@@ -935,7 +935,8 @@ CG_RegisterGraphics(void)
 #endif
 	}
 
-	cgs.media.thrustFlameModel = trap_R_RegisterModel("models/players/thrust.md3");
+	cgs.media.thrustFlameModel = trap_R_RegisterModel("models/testfire.md3");
+	CG_ParseAnimationFile("models/animation.cfg", cgs.media.thrustFlameAnims);
 
 	cgs.media.armorModel = trap_R_RegisterModel("models/powerups/armor/armor_yel.md3");
 	cgs.media.armorIcon = trap_R_RegisterShaderNoMip("icons/iconr_yellow");

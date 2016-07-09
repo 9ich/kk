@@ -504,7 +504,11 @@ typedef enum
 // animations
 typedef enum
 {
-	BOTH_DEATH1,
+	// generic entities
+	ANIM_IDLE = 0,
+
+	// ET_PLAYER
+	BOTH_DEATH1 = 0,
 	BOTH_DEAD1,
 	BOTH_DEATH2,
 	BOTH_DEAD2,

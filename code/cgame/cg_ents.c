@@ -169,7 +169,6 @@ dogeneral(centity_t *cent)
 	memset(&ent, 0, sizeof(ent));
 
 	// set frame
-
 	ent.frame = s1->frame;
 	ent.oldframe = ent.frame;
 	ent.backlerp = 0;

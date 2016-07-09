@@ -74,201 +74,6 @@ CLIENT INFO
 */
 
 /*
-======================
-CG_ParseAnimationFile
-
-Read a configuration file containing animation counts and rates
-models/players/visor/animation.cfg, etc
-======================
-*/
-static qboolean
-CG_ParseAnimationFile(const char *filename, clientInfo_t *ci)
-{
-	char *text_p, *prev;
-	int len;
-	int i;
-	char *token;
-	float fps;
-	int skip;
-	char text[20000];
-	fileHandle_t f;
-	animation_t *animations;
-
-	animations = ci->animations;
-
-	// load the file
-	len = trap_FS_FOpenFile(filename, &f, FS_READ);
-	if(len <= 0)
-		return qfalse;
-	if(len >= sizeof(text) - 1){
-		cgprintf("File %s too long\n", filename);
-		trap_FS_FCloseFile(f);
-		return qfalse;
-	}
-	trap_FS_Read(text, len, f);
-	text[len] = 0;
-	trap_FS_FCloseFile(f);
-
-	// parse the text
-	text_p = text;
-	skip = 0;	// quite the compiler warning
-
-	ci->footsteps = FOOTSTEP_NORMAL;
-	ci->gender = GENDER_MALE;
-	ci->fixedlegs = qfalse;
-	ci->fixedtorso = qfalse;
-
-	// read optional parameters
-	while(1){
-		prev = text_p;	// so we can unget
-		token = COM_Parse(&text_p);
-		if(!token)
-			break;
-		if(!Q_stricmp(token, "footsteps")){
-			token = COM_Parse(&text_p);
-			if(!token)
-				break;
-			if(!Q_stricmp(token, "default") || !Q_stricmp(token, "normal"))
-				ci->footsteps = FOOTSTEP_NORMAL;
-			else if(!Q_stricmp(token, "boot"))
-				ci->footsteps = FOOTSTEP_BOOT;
-			else if(!Q_stricmp(token, "flesh"))
-				ci->footsteps = FOOTSTEP_FLESH;
-			else if(!Q_stricmp(token, "mech"))
-				ci->footsteps = FOOTSTEP_MECH;
-			else if(!Q_stricmp(token, "energy"))
-				ci->footsteps = FOOTSTEP_ENERGY;
-			else
-				cgprintf("Bad footsteps parm in %s: %s\n", filename, token);
-			continue;
-		}else if(!Q_stricmp(token, "headoffset")){
-			for(i = 0; i < 3; i++){
-				token = COM_Parse(&text_p);
-				if(!token)
-					break;
-				ci->headoffset[i] = atof(token);
-			}
-			continue;
-		}else if(!Q_stricmp(token, "sex")){
-			token = COM_Parse(&text_p);
-			if(!token)
-				break;
-			if(token[0] == 'f' || token[0] == 'F')
-				ci->gender = GENDER_FEMALE;
-			else if(token[0] == 'n' || token[0] == 'N')
-				ci->gender = GENDER_NEUTER;
-			else
-				ci->gender = GENDER_MALE;
-			continue;
-		}else if(!Q_stricmp(token, "fixedlegs")){
-			ci->fixedlegs = qtrue;
-			continue;
-		}else if(!Q_stricmp(token, "fixedtorso")){
-			ci->fixedtorso = qtrue;
-			continue;
-		}
-
-		// if it is a number, start parsing animations
-		if(token[0] >= '0' && token[0] <= '9'){
-			text_p = prev;	// unget the token
-			break;
-		}
-		Com_Printf("unknown token '%s' in %s\n", token, filename);
-	}
-
-	// read information for each frame
-	for(i = 0; i < MAX_ANIMATIONS; i++){
-		token = COM_Parse(&text_p);
-		if(!*token){
-			if(i >= TORSO_GETFLAG && i <= TORSO_NEGATIVE){
-				animations[i].firstframe = animations[TORSO_GESTURE].firstframe;
-				animations[i].framelerp = animations[TORSO_GESTURE].framelerp;
-				animations[i].initiallerp = animations[TORSO_GESTURE].initiallerp;
-				animations[i].loopframes = animations[TORSO_GESTURE].loopframes;
-				animations[i].nframes = animations[TORSO_GESTURE].nframes;
-				animations[i].reversed = qfalse;
-				animations[i].flipflop = qfalse;
-				continue;
-			}
-			break;
-		}
-		animations[i].firstframe = atoi(token);
-		// leg only frames are adjusted to not count the upper body only frames
-		if(i == LEGS_WALKCR)
-			skip = animations[LEGS_WALKCR].firstframe - animations[TORSO_GESTURE].firstframe;
-		if(i >= LEGS_WALKCR && i<TORSO_GETFLAG)
-			animations[i].firstframe -= skip;
-
-		token = COM_Parse(&text_p);
-		if(!*token)
-			break;
-		animations[i].nframes = atoi(token);
-
-		animations[i].reversed = qfalse;
-		animations[i].flipflop = qfalse;
-		// if nframes is negative the animation is reversed
-		if(animations[i].nframes < 0){
-			animations[i].nframes = -animations[i].nframes;
-			animations[i].reversed = qtrue;
-		}
-
-		token = COM_Parse(&text_p);
-		if(!*token)
-			break;
-		animations[i].loopframes = atoi(token);
-
-		token = COM_Parse(&text_p);
-		if(!*token)
-			break;
-		fps = atof(token);
-		if(fps == 0)
-			fps = 1;
-		animations[i].framelerp = 1000 / fps;
-		animations[i].initiallerp = 1000 / fps;
-	}
-
-	if(i != MAX_ANIMATIONS){
-		cgprintf("Error parsing animation file: %s\n", filename);
-		return qfalse;
-	}
-
-	// crouch backward animation
-	memcpy(&animations[LEGS_BACKCR], &animations[LEGS_WALKCR], sizeof(animation_t));
-	animations[LEGS_BACKCR].reversed = qtrue;
-	// walk backward animation
-	memcpy(&animations[LEGS_BACKWALK], &animations[LEGS_WALK], sizeof(animation_t));
-	animations[LEGS_BACKWALK].reversed = qtrue;
-	// flag moving fast
-	animations[FLAG_RUN].firstframe = 0;
-	animations[FLAG_RUN].nframes = 16;
-	animations[FLAG_RUN].loopframes = 16;
-	animations[FLAG_RUN].framelerp = 1000 / 15;
-	animations[FLAG_RUN].initiallerp = 1000 / 15;
-	animations[FLAG_RUN].reversed = qfalse;
-	// flag not moving or moving slowly
-	animations[FLAG_STAND].firstframe = 16;
-	animations[FLAG_STAND].nframes = 5;
-	animations[FLAG_STAND].loopframes = 0;
-	animations[FLAG_STAND].framelerp = 1000 / 20;
-	animations[FLAG_STAND].initiallerp = 1000 / 20;
-	animations[FLAG_STAND].reversed = qfalse;
-	// flag speeding up
-	animations[FLAG_STAND2RUN].firstframe = 16;
-	animations[FLAG_STAND2RUN].nframes = 5;
-	animations[FLAG_STAND2RUN].loopframes = 1;
-	animations[FLAG_STAND2RUN].framelerp = 1000 / 15;
-	animations[FLAG_STAND2RUN].initiallerp = 1000 / 15;
-	animations[FLAG_STAND2RUN].reversed = qtrue;
-	// new anims changes
-//	animations[TORSO_GETFLAG].flipflop = qtrue;
-//	animations[TORSO_GUARDBASE].flipflop = qtrue;
-//	animations[TORSO_PATROL].flipflop = qtrue;
-//	animations[TORSO_AFFIRMATIVE].flipflop = qtrue;
-//	animations[TORSO_NEGATIVE].flipflop = qtrue;
-	return qtrue;
-}
-
-/*
  * A thruster file has entries like this, one per line:
  * //	tagname		movekeys	shader		color		dur	vel	startsize	endsize
  * 	tag_thrustXDL	( r !rd )	explode1	( 1 0 .9 .9 )	70	1000	4		8
@@ -577,7 +382,7 @@ CG_RegisterClientModelname(clientInfo_t *ci, const char *modelname, const char *
 
 	// load the animations
 	Com_sprintf(filename, sizeof(filename), "models/players/%s/animation.cfg", modelname);
-	if(!CG_ParseAnimationFile(filename, ci)){
+	if(!CG_ParseAnimationFile(filename, ci->animations)){
 		Com_Printf("Failed to load animation file %s\n", filename);
 		return qfalse;
 	}
@@ -997,127 +802,6 @@ PLAYER ANIMATION
 
 /*
 ===============
-CG_SetLerpFrameAnimation
-
-may include ANIM_TOGGLEBIT
-===============
-*/
-static void
-CG_SetLerpFrameAnimation(clientInfo_t *ci, lerpFrame_t *lf, int newAnimation)
-{
-	animation_t *anim;
-
-	lf->animnum = newAnimation;
-	newAnimation &= ~ANIM_TOGGLEBIT;
-
-	if(newAnimation < 0 || newAnimation >= MAX_TOTALANIMATIONS)
-		cgerrorf("Bad animation number: %i", newAnimation);
-
-	anim = &ci->animations[newAnimation];
-
-	lf->animation = anim;
-	lf->animtime = lf->frametime + anim->initiallerp;
-
-	if(cg_debugAnim.integer)
-		cgprintf("Anim: %i\n", newAnimation);
-}
-
-/*
-===============
-CG_RunLerpFrame
-
-Sets cg.snap, cg.oldframe, and cg.backlerp
-cg.time should be between oldframetime and frametime after exit
-===============
-*/
-static void
-CG_RunLerpFrame(clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, float speedScale)
-{
-	int f, nframes;
-	animation_t *anim;
-
-	// debugging tool to get no animations
-	if(cg_animSpeed.integer == 0){
-		lf->oldframe = lf->frame = lf->backlerp = 0;
-		return;
-	}
-
-	// see if the animation sequence is switching
-	if(newAnimation != lf->animnum || !lf->animation)
-		CG_SetLerpFrameAnimation(ci, lf, newAnimation);
-
-	// if we have passed the current frame, move it to
-	// oldframe and calculate a new frame
-	if(cg.time >= lf->frametime){
-		lf->oldframe = lf->frame;
-		lf->oldframetime = lf->frametime;
-
-		// get the next frame based on the animation
-		anim = lf->animation;
-		if(!anim->framelerp)
-			return;					// shouldn't happen
-		if(cg.time < lf->animtime)
-			lf->frametime = lf->animtime;	// initial lerp
-		else
-			lf->frametime = lf->oldframetime + anim->framelerp;
-		f = (lf->frametime - lf->animtime) / anim->framelerp;
-		f *= speedScale;	// adjust for haste, etc
-
-		nframes = anim->nframes;
-		if(anim->flipflop)
-			nframes *= 2;
-		if(f >= nframes){
-			f -= nframes;
-			if(anim->loopframes){
-				f %= anim->loopframes;
-				f += anim->nframes - anim->loopframes;
-			}else{
-				f = nframes - 1;
-				// the animation is stuck at the end, so it
-				// can immediately transition to another sequence
-				lf->frametime = cg.time;
-			}
-		}
-		if(anim->reversed)
-			lf->frame = anim->firstframe + anim->nframes - 1 - f;
-		else if(anim->flipflop && f>=anim->nframes)
-			lf->frame = anim->firstframe + anim->nframes - 1 - (f%anim->nframes);
-		else
-			lf->frame = anim->firstframe + f;
-		if(cg.time > lf->frametime){
-			lf->frametime = cg.time;
-			if(cg_debugAnim.integer)
-				cgprintf("Clamp lf->frametime\n");
-		}
-	}
-
-	if(lf->frametime > cg.time + 200)
-		lf->frametime = cg.time;
-
-	if(lf->oldframetime > cg.time)
-		lf->oldframetime = cg.time;
-	// calculate current lerp value
-	if(lf->frametime == lf->oldframetime)
-		lf->backlerp = 0;
-	else
-		lf->backlerp = 1.0 - (float)(cg.time - lf->oldframetime) / (lf->frametime - lf->oldframetime);
-}
-
-/*
-===============
-CG_ClearLerpFrame
-===============
-*/
-static void
-CG_ClearLerpFrame(clientInfo_t *ci, lerpFrame_t *lf, int animnum)
-{
-	lf->frametime = lf->oldframetime = cg.time;
-	CG_SetLerpFrameAnimation(ci, lf, animnum);
-	lf->oldframe = lf->frame = lf->animation->firstframe;
-}
-
-/*
-===============
 CG_PlayerAnimation
 ===============
 */
@@ -1144,11 +828,11 @@ CG_PlayerAnimation(centity_t *cent, int *torsoOld, int *torso, float *torsoBackL
 
 	// do the shuffle turn frames locally
 	if(cent->pe.legs.yawing && (cent->currstate.legsAnim & ~ANIM_TOGGLEBIT) == LEGS_IDLE)
-		CG_RunLerpFrame(ci, &cent->pe.legs, LEGS_TURN, speedScale);
+		CG_RunLerpFrame(ci->animations, &cent->pe.legs, LEGS_TURN, speedScale);
 	else
-		CG_RunLerpFrame(ci, &cent->pe.legs, cent->currstate.legsAnim, speedScale);
+		CG_RunLerpFrame(ci->animations, &cent->pe.legs, cent->currstate.legsAnim, speedScale);
 
-	CG_RunLerpFrame(ci, &cent->pe.torso, cent->currstate.torsoAnim, speedScale);
+	CG_RunLerpFrame(ci->animations, &cent->pe.torso, cent->currstate.torsoAnim, speedScale);
 
 	*torsoOld = cent->pe.torso.oldframe;
 	*torso = cent->pe.torso.frame;
@@ -1312,7 +996,7 @@ CG_PlayerFlag(centity_t *cent, refEntity_t *torso, qhandle_t flagmodel)
 	flag.renderfx = torso->renderfx;
 	// lerp the flag animation frames
 	ci = &cgs.clientinfo[cent->currstate.clientNum];
-	CG_RunLerpFrame(ci, &cent->pe.flag, 0, 1);
+	CG_RunLerpFrame(ci->animations, &cent->pe.flag, 0, 1);
 	flag.hModel = flagmodel;
 	flag.oldframe = cent->pe.flag.oldframe;
 	flag.frame = cent->pe.flag.frame;
@@ -1361,6 +1045,7 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 	vec3_t forward, right, up;
 	vec3_t pos, v;
 	vec4_t clr;
+	refEntity_t re;
 	int i, j;
 
 	ci = &cgs.clientinfo[cent->currstate.clientNum];
@@ -1371,6 +1056,16 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 	l = cent->currstate.rightmove < 0;
 	r = cent->currstate.rightmove > 0;
 	playerpos(cent, pos);
+
+
+	memset(&re, 0, sizeof re);
+	
+	re.hModel = cgs.media.thrustFlameModel;
+	re.nonNormalizedAxes = qtrue;
+	CG_RunLerpFrame(cgs.media.thrustFlameAnims, &cent->lf, ANIM_IDLE, 1.0f);
+	re.frame = cent->lf.frame;
+	re.oldframe = cent->lf.oldframe;
+	re.backlerp = cent->lf.backlerp;
 
 	//
 	// thruster sounds
@@ -1425,14 +1120,10 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 	}
 
 	//
-	// thruster plumes
+	// thruster flame
 	//
 	if(!cg.thirdperson && cent->currstate.clientNum == cg.pps.clientNum)
 		return;
-
-	if(cg.time - cent->trailtime < 16)
-		return;
-	cent->trailtime = cg.time;
 
 	for(i = 0; i < ci->nthrusttab; i++){
 		qboolean enable;
@@ -1483,16 +1174,20 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 				enable = invert? qfalse : qtrue;
 		}
 		if(enable){
-			refEntity_t dummy;
 			vec3_t vel, smokepos;
+			vec3_t angles;
 
-			// flame
-			rotentontag(&dummy, ship, ship->hModel, tp->tagname);
-			vecmul(dummy.axis[0], tp->vel, vel);
-			if(veclensq(dummy.origin) != 0){
-				CG_ParticleExplosion(tp->shader, dummy.origin,
-				   vel, tp->dur, tp->startsize, tp->endsize);
-				vecmad(dummy.origin, 10, dummy.axis[0], smokepos);
+			// add flame
+			vecclear(angles);
+			AnglesToAxis(angles, re.axis);
+			rotentontag(&re, ship, ship->hModel, tp->tagname);
+			vecmul(re.axis[0], 2, vel);
+			trap_R_AddRefEntityToScene(&re);
+
+			// add smoke plume
+			vecmad(re.origin, 10, re.axis[0], smokepos);
+			if(cg.time - cent->trailtime >= 16){
+				cent->trailtime = cg.time;
 				CG_ParticleThrustPlume(cent, smokepos, vel);
 			}
 		}
@@ -2156,8 +1851,8 @@ resetplayerent(centity_t *cent)
 	cent->errtime = -99999;	// guarantee no error decay added
 	cent->extrapolated = qfalse;
 
-	CG_ClearLerpFrame(&cgs.clientinfo[cent->currstate.clientNum], &cent->pe.legs, cent->currstate.legsAnim);
-	CG_ClearLerpFrame(&cgs.clientinfo[cent->currstate.clientNum], &cent->pe.torso, cent->currstate.torsoAnim);
+	CG_ClearLerpFrame(cgs.clientinfo[cent->currstate.clientNum].animations, &cent->pe.legs, cent->currstate.legsAnim);
+	CG_ClearLerpFrame(cgs.clientinfo[cent->currstate.clientNum].animations, &cent->pe.torso, cent->currstate.torsoAnim);
 
 	evaltrajectory(&cent->currstate.pos, cg.time, cent->lerporigin);
 	evaltrajectory(&cent->currstate.apos, cg.time, cent->lerpangles);

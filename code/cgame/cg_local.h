@@ -140,12 +140,12 @@ typedef struct
 // The current lerp will finish out, then it will lerp to the new animation
 typedef struct
 {
+	// these fields get copied to a refEntity_t when cgame is
+	// constructing the scene
 	int		oldframe;
 	int		oldframetime;	// time when ->oldframe was exactly on
-
 	int		frame;
 	int		frametime;	// time when ->frame will be exactly on
-
 	float		backlerp;
 
 	float		yaw;
@@ -207,9 +207,11 @@ typedef struct centity_s
 
 	int		snapshottime;	// last time this entity was found in a snapshot
 
-	playerEntity_t	pe;
+	playerEntity_t	pe;		// if this is a player
 
 	cpEntity_t	cp;		// if this is a GT_CP control point
+
+	lerpFrame_t	lf;		// animation control if this is not a player
 
 	int		errtime;	// decay the error from this time
 	vec3_t		errorigin;
@@ -747,6 +749,7 @@ typedef struct
 #endif
 
 	qhandle_t	thrustFlameModel;
+	animation_t	thrustFlameAnims[MAX_ANIMATIONS];
 
 	qhandle_t	armorModel;
 	qhandle_t	armorIcon;
@@ -1280,6 +1283,12 @@ void		rankrunframe(void);
 void		setscoresel(void *menu);
 score_t *	getselscore(void);
 void		mkspecstr(void);
+
+// cg_anim.c
+void		CG_SetLerpFrameAnimation(animation_t *anims, lerpFrame_t *lf, int newanim);
+void		CG_RunLerpFrame(animation_t *anims, lerpFrame_t *lf, int newanim, float speedscale);
+void		CG_ClearLerpFrame(animation_t *anims, lerpFrame_t *lf, int animnum);
+qboolean	CG_ParseAnimationFile(const char *filename, animation_t *anims);
 
 // cg_view.c
 void	CG_TestModel_f(void);
