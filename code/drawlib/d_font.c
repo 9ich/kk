@@ -182,6 +182,7 @@ drawmultiline(float x, float y, float xmax, const char *str, int font, float siz
 /*
 Returns the width of a drawn string in terms of virtual coordinates.
 sliceend=-1 means up to the terminating \0.
+slicebegin must be within string bounds.
 */
 float
 stringwidth(const char *str, int font, float size, int slicebegin, int sliceend)
@@ -193,8 +194,9 @@ stringwidth(const char *str, int font, float size, int slicebegin, int sliceend)
 	scale = size/charmaps[font].charh;
 
 	w = 0;
+	str += slicebegin;
 	p = str;
-	while(*p){
+	while(*p && (sliceend == -1 || p - str < sliceend)){
 		c = *p & 0xFF;
 		if(Q_IsColorString(p)){
 			p += 2;
@@ -203,9 +205,9 @@ stringwidth(const char *str, int font, float size, int slicebegin, int sliceend)
 		if(charmaps[font].map[c][2] != -1){
 			// apply kerning if possible
 			if(*(p+1) != '\0')
-				w += kerning(font, *p, *(p+1))*scale;
+				w += kerning(font, *p, *(p+1)) * scale;
 			// add xadvance
-			w += (charmaps[font].map[c][5]*scale + 1*scale);
+			w += charmaps[font].map[c][5] * scale;
 		}
 		p++;
 	}
