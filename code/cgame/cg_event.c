@@ -164,6 +164,7 @@ CG_Obituary(entityState_t *ent)
 			s = va("You fragged %s", targetName);
 
 		centerprint(s, screenheight() * 0.30, 16);
+		trap_S_StartLocalSound(cgs.media.killSound, CHAN_ANNOUNCER);
 	}
 
 	// check for double client messages

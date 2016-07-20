@@ -564,6 +564,7 @@ CG_RegisterSounds(void)
 	char name[MAX_QPATH];
 	const char *soundName;
 
+	cgs.media.killSound = trap_S_RegisterSound("sound/feedback/kill.wav", qtrue);
 	cgs.media.oneMinuteSound = trap_S_RegisterSound("sound/feedback/1_minute.wav", qtrue);
 	cgs.media.fiveMinuteSound = trap_S_RegisterSound("sound/feedback/5_minute.wav", qtrue);
 	cgs.media.suddenDeathSound = trap_S_RegisterSound("sound/feedback/sudden_death.wav", qtrue);

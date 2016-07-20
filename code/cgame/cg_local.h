@@ -953,6 +953,7 @@ typedef struct
 
 	sfxHandle_t	hitSound;
 	sfxHandle_t	hitTeamSound;
+	sfxHandle_t	killSound;
 
 	sfxHandle_t	takenLeadSound;
 	sfxHandle_t	tiedLeadSound;
