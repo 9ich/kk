@@ -521,7 +521,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 		S_UpdateEntityPosition( args[1], VMA(2) );
 		return 0;
 	case CG_S_RESPATIALIZE:
-		S_Respatialize( args[1], VMA(2), VMA(3), args[4] );
+		S_Respatialize( args[1], VMA(2), VMA(3), VMA(4), args[5] );
 		return 0;
 	case CG_S_REGISTERSOUND:
 		return S_RegisterSound( VMA(1), args[2] );

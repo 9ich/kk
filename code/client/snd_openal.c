@@ -2237,13 +2237,15 @@ S_AL_Respatialize
 =================
 */
 static
-void S_AL_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[3], int inwater )
+void S_AL_Respatialize( int entityNum, const vec3_t origin, const vec3_t vel, vec3_t axis[3], int inwater )
 {
 	float		orientation[6];
-	vec3_t	sorigin;
+	vec3_t	sorigin, svel;
 
 	VectorCopy( origin, sorigin );
 	S_AL_SanitiseVector( sorigin );
+	VectorCopy( vel, svel );
+	S_AL_SanitiseVector( svel );
 
 	S_AL_SanitiseVector( axis[ 0 ] );
 	S_AL_SanitiseVector( axis[ 1 ] );
@@ -2257,7 +2259,7 @@ void S_AL_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[3], int 
 
 	// Set OpenAL listener paramaters
 	qalListenerfv(AL_POSITION, (ALfloat *)sorigin);
-	qalListenerfv(AL_VELOCITY, vec3_origin);
+	qalListenerfv(AL_VELOCITY, svel);
 	qalListenerfv(AL_ORIENTATION, orientation);
 }
 

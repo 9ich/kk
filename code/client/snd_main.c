@@ -202,11 +202,10 @@ void S_StopLoopingSound( int entityNum )
 S_Respatialize
 =================
 */
-void S_Respatialize( int entityNum, const vec3_t origin,
-		vec3_t axis[3], int inwater )
+void S_Respatialize( int entityNum, const vec3_t origin, const vec3_t vel, vec3_t axis[3], int inwater )
 {
 	if( si.Respatialize ) {
-		si.Respatialize( entityNum, origin, axis, inwater );
+		si.Respatialize( entityNum, origin, vel, axis, inwater );
 	}
 }
 

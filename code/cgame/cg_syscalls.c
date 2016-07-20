@@ -293,9 +293,9 @@ trap_S_UpdateEntityPosition(int entityNum, const vec3_t origin)
 }
 
 void
-trap_S_Respatialize(int entityNum, const vec3_t origin, vec3_t axis[3], int inwater)
+trap_S_Respatialize(int entityNum, const vec3_t origin, const vec3_t vel, vec3_t axis[3], int inwater)
 {
-	syscall(CG_S_RESPATIALIZE, entityNum, origin, axis, inwater);
+	syscall(CG_S_RESPATIALIZE, entityNum, origin, vel, axis, inwater);
 }
 
 sfxHandle_t

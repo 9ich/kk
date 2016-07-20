@@ -807,7 +807,7 @@ drawframe(int serverTime, stereoFrame_t stereoview, qboolean demoplayback)
 	CG_PowerupTimerSounds();
 
 	// update audio positions
-	trap_S_Respatialize(cg.snap->ps.clientNum, cg.refdef.vieworg, cg.refdef.viewaxis, inwater);
+	trap_S_Respatialize(cg.snap->ps.clientNum, cg.refdef.vieworg, cg.pps.velocity, cg.refdef.viewaxis, inwater);
 
 	// make sure the lagometerSample and frame timing isn't done twice when in stereo
 	if(stereoview != STEREO_RIGHT){
