@@ -33,6 +33,14 @@ char syschat[256];
 char teamchat1[256];
 char teamchat2[256];
 
+// this should go to common
+static float
+sawtoothwave(int time, float hz, float phase, float amp)
+{
+	time *= hz;
+	return amp * (((time + (int)(phase*time)) % 1000) / 1000.0f);
+}
+
 /*
 ================
 drawmodel
@@ -94,6 +102,7 @@ drawdmgindicator(void)
 	vec3_t dir;
 	int attacker, t;
 	float d, x, y;
+	qboolean hurtself;
 
 	if(!cg_drawDamageDir.integer)
 		return;
@@ -109,7 +118,13 @@ drawdmgindicator(void)
 	if(attacker == -1)
 		return;
 
-	vecsub(cg.snap->ps.origin, cg_entities[attacker].lerporigin, dir);
+	// flicker
+	if(sawtoothwave(cg.time, 8, 0, 1.0f) < 0.5f)
+		return;
+
+	hurtself = attacker == cg.pps.clientNum;
+
+	vecsub(cg.pps.origin, cg_entities[attacker].lerporigin, dir);
 	vecnorm(dir);
 
 	x = screenwidth()/2;
@@ -117,21 +132,22 @@ drawdmgindicator(void)
 
 	setalign("midcenter");
 	d = vecdot(cg.refdef.viewaxis[0], dir);
-	if(d < -thresh)	// in front of us
+	trap_R_SetColor(CPaleGreen);
+	if(d < -thresh || hurtself)	// in front of us
 		drawpic(x, y - yofs, w, h, cgs.media.hurtForwardShader);
-	else if(d > thresh)	// behind us
+	if(d > thresh || hurtself)	// behind us
 		drawpic(x, y + yofs, w, -h, cgs.media.hurtForwardShader);
 
 	d = vecdot(cg.refdef.viewaxis[1], dir);
-	if(d < -thresh)	// on our left
+	if(d < -thresh || hurtself)	// on our left
 		drawpic(x - xofs, y, w, h, cgs.media.hurtLeftShader);
-	else if(d > thresh)	// on our right
+	if(d > thresh || hurtself)	// on our right
 		drawpic(x + xofs, y, -w, h, cgs.media.hurtLeftShader);
 
 	d = vecdot(cg.refdef.viewaxis[2], dir);
-	if(d < -thresh)	// below us
+	if(d < -thresh && !hurtself)	// below us
 		drawpic(x, y - yofs, w, h, cgs.media.hurtUpShader);
-	else if(d > thresh)	// above us
+	if(d > thresh && !hurtself)	// above us
 		drawpic(x, y + yofs, w, -h, cgs.media.hurtUpShader);
 
 	setalign("");
@@ -222,14 +238,6 @@ drawteambg(int x, int y, int w, int h, float alpha, int team)
 	trap_R_SetColor(hcolor);
 	drawpic(x, y, w, h, cgs.media.teamStatusBar);
 	trap_R_SetColor(nil);
-}
-
-// this should go to common
-static float
-sawtoothwave(int time, float hz, float phase, float amp)
-{
-	time *= hz;
-	return amp * (((time + (int)(phase*time)) % 1000) / 1000.0f);
 }
 
 /*
