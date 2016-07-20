@@ -38,7 +38,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define PULSE_TIME			200
 #define DAMAGE_DEFLECT_TIME		100
 #define DAMAGE_RETURN_TIME		400
-#define DAMAGE_TIME			500
+#define DAMAGE_TIME			600
 #define LAND_DEFLECT_TIME		150
 #define LAND_RETURN_TIME		300
 #define STEP_TIME			200
