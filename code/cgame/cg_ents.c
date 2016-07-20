@@ -455,15 +455,6 @@ domissile(centity_t *cent)
 	veccpy(cent->lerporigin, ent.origin);
 	veccpy(cent->lerporigin, ent.oldorigin);
 
-	if(cent->currstate.weapon == WP_PLASMAGUN){
-		ent.reType = RT_SPRITE;
-		ent.radius = 16;
-		ent.rotation = 0;
-		ent.customShader = cgs.media.plasmaBallShader;
-		trap_R_AddRefEntityToScene(&ent);
-		return;
-	}
-
 	// flicker between two skins
 	ent.skinNum = cg.clframe & 1;
 	ent.hModel = weapon->missilemodel;

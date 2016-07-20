@@ -428,96 +428,6 @@ CG_RocketTrail(centity_t *ent, const weaponInfo_t *wi)
 
 /*
 ==========================
-CG_PlasmaTrail
-==========================
-*/
-static void
-CG_PlasmaTrail(centity_t *cent, const weaponInfo_t *wi)
-{
-	localEntity_t *le;
-	refEntity_t *re;
-	entityState_t *es;
-	vec3_t velocity, xvelocity, origin;
-	vec3_t offset, xoffset;
-	vec3_t v[3];
-
-	float waterScale = 1.0f;
-
-	if(cg_noProjectileTrail.integer || cg_oldPlasma.integer)
-		return;
-
-	es = &cent->currstate;
-
-	evaltrajectory(&es->pos, cg.time, origin);
-
-	le = alloclocalent();
-	re = &le->refEntity;
-
-	velocity[0] = 60 - 120 * crandom();
-	velocity[1] = 40 - 80 * crandom();
-	velocity[2] = 100 - 200 * crandom();
-
-	le->type = LE_MOVE_SCALE_FADE;
-	le->flags = LEF_TUMBLE;
-	le->bouncesoundtype = LEBS_NONE;
-	le->marktype = LEMT_NONE;
-
-	le->starttime = cg.time;
-	le->endtime = le->starttime + 600;
-
-	le->pos.trType = TR_GRAVITY;
-	le->pos.trTime = cg.time;
-
-	AnglesToAxis(cent->lerpangles, v);
-
-	offset[0] = 2;
-	offset[1] = 2;
-	offset[2] = 2;
-
-	xoffset[0] = offset[0] * v[0][0] + offset[1] * v[1][0] + offset[2] * v[2][0];
-	xoffset[1] = offset[0] * v[0][1] + offset[1] * v[1][1] + offset[2] * v[2][1];
-	xoffset[2] = offset[0] * v[0][2] + offset[1] * v[1][2] + offset[2] * v[2][2];
-
-	vecadd(origin, xoffset, re->origin);
-	veccpy(re->origin, le->pos.trBase);
-
-	if(pointcontents(re->origin, -1) & CONTENTS_WATER)
-		waterScale = 0.10f;
-
-	xvelocity[0] = velocity[0] * v[0][0] + velocity[1] * v[1][0] + velocity[2] * v[2][0];
-	xvelocity[1] = velocity[0] * v[0][1] + velocity[1] * v[1][1] + velocity[2] * v[2][1];
-	xvelocity[2] = velocity[0] * v[0][2] + velocity[1] * v[1][2] + velocity[2] * v[2][2];
-	vecmul(xvelocity, waterScale, le->pos.trDelta);
-
-	AxisCopy(axisDefault, re->axis);
-	re->shaderTime = cg.time / 1000.0f;
-	re->reType = RT_SPRITE;
-	re->radius = 0.25f;
-	re->customShader = cgs.media.railRingsShader;
-	le->bouncefactor = 0.3f;
-
-	re->shaderRGBA[0] = wi->flashcolor[0] * 63;
-	re->shaderRGBA[1] = wi->flashcolor[1] * 63;
-	re->shaderRGBA[2] = wi->flashcolor[2] * 63;
-	re->shaderRGBA[3] = 63;
-
-	le->color[0] = wi->flashcolor[0] * 0.2;
-	le->color[1] = wi->flashcolor[1] * 0.2;
-	le->color[2] = wi->flashcolor[2] * 0.2;
-	le->color[3] = 0.25f;
-
-	le->angles.trType = TR_LINEAR;
-	le->angles.trTime = cg.time;
-	le->angles.trBase[0] = rand()&31;
-	le->angles.trBase[1] = rand()&31;
-	le->angles.trBase[2] = rand()&31;
-	le->angles.trDelta[0] = 1;
-	le->angles.trDelta[1] = 0.5;
-	le->angles.trDelta[2] = 0;
-}
-
-/*
-==========================
 grappletrail
 ==========================
 */
@@ -743,8 +653,7 @@ registerweap(int weaponNum)
 #endif
 
 	case WP_PLASMAGUN:
-//		weapinfo->missilemodel = cgs.media.invulnerabilityPowerupModel;
-		weapinfo->missileTrailFunc = CG_PlasmaTrail;
+		weapinfo->missilemodel = trap_R_RegisterModel("models/missiles/plasma.md3");
 		weapinfo->missilesound = trap_S_RegisterSound("sound/weapons/plasma/lasfly.wav", qfalse);
 		weapinfo->missilelight = 160;
 		MAKERGB(weapinfo->flashcolor, 0.6f, 0.6f, 1.0f);
