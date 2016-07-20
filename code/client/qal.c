@@ -62,6 +62,7 @@ LPALSOURCEF qalSourcef;
 LPALSOURCE3F qalSource3f;
 LPALSOURCEFV qalSourcefv;
 LPALSOURCEI qalSourcei;
+LPALSOURCE3I qalSource3i;
 LPALGETSOURCEF qalGetSourcef;
 LPALGETSOURCE3F qalGetSource3f;
 LPALGETSOURCEFV qalGetSourcefv;
@@ -180,6 +181,7 @@ qboolean QAL_Init(const char *libname)
 	qalSource3f = GPA("alSource3f");
 	qalSourcefv = GPA("alSourcefv");
 	qalSourcei = GPA("alSourcei");
+	qalSource3i = GPA("alSource3i");
 	qalGetSourcef = GPA("alGetSourcef");
 	qalGetSource3f = GPA("alGetSource3f");
 	qalGetSourcefv = GPA("alGetSourcefv");
