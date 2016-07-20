@@ -249,6 +249,7 @@ typedef enum
 	LE_MARK,
 	LE_EXPLOSION,
 	LE_SPRITE_EXPLOSION,
+	LE_SHOCKWAVE,
 	LE_FRAGMENT,
 	LE_MOVE_SCALE_FADE,
 	LE_FALL_SCALE_FADE,
@@ -840,6 +841,7 @@ typedef struct
 	qhandle_t	ringFlashModel;
 	qhandle_t	dishFlashModel;
 	qhandle_t	lightningExplosionModel;
+	qhandle_t	shockwaveModel;
 
 	// weapon effect shaders
 	qhandle_t	railExplosionShader;
@@ -1441,6 +1443,7 @@ localEntity_t *smokepuff(const vec3_t p,
 			    int fadeintime,
 			    int flags,
 			    qhandle_t hShader);
+localEntity_t	*shockwave(vec3_t pt, float radius);
 void		bubbletrail(vec3_t start, vec3_t end, float spacing);
 void		spawneffect(vec3_t org);
 #ifdef MISSIONPACK

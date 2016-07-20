@@ -1683,6 +1683,8 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		lightcolor[1] = 0.45f;
 		lightcolor[2] = 0.0f;
 
+		shockwave(origin, 400);
+
 		// flame
 		for(i = 0; i < 10; i++){
 			vec3_t pt;

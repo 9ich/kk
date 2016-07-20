@@ -528,6 +528,50 @@ CG_AddSpriteExplosion(localEntity_t *le)
 	}
 }
 
+#define SHOCKWAVE_TIME		100.0f
+// model radius
+#define SHOCKWAVE_RADIUS	27.0f
+#define SHOCKWAVE_ENDRADIUS	700.0f
+
+void
+CG_AddShockwave(localEntity_t *le)
+{
+	refEntity_t *re;
+	refEntity_t shockwave;
+	float c, cc, scale;
+	vec3_t angles, axis[3];
+	int t;
+
+	re = &le->refEntity;
+
+	t = cg.time - le->starttime;
+	vecclear(angles);
+	AnglesToAxis(angles, axis);
+
+	if(t < SHOCKWAVE_TIME){
+		memset(&shockwave, 0, sizeof(shockwave));
+		shockwave.hModel = cgs.media.shockwaveModel;
+		shockwave.reType = RT_MODEL;
+		shockwave.shaderTime = re->shaderTime;
+		veccpy(re->origin, shockwave.origin);
+
+		c = t / SHOCKWAVE_TIME;
+		cc = 0.25 + c*0.75f;
+		scale = SHOCKWAVE_ENDRADIUS / SHOCKWAVE_RADIUS;
+		vecmul(axis[0], cc * scale, shockwave.axis[0]);
+		vecmul(axis[1], cc * scale, shockwave.axis[1]);
+		vecmul(axis[2], cc * scale, shockwave.axis[2]);
+		shockwave.nonNormalizedAxes = qtrue;
+
+		shockwave.shaderRGBA[0] = 0xf0;
+		shockwave.shaderRGBA[1] = 0xf0;
+		shockwave.shaderRGBA[2] = 0xf0;
+		shockwave.shaderRGBA[3] = 0x10 - c*0x10;
+
+		trap_R_AddRefEntityToScene(&shockwave);
+	}
+}
+
 /*
 ===================
 CG_AddScorePlum
@@ -826,6 +870,10 @@ addlocalents(void)
 
 		case LE_EXPLOSION:
 			CG_AddExplosion(le);
+			break;
+
+		case LE_SHOCKWAVE:
+			CG_AddShockwave(le);
 			break;
 
 		case LE_FRAGMENT:	// gibs and brass

@@ -967,6 +967,9 @@ CG_RegisterGraphics(void)
 	cgs.media.bulletFlashModel = trap_R_RegisterModel("models/weaphits/bullet.md3");
 	cgs.media.ringFlashModel = trap_R_RegisterModel("models/weaphits/ring02.md3");
 	cgs.media.dishFlashModel = trap_R_RegisterModel("models/weaphits/boom01.md3");
+
+	cgs.media.shockwaveModel = trap_R_RegisterModel("models/weaphits/shockwave.md3");
+
 #ifdef MISSIONPACK
 	cgs.media.teleportEffectModel = trap_R_RegisterModel("models/powerups/pop.md3");
 #else

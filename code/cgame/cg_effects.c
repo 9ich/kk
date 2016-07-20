@@ -160,6 +160,33 @@ smokepuff(const vec3_t p, const vec3_t vel,
 	return le;
 }
 
+localEntity_t *
+shockwave(vec3_t pt, float radius)
+{
+	localEntity_t *le;
+	refEntity_t *re;
+
+	le = alloclocalent();
+	le->flags = 0;
+	le->type = LE_SHOCKWAVE;
+	le->starttime = cg.time;
+	le->endtime = cg.time + 100;
+	le->liferate = 1.0 / (le->endtime - le->starttime);
+
+	le->color[0] = le->color[1] = le->color[2] = le->color[3] = 1.0;
+
+	vecclear(le->angles.trBase);
+
+	re = &le->refEntity;
+
+	re->reType = RT_MODEL;
+	re->shaderTime = cg.time / 1000.0f;
+
+	re->hModel = cgs.media.shockwaveModel;
+
+	veccpy(pt, re->origin);
+}
+
 /*
 ==================
 spawneffect
