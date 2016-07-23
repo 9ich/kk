@@ -108,6 +108,32 @@ LPALCCAPTURESTART qalcCaptureStart;
 LPALCCAPTURESTOP qalcCaptureStop;
 LPALCCAPTURESAMPLES qalcCaptureSamples;
 
+// EFX
+LPALGENEFFECTS qalGenEffects;
+LPALDELETEEFFECTS qalDeleteEffects;
+LPALISEFFECT qalIsEffect;
+LPALEFFECTI qalEffecti;
+LPALEFFECTIV qalEffectiv;
+LPALEFFECTF qalEffectf;
+LPALEFFECTFV qalEffectfv;
+LPALGETEFFECTI qalGetEffecti;
+LPALGETEFFECTIV qalGetEffectiv;
+LPALGETEFFECTF qalGetEffectf;
+LPALGETEFFECTFV qalGetEffectfv;
+
+/* Auxiliary Effect Slot object function types. */
+LPALGENAUXILIARYEFFECTSLOTS qalGenAuxiliaryEffectSlots;
+LPALDELETEAUXILIARYEFFECTSLOTS qalDeleteAuxiliaryEffectSlots;
+LPALISAUXILIARYEFFECTSLOT qalIsAuxiliaryEffectSlot;
+LPALAUXILIARYEFFECTSLOTI qalAuxiliaryEffectSloti;
+LPALAUXILIARYEFFECTSLOTIV qalAuxiliaryEffectSlotiv;
+LPALAUXILIARYEFFECTSLOTF qalAuxiliaryEffectSlotf;
+LPALAUXILIARYEFFECTSLOTFV qalAuxiliaryEffectSlotfv;
+LPALGETAUXILIARYEFFECTSLOTI qalGetAuxiliaryEffectSloti;
+LPALGETAUXILIARYEFFECTSLOTIV qalGetAuxiliaryEffectSlotiv;
+LPALGETAUXILIARYEFFECTSLOTF qalGetAuxiliaryEffectSlotf;
+LPALGETAUXILIARYEFFECTSLOTFV qalGetAuxiliaryEffectSlotfv;
+
 static void *OpenALLib = NULL;
 
 static qboolean alinit_fail = qfalse;
@@ -226,6 +252,30 @@ qboolean QAL_Init(const char *libname)
 	qalcCaptureStart = GPA("alcCaptureStart");
 	qalcCaptureStop = GPA("alcCaptureStop");
 	qalcCaptureSamples = GPA("alcCaptureSamples");
+	
+	qalGenEffects = GPA("alGenEffects");
+	qalDeleteEffects = GPA("alDeleteEffects");
+	qalIsEffect = GPA("alIsEffect");
+	qalEffecti = GPA("alEffecti");
+	qalEffectiv = GPA("alEffectiv");
+	qalEffectf = GPA("alEffectf");
+	qalEffectfv = GPA("alEffectfv");
+	qalGetEffecti = GPA("alGetEffecti");
+	qalGetEffectiv = GPA("alGetEffectiv");
+	qalGetEffectf = GPA("alGetEffectf");
+	qalGetEffectfv = GPA("alGetEffectfv");
+
+	qalGenAuxiliaryEffectSlots = GPA("alGenAuxiliaryEffectSlots");
+	qalDeleteAuxiliaryEffectSlots = GPA("alDeleteAuxiliaryEffectSlots");
+	qalIsAuxiliaryEffectSlot = GPA("alIsAuxiliaryEffectSlot");
+	qalAuxiliaryEffectSloti = GPA("alAuxiliaryEffectSloti");
+	qalAuxiliaryEffectSlotiv = GPA("alAuxiliaryEffectSlotiv");
+	qalAuxiliaryEffectSlotf = GPA("alAuxiliaryEffectSlotf");
+	qalAuxiliaryEffectSlotfv = GPA("alAuxiliaryEffectSlotfv");
+	qalGetAuxiliaryEffectSloti = GPA("alGetAuxiliaryEffectSloti");
+	qalGetAuxiliaryEffectSlotiv = GPA("alGetAuxiliaryEffectSlotiv");
+	qalGetAuxiliaryEffectSlotf = GPA("alGetAuxiliaryEffectSlotf");
+	qalGetAuxiliaryEffectSlotfv = GPA("alGetAuxiliaryEffectSlotfv");
 
 	if(alinit_fail)
 	{
@@ -325,6 +375,30 @@ void QAL_Shutdown( void )
 	qalcCaptureStart = NULL;
 	qalcCaptureStop = NULL;
 	qalcCaptureSamples = NULL;
+
+	qalGenEffects = NULL;
+	qalDeleteEffects = NULL;
+	qalIsEffect = NULL;
+	qalEffecti = NULL;
+	qalEffectiv = NULL;
+	qalEffectf = NULL;
+	qalEffectfv = NULL;
+	qalGetEffecti = NULL;
+	qalGetEffectiv = NULL;
+	qalGetEffectf = NULL;
+	qalGetEffectfv = NULL;
+
+	qalGenAuxiliaryEffectSlots = NULL;
+	qalDeleteAuxiliaryEffectSlots = NULL;
+	qalIsAuxiliaryEffectSlot = NULL;
+	qalAuxiliaryEffectSloti = NULL;
+	qalAuxiliaryEffectSlotiv = NULL;
+	qalAuxiliaryEffectSlotf = NULL;
+	qalAuxiliaryEffectSlotfv = NULL;
+	qalGetAuxiliaryEffectSloti = NULL;
+	qalGetAuxiliaryEffectSlotiv = NULL;
+	qalGetAuxiliaryEffectSlotf = NULL;
+	qalGetAuxiliaryEffectSlotfv = NULL;
 }
 #else
 qboolean QAL_Init(const char *libname)

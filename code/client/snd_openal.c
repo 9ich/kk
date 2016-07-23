@@ -47,6 +47,7 @@ cvar_t *s_alAvailableInputDevices;
 
 static qboolean enumeration_ext = qfalse;
 static qboolean enumeration_all_ext = qfalse;
+static qboolean efx_ext = qfalse;
 #ifdef USE_VOIP
 static qboolean capture_ext = qfalse;
 #endif
@@ -2429,6 +2430,9 @@ static void S_AL_SoundInfo(void)
 	if(enumeration_all_ext || enumeration_ext)
 		Com_Printf("  Available Devices:\n%s", s_alAvailableDevices->string);
 
+	if(efx_ext)
+		Com_Printf("  EFX supported\n");
+
 #ifdef USE_VOIP
 	if(capture_ext)
 	{
@@ -2536,6 +2540,8 @@ qboolean S_AL_Init( soundInterface_t *si )
 	if(inputdevice && !*inputdevice)
 		inputdevice = NULL;
 
+	// EFX support
+	efx_ext = qalcIsExtensionPresent(NULL, "ALC_EXT_EFX");
 
 	// Device enumeration support
 	enumeration_all_ext = qalcIsExtensionPresent(NULL, "ALC_ENUMERATE_ALL_EXT");

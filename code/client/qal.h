@@ -36,14 +36,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifdef USE_LOCAL_HEADERS
 #include "../AL/al.h"
 #include "../AL/alc.h"
+#include "../AL/efx.h"
 #else
 #ifdef _MSC_VER
   // MSVC users must install the OpenAL SDK which doesn't use the AL/*.h scheme.
   #include <al.h>
   #include <alc.h>
+  #include <efx.h>
 #else
   #include <AL/al.h>
   #include <AL/alc.h>
+  #include <AL/efx.h>
 #endif
 #endif
 
@@ -148,6 +151,49 @@ extern LPALCCAPTURECLOSEDEVICE qalcCaptureCloseDevice;
 extern LPALCCAPTURESTART qalcCaptureStart;
 extern LPALCCAPTURESTOP qalcCaptureStop;
 extern LPALCCAPTURESAMPLES qalcCaptureSamples;
+
+// EFX
+
+extern LPALGENEFFECTS qalGenEffects;
+extern LPALDELETEEFFECTS qalDeleteEffects;
+extern LPALISEFFECT qalIsEffect;
+extern LPALEFFECTI qalEffecti;
+extern LPALEFFECTIV qalEffectiv;
+extern LPALEFFECTF qalEffectf;
+extern LPALEFFECTFV qalEffectfv;
+extern LPALGETEFFECTI qalGetEffecti;
+extern LPALGETEFFECTIV qalGetEffectiv;
+extern LPALGETEFFECTF qalGetEffectf;
+extern LPALGETEFFECTFV qalGetEffectfv;
+
+/* Filter object function types. */
+/*
+extern LPALGENFILTERS qalGenFilters;
+extern LPALDELETEFILTERS)(ALsizei, const ALuint*);
+typedef ALboolean (AL_APIENTRY *LPALISFILTER)(ALuint);
+extern LPALFILTERI)(ALuint, ALenum, ALint);
+extern LPALFILTERIV)(ALuint, ALenum, const ALint*);
+extern LPALFILTERF)(ALuint, ALenum, ALfloat);
+extern LPALFILTERFV)(ALuint, ALenum, const ALfloat*);
+extern LPALGETFILTERI)(ALuint, ALenum, ALint*);
+extern LPALGETFILTERIV)(ALuint, ALenum, ALint*);
+extern LPALGETFILTERF)(ALuint, ALenum, ALfloat*);
+extern LPALGETFILTERFV)(ALuint, ALenum, ALfloat*);
+*/
+
+/* Auxiliary Effect Slot object function types. */
+extern LPALGENAUXILIARYEFFECTSLOTS qalGenAuxiliaryEffectSlots;
+extern LPALDELETEAUXILIARYEFFECTSLOTS qalDeleteAuxiliaryEffectSlots;
+extern LPALISAUXILIARYEFFECTSLOT qalIsAuxiliaryEffectSlot;
+extern LPALAUXILIARYEFFECTSLOTI qalAuxiliaryEffectSloti;
+extern LPALAUXILIARYEFFECTSLOTIV qalAuxiliaryEffectSlotiv;
+extern LPALAUXILIARYEFFECTSLOTF qalAuxiliaryEffectSlotf;
+extern LPALAUXILIARYEFFECTSLOTFV qalAuxiliaryEffectSlotfv;
+extern LPALGETAUXILIARYEFFECTSLOTI qalGetAuxiliaryEffectSloti;
+extern LPALGETAUXILIARYEFFECTSLOTIV qalGetAuxiliaryEffectSlotiv;
+extern LPALGETAUXILIARYEFFECTSLOTF qalGetAuxiliaryEffectSlotf;
+extern LPALGETAUXILIARYEFFECTSLOTFV qalGetAuxiliaryEffectSlotfv;
+
 #else
 #define qalEnable alEnable
 #define qalDisable alDisable
@@ -242,6 +288,48 @@ extern LPALCCAPTURESAMPLES qalcCaptureSamples;
 #define qalcCaptureStart alcCaptureStart
 #define qalcCaptureStop alcCaptureStop
 #define qalcCaptureSamples alcCaptureSamples
+
+// EFX
+
+#define alGenEffects qalGenEffects
+#define alDeleteEffects qalDeleteEffects
+extern LPALISEFFECT qalIsEffect;
+extern LPALEFFECTI qalEffecti;
+extern LPALEFFECTIV qalEffectiv;
+extern LPALEFFECTF qalEffectf;
+extern LPALEFFECTFV qalEffectfv;
+extern LPALGETEFFECTI qalGetEffecti;
+extern LPALGETEFFECTIV qalGetEffectiv;
+extern LPALGETEFFECTF qalGetEffectf;
+extern LPALGETEFFECTFV qalGetEffectfv;
+
+/* Filter object function types. */
+/*
+extern LPALGENFILTERS qalGenFilters;
+extern LPALDELETEFILTERS)(ALsizei, const ALuint*);
+typedef ALboolean (AL_APIENTRY *LPALISFILTER)(ALuint);
+extern LPALFILTERI)(ALuint, ALenum, ALint);
+extern LPALFILTERIV)(ALuint, ALenum, const ALint*);
+extern LPALFILTERF)(ALuint, ALenum, ALfloat);
+extern LPALFILTERFV)(ALuint, ALenum, const ALfloat*);
+extern LPALGETFILTERI)(ALuint, ALenum, ALint*);
+extern LPALGETFILTERIV)(ALuint, ALenum, ALint*);
+extern LPALGETFILTERF)(ALuint, ALenum, ALfloat*);
+extern LPALGETFILTERFV)(ALuint, ALenum, ALfloat*);
+*/
+
+/* Auxiliary Effect Slot object function types. */
+extern LPALGENAUXILIARYEFFECTSLOTS qalGenAuxiliaryEffectSlots;
+extern LPALDELETEAUXILIARYEFFECTSLOTS qalDeleteAuxiliaryEffectSlots;
+extern LPALISAUXILIARYEFFECTSLOT qalIsAuxiliaryEffectSlot;
+extern LPALAUXILIARYEFFECTSLOTI qalAuxiliaryEffectSloti;
+extern LPALAUXILIARYEFFECTSLOTIV qalAuxiliaryEffectSlotiv;
+extern LPALAUXILIARYEFFECTSLOTF qalAuxiliaryEffectSlotf;
+extern LPALAUXILIARYEFFECTSLOTFV qalAuxiliaryEffectSlotfv;
+extern LPALGETAUXILIARYEFFECTSLOTI qalGetAuxiliaryEffectSloti;
+extern LPALGETAUXILIARYEFFECTSLOTIV qalGetAuxiliaryEffectSlotiv;
+extern LPALGETAUXILIARYEFFECTSLOTF qalGetAuxiliaryEffectSlotf;
+extern LPALGETAUXILIARYEFFECTSLOTFV qalGetAuxiliaryEffectSlotfv;
 #endif
 
 qboolean QAL_Init(const char *libname);
