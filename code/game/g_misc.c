@@ -294,7 +294,7 @@ Use_Shooter(gentity_t *ent, gentity_t *other, gentity_t *activator)
 
 	vecnorm(dir);
 
-	switch(ent->s.weapon){
+	switch(ent->s.weapon[0]){
 	case WP_GRENADE_LAUNCHER:
 		fire_grenade(ent, ent->s.origin, dir);
 		break;
@@ -321,7 +321,7 @@ void
 InitShooter(gentity_t *ent, int weapon)
 {
 	ent->use = Use_Shooter;
-	ent->s.weapon = weapon;
+	ent->s.weapon[0] = weapon;
 
 	registeritem(finditemforweapon(weapon));
 

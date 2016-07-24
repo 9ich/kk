@@ -409,9 +409,9 @@ domissile(centity_t *cent)
 //	int	col;
 
 	s1 = &cent->currstate;
-	if(s1->weapon >= WP_NUM_WEAPONS)
-		s1->weapon = 0;
-	weapon = &cg_weapons[s1->weapon];
+	if(s1->weapon[0] >= WP_NUM_WEAPONS)
+		s1->weapon[0] = 0;
+	weapon = &cg_weapons[s1->weapon[0]];
 
 	// calculate the axis
 	veccpy(s1->angles, cent->lerpangles);
@@ -493,9 +493,9 @@ dograpple(centity_t *cent)
 	const weaponInfo_t *weapon;
 
 	s1 = &cent->currstate;
-	if(s1->weapon >= WP_NUM_WEAPONS)
-		s1->weapon = 0;
-	weapon = &cg_weapons[s1->weapon];
+	if(s1->weapon[0] >= WP_NUM_WEAPONS)
+		s1->weapon[0] = 0;
+	weapon = &cg_weapons[s1->weapon[0]];
 
 	// calculate the axis
 	veccpy(s1->angles, cent->lerpangles);
@@ -825,9 +825,9 @@ doteambase(centity_t *cent)
 			trap_R_AddRefEntityToScene(&model);
 			// show the target
 			if(t > h){
-				if(!cent->muzzleflashtime){
+				if(!cent->muzzleflashtime[0]){
 					trap_S_StartSound(cent->lerporigin, ENTITYNUM_NONE, CHAN_BODY, cgs.media.obeliskRespawnSound);
-					cent->muzzleflashtime = 1;
+					cent->muzzleflashtime[0] = 1;
 				}
 				veccpy(cent->currstate.angles, angles);
 				angles[YAW] += (float)16 * acos(1-c) * 180 / M_PI;
@@ -849,7 +849,9 @@ doteambase(centity_t *cent)
 			}
 		}else{
 			cent->misctime = 0;
-			cent->muzzleflashtime = 0;
+			cent->muzzleflashtime[0] = 0;
+			cent->muzzleflashtime[1] = 0;
+			cent->muzzleflashtime[2] = 0;
 			// modelindex2 is the health value of the obelisk
 			c = cent->currstate.modelindex2;
 			model.shaderRGBA[0] = 0xff;

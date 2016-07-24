@@ -185,10 +185,13 @@ respawn(void)
 	cg.teleportthisframe = qtrue;
 
 	// display weapons available
-	cg.weapseltime = cg.time;
+	cg.weapseltime[0] = cg.time;
+	cg.weapseltime[1] = cg.time;
 
 	// select the weapon the server says we are using
-	cg.weapsel = cg.snap->ps.weapon;
+	cg.weapsel[0] = cg.snap->ps.weapon[0];
+	cg.weapsel[1] = cg.snap->ps.weapon[1];
+	cg.weapsel[2] = cg.snap->ps.weapon[2];
 }
 
 extern char *eventnames[];

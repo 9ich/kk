@@ -1280,7 +1280,9 @@ char *eventnames[] = {
 
 	"EV_NOAMMO",
 	"EV_CHANGE_WEAPON",
-	"EV_FIRE_WEAPON",
+	"EV_FIRE_WEAPON",		// slot 0
+	"EV_FIRE_WEAPON2",		// slot 1
+	"EV_FIRE_WEAPON3",		// slot 2
 
 	"EV_USE_ITEM0",
 	"EV_USE_ITEM1",
@@ -1496,7 +1498,9 @@ playerstate2entstate(playerState_t *ps, entityState_t *s, qboolean snap)
 		ps->entityEventSequence++;
 	}
 
-	s->weapon = ps->weapon;
+	s->weapon[0] = ps->weapon[0];
+	s->weapon[1] = ps->weapon[1];
+	s->weapon[2] = ps->weapon[2];
 	s->groundEntityNum = ps->groundEntityNum;
 
 	s->powerups = 0;
@@ -1576,7 +1580,9 @@ playerstate2entstatexerp(playerState_t *ps, entityState_t *s, int time, qboolean
 		ps->entityEventSequence++;
 	}
 
-	s->weapon = ps->weapon;
+	s->weapon[0] = ps->weapon[0];
+	s->weapon[1] = ps->weapon[1];
+	s->weapon[2] = ps->weapon[2];
 	s->groundEntityNum = ps->groundEntityNum;
 
 	s->powerups = 0;

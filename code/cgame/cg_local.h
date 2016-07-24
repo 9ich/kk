@@ -194,7 +194,7 @@ typedef struct centity_s
 	qboolean	interpolate;		// true if next is valid to interpolate to
 	qboolean	currvalid;		// true if cg.frame holds this entity
 
-	int		muzzleflashtime;	// move to playerEntity?
+	int		muzzleflashtime[WS_NUMSLOTS];	// move to playerEntity?
 	int		prevevent;
 	int		teleportflag;
 
@@ -573,7 +573,7 @@ typedef struct
 	int		landtime;
 
 	// input state sent to server
-	int		weapsel;
+	int		weapsel[WS_NUMSLOTS];
 
 	// view rendering
 	refdef_t	refdef;
@@ -675,9 +675,9 @@ typedef struct
 	int	itempkuptime;
 	int	itempkupblendtime;	// the pulse around the crosshair is timed seperately
 
-	int	weapseltime;
-	int	weapanim;
-	int	weapanimtime;
+	int	weapseltime[WS_NUMSLOTS];
+	int	weapanim[WS_NUMSLOTS];
+	int	weapanimtime[WS_NUMSLOTS];
 
 	// blend blobs
 	float	dmgtime;
@@ -1199,6 +1199,9 @@ extern vmCvar_t cg_gun_frame;
 extern vmCvar_t cg_gun_x;
 extern vmCvar_t cg_gun_y;
 extern vmCvar_t cg_gun_z;
+extern vmCvar_t cg_gun2_x;
+extern vmCvar_t cg_gun2_y;
+extern vmCvar_t cg_gun2_z;
 extern vmCvar_t cg_drawGun;
 extern vmCvar_t cg_viewsize;
 extern vmCvar_t cg_tracerChance;
@@ -1400,12 +1403,14 @@ void	rotentontag(refEntity_t *entity, const refEntity_t *parent,
 // cg_weapons.c
 void	CG_NextWeapon_f(void);
 void	CG_PrevWeapon_f(void);
+void	CG_NextWeapon2_f(void);
+void	CG_PrevWeapon2_f(void);
 void	CG_Weapon_f(void);
 
 void	registerweap(int weaponNum);
 void	registeritemgfx(int itemNum);
 
-void	fireweap(centity_t *cent);
+void	fireweap(centity_t *cent, int slot);
 void	missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound_t soundType);
 void	missilehitplayer(int weapon, vec3_t origin, vec3_t dir, int entityNum);
 void	shotgunfire(entityState_t *es);
@@ -1414,8 +1419,8 @@ void	dobullet(vec3_t origin, int sourceEntityNum, vec3_t normal, qboolean flesh,
 void	dorailtrail(clientInfo_t *ci, vec3_t start, vec3_t end);
 void	grappletrail(centity_t *ent, const weaponInfo_t *wi);
 void	addviewweap(playerState_t *ps);
-void	addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team);
-void	drawweapsel(void);
+void	addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team, int slot);
+void	drawweapsel(int slot);
 
 void	outofammochange(void);	// should this be in pmove?
 
@@ -1657,7 +1662,7 @@ int		trap_GetCurrentCmdNumber(void);
 qboolean	trap_GetUserCmd(int cmdNumber, usercmd_t *ucmd);
 
 // used for the weapon select and zoom
-void		trap_SetUserCmdValue(int stateValue, float sensitivityScale);
+void		trap_SetUserCmdValue(int val0, int val1, int val2, float sensitivityScale);
 
 // aids for VM testing
 void		testPrintInt(char *string, int i);

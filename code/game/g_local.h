@@ -601,7 +601,7 @@ void		processipbans(void);
 qboolean	filterpacket(char *from);
 
 // g_weapon.c
-void	fireweapon(gentity_t *ent);
+void	fireweapon(gentity_t *ent, int slot);
 #ifdef MISSIONPACK
 void	G_StartKamikaze(gentity_t *ent);
 #endif

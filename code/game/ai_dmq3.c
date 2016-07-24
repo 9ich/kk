@@ -1506,8 +1506,8 @@ BotChooseWeapon(bot_state_t *bs)
 {
 	int newweaponnum;
 
-	if(bs->cur_ps.weaponstate == WEAPON_RAISING ||
-	   bs->cur_ps.weaponstate == WEAPON_DROPPING)
+	if(bs->cur_ps.weaponstate[0] == WEAPON_RAISING ||
+	   bs->cur_ps.weaponstate[0] == WEAPON_DROPPING)
 		trap_EA_SelectWeapon(bs->client, bs->weaponnum);
 	else{
 		newweaponnum = trap_BotChooseBestFightWeapon(bs->ws, bs->inventory);
@@ -2618,7 +2618,7 @@ BotAttackMove(bot_state_t *bs, int tfl)
 		else
 			bs->attackjump_time = FloatTime() + 1;
 	}
-	if(bs->cur_ps.weapon == WP_GAUNTLET){
+	if(bs->cur_ps.weapon[0] == WP_GAUNTLET){
 		attack_dist = 0;
 		attack_range = 0;
 	}else{
@@ -4477,7 +4477,7 @@ void
 BotCheckForGrenades(bot_state_t *bs, entityState_t *state)
 {
 	// if this is not a grenade
-	if(state->eType != ET_MISSILE || state->weapon != WP_GRENADE_LAUNCHER)
+	if(state->eType != ET_MISSILE || state->weapon[0] != WP_GRENADE_LAUNCHER)
 		return;
 	// try to avoid the grenade
 	trap_BotAddAvoidSpot(bs->ms, state->pos.trBase, 160, AVOID_ALWAYS);
@@ -4493,7 +4493,7 @@ void
 BotCheckForProxMines(bot_state_t *bs, entityState_t *state)
 {
 	// if this is not a prox mine
-	if(state->eType != ET_MISSILE || state->weapon != WP_PROX_LAUNCHER)
+	if(state->eType != ET_MISSILE || state->weapon[0] != WP_PROX_LAUNCHER)
 		return;
 	// if this prox mine is from someone on our own team
 	if(state->generic1 == BotTeam(bs))

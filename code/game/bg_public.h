@@ -402,7 +402,9 @@ typedef enum
 
 	EV_NOAMMO,
 	EV_CHANGE_WEAPON,
-	EV_FIRE_WEAPON,
+	EV_FIRE_WEAPON,		// slot 0
+	EV_FIRE_WEAPON2,	// slot 1
+	EV_FIRE_WEAPON3,	// slot 2
 
 	EV_USE_ITEM0,
 	EV_USE_ITEM1,

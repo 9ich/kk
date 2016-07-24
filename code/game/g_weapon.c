@@ -110,7 +110,7 @@ chkgauntletattack(gentity_t *ent)
 		tent = enttemp(tr.endpos, EV_MISSILE_HIT);
 		tent->s.otherEntityNum = traceEnt->s.number;
 		tent->s.eventParm = DirToByte(tr.plane.normal);
-		tent->s.weapon = ent->s.weapon;
+		tent->s.weapon[0] = ent->s.weapon[0];
 	}
 
 	if(!traceEnt->takedmg)
@@ -698,7 +698,7 @@ Weapon_LightningFire(gentity_t *ent)
 			tent = enttemp(tr.endpos, EV_MISSILE_HIT);
 			tent->s.otherEntityNum = traceEnt->s.number;
 			tent->s.eventParm = DirToByte(tr.plane.normal);
-			tent->s.weapon = ent->s.weapon;
+			tent->s.weapon[0] = ent->s.weapon[0];
 			if(logaccuracyhit(traceEnt, ent))
 				ent->client->accuracyhits++;
 		}else if(!(tr.surfaceFlags & SURF_NOIMPACT)){
@@ -824,7 +824,7 @@ fireweapon
 ===============
 */
 void
-fireweapon(gentity_t *ent)
+fireweapon(gentity_t *ent, int slot)
 {
 	if(ent->client->ps.powerups[PW_QUAD])
 		s_quadFactor = g_quadfactor.value;
@@ -838,7 +838,7 @@ fireweapon(gentity_t *ent)
 #endif
 
 	// track shots taken for accuracy tracking.  Grapple is not a weapon and gauntet is just not tracked
-	if(ent->s.weapon != WP_GRAPPLING_HOOK && ent->s.weapon != WP_GAUNTLET){
+	if(ent->s.weapon[slot] != WP_GRAPPLING_HOOK && ent->s.weapon[slot] != WP_GAUNTLET){
 		ent->client->accuracyshots++;
 	}
 
@@ -848,7 +848,7 @@ fireweapon(gentity_t *ent)
 	calcmuzzlepointorigin(ent, ent->client->oldorigin, forward, right, up, muzzle);
 
 	// fire the specific weapon
-	switch(ent->s.weapon){
+	switch(ent->s.weapon[slot]){
 	case WP_GAUNTLET:
 		Weapon_Gauntlet(ent);
 		break;
@@ -1158,7 +1158,8 @@ homing_scan(gentity_t *ent)
 
 	ps = &ent->client->ps;
 
-	if(ps->weapon != WP_HOMING_LAUNCHER){
+	if(ps->weapon[0] != WP_HOMING_LAUNCHER &&
+	   ps->weapon[1] != WP_HOMING_LAUNCHER){
 		ps->lockontarget = ENTITYNUM_NONE;
 		ps->lockontime = 0;
 		ps->lockonstarttime = 0;

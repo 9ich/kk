@@ -782,7 +782,8 @@ CG_LightningBolt(centity_t *cent, vec3_t origin)
 	vec3_t muzzlePoint, endPoint;
 	int anim;
 
-	if(cent->currstate.weapon != WP_LIGHTNING)
+	if(cent->currstate.weapon[0] != WP_LIGHTNING &&
+	   cent->currstate.weapon[1] != WP_LIGHTNING)
 		return;
 
 	memset(&beam, 0, sizeof(beam));
@@ -957,7 +958,7 @@ CG_MachinegunSpinAngle(centity_t *cent)
 		cent->pe.barrelangle = AngleMod(angle);
 		cent->pe.barrelspin = !!(cent->currstate.eFlags & EF_FIRING);
 #ifdef MISSIONPACK
-		if(cent->currstate.weapon == WP_CHAINGUN && !cent->pe.barrelspin)
+		if(cent->currstate.weapon[0] == WP_CHAINGUN && !cent->pe.barrelspin)
 			trap_S_StartSound(nil, cent->currstate.number, CHAN_WEAPON, trap_S_RegisterSound("sound/weapons/vulcan/wvulwind.wav", qfalse));
 
 #endif
@@ -1002,7 +1003,7 @@ sound should only be done on the world model case.
 =============
 */
 void
-addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team)
+addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team, int slot)
 {
 	refEntity_t gun;
 	refEntity_t barrel;
@@ -1013,7 +1014,7 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team)
 	centity_t *nonPredictedCent;
 	orientation_t lerped;
 
-	weaponNum = cent->currstate.weapon;
+	weaponNum = cent->currstate.weapon[slot];
 
 	registerweap(weaponNum);
 	weapon = &cg_weapons[weaponNum];
@@ -1104,7 +1105,7 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team)
 		// continuous flash
 	}else
 	// impulse flash
-	if(cg.time - cent->muzzleflashtime > MUZZLE_FLASH_TIME)
+	if(cg.time - cent->muzzleflashtime[slot] > MUZZLE_FLASH_TIME)
 		return;
 
 
@@ -1199,8 +1200,12 @@ addviewweap(playerState_t *ps)
 		fovOffset = 0;
 
 	cent = &cg.pplayerent;	// &cg_entities[cg.snap->ps.clientNum];
-	registerweap(ps->weapon);
-	weapon = &cg_weapons[ps->weapon];
+
+	//
+	// slot 0
+	//
+	registerweap(ps->weapon[0]);
+	weapon = &cg_weapons[ps->weapon[0]];
 
 	memset(&hand, 0, sizeof(hand));
 
@@ -1231,7 +1236,44 @@ addviewweap(playerState_t *ps)
 	hand.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON | RF_MINLIGHT;
 
 	// add everything onto the hand
-	addplayerweap(&hand, ps, &cg.pplayerent, ps->persistant[PERS_TEAM]);
+	addplayerweap(&hand, ps, &cg.pplayerent, ps->persistant[PERS_TEAM], 0);
+
+	//
+	// slot 0
+	//
+	registerweap(ps->weapon[1]);
+	weapon = &cg_weapons[ps->weapon[1]];
+
+	memset(&hand, 0, sizeof(hand));
+
+	// set up gun position
+	veccpy(cg.refdef.vieworg, hand.origin);
+	veccpy(cg.refdefviewangles, angles);
+
+	vecmad(hand.origin, cg_gun2_x.value, cg.refdef.viewaxis[0], hand.origin);
+	vecmad(hand.origin, cg_gun2_y.value, cg.refdef.viewaxis[1], hand.origin);
+	vecmad(hand.origin, (cg_gun2_z.value+fovOffset), cg.refdef.viewaxis[2], hand.origin);
+
+	AnglesToAxis(angles, hand.axis);
+
+	// map torso animations to weapon animations
+	if(cg_gun_frame.integer){
+		// development tool
+		hand.frame = hand.oldframe = cg_gun_frame.integer;
+		hand.backlerp = 0;
+	}else{
+		// get clientinfo for animation map
+		ci = &cgs.clientinfo[cent->currstate.clientNum];
+		hand.frame = CG_MapTorsoToWeaponFrame(ci, cent->pe.torso.frame);
+		hand.oldframe = CG_MapTorsoToWeaponFrame(ci, cent->pe.torso.oldframe);
+		hand.backlerp = cent->pe.torso.backlerp;
+	}
+
+	hand.hModel = weapon->handsmodel;
+	hand.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON | RF_MINLIGHT;
+
+	// add everything onto the hand
+	addplayerweap(&hand, ps, &cg.pplayerent, ps->persistant[PERS_TEAM], 1);
 }
 
 /*
@@ -1248,7 +1290,7 @@ drawweapsel
 ===================
 */
 void
-drawweapsel(void)
+drawweapsel(int slot)
 {
 	int i;
 	int bits;
@@ -1261,7 +1303,7 @@ drawweapsel(void)
 	if(cg.pps.stats[STAT_HEALTH] <= 0)
 		return;
 
-	color = fadecolor(cg.weapseltime, WEAPON_SELECT_TIME);
+	color = fadecolor(cg.weapseltime[slot], WEAPON_SELECT_TIME);
 	if(!color)
 		return;
 	trap_R_SetColor(color);
@@ -1289,7 +1331,7 @@ drawweapsel(void)
 		drawpic(x, y, 32, 32, cg_weapons[i].icon);
 
 		// draw selection marker
-		if(i == cg.weapsel)
+		if(i == cg.weapsel[slot])
 			drawpic(x-4, y-4, 40, 40, cgs.media.selectShader);
 
 		// no ammo cross on top
@@ -1300,8 +1342,8 @@ drawweapsel(void)
 	}
 
 	// draw the selected name
-	if(cg_weapons[cg.weapsel].item){
-		name = cg_weapons[cg.weapsel].item->pickupname;
+	if(cg_weapons[cg.weapsel[slot]].item){
+		name = cg_weapons[cg.weapsel[slot]].item->pickupname;
 		if(name){
 			setalign("center");
 			drawbigstr(0.5f*screenwidth(), y - 22, name, 1.0f);
@@ -1344,20 +1386,20 @@ CG_NextWeapon_f(void)
 	if(cg.snap->ps.pm_flags & PMF_FOLLOW)
 		return;
 
-	cg.weapseltime = cg.time;
-	original = cg.weapsel;
+	cg.weapseltime[0] = cg.time;
+	original = cg.weapsel[0];
 
 	for(i = 0; i < MAX_WEAPONS; i++){
-		cg.weapsel++;
-		if(cg.weapsel == MAX_WEAPONS)
-			cg.weapsel = 0;
-		if(cg.weapsel == WP_GAUNTLET)
+		cg.weapsel[0]++;
+		if(cg.weapsel[0] == MAX_WEAPONS)
+			cg.weapsel[0] = 0;
+		if(cg.weapsel[0] == WP_GAUNTLET)
 			continue;	// never cycle to gauntlet
-		if(weapselectable(cg.weapsel))
+		if(weapselectable(cg.weapsel[0]))
 			break;
 	}
 	if(i == MAX_WEAPONS)
-		cg.weapsel = original;
+		cg.weapsel[0] = original;
 }
 
 /*
@@ -1376,20 +1418,84 @@ CG_PrevWeapon_f(void)
 	if(cg.snap->ps.pm_flags & PMF_FOLLOW)
 		return;
 
-	cg.weapseltime = cg.time;
-	original = cg.weapsel;
+	cg.weapseltime[0] = cg.time;
+	original = cg.weapsel[0];
 
 	for(i = 0; i < MAX_WEAPONS; i++){
-		cg.weapsel--;
-		if(cg.weapsel == -1)
-			cg.weapsel = MAX_WEAPONS - 1;
-		if(cg.weapsel == WP_GAUNTLET)
+		cg.weapsel[0]--;
+		if(cg.weapsel[0] == -1)
+			cg.weapsel[0] = MAX_WEAPONS - 1;
+		if(cg.weapsel[0] == WP_GAUNTLET)
 			continue;	// never cycle to gauntlet
-		if(weapselectable(cg.weapsel))
+		if(weapselectable(cg.weapsel[0]))
 			break;
 	}
 	if(i == MAX_WEAPONS)
-		cg.weapsel = original;
+		cg.weapsel[0] = original;
+}
+
+/*
+===============
+CG_NextWeapon2_f
+===============
+*/
+void
+CG_NextWeapon2_f(void)
+{
+	int i;
+	int original;
+
+	if(!cg.snap)
+		return;
+	if(cg.snap->ps.pm_flags & PMF_FOLLOW)
+		return;
+
+	cg.weapseltime[1] = cg.time;
+	original = cg.weapsel[1];
+
+	for(i = 0; i < MAX_WEAPONS; i++){
+		cg.weapsel[1]++;
+		if(cg.weapsel[1] == MAX_WEAPONS)
+			cg.weapsel[1] = 0;
+		if(cg.weapsel[1] == WP_GAUNTLET)
+			continue;	// never cycle to gauntlet
+		if(weapselectable(cg.weapsel[1]))
+			break;
+	}
+	if(i == MAX_WEAPONS)
+		cg.weapsel[1] = original;
+}
+
+/*
+===============
+CG_PrevWeapon2_f
+===============
+*/
+void
+CG_PrevWeapon2_f(void)
+{
+	int i;
+	int original;
+
+	if(!cg.snap)
+		return;
+	if(cg.snap->ps.pm_flags & PMF_FOLLOW)
+		return;
+
+	cg.weapseltime[1] = cg.time;
+	original = cg.weapsel[1];
+
+	for(i = 0; i < MAX_WEAPONS; i++){
+		cg.weapsel[1]--;
+		if(cg.weapsel[1] == -1)
+			cg.weapsel[1] = MAX_WEAPONS - 1;
+		if(cg.weapsel[1] == WP_GAUNTLET)
+			continue;	// never cycle to gauntlet
+		if(weapselectable(cg.weapsel[1]))
+			break;
+	}
+	if(i == MAX_WEAPONS)
+		cg.weapsel[1] = original;
 }
 
 /*
@@ -1412,12 +1518,12 @@ CG_Weapon_f(void)
 	if(num < 1 || num > MAX_WEAPONS-1)
 		return;
 
-	cg.weapseltime = cg.time;
+	cg.weapseltime[0] = cg.time;
 
 	if(!(cg.snap->ps.stats[STAT_WEAPONS] & (1 << num)))
 		return;	// don't have the weapon
 
-	cg.weapsel = num;
+	cg.weapsel[0] = num;
 }
 
 /*
@@ -1432,11 +1538,11 @@ outofammochange(void)
 {
 	int i;
 
-	cg.weapseltime = cg.time;
+	cg.weapseltime[0] = cg.time;
 
 	for(i = MAX_WEAPONS-1; i > 0; i--)
 		if(weapselectable(i)){
-			cg.weapsel = i;
+			cg.weapsel[0] = i;
 			break;
 		}
 }
@@ -1457,31 +1563,31 @@ Caused by an EV_FIRE_WEAPON event
 ================
 */
 void
-fireweap(centity_t *cent)
+fireweap(centity_t *cent, int slot)
 {
 	entityState_t *ent;
 	int c;
 	weaponInfo_t *weap;
 
 	ent = &cent->currstate;
-	if(ent->weapon == WP_NONE)
+	if(ent->weapon[slot] == WP_NONE)
 		return;
-	if(ent->weapon >= WP_NUM_WEAPONS){
+	if(ent->weapon[slot] >= WP_NUM_WEAPONS){
 		cgerrorf("fireweap: ent->weapon >= WP_NUM_WEAPONS");
 		return;
 	}
-	weap = &cg_weapons[ent->weapon];
+	weap = &cg_weapons[ent->weapon[slot]];
 
 	// mark the entity as muzzle flashing, so when it is added it will
 	// append the flash to the weapon model
-	cent->muzzleflashtime = cg.time;
+	cent->muzzleflashtime[slot] = cg.time;
 
 	// lightning gun only does this this on initial press
-	if(ent->weapon == WP_LIGHTNING)
+	if(ent->weapon[slot] == WP_LIGHTNING)
 		if(cent->pe.lightningfiring)
 			return;
 
-	if(ent->weapon == WP_RAILGUN)
+	if(ent->weapon[slot] == WP_RAILGUN)
 		cent->pe.railfiretime = cg.time;
 
 	// play quad sound if needed

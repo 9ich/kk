@@ -1145,16 +1145,14 @@ clientspawn(gentity_t *ent)
 		giveweapon(client, WP_NAILGUN, 150);
 		giveweapon(client, WP_HOMING_LAUNCHER, 20);		
 	}else{
-		client->ps.stats[STAT_WEAPONS] = (1 << WP_MACHINEGUN);
 		if(g_gametype.integer == GT_TEAM)
-			client->ps.ammo[WP_MACHINEGUN] = 50;
+			giveweapon(client, WP_MACHINEGUN, 50);
 		else
-			client->ps.ammo[WP_MACHINEGUN] = 100;
+			giveweapon(client, WP_MACHINEGUN, 100);
 	}
-
-	client->ps.stats[STAT_WEAPONS] |= (1 << WP_GAUNTLET);
-	client->ps.ammo[WP_GAUNTLET] = -1;
-	client->ps.ammo[WP_GRAPPLING_HOOK] = -1;
+	
+	giveweapon(client, WP_GAUNTLET, -1);
+	giveweapon(client, WP_GRAPPLING_HOOK, -1);
 
 	// if not in CA, health will count down towards maxhealth
 	if(g_gametype.integer == GT_CA)
@@ -1190,18 +1188,27 @@ clientspawn(gentity_t *ent)
 		if(ent->client->sess.team != TEAM_SPECTATOR){
 			killbox(ent);
 			// force the base weapon up
-			client->ps.weapon = WP_MACHINEGUN;
-			client->ps.weaponstate = WEAPON_READY;
+			client->ps.weapon[0] = WP_MACHINEGUN;
+			client->ps.weaponstate[0] = WEAPON_READY;
+			client->ps.weapon[1] = WP_MACHINEGUN;
+			client->ps.weaponstate[1] = WEAPON_READY;
+			client->ps.weaponstate[2] = WEAPON_READY;
 			// fire the targets of the spawn point
 			usetargets(spawnPoint, ent);
 			// select the highest weapon number available, after any spawn given items have fired
-			client->ps.weapon = 1;
-
+			client->ps.weapon[0] = 1;
 			for(i = WP_NUM_WEAPONS - 1; i > 0; i--)
-				if(client->ps.stats[STAT_WEAPONS] & (1 << i)){
-					client->ps.weapon = i;
+				if(client->ps.stats[STAT_WEAPONS] & (1 << i) && i != WP_GRAPPLING_HOOK){
+					client->ps.weapon[0] = i;
 					break;
 				}
+			client->ps.weapon[1] = 1;
+			for(i = WP_NUM_WEAPONS - 1; i > 0; i--)
+				if(client->ps.stats[STAT_WEAPONS] & (1 << i) && i != WP_GRAPPLING_HOOK){
+					client->ps.weapon[1] = i;
+					break;
+				}
+			client->ps.weapon[2] = WP_GRAPPLING_HOOK;
 			// positively link the client, even if the command times are weird
 			veccpy(ent->client->ps.origin, ent->r.currentOrigin);
 

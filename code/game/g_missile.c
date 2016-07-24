@@ -242,14 +242,14 @@ missileimpact(gentity_t *ent, trace_t *trace)
 	if(!other->takedmg &&
 	   (ent->s.eFlags & (EF_BOUNCE | EF_BOUNCE_HALF))){
 		bouncemissile(ent, trace);
-		if(ent->s.weapon == WP_GRENADE_LAUNCHER)
+		if(ent->s.weapon[0] == WP_GRENADE_LAUNCHER)
 			addevent(ent, EV_GRENADE_BOUNCE, 0);
 		return;
 	}
 
 #ifdef MISSIONPACK
 	if(other->takedmg){
-		if(ent->s.weapon != WP_PROX_LAUNCHER)
+		if(ent->s.weapon[0] != WP_PROX_LAUNCHER)
 			if(other->client && other->client->invulnerabilityTime > level.time){
 				veccpy(ent->s.pos.trDelta, forward);
 				vecnorm(forward);
@@ -284,7 +284,7 @@ missileimpact(gentity_t *ent, trace_t *trace)
 		}
 
 #ifdef MISSIONPACK
-	if(ent->s.weapon == WP_PROX_LAUNCHER){
+	if(ent->s.weapon[0] == WP_PROX_LAUNCHER){
 		if(ent->s.pos.trType != TR_GRAVITY)
 			return;
 
@@ -409,7 +409,7 @@ runmissile(gentity_t *ent)
 
 #ifdef MISSIONPACK
 	// prox mines that left the owner bbox will attach to anything, even the owner
-	else if(ent->s.weapon == WP_PROX_LAUNCHER && ent->count)
+	else if(ent->s.weapon[0] == WP_PROX_LAUNCHER && ent->count)
 		passent = ENTITYNUM_NONE;
 
 #endif
@@ -443,7 +443,7 @@ runmissile(gentity_t *ent)
 	}
 #ifdef MISSIONPACK
 	// if the prox mine wasn't yet outside the player body
-	if(ent->s.weapon == WP_PROX_LAUNCHER && !ent->count){
+	if(ent->s.weapon[0] == WP_PROX_LAUNCHER && !ent->count){
 		// check if the prox mine is outside the owner bbox
 		trap_Trace(&tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, ent->r.currentOrigin, ENTITYNUM_NONE, ent->clipmask);
 		if(!tr.startsolid || tr.entityNum != ent->r.ownerNum)
@@ -469,7 +469,7 @@ fire_plasma(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->think = explodemissile;
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
-	bolt->s.weapon = WP_PLASMAGUN;
+	bolt->s.weapon[0] = WP_PLASMAGUN;
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;
 	bolt->damage = 20;
@@ -506,7 +506,7 @@ fire_grenade(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->think = explodemissile;
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
-	bolt->s.weapon = WP_GRENADE_LAUNCHER;
+	bolt->s.weapon[0] = WP_GRENADE_LAUNCHER;
 	bolt->s.eFlags = EF_BOUNCE_HALF;
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;
@@ -544,7 +544,7 @@ fire_bfg(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->think = explodemissile;
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
-	bolt->s.weapon = WP_BFG;
+	bolt->s.weapon[0] = WP_BFG;
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;
 	bolt->damage = 100;
@@ -612,7 +612,7 @@ fire_rocket(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->count = 15000 / ROCKET_THINKTIME;
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
-	bolt->s.weapon = WP_ROCKET_LAUNCHER;
+	bolt->s.weapon[0] = WP_ROCKET_LAUNCHER;
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;
 	bolt->damage = 100;
@@ -716,7 +716,7 @@ fire_homingrocket(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->nextthink = level.time + HOMINGROCKET_THINKTIME;
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
-	bolt->s.weapon = WP_HOMING_LAUNCHER;
+	bolt->s.weapon[0] = WP_HOMING_LAUNCHER;
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;
 	bolt->damage = 100;
@@ -755,7 +755,7 @@ fire_grapple(gentity_t *self, vec3_t start, vec3_t dir)
 	hook->think = weapon_hook_free;
 	hook->s.eType = ET_MISSILE;
 	hook->r.svFlags = SVF_USE_CURRENT_ORIGIN;
-	hook->s.weapon = WP_GRAPPLING_HOOK;
+	hook->s.weapon[0] = WP_GRAPPLING_HOOK;
 	hook->r.ownerNum = self->s.number;
 	hook->meansofdeath = MOD_GRAPPLE;
 	hook->clipmask = MASK_SHOT;
@@ -789,7 +789,7 @@ fire_nail(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->s.eType = ET_MISSILE;
 	bolt->s.eFlags = EF_BOUNCE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
-	bolt->s.weapon = WP_NAILGUN;
+	bolt->s.weapon[0] = WP_NAILGUN;
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;
 	bolt->damage = 20;
@@ -820,7 +820,7 @@ fire_prox(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->think = explodemissile;
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
-	bolt->s.weapon = WP_PROX_LAUNCHER;
+	bolt->s.weapon[0] = WP_PROX_LAUNCHER;
 	bolt->s.eFlags = 0;
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;

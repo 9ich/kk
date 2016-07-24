@@ -728,7 +728,7 @@ PM_BeginWeaponChange
 ===============
 */
 static void
-PM_BeginWeaponChange(int weapon)
+PM_BeginWeaponChange(int slot, int weapon)
 {
 	if(weapon <= WP_NONE || weapon >= WP_NUM_WEAPONS)
 		return;
@@ -736,12 +736,12 @@ PM_BeginWeaponChange(int weapon)
 	if(!(pm->ps->stats[STAT_WEAPONS] & (1 << weapon)))
 		return;
 
-	if(pm->ps->weaponstate == WEAPON_DROPPING)
+	if(pm->ps->weaponstate[slot] == WEAPON_DROPPING)
 		return;
 
 	pmaddevent(EV_CHANGE_WEAPON);
-	pm->ps->weaponstate = WEAPON_DROPPING;
-	pm->ps->weaponTime += 50;
+	pm->ps->weaponstate[slot] = WEAPON_DROPPING;
+	pm->ps->weaponTime[slot] += 50;
 	PM_StartTorsoAnim(TORSO_DROP);
 }
 
@@ -751,20 +751,20 @@ PM_FinishWeaponChange
 ===============
 */
 static void
-PM_FinishWeaponChange(void)
+PM_FinishWeaponChange(int slot)
 {
 	int weapon;
 
-	weapon = pm->cmd.weapon;
+	weapon = pm->cmd.weapon[slot];
 	if(weapon < WP_NONE || weapon >= WP_NUM_WEAPONS)
 		weapon = WP_NONE;
 
 	if(!(pm->ps->stats[STAT_WEAPONS] & (1 << weapon)))
 		weapon = WP_NONE;
 
-	pm->ps->weapon = weapon;
-	pm->ps->weaponstate = WEAPON_RAISING;
-	pm->ps->weaponTime += 50;
+	pm->ps->weapon[slot] = weapon;
+	pm->ps->weaponstate[slot] = WEAPON_RAISING;
+	pm->ps->weaponTime[slot] += 50;
 	PM_StartTorsoAnim(TORSO_RAISE);
 }
 
@@ -777,8 +777,8 @@ PM_TorsoAnimation
 static void
 PM_TorsoAnimation(void)
 {
-	if(pm->ps->weaponstate == WEAPON_READY){
-		if(pm->ps->weapon == WP_GAUNTLET)
+	if(pm->ps->weaponstate[0] == WEAPON_READY){
+		if(pm->ps->weapon[0] == WP_GAUNTLET)
 			PM_ContinueTorsoAnim(TORSO_STAND2);
 		else
 			PM_ContinueTorsoAnim(TORSO_STAND);
@@ -794,9 +794,10 @@ Generates weapon events and modifes the weapon counter
 ==============
 */
 static void
-PM_Weapon(void)
+PM_Weapon(int slot)
 {
 	int addTime;
+	int button;
 
 	// don't allow attack until all buttons are up
 	if(pm->ps->pm_flags & PMF_RESPAWNED)
@@ -808,7 +809,7 @@ PM_Weapon(void)
 
 	// check for dead player
 	if(pm->ps->stats[STAT_HEALTH] <= 0){
-		pm->ps->weapon = WP_NONE;
+		pm->ps->weapon[slot] = WP_NONE;
 		return;
 	}
 
@@ -829,28 +830,28 @@ PM_Weapon(void)
 		pm->ps->pm_flags &= ~PMF_USE_ITEM_HELD;
 
 	// make weapon function
-	if(pm->ps->weaponTime > 0)
-		pm->ps->weaponTime -= pml.msec;
+	if(pm->ps->weaponTime[slot] > 0)
+		pm->ps->weaponTime[slot] -= pml.msec;
 
 	// check for weapon change
 	// can't change if weapon is firing, but can change
 	// again if lowering or raising
-	if(pm->ps->weaponTime <= 0 || pm->ps->weaponstate != WEAPON_FIRING)
-		if(pm->ps->weapon != pm->cmd.weapon)
-			PM_BeginWeaponChange(pm->cmd.weapon);
+	if(pm->ps->weaponTime[slot] <= 0 || pm->ps->weaponstate[slot] != WEAPON_FIRING)
+		if(pm->ps->weapon[slot] != pm->cmd.weapon[slot])
+			PM_BeginWeaponChange(slot, pm->cmd.weapon[slot]);
 
-	if(pm->ps->weaponTime > 0)
+	if(pm->ps->weaponTime[slot] > 0)
 		return;
 
 	// change weapon if time
-	if(pm->ps->weaponstate == WEAPON_DROPPING){
-		PM_FinishWeaponChange();
+	if(pm->ps->weaponstate[slot] == WEAPON_DROPPING){
+		PM_FinishWeaponChange(slot);
 		return;
 	}
 
-	if(pm->ps->weaponstate == WEAPON_RAISING){
-		pm->ps->weaponstate = WEAPON_READY;
-		if(pm->ps->weapon == WP_GAUNTLET)
+	if(pm->ps->weaponstate[slot] == WEAPON_RAISING){
+		pm->ps->weaponstate[slot] = WEAPON_READY;
+		if(pm->ps->weapon[slot] == WP_GAUNTLET)
 			PM_StartTorsoAnim(TORSO_STAND2);
 		else
 			PM_StartTorsoAnim(TORSO_STAND);
@@ -862,46 +863,67 @@ PM_Weapon(void)
 		return;
 
 	// check for fire
-	if(!(pm->cmd.buttons & BUTTON_ATTACK)){
-		pm->ps->weaponTime = 0;
-		pm->ps->weaponstate = WEAPON_READY;
+	switch(slot){
+	case 1:
+		button = BUTTON_ATTACK2;
+		break;
+	case 2:
+		button = BUTTON_HOOK;
+		break;
+	default:	// 0
+		button = BUTTON_ATTACK;
+		break;
+	}
+	if(!(pm->cmd.buttons & button)){
+		pm->ps->weaponTime[slot] = 0;
+		pm->ps->weaponstate[slot] = WEAPON_READY;
 		return;
 	}
 
 	// start the animation even if out of ammo
-	if(pm->ps->weapon == WP_GAUNTLET){
+	if(pm->ps->weapon[slot] == WP_GAUNTLET){
 		// the guantlet only "fires" when it actually hits something
 		if(!pm->gauntlethit){
-			pm->ps->weaponTime = 0;
-			pm->ps->weaponstate = WEAPON_READY;
+			pm->ps->weaponTime[slot] = 0;
+			pm->ps->weaponstate[slot] = WEAPON_READY;
 			return;
 		}
 		PM_StartTorsoAnim(TORSO_ATTACK2);
 	}else
 		PM_StartTorsoAnim(TORSO_ATTACK);
 
-	if(pm->ps->weapon == WP_HOMING_LAUNCHER &&
+	if(pm->ps->weapon[slot] == WP_HOMING_LAUNCHER &&
 	   (pm->ps->lockontarget == ENTITYNUM_NONE ||
 	   pm->ps->lockontime - pm->ps->lockonstarttime < HOMING_SCANWAIT))
 		return;
 
-	pm->ps->weaponstate = WEAPON_FIRING;
+	pm->ps->weaponstate[slot] = WEAPON_FIRING;
 
 	// check for out of ammo
-	if(!pm->ps->ammo[pm->ps->weapon]){
+	if(!pm->ps->ammo[pm->ps->weapon[slot]]){
 		pmaddevent(EV_NOAMMO);
-		pm->ps->weaponTime += 200;
+		pm->ps->weaponTime[slot] += 200;
 		return;
 	}
 
 	// take an ammo away if not infinite
-	if(pm->ps->ammo[pm->ps->weapon] != -1)
-		pm->ps->ammo[pm->ps->weapon]--;
+	if(pm->ps->ammo[pm->ps->weapon[slot]] != -1)
+		pm->ps->ammo[pm->ps->weapon[slot]]--;
 
 	// fire weapon
-	pmaddevent(EV_FIRE_WEAPON);
+	switch(slot){
+	case 1:
+		pmaddevent(EV_FIRE_WEAPON2);
+		break;
+	case 2:
+		pmaddevent(EV_FIRE_WEAPON3);
+		break;
+	default:	// 0
+		pmaddevent(EV_FIRE_WEAPON);
+		break;
+	}
 
-	switch(pm->ps->weapon){
+	switch(pm->ps->weapon[slot]){
 	default:
 	case WP_GAUNTLET:
 		addTime = 400;
@@ -960,7 +982,7 @@ PM_Weapon(void)
 	if(pm->ps->powerups[PW_HASTE])
 		addTime /= 1.3;
 
-	pm->ps->weaponTime += addTime;
+	pm->ps->weaponTime[slot] += addTime;
 }
 
 /*
@@ -1074,15 +1096,18 @@ PmoveSingle(pmove_t *pmove)
 		pm->ps->eFlags &= ~EF_TALK;
 
 	// set the firing flag for continuous beam weapons
-	if(!(pm->ps->pm_flags & PMF_RESPAWNED) && pm->ps->pm_type != PM_INTERMISSION && pm->ps->pm_type != PM_NOCLIP
-	   && (pm->cmd.buttons & BUTTON_ATTACK) && pm->ps->ammo[pm->ps->weapon])
-		pm->ps->eFlags |= EF_FIRING;
-	else
-		pm->ps->eFlags &= ~EF_FIRING;
+	if(!(pm->ps->pm_flags & PMF_RESPAWNED) && pm->ps->pm_type != PM_INTERMISSION && pm->ps->pm_type != PM_NOCLIP){
+		if(((pm->cmd.buttons & BUTTON_ATTACK) && pm->ps->ammo[pm->ps->weapon[0]]) &&
+		   ((pm->cmd.buttons & BUTTON_ATTACK2) && pm->ps->ammo[pm->ps->weapon[1]]) &&
+		   ((pm->cmd.buttons & BUTTON_HOOK) && pm->ps->ammo[pm->ps->weapon[2]]))
+			pm->ps->eFlags |= EF_FIRING;
+		else
+			pm->ps->eFlags &= ~EF_FIRING;
+	}
 
 	// clear the respawned flag if attack and use are cleared
 	if(pm->ps->stats[STAT_HEALTH] > 0 &&
-	   !(pm->cmd.buttons & (BUTTON_ATTACK | BUTTON_USE_HOLDABLE)))
+	   !(pm->cmd.buttons & (BUTTON_ATTACK | BUTTON_ATTACK2 | BUTTON_HOOK | BUTTON_USE_HOLDABLE)))
 		pm->ps->pm_flags &= ~PMF_RESPAWNED;
 
 	// if talk button is down, dissallow all other input
@@ -1195,7 +1220,9 @@ PmoveSingle(pmove_t *pmove)
 	PM_SetWaterLevel();
 
 	// weapons
-	PM_Weapon();
+	PM_Weapon(0);
+	PM_Weapon(1);
+	PM_Weapon(2);
 
 	// torso animation
 	PM_TorsoAnimation();

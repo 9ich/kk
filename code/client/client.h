@@ -115,7 +115,7 @@ typedef struct {
 	int			joystickAxis[MAX_JOYSTICK_AXIS];	// set by joystick events
 
 	// cgame communicates a few values to the client system
-	int			cgameUserCmdValue;	// current weapon to add to usercmd_t
+	int			cgameUserCmdValue[WS_NUMSLOTS];	// current weapon to add to usercmd_t
 	float		cgameSensitivity;
 
 	// cmds[cmdNumber] is the predicted command, [cmdNumber-1] is the last

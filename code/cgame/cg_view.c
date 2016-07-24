@@ -769,7 +769,7 @@ drawframe(int serverTime, stereoFrame_t stereoview, qboolean demoplayback)
 	}
 
 	// let the client system know what our weapon and zoom settings are
-	trap_SetUserCmdValue(cg.weapsel, cg.zoomsens);
+	trap_SetUserCmdValue(cg.weapsel[0], cg.weapsel[1], cg.weapsel[2], cg.zoomsens);
 
 	// this counter will be bumped for every valid scene we generate
 	cg.clframe++;

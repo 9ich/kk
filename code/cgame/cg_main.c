@@ -142,6 +142,9 @@ vmCvar_t cg_gun_frame;
 vmCvar_t cg_gun_x;
 vmCvar_t cg_gun_y;
 vmCvar_t cg_gun_z;
+vmCvar_t cg_gun2_x;
+vmCvar_t cg_gun2_y;
+vmCvar_t cg_gun2_z;
 vmCvar_t cg_tracerChance;
 vmCvar_t cg_tracerWidth;
 vmCvar_t cg_tracerLength;
@@ -249,8 +252,11 @@ static cvarTable_t cvarTable[] = {
 	{&cg_lagometer, "cg_lagometer", "1", CVAR_ARCHIVE},
 	{&cg_railTrailTime, "cg_railTrailTime", "400", CVAR_ARCHIVE},
 	{&cg_gun_x, "cg_gunX", "0", CVAR_CHEAT},
-	{&cg_gun_y, "cg_gunY", "0", CVAR_CHEAT},
+	{&cg_gun_y, "cg_gunY", "10", CVAR_CHEAT},
 	{&cg_gun_z, "cg_gunZ", "0", CVAR_CHEAT},
+	{&cg_gun2_x, "cg_gun2X", "0", CVAR_CHEAT},
+	{&cg_gun2_y, "cg_gun2Y", "-10", CVAR_CHEAT},
+	{&cg_gun2_z, "cg_gun2Z", "0", CVAR_CHEAT},
 	{&cg_centertime, "cg_centertime", "3", CVAR_CHEAT},
 	{&cg_swingSpeed, "cg_swingSpeed", "0.3", CVAR_CHEAT},
 	{&cg_animSpeed, "cg_animspeed", "1", CVAR_CHEAT},
@@ -1182,7 +1188,9 @@ cginit(int serverMessageNum, int serverCommandSequence, int clientNum)
 
 	initconsolesmds();
 
-	cg.weapsel = WP_MACHINEGUN;
+	cg.weapsel[0] = WP_MACHINEGUN;
+	cg.weapsel[1] = WP_MACHINEGUN;
+	cg.weapsel[2] = WP_GRAPPLING_HOOK;
 
 	cgs.redflag = cgs.blueflag = -1;// For compatibily, default to unset for
 	cgs.flagStatus = -1;

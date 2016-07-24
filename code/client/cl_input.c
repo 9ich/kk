@@ -576,7 +576,9 @@ void CL_FinishMove( usercmd_t *cmd ) {
 	int		i;
 
 	// copy the state that the cgame is currently sending
-	cmd->weapon = cl.cgameUserCmdValue;
+	cmd->weapon[0] = cl.cgameUserCmdValue[0];
+	cmd->weapon[1] = cl.cgameUserCmdValue[1];
+	cmd->weapon[2] = cl.cgameUserCmdValue[2];
 
 	// send the current server time so the amount of movement
 	// can be determined without allowing cheating
@@ -991,8 +993,12 @@ void CL_InitInput( void ) {
 	Cmd_AddCommand ("-attack", IN_Button0Up);
 	Cmd_AddCommand ("+button0", IN_Button0Down);
 	Cmd_AddCommand ("-button0", IN_Button0Up);
+	Cmd_AddCommand ("+attack2", IN_Button1Down);
+	Cmd_AddCommand ("-attack2", IN_Button1Up);
 	Cmd_AddCommand ("+button1", IN_Button1Down);
 	Cmd_AddCommand ("-button1", IN_Button1Up);
+	Cmd_AddCommand ("+hook", IN_Button2Down);
+	Cmd_AddCommand ("-hook", IN_Button2Up);
 	Cmd_AddCommand ("+button2", IN_Button2Down);
 	Cmd_AddCommand ("-button2", IN_Button2Up);
 	Cmd_AddCommand ("+button3", IN_Button3Down);
@@ -1092,8 +1098,12 @@ void CL_ShutdownInput(void)
 	Cmd_RemoveCommand("-button9");
 	Cmd_RemoveCommand("+button10");
 	Cmd_RemoveCommand("-button10");
+	Cmd_RemoveCommand("+attack2");
+	Cmd_RemoveCommand("-attack2");
 	Cmd_RemoveCommand("+button11");
 	Cmd_RemoveCommand("-button11");
+	Cmd_RemoveCommand("+hook");
+	Cmd_RemoveCommand("-hook");
 	Cmd_RemoveCommand("+button12");
 	Cmd_RemoveCommand("-button12");
 	Cmd_RemoveCommand("+button13");

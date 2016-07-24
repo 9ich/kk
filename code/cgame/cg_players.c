@@ -1828,7 +1828,8 @@ doplayer(centity_t *cent)
 #endif	// MISSIONPACK
 
 	// add the gun / barrel / flash
-	addplayerweap(&torso, nil, cent, ci->team);
+	addplayerweap(&torso, nil, cent, ci->team, 0);
+	addplayerweap(&torso, nil, cent, ci->team, 1);
 
 	// add powerups floating behind the player
 	CG_PlayerPowerups(cent, &torso);

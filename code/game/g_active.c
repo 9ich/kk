@@ -520,7 +520,13 @@ clientevents(gentity_t *ent, int oldEventSequence)
 			break;
 
 		case EV_FIRE_WEAPON:
-			fireweapon(ent);
+			fireweapon(ent, 0);
+			break;
+		case EV_FIRE_WEAPON2:
+			fireweapon(ent, 1);
+			break;
+		case EV_FIRE_WEAPON3:
+			fireweapon(ent, 2);
 			break;
 
 		case EV_USE_ITEM1:	// teleporter
@@ -779,8 +785,14 @@ ClientThink_real(gentity_t *ent)
 		client->ps.speed *= 1.3;
 
 	// Let go of the hook if we aren't firing
-	if(client->ps.weapon == WP_GRAPPLING_HOOK &&
+	if(client->ps.weapon[0] == WP_GRAPPLING_HOOK &&
 	   client->hook && !(ucmd->buttons & BUTTON_ATTACK))
+		weapon_hook_free(client->hook);
+	if(client->ps.weapon[1] == WP_GRAPPLING_HOOK &&
+	   client->hook && !(ucmd->buttons & BUTTON_ATTACK2))
+		weapon_hook_free(client->hook);
+	if(client->ps.weapon[2] == WP_GRAPPLING_HOOK &&
+	   client->hook && !(ucmd->buttons & BUTTON_HOOK))
 		weapon_hook_free(client->hook);
 
 	// set up for pmove
@@ -790,8 +802,8 @@ ClientThink_real(gentity_t *ent)
 
 	// check for the hit-scan gauntlet, don't let the action
 	// go through as an attack unless it actually hits something
-	if(client->ps.weapon == WP_GAUNTLET && !(ucmd->buttons & BUTTON_TALK) &&
-	   (ucmd->buttons & BUTTON_ATTACK) && client->ps.weaponTime <= 0)
+	if(client->ps.weapon[0] == WP_GAUNTLET && !(ucmd->buttons & BUTTON_TALK) &&
+	   (ucmd->buttons & BUTTON_ATTACK) && client->ps.weaponTime[0] <= 0)
 		pm.gauntlethit = chkgauntletattack(ent);
 
 	if(ent->flags & FL_FORCE_GESTURE){

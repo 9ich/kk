@@ -323,8 +323,8 @@ CG_ItemPickup(int itemNum)
 	if(bg_itemlist[itemNum].type == IT_WEAPON)
 		// select it immediately
 		if(cg_autoswitch.integer && bg_itemlist[itemNum].tag != WP_MACHINEGUN){
-			cg.weapseltime = cg.time;
-			cg.weapsel = bg_itemlist[itemNum].tag;
+			cg.weapseltime[0] = cg.time;
+			cg.weapsel[0] = bg_itemlist[itemNum].tag;
 		}
 
 }
@@ -603,7 +603,15 @@ entevent(centity_t *cent, vec3_t position)
 		break;
 	case EV_FIRE_WEAPON:
 		DEBUGNAME("EV_FIRE_WEAPON");
-		fireweap(cent);
+		fireweap(cent, 0);
+		break;
+	case EV_FIRE_WEAPON2:
+		DEBUGNAME("EV_FIRE_WEAPON2");
+		fireweap(cent, 1);
+		break;
+	case EV_FIRE_WEAPON3:
+		DEBUGNAME("EV_FIRE_WEAPON3");
+		fireweap(cent, 2);
 		break;
 
 	case EV_USE_ITEM0:
@@ -753,24 +761,24 @@ entevent(centity_t *cent, vec3_t position)
 	case EV_MISSILE_HIT:
 		DEBUGNAME("EV_MISSILE_HIT");
 		ByteToDir(es->eventParm, dir);
-		missilehitplayer(es->weapon, position, dir, es->otherEntityNum);
+		missilehitplayer(es->weapon[0], position, dir, es->otherEntityNum);
 		break;
 
 	case EV_MISSILE_MISS:
 		DEBUGNAME("EV_MISSILE_MISS");
 		ByteToDir(es->eventParm, dir);
-		missilehitwall(es->weapon, 0, position, dir, IMPACTSOUND_DEFAULT);
+		missilehitwall(es->weapon[0], 0, position, dir, IMPACTSOUND_DEFAULT);
 		break;
 
 	case EV_MISSILE_MISS_METAL:
 		DEBUGNAME("EV_MISSILE_MISS_METAL");
 		ByteToDir(es->eventParm, dir);
-		missilehitwall(es->weapon, 0, position, dir, IMPACTSOUND_METAL);
+		missilehitwall(es->weapon[0], 0, position, dir, IMPACTSOUND_METAL);
 		break;
 
 	case EV_RAILTRAIL:
 		DEBUGNAME("EV_RAILTRAIL");
-		cent->currstate.weapon = WP_RAILGUN;
+		cent->currstate.weapon[0] = WP_RAILGUN;
 
 		if(es->clientNum == cg.snap->ps.clientNum && !cg.thirdperson){
 			if(cg_drawGun.integer == 2)
@@ -784,7 +792,7 @@ entevent(centity_t *cent, vec3_t position)
 		// if the end was on a nomark surface, don't make an explosion
 		if(es->eventParm != 255){
 			ByteToDir(es->eventParm, dir);
-			missilehitwall(es->weapon, es->clientNum, position, dir, IMPACTSOUND_DEFAULT);
+			missilehitwall(es->weapon[0], es->clientNum, position, dir, IMPACTSOUND_DEFAULT);
 		}
 		break;
 

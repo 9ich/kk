@@ -85,26 +85,28 @@ tossclientitems(gentity_t *self)
 		return;
 
 	// drop the weapon if not a gauntlet or machinegun
-	weapon = self->s.weapon;
+	for(i = 0; i < 3; i++){
+		weapon = self->s.weapon[i];
 
-	// make a special check to see if they are changing to a new
-	// weapon that isn't the mg or gauntlet.  Without this, a client
-	// can pick up a weapon, be killed, and not drop the weapon because
-	// their weapon change hasn't completed yet and they are still holding the MG.
-	if(weapon == WP_MACHINEGUN || weapon == WP_GRAPPLING_HOOK){
-		if(self->client->ps.weaponstate == WEAPON_DROPPING)
-			weapon = self->client->pers.cmd.weapon;
-		if(!(self->client->ps.stats[STAT_WEAPONS] & (1 << weapon)))
-			weapon = WP_NONE;
-	}
+		// make a special check to see if they are changing to a new
+		// weapon that isn't the mg or gauntlet.  Without this, a client
+		// can pick up a weapon, be killed, and not drop the weapon because
+		// their weapon change hasn't completed yet and they are still holding the MG.
+		if(weapon == WP_MACHINEGUN || weapon == WP_GRAPPLING_HOOK){
+			if(self->client->ps.weaponstate[i] == WEAPON_DROPPING)
+				weapon = self->client->pers.cmd.weapon[i];
+			if(!(self->client->ps.stats[STAT_WEAPONS] & (1 << weapon)))
+				weapon = WP_NONE;
+		}
 
-	if(weapon > WP_MACHINEGUN && weapon != WP_GRAPPLING_HOOK &&
-	   self->client->ps.ammo[weapon]){
-		// find the item type for this weapon
-		item = finditemforweapon(weapon);
+		if(weapon > WP_MACHINEGUN && weapon != WP_GRAPPLING_HOOK &&
+		   self->client->ps.ammo[weapon]){
+			// find the item type for this weapon
+			item = finditemforweapon(weapon);
 
-		// spawn the item
-		itemdrop(self, item, 0);
+			// spawn the item
+			itemdrop(self, item, 0);
+		}
 	}
 
 	// drop all the powerups if not in teamplay
@@ -630,7 +632,8 @@ player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damag
 
 	self->takedmg = qtrue;	// can still be gibbed
 
-	self->s.weapon = WP_NONE;
+	self->s.weapon[0] = WP_NONE;
+	self->s.weapon[1] = WP_NONE;
 	self->s.powerups = 0;
 	self->r.contents = CONTENTS_CORPSE;
 

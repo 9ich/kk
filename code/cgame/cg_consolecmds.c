@@ -205,6 +205,8 @@ static consoleCommand_t commands[] = {
 	{"sizedown", CG_SizeDown_f},
 	{"weapnext", CG_NextWeapon_f},
 	{"weapprev", CG_PrevWeapon_f},
+	{"weapnext2", CG_NextWeapon2_f},
+	{"weapprev2", CG_PrevWeapon2_f},
 	{"weapon", CG_Weapon_f},
 	{"tcmd", CG_TargetCommand_f},
 	{"tell_target", CG_TellTarget_f},

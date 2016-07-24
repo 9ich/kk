@@ -469,9 +469,9 @@ trap_GetUserCmd(int cmdNumber, usercmd_t *ucmd)
 }
 
 void
-trap_SetUserCmdValue(int stateValue, float sensitivityScale)
+trap_SetUserCmdValue(int val0, int val1, int val2, float sensitivityScale)
 {
-	syscall(CG_SETUSERCMDVALUE, stateValue, PASSFLOAT(sensitivityScale));
+	syscall(CG_SETUSERCMDVALUE, val0, val1, val2 PASSFLOAT(sensitivityScale));
 }
 
 void

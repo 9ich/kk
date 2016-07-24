@@ -269,14 +269,14 @@ drawstatusbar(void)
 	setalign("left");
 
 	// ammo
-	if(cent->currstate.weapon){
-		if(cg.pps.weaponTime > 100){
+	if(cent->currstate.weapon[0]){
+		if(cg.pps.weaponTime[0] > 100){
 			// draw weapontime indicator
-			coloralpha(clr, CWhite, sawtoothwave(cg.pps.weaponTime, 8, 0, 1));
+			coloralpha(clr, CWhite, sawtoothwave(cg.pps.weaponTime[0], 8, 0, 1));
 			fillrect(0.5f*screenwidth() + 100, 305, 6, 6, clr);
 		}
 
-		value = ps->ammo[cent->currstate.weapon];
+		value = ps->ammo[cent->currstate.weapon[0]];
 		if(value > -1)
 			drawhudfield(0.5f*screenwidth() + 75, 320, va("%d", value), CWhite);
 		
@@ -285,8 +285,8 @@ drawstatusbar(void)
 		// draw a 2D icon for ammo
 		if(cg_drawIcons.integer){
 			drawpic(0.5f*screenwidth() + 74 - 2, 300 - 2, 16 + 4, 16 + 4, cgs.media.selectShader);
-			drawpic(0.5f*screenwidth() + 74, 300, 16, 16, cg_weapons[cg.pps.weapon].ammoicon);
-			drawstring(0.5f*screenwidth() + 100, 316, cg_weapons[cg.pps.weapon].item->pickupname, FONT3, 7, CWhite);
+			drawpic(0.5f*screenwidth() + 74, 300, 16, 16, cg_weapons[cg.pps.weapon[0]].ammoicon);
+			drawstring(0.5f*screenwidth() + 100, 316, cg_weapons[cg.pps.weapon[0]].item->pickupname, FONT3, 7, CWhite);
 		}
 	}
 
@@ -2092,7 +2092,9 @@ draw2d(stereoFrame_t stereoFrame)
 			if(stereoFrame == STEREO_CENTER)
 				drawxhair();
 			drawxhairnames();
-			drawweapsel();
+			drawweapsel(0);
+			drawweapsel(1);
+			drawweapsel(2);
 
 			drawholdable();
 		}
