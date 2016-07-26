@@ -1404,7 +1404,6 @@ typedef struct {
 	qboolean textureNonPowerOfTwo;
 	qboolean textureFloat;
 	qboolean halfFloatPixel;
-	qboolean packedDepthStencil;
 	textureCompressionRef_t textureCompression;
 	qboolean swizzleNormalmap;
 	

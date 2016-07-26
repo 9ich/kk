@@ -266,8 +266,8 @@ vao_t *R_CreateVao(const char *name, byte *vertexes, int vertexesSize, byte *ind
 
 	if (glRefConfig.vertexArrayObject)
 	{
-		qglGenVertexArraysARB(1, &vao->vao);
-		qglBindVertexArrayARB(vao->vao);
+		qglGenVertexArrays(1, &vao->vao);
+		qglBindVertexArray(vao->vao);
 	}
 
 
@@ -387,8 +387,8 @@ vao_t *R_CreateVao2(const char *name, int numVertexes, srfVert_t *verts, int num
 
 	if (glRefConfig.vertexArrayObject)
 	{
-		qglGenVertexArraysARB(1, &vao->vao);
-		qglBindVertexArrayARB(vao->vao);
+		qglGenVertexArrays(1, &vao->vao);
+		qglBindVertexArray(vao->vao);
 	}
 
 
@@ -484,7 +484,7 @@ void R_BindVao(vao_t * vao)
 
 		if (glRefConfig.vertexArrayObject)
 		{
-			qglBindVertexArrayARB(vao->vao);
+			qglBindVertexArray(vao->vao);
 
 			// why you no save GL_ELEMENT_ARRAY_BUFFER binding, Intel?
 			if (1)
@@ -519,7 +519,7 @@ void R_BindNullVao(void)
 	{
 		if (glRefConfig.vertexArrayObject)
 		{
-			qglBindVertexArrayARB(0);
+			qglBindVertexArray(0);
 
 			// why you no save GL_ELEMENT_ARRAY_BUFFER binding, Intel?
 			if (1) qglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -658,7 +658,7 @@ void R_ShutdownVaos(void)
 		vao = tr.vaos[i];
 
 		if(vao->vao)
-			qglDeleteVertexArraysARB(1, &vao->vao);
+			qglDeleteVertexArrays(1, &vao->vao);
 
 		if(vao->vertexesVBO)
 		{
