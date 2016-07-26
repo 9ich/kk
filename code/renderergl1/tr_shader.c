@@ -832,6 +832,126 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 				depthMaskBits = 0;
 			}
 		}
+		else if(!Q_stricmp(token, "stage"))
+		{
+			token = COM_ParseExt(text, qfalse);
+			if(token[0] == 0)
+			{
+				ri.Printf(PRINT_WARNING, "WARNING: missing parameters for stage in shader '%s'\n", shader.name);
+				continue;
+			}
+
+			// if this stage is not a diffuse map, skip the rest
+			// of the block
+			if(Q_stricmp(token, "diffuseMap") != 0)
+			{
+				while(token[0] != 0 && token[0] != '}')
+					token = COM_ParseExt(text, qtrue);
+				break;
+			}
+		}
+		//
+		// specularReflectance <value>
+		//
+		else if (!Q_stricmp(token, "specularreflectance"))
+		{
+			// ignore
+			token = COM_ParseExt(text, qfalse);
+		}
+		//
+		// specularExponent <value>
+		//
+		else if (!Q_stricmp(token, "specularexponent"))
+		{
+			// ignore
+			token = COM_ParseExt(text, qfalse);
+		}
+		//
+		// gloss <value>
+		//
+		else if (!Q_stricmp(token, "gloss"))
+		{
+			// ignore
+			token = COM_ParseExt(text, qfalse);
+		}
+		//
+		// roughness <value>
+		//
+		else if (!Q_stricmp(token, "roughness"))
+		{
+			// ignore
+			token = COM_ParseExt(text, qfalse);
+		}
+		//
+		// parallaxDepth <value>
+		//
+		else if (!Q_stricmp(token, "parallaxdepth"))
+		{
+			// ignore
+			token = COM_ParseExt(text, qfalse);
+		}
+		//
+		// normalScale <xy>
+		// or normalScale <x> <y>
+		// or normalScale <x> <y> <height>
+		//
+		else if (!Q_stricmp(token, "normalscale"))
+		{
+			// ignore
+			token = COM_ParseExt(text, qfalse);
+			if ( token[0] == 0 )
+			{
+				continue;
+			}
+
+			token = COM_ParseExt(text, qfalse);
+			if ( token[0] == 0 )
+			{
+				// one value, applies to X/Y
+				continue;
+			}
+
+			token = COM_ParseExt(text, qfalse);
+			if ( token[0] == 0 )
+			{
+				// two values, no height
+				continue;
+			}
+		}
+		//
+		// specularScale <rgb> <gloss>
+		// or specularScale <metallic> <smoothness> with r_pbr 1
+		// or specularScale <r> <g> <b>
+		// or specularScale <r> <g> <b> <gloss>
+		//
+		else if (!Q_stricmp(token, "specularscale"))
+		{
+			// ignore
+			token = COM_ParseExt(text, qfalse);
+			if ( token[0] == 0 )
+			{
+				continue;
+			}
+
+			token = COM_ParseExt(text, qfalse);
+			if ( token[0] == 0 )
+			{
+				continue;
+			}
+
+			token = COM_ParseExt(text, qfalse);
+			if ( token[0] == 0 )
+			{
+				continue;
+			}
+
+			token = COM_ParseExt(text, qfalse);
+			if ( token[0] == 0 )
+			{
+				// three values, rgb
+				continue;
+			}
+		}
 		//
 		// rgbGen
 		//
