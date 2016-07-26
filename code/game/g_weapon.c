@@ -594,10 +594,10 @@ GRAPPLING HOOK
 void
 Weapon_GrapplingHook_Fire(gentity_t *ent)
 {
-	if(!ent->client->fireheld && !ent->client->hook)
+	if(!ent->client->fireheld[2] && !ent->client->hook)
 		fire_grapple(ent, muzzle, forward);
 
-	ent->client->fireheld = qtrue;
+	ent->client->fireheld[2] = qtrue;
 }
 
 void

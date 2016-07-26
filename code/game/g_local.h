@@ -331,7 +331,7 @@ struct gclient_s
 
 	int		killsthislife;		// number of enemies killed since respawning, for AWARD_SADDAY
 
-	qboolean	fireheld;		// used for hook
+	qboolean	fireheld[WS_NUMSLOTS];		// used for hook
 	gentity_t	*hook;			// grapple hook if out
 
 	int		switchteamtime;		// time the player switched teams

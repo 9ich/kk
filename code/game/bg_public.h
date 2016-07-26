@@ -272,6 +272,8 @@ typedef enum
 #define EF_TALK			0x00001000	// draw a talk balloon
 #define EF_CONNECTION		0x00002000	// draw a connection trouble sprite
 #define EF_VOTED		0x00004000	// already cast a vote
+#define EF_FIRING2		0x00008000	// weapon slot 2
+#define EF_FIRING3		0x00010000	// weapon slot 3
 #define EF_TEAMVOTED		0x00080000	// already cast a team vote
 
 // may not have more than 32 (MAX_AWARDS)

@@ -1097,12 +1097,18 @@ PmoveSingle(pmove_t *pmove)
 
 	// set the firing flag for continuous beam weapons
 	if(!(pm->ps->pm_flags & PMF_RESPAWNED) && pm->ps->pm_type != PM_INTERMISSION && pm->ps->pm_type != PM_NOCLIP){
-		if(((pm->cmd.buttons & BUTTON_ATTACK) && pm->ps->ammo[pm->ps->weapon[0]]) &&
-		   ((pm->cmd.buttons & BUTTON_ATTACK2) && pm->ps->ammo[pm->ps->weapon[1]]) &&
-		   ((pm->cmd.buttons & BUTTON_HOOK) && pm->ps->ammo[pm->ps->weapon[2]]))
+		if(((pm->cmd.buttons & BUTTON_ATTACK) && pm->ps->ammo[pm->ps->weapon[0]]))
 			pm->ps->eFlags |= EF_FIRING;
 		else
 			pm->ps->eFlags &= ~EF_FIRING;
+		if((pm->cmd.buttons & BUTTON_ATTACK2) && pm->ps->ammo[pm->ps->weapon[1]])
+			pm->ps->eFlags |= EF_FIRING2;
+		else
+			pm->ps->eFlags &= ~EF_FIRING2;
+		if((pm->cmd.buttons & BUTTON_HOOK) && pm->ps->ammo[pm->ps->weapon[2]])
+			pm->ps->eFlags |= EF_FIRING3;
+		else
+			pm->ps->eFlags &= ~EF_FIRING3;
 	}
 
 	// clear the respawned flag if attack and use are cleared

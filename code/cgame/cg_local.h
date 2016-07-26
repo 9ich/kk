@@ -163,7 +163,6 @@ typedef struct
 	lerpFrame_t	legs, torso, flag;
 	int		paintime;
 	int		paindir;	// flip from 0 to 1
-	int		lightningfiring;
 
 	int		railfiretime;
 

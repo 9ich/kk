@@ -774,7 +774,7 @@ angle)
 ===============
 */
 static void
-CG_LightningBolt(centity_t *cent, vec3_t origin)
+CG_LightningBolt(centity_t *cent, vec3_t origin, int slot)
 {
 	trace_t trace;
 	refEntity_t beam;
@@ -782,8 +782,7 @@ CG_LightningBolt(centity_t *cent, vec3_t origin)
 	vec3_t muzzlePoint, endPoint;
 	int anim;
 
-	if(cent->currstate.weapon[0] != WP_LIGHTNING &&
-	   cent->currstate.weapon[1] != WP_LIGHTNING)
+	if(cent->currstate.weapon[slot] != WP_LIGHTNING)
 		return;
 
 	memset(&beam, 0, sizeof(beam));
@@ -863,70 +862,6 @@ CG_LightningBolt(centity_t *cent, vec3_t origin)
 		trap_R_AddRefEntityToScene(&beam);
 	}
 }
-
-/*
-
-static void CG_LightningBolt( centity_t *cent, vec3_t origin ) {
-        trace_t		trace;
-        refEntity_t		beam;
-        vec3_t			forward;
-        vec3_t			muzzlePoint, endPoint;
-
-        if ( cent->currstate.weapon != WP_LIGHTNING ) {
-                return;
-        }
-
-        memset( &beam, 0, sizeof( beam ) );
-
-        // find muzzle point for this frame
-        veccpy( cent->lerporigin, muzzlePoint );
-        anglevecs( cent->lerpangles, forward, nil, nil );
-
-        // FIXME: crouch
-        muzzlePoint[2] += DEFAULT_VIEWHEIGHT;
-
-        vecmad( muzzlePoint, 14, forward, muzzlePoint );
-
-        // project forward by the lightning range
-        vecmad( muzzlePoint, LIGHTNING_RANGE, forward, endPoint );
-
-        // see if it hit a wall
-        cgtrace( &trace, muzzlePoint, vec3_origin, vec3_origin, endPoint,
-                cent->currstate.number, MASK_SHOT );
-
-        // this is the endpoint
-        veccpy( trace.endpos, beam.oldorigin );
-
-        // use the provided origin, even though it may be slightly
-        // different than the muzzle origin
-        veccpy( origin, beam.origin );
-
-        beam.reType = RT_LIGHTNING;
-        beam.customShader = cgs.media.lightningShader;
-        trap_R_AddRefEntityToScene( &beam );
-
-        // add the impact flare if it hit something
-        if ( trace.fraction < 1.0 ) {
-                vec3_t	angles;
-                vec3_t	dir;
-
-                vecsub( beam.oldorigin, beam.origin, dir );
-                vecnorm( dir );
-
-                memset( &beam, 0, sizeof( beam ) );
-                beam.hModel = cgs.media.lightningExplosionModel;
-
-                vecmad( trace.endpos, -16, dir, beam.origin );
-
-                // make a random orientation
-                angles[0] = rand() % 360;
-                angles[1] = rand() % 360;
-                angles[2] = rand() % 360;
-                AnglesToAxis( angles, beam.axis );
-                trap_R_AddRefEntityToScene( &beam );
-        }
-}
-*/
 
 /*
 ======================
@@ -1013,6 +948,7 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team,
 	weaponInfo_t *weapon;
 	centity_t *nonPredictedCent;
 	orientation_t lerped;
+	int firingmask;
 
 	weaponNum = cent->currstate.weapon[slot];
 
@@ -1042,13 +978,17 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team,
 	if(!gun.hModel)
 		return;
 
+	firingmask = EF_FIRING;
+	if(slot == 1)
+		firingmask = EF_FIRING2;
+	else if(slot == 2)
+		firingmask = EF_FIRING3;
+
 	if(!ps){
 		// add weapon ready sound
-		cent->pe.lightningfiring = qfalse;
-		if((cent->currstate.eFlags & EF_FIRING) && weapon->firingsound){
+		if((cent->currstate.eFlags & firingmask) && weapon->firingsound){
 			// lightning gun and guantlet make a different sound when fire is held down
 			trap_S_AddLoopingSound(cent->currstate.number, cent->lerporigin, vec3_origin, weapon->firingsound);
-			cent->pe.lightningfiring = qtrue;
 		}else if(weapon->rdysound)
 			trap_S_AddLoopingSound(cent->currstate.number, cent->lerporigin, vec3_origin, weapon->rdysound);
 	}
@@ -1101,12 +1041,12 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team,
 
 	// add the flash
 	if((weaponNum == WP_LIGHTNING || weaponNum == WP_GAUNTLET || weaponNum == WP_GRAPPLING_HOOK)
-	   && (nonPredictedCent->currstate.eFlags & EF_FIRING)){
+	   && (nonPredictedCent->currstate.eFlags & firingmask)){
 		// continuous flash
 	}else
-	// impulse flash
-	if(cg.time - cent->muzzleflashtime[slot] > MUZZLE_FLASH_TIME)
-		return;
+		// impulse flash
+		if(cg.time - cent->muzzleflashtime[slot] > MUZZLE_FLASH_TIME)
+			return;
 
 
 	memset(&flash, 0, sizeof(flash));
@@ -1115,7 +1055,7 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team,
 	// add lightning bolt
 	if(ps || cg.thirdperson ||
 	   cent->currstate.number != cg.pps.clientNum){
-		CG_LightningBolt(nonPredictedCent, flash.origin);
+		CG_LightningBolt(nonPredictedCent, flash.origin, slot);
 
 		if(weapon->flashcolor[0] || weapon->flashcolor[1] || weapon->flashcolor[2])
 			trap_R_AddLightToScene(flash.origin, 300 + (rand()&31), weapon->flashcolor[0],
@@ -1177,6 +1117,7 @@ addviewweap(playerState_t *ps)
 
 
 	// allow the gun to be completely removed
+	// but still draw the lg
 	if(!cg_drawGun.integer){
 		vec3_t origin;
 
@@ -1184,7 +1125,9 @@ addviewweap(playerState_t *ps)
 			// special hack for lightning gun...
 			veccpy(cg.refdef.vieworg, origin);
 			vecmad(origin, -8, cg.refdef.viewaxis[2], origin);
-			CG_LightningBolt(&cg_entities[ps->clientNum], origin);
+			CG_LightningBolt(&cg_entities[ps->clientNum], origin, 0);
+			CG_LightningBolt(&cg_entities[ps->clientNum], origin, 1);
+			CG_LightningBolt(&cg_entities[ps->clientNum], origin, 2);
 		}
 		return;
 	}
@@ -1596,6 +1539,7 @@ fireweap(centity_t *cent, int slot)
 	entityState_t *ent;
 	int c;
 	weaponInfo_t *weap;
+	int firingmask;
 
 	ent = &cent->currstate;
 	if(ent->weapon[slot] == WP_NONE)
@@ -1610,9 +1554,15 @@ fireweap(centity_t *cent, int slot)
 	// append the flash to the weapon model
 	cent->muzzleflashtime[slot] = cg.time;
 
+	firingmask = EF_FIRING;
+	if(slot == 1)
+		firingmask = EF_FIRING2;
+	else if(slot == 2)
+		firingmask = EF_FIRING3;
+
 	// lightning gun only does this this on initial press
 	if(ent->weapon[slot] == WP_LIGHTNING)
-		if(cent->pe.lightningfiring)
+		if(cent->currstate.eFlags & firingmask)
 			return;
 
 	if(ent->weapon[slot] == WP_RAILGUN)

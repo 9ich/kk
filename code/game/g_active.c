@@ -465,7 +465,7 @@ void
 ClientIntermissionThink(gclient_t *client)
 {
 	client->ps.eFlags &= ~EF_TALK;
-	client->ps.eFlags &= ~EF_FIRING;
+	client->ps.eFlags &= ~(EF_FIRING | EF_FIRING2 | EF_FIRING3);
 
 	// the level will exit when everyone wants to or after timeouts
 
@@ -869,7 +869,11 @@ ClientThink_real(gentity_t *ent)
 	sendpredictableevents(&ent->client->ps);
 
 	if(!(ent->client->ps.eFlags & EF_FIRING))
-		client->fireheld = qfalse;	// for grapple
+		client->fireheld[0] = qfalse;	// for grapple
+	if(!(ent->client->ps.eFlags & EF_FIRING2))
+		client->fireheld[1] = qfalse;	// for grapple
+	if(!(ent->client->ps.eFlags & EF_FIRING3))
+		client->fireheld[2] = qfalse;	// for grapple
 
 	// use the snapped origin for linking so it matches client predicted versions
 	veccpy(ent->s.pos.trBase, ent->r.currentOrigin);
