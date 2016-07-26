@@ -185,6 +185,8 @@ shockwave(vec3_t pt, float radius)
 	re->hModel = cgs.media.shockwaveModel;
 
 	veccpy(pt, re->origin);
+
+	return le;
 }
 
 /*

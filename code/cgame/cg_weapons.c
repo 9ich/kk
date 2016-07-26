@@ -1239,7 +1239,7 @@ addviewweap(playerState_t *ps)
 	addplayerweap(&hand, ps, &cg.pplayerent, ps->persistant[PERS_TEAM], 0);
 
 	//
-	// slot 0
+	// slot 1
 	//
 	registerweap(ps->weapon[1]);
 	weapon = &cg_weapons[ps->weapon[1]];
@@ -1290,22 +1290,30 @@ drawweapsel
 ===================
 */
 void
-drawweapsel(int slot)
+drawweapsel(void)
 {
+	const float sz = 18, h = 29, pad = 4;
+	const int font = FONT1, fontsz = 8;
+	float strw, strh;
 	int i;
 	int bits;
 	int count;
 	int x, y;
 	char *name;
-	float *color;
+	float *color, *color2;
+	vec4_t priclr, secclr;
 
 	// don't display if dead
 	if(cg.pps.stats[STAT_HEALTH] <= 0)
 		return;
 
-	color = fadecolor(cg.weapseltime[slot], WEAPON_SELECT_TIME);
-	if(!color)
+	// display if we're selecting either primary or secondary weapon
+	color = fadecolor(cg.weapseltime[0], WEAPON_SELECT_TIME);
+	color2 = fadecolor(cg.weapseltime[1], WEAPON_SELECT_TIME);
+	if(!color && !color2)
 		return;
+	if(color2[3] > color[3])
+		color = color2;
 	trap_R_SetColor(color);
 
 	// showing weapon select clears pickup item display, but not the blend blob
@@ -1313,13 +1321,21 @@ drawweapsel(int slot)
 
 	// count the number of weapons owned
 	bits = cg.snap->ps.stats[STAT_WEAPONS];
+	bits &= ~(1 << WP_GRAPPLING_HOOK);		// do not display the grappling hook
 	count = 0;
 	for(i = 1; i < MAX_WEAPONS; i++)
 		if(bits & (1 << i))
 			count++;
 
-	x = 0.5f*screenwidth() - count * 20;
-	y = 430;
+	//x = 0.5f*screenwidth() - count * 20;
+	x = 40;
+	//y = 50;
+	y = 0.5f*screenheight() - count * h/2;
+
+	Vector4Copy(CLightBlue, priclr);
+	Vector4Copy(CLightSalmon, secclr);
+	priclr[3] = color[3];
+	secclr[3] = color[3];
 
 	for(i = 1; i < MAX_WEAPONS; i++){
 		if(!(bits & (1 << i)))
@@ -1328,29 +1344,39 @@ drawweapsel(int slot)
 		registerweap(i);
 
 		// draw weapon icon
-		drawpic(x, y, 32, 32, cg_weapons[i].icon);
+		drawpic(x, y, sz, sz, cg_weapons[i].icon);
+		// ammo count
+		if(cg.pps.ammo[i] != -1)
+			drawstring(x + sz + 2*pad, y + 10, va("%d", cg.pps.ammo[i]), font, 12, color);
 
 		// draw selection marker
-		if(i == cg.weapsel[slot])
-			drawpic(x-4, y-4, 40, 40, cgs.media.selectShader);
-
-		// no ammo cross on top
-		if(!cg.snap->ps.ammo[i])
-			drawpic(x, y, 32, 32, cgs.media.noammoShader);
-
-		x += 40;
-	}
-
-	// draw the selected name
-	if(cg_weapons[cg.weapsel[slot]].item){
-		name = cg_weapons[cg.weapsel[slot]].item->pickupname;
-		if(name){
-			setalign("center");
-			drawbigstr(0.5f*screenwidth(), y - 22, name, 1.0f);
-			setalign("");
+		if(i == cg.weapsel[0]){
+			// pri/sec
+			strw = stringwidth("1", font, 7, 0, -1);
+			drawstring(x - 2*pad - strw, y, "1", font, 7, priclr);
+			// name
+			drawstring(x + sz + 2*pad, y, cg_weapons[i].item->pickupname, font, 8, priclr);
+			// icon
+			trap_R_SetColor(priclr);
+			drawpic(x - pad, y - pad, sz + 2*pad, sz + 2*pad, cgs.media.selectShader);
+			trap_R_SetColor(color);
 		}
-	}
 
+		if(i == cg.weapsel[1]){
+			// pri/sec
+			strw = stringwidth("2", font, 7, 0, -1);
+			strh = stringheight("2", font, 7);
+			drawstring(x - 2*pad - strw, y + sz - strh, "2", font, 7, secclr);
+			// name
+			drawstring(x + sz + 2*pad, y, cg_weapons[i].item->pickupname, font, 8, secclr);
+			// icon
+			trap_R_SetColor(secclr);
+			drawpic(x - pad, y - pad, sz + 2*pad, sz + 2*pad, cgs.media.selectShader);
+			trap_R_SetColor(color);
+		}
+
+		y += h;
+	}
 	trap_R_SetColor(nil);
 }
 
@@ -1360,8 +1386,10 @@ weapselectable
 ===============
 */
 static qboolean
-weapselectable(int i)
+weapselectable(int slot, int i)
 {
+	if(slot != 2 && i == WP_GRAPPLING_HOOK)
+		return qfalse;
 	if(!cg.snap->ps.ammo[i])
 		return qfalse;
 	if(!(cg.snap->ps.stats[STAT_WEAPONS] & (1 << i)))
@@ -1395,7 +1423,7 @@ CG_NextWeapon_f(void)
 			cg.weapsel[0] = 0;
 		if(cg.weapsel[0] == WP_GAUNTLET)
 			continue;	// never cycle to gauntlet
-		if(weapselectable(cg.weapsel[0]))
+		if(weapselectable(0, cg.weapsel[0]))
 			break;
 	}
 	if(i == MAX_WEAPONS)
@@ -1427,7 +1455,7 @@ CG_PrevWeapon_f(void)
 			cg.weapsel[0] = MAX_WEAPONS - 1;
 		if(cg.weapsel[0] == WP_GAUNTLET)
 			continue;	// never cycle to gauntlet
-		if(weapselectable(cg.weapsel[0]))
+		if(weapselectable(0, cg.weapsel[0]))
 			break;
 	}
 	if(i == MAX_WEAPONS)
@@ -1459,7 +1487,7 @@ CG_NextWeapon2_f(void)
 			cg.weapsel[1] = 0;
 		if(cg.weapsel[1] == WP_GAUNTLET)
 			continue;	// never cycle to gauntlet
-		if(weapselectable(cg.weapsel[1]))
+		if(weapselectable(1, cg.weapsel[1]))
 			break;
 	}
 	if(i == MAX_WEAPONS)
@@ -1491,7 +1519,7 @@ CG_PrevWeapon2_f(void)
 			cg.weapsel[1] = MAX_WEAPONS - 1;
 		if(cg.weapsel[1] == WP_GAUNTLET)
 			continue;	// never cycle to gauntlet
-		if(weapselectable(cg.weapsel[1]))
+		if(weapselectable(1, cg.weapsel[1]))
 			break;
 	}
 	if(i == MAX_WEAPONS)
@@ -1541,7 +1569,7 @@ outofammochange(void)
 	cg.weapseltime[0] = cg.time;
 
 	for(i = MAX_WEAPONS-1; i > 0; i--)
-		if(weapselectable(i)){
+		if(weapselectable(0, i)){
 			cg.weapsel[0] = i;
 			break;
 		}

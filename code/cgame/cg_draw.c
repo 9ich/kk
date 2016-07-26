@@ -2092,9 +2092,7 @@ draw2d(stereoFrame_t stereoFrame)
 			if(stereoFrame == STEREO_CENTER)
 				drawxhair();
 			drawxhairnames();
-			drawweapsel(0);
-			drawweapsel(1);
-			drawweapsel(2);
+			drawweapsel();
 
 			drawholdable();
 		}
