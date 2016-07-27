@@ -865,9 +865,9 @@ CG_AddPainTwitch(centity_t *cent, vec3_t torsoAngles)
 	f = 1.0 - (float)t / PAIN_TWITCH_TIME;
 
 	if(cent->pe.paindir)
-		torsoAngles[ROLL] += 20 * f;
+		torsoAngles[ROLL] += f;
 	else
-		torsoAngles[ROLL] -= 20 * f;
+		torsoAngles[ROLL] -= f;
 }
 
 /*
