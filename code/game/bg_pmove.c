@@ -47,23 +47,12 @@ float pm_spectatorfriction = 5.0f;
 
 int c_pmove = 0;
 
-/*
-===============
-pmaddevent
-
-===============
-*/
 void
 pmaddevent(int newEvent)
 {
 	bgaddpredictableevent(newEvent, 0, pm->ps);
 }
 
-/*
-===============
-pmaddtouchent
-===============
-*/
 void
 pmaddtouchent(int entityNum)
 {
@@ -84,36 +73,26 @@ pmaddtouchent(int entityNum)
 	pm->numtouch++;
 }
 
-/*
-===================
-PM_StartTorsoAnim
-===================
-*/
 static void
-PM_StartTorsoAnim(int anim)
+pmbeginanim(int anim)
 {
 	if(pm->ps->pm_type >= PM_DEAD)
 		return;
-	pm->ps->torsoAnim = ((pm->ps->torsoAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT)
-			    | anim;
+	pm->ps->torsoAnim = ((pm->ps->torsoAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT) | anim;
 }
 
 static void
-PM_ContinueTorsoAnim(int anim)
+pmfinishanim(int anim)
 {
 	if((pm->ps->torsoAnim & ~ANIM_TOGGLEBIT) == anim)
 		return;
 	if(pm->ps->torsoTimer > 0)
 		return;	// a high priority animation is running
-	PM_StartTorsoAnim(anim);
+	pmbeginanim(anim);
 }
 
 /*
-==================
-pmclipvel
-
 Slide off of the impacting surface
-==================
 */
 void
 pmclipvel(vec3_t in, vec3_t normal, vec3_t out, float overbounce)
@@ -135,15 +114,8 @@ pmclipvel(vec3_t in, vec3_t normal, vec3_t out, float overbounce)
 	}
 }
 
-/*
-==================
-PM_Friction
-
-Handles both ground friction and water friction
-==================
-*/
 static void
-PM_Friction(void)
+applyfriction(void)
 {
 	vec3_t vec;
 	float *vel;
@@ -158,9 +130,7 @@ PM_Friction(void)
 
 	speed = veclen(vec);
 	if(speed < 0.01f){
-		vel[0] = 0;
-		vel[1] = 0;
-		vel[2] = 0;
+		vecset(vel, 0, 0, 0);
 		return;
 	}
 
@@ -195,28 +165,36 @@ PM_Friction(void)
 		newspeed = 0;
 	newspeed /= speed;
 
-	vel[0] = vel[0] * newspeed;
-	vel[1] = vel[1] * newspeed;
-	vel[2] = vel[2] * newspeed;
+	vecmul(vel, newspeed, vel);
 }
 
 /*
-==============
-PM_Accelerate
-
 Handles user intended acceleration
-==============
 */
 static void
-PM_Accelerate(vec3_t wishdir, float wishspeed, float accel)
+pmaccelerate(vec3_t wishdir, float wishspeed, float accel)
 {
 #if 1
+	// the konkrete way, passthrough
 	int i;
 	float accelspeed;
 
 	accelspeed = accel*pml.frametime*wishspeed;
-	for(i = 0; i<3; i++)
-		pm->ps->velocity[i] += accelspeed*wishdir[i];
+	vecmad(pm->ps->velocity, accelspeed, wishdir, pm->ps->velocity);
+
+#elif 0
+	// q2 style
+	int i;
+	float addspeed, accelspeed, currentspeed;
+
+	currentspeed = vecdot(pm->ps->velocity, wishdir);
+	addspeed = wishspeed - currentspeed;
+	if(addspeed <= 0)
+		return;
+	accelspeed = accel*pml.frametime*wishspeed;
+	if(accelspeed > addspeed)
+		accelspeed = addspeed;
+	vecmad(pm->ps->velocity, accelspeed, wishdir, pm->ps->velocity);
 
 #else
 	// proper way (avoids strafe jump maxspeed bug), but feels bad
@@ -237,26 +215,44 @@ PM_Accelerate(vec3_t wishdir, float wishspeed, float accel)
 #endif
 }
 
+/*
+Returns the scale factor to apply to cmd movements
+This allows the clients to use axial -127 to 127 values for all directions
+without getting a sqrt(2) distortion in speed.
+*/
 static float
-PM_CmdScale(usercmd_t *cmd)
+cmdscale(usercmd_t *cmd)
 {
+#if 1	// 1 = allow the speed distortion, 0 = don't
 	float scale;
 
 	// max achievable scale with the old code
 	scale = 127.0f / (127.0f*127.0f);
 	return (float)pm->ps->speed * scale;
+#else
+	int max;
+	float total;
+	float scale;
+
+	max = abs(cmd->forwardmove);
+	if(abs(cmd->rightmove) > max)
+		max = abs(cmd->rightmove);
+	if(abs(cmd->upmove) > max)
+		max = abs(cmd->upmove);
+	if(!max)
+		return 0;
+	total = sqrt(Square(cmd->forwardmove) + Square(cmd->rightmove) + Square(cmd->upmove));
+	scale = max / (127.0f * total);
+	return (float)pm->ps->speed * scale;
+#endif
 }
 
 /*
-================
-PM_SetMovementDir
-
 Determine the rotation of the legs relative
 to the facing dir
-================
 */
 static void
-PM_SetMovementDir(void)
+setmovementdir(void)
 {
 	if(pm->cmd.forwardmove || pm->cmd.rightmove){
 		if(pm->cmd.rightmove == 0 && pm->cmd.forwardmove > 0)
@@ -286,83 +282,8 @@ PM_SetMovementDir(void)
 	}
 }
 
-/*
-=============
-PM_CheckWaterJump
-=============
-*/
-static qboolean
-PM_CheckWaterJump(void)
-{
-	vec3_t spot;
-	int cont;
-	vec3_t flatforward;
-
-	if(pm->ps->pm_time)
-		return qfalse;
-
-	// check for water jump
-	if(pm->waterlevel != 2)
-		return qfalse;
-
-	flatforward[0] = pml.forward[0];
-	flatforward[1] = pml.forward[1];
-	flatforward[2] = 0;
-	vecnorm(flatforward);
-
-	vecmad(pm->ps->origin, 30, flatforward, spot);
-	spot[2] += 4;
-	cont = pm->pointcontents(spot, pm->ps->clientNum);
-	if(!(cont & CONTENTS_SOLID))
-		return qfalse;
-
-	spot[2] += 16;
-	cont = pm->pointcontents(spot, pm->ps->clientNum);
-	if(cont & (CONTENTS_SOLID|CONTENTS_PLAYERCLIP|CONTENTS_BODY))
-		return qfalse;
-
-	// jump out of water
-	vecmul(pml.forward, 200, pm->ps->velocity);
-	pm->ps->velocity[2] = 350;
-
-	pm->ps->pm_flags |= PMF_TIME_WATERJUMP;
-	pm->ps->pm_time = 2000;
-
-	return qtrue;
-}
-
-//============================================================================
-
-/*
-===================
-PM_WaterJumpMove
-
-Flying out of the water
-===================
-*/
 static void
-PM_WaterJumpMove(void)
-{
-	// waterjump has no control, but falls
-
-	pmstepslidemove(qtrue);
-
-	pm->ps->velocity[2] -= pm->ps->gravity * pml.frametime;
-	if(pm->ps->velocity[2] < 0){
-		// cancel as soon as we are falling down again
-		pm->ps->pm_flags &= ~PMF_ALL_TIMES;
-		pm->ps->pm_time = 0;
-	}
-}
-
-/*
-===================
-PM_WaterMove
-
-===================
-*/
-static void
-PM_WaterMove(void)
+watermove(void)
 {
 	int i;
 	vec3_t wishvel;
@@ -371,10 +292,6 @@ PM_WaterMove(void)
 	float scale;
 	float vel;
 
-	if(PM_CheckWaterJump()){
-		PM_WaterJumpMove();
-		return;
-	}
 #if 0
 	// jump = head for surface
 	if(pm->cmd.upmove >= 10)
@@ -388,9 +305,9 @@ PM_WaterMove(void)
 		}
 
 #endif
-	PM_Friction();
+	applyfriction();
 
-	scale = PM_CmdScale(&pm->cmd);
+	scale = cmdscale(&pm->cmd);
 	// user intentions
 	if(!scale){
 		wishvel[0] = 0;
@@ -409,7 +326,7 @@ PM_WaterMove(void)
 	if(wishspeed > pm->ps->speed * pm_swimScale)
 		wishspeed = pm->ps->speed * pm_swimScale;
 
-	PM_Accelerate(wishdir, wishspeed, pm_wateraccelerate);
+	pmaccelerate(wishdir, wishspeed, pm_wateraccelerate);
 
 	// make sure we can go up slopes easily under water
 	if(pml.groundplane && vecdot(pm->ps->velocity, pml.groundtrace.plane.normal) < 0){
@@ -425,120 +342,63 @@ PM_WaterMove(void)
 	pmslidemove(qfalse);
 }
 
-#ifdef MISSIONPACK
-/*
-===================
-PM_InvulnerabilityMove
-
-Only with the invulnerability powerup
-===================
-*/
 static void
-PM_InvulnerabilityMove(void)
-{
-	pm->cmd.forwardmove = 0;
-	pm->cmd.rightmove = 0;
-	pm->cmd.upmove = 0;
-	vecclear(pm->ps->velocity);
-}
-
-#endif
-
-/*
-===================
-PM_FlyMove
-
-Only with the flight powerup
-===================
-*/
-static void
-PM_FlyMove(void)
+specmove(void)
 {
 	int i;
 	vec3_t wishvel;
 	float wishspeed;
 	vec3_t wishdir;
+	vec3_t fwd, right, up;
 	float scale;
 
 	// normal slowdown
-	PM_Friction();
+	applyfriction();
 
-	scale = PM_CmdScale(&pm->cmd);
+	scale = cmdscale(&pm->cmd);
 	// user intentions
 	if(!scale){
-		wishvel[0] = 0;
-		wishvel[1] = 0;
-		wishvel[2] = 0;
+		vecset(wishvel, 0, 0, 0);
 	}else{
-		for(i = 0; i<3; i++)
-			wishvel[i] = scale * pml.forward[i]*pm->cmd.forwardmove + scale * pml.right[i]*pm->cmd.rightmove;
-
-		wishvel[2] += scale * pm->cmd.upmove;
+		vecmul(pml.forward, pm->cmd.forwardmove, fwd);
+		vecmul(pml.right, pm->cmd.rightmove, right);
+		vecmul(pml.up, pm->cmd.upmove, up);
+		vecadd(fwd, right, wishvel);
+		vecadd(wishvel, up, wishvel);
 	}
 
 	veccpy(wishvel, wishdir);
-	wishspeed = vecnorm(wishdir);
+	wishspeed = vecnorm(wishdir) * scale;
 
-	PM_Accelerate(wishdir, wishspeed, pm_flyaccelerate);
-
+	pmaccelerate(wishdir, wishspeed, pm_flyaccelerate);
 	pmstepslidemove(qfalse);
 }
 
 static void
-_airmove(usercmd_t *cmd, float *wvel, float *wdir, float *wspeed)
-{
-	int i;
-	float fm, sm, um, scale, wishspeed;
-	vec3_t wishvel;
-
-	fm = cmd->forwardmove;
-	sm = cmd->rightmove;
-	um = cmd->upmove;
-	wishspeed = 0.0f;
-	scale = PM_CmdScale(cmd);
-	PM_SetMovementDir();
-	vecnorm(pml.forward);
-	vecnorm(pml.right);
-	vecnorm(pml.up);
-	for(i = 0; i < 3; i++)
-		wishvel[i] = pml.forward[i]*fm + pml.right[i]*sm + pml.up[i]*um;
-	wishspeed = veclen(wishvel);
-	if(wvel != nil)
-		veccpy(wishvel, wvel);
-	if(wdir != nil){
-		veccpy(wishvel, wdir);
-		vecnorm(wdir);
-	}
-	if(wspeed != nil)
-		*wspeed = wishspeed * scale;
-}
-
-/*
-===================
-PM_AirMove
-
-===================
-*/
-static void
-PM_AirMove(void)
+airmove(void)
 {
 	vec3_t wishvel, wishdir;
+	vec3_t fwd, right, up;
 	float wishspeed;
 
-	PM_Friction();
-	_airmove(&pm->cmd, wishvel, wishdir, &wishspeed);
-	PM_Accelerate(wishdir, wishspeed, pm->ps->airAccel);
+	applyfriction();
+	setmovementdir();
+
+	vecmul(pml.forward, pm->cmd.forwardmove, fwd);
+	vecmul(pml.right, pm->cmd.rightmove, right);
+	vecmul(pml.up, pm->cmd.upmove, up);
+	vecadd(fwd, right, wishvel);
+	vecadd(wishvel, up, wishvel);
+
+	veccpy(wishvel, wishdir);
+	wishspeed = vecnorm(wishdir) * cmdscale(&pm->cmd);
+
+	pmaccelerate(wishdir, wishspeed, pm->ps->airAccel);
 	pmslidemove(qtrue);
 }
 
-/*
-===================
-PM_GrappleMove
-
-===================
-*/
 static void
-PM_GrappleMove(void)
+grapplemove(void)
 {
 	vec3_t vel, v;
 	float vlen;
@@ -559,13 +419,8 @@ PM_GrappleMove(void)
 	pml.groundplane = qfalse;
 }
 
-/*
-==============
-PM_DeadMove
-==============
-*/
 static void
-PM_DeadMove(void)
+deadmove(void)
 {
 	float forward;
 
@@ -584,19 +439,13 @@ PM_DeadMove(void)
 	}
 }
 
-/*
-===============
-PM_NoclipMove
-===============
-*/
 static void
-PM_NoclipMove(void)
+noclipmove(void)
 {
 	float speed, drop, friction, control, newspeed;
 	int i;
-	vec3_t wishvel;
-	float fmove, smove;
-	vec3_t wishdir;
+	vec3_t wishvel, wishdir;
+	vec3_t fwd, right, up;
 	float wishspeed;
 	float scale;
 
@@ -624,34 +473,29 @@ PM_NoclipMove(void)
 	}
 
 	// accelerate
-	scale = PM_CmdScale(&pm->cmd);
+	scale = cmdscale(&pm->cmd);
 
-	fmove = pm->cmd.forwardmove;
-	smove = pm->cmd.rightmove;
-
-	for(i = 0; i<3; i++)
-		wishvel[i] = pml.forward[i]*fmove + pml.right[i]*smove;
-	wishvel[2] += pm->cmd.upmove;
+	vecmul(pml.forward, pm->cmd.forwardmove, fwd);
+	vecmul(pml.right, pm->cmd.rightmove, right);
+	vecmul(pml.up, pm->cmd.upmove, up);
+	vecadd(fwd, right, wishvel);
+	vecadd(wishvel, up, wishvel);
 
 	veccpy(wishvel, wishdir);
 	wishspeed = vecnorm(wishdir);
 	wishspeed *= scale;
 
-	PM_Accelerate(wishdir, wishspeed, pm_accelerate);
+	pmaccelerate(wishdir, wishspeed, pm_accelerate);
 
 	// move
 	vecmad(pm->ps->origin, pml.frametime, pm->ps->velocity, pm->ps->origin);
 }
 
-//============================================================================
-
 /*
-=============
-PM_SetWaterLevel	FIXME: avoid this twice?  certainly if not moving
-=============
+FIXME: avoid this twice?  certainly if not moving
 */
 static void
-PM_SetWaterLevel(void)
+setwaterlevel(void)
 {
 	vec3_t point;
 	int cont;
@@ -693,17 +537,11 @@ setplayerbounds(void)
 	pm->ps->viewheight = DEFAULT_VIEWHEIGHT;
 }
 
-//===================================================================
-
 /*
-==============
-PM_WaterEvents
-
 Generate sound events for entering and leaving water
-==============
 */
 static void
-PM_WaterEvents(void)	// FIXME?
+waterevents(void)	// FIXME?
 {	//
 	// if just entered a water volume, play a sound
 	if(!pml.prevwaterlevel && pm->waterlevel)
@@ -722,13 +560,8 @@ PM_WaterEvents(void)	// FIXME?
 		pmaddevent(EV_WATER_CLEAR);
 }
 
-/*
-===============
-PM_BeginWeaponChange
-===============
-*/
 static void
-PM_BeginWeaponChange(int slot, int weapon)
+pmbeginweapchange(int slot, int weapon)
 {
 	if(weapon <= WP_NONE || weapon >= WP_NUM_WEAPONS)
 		return;
@@ -742,16 +575,11 @@ PM_BeginWeaponChange(int slot, int weapon)
 	pmaddevent(EV_CHANGE_WEAPON);
 	pm->ps->weaponstate[slot] = WEAPON_DROPPING;
 	pm->ps->weaponTime[slot] += 50;
-	PM_StartTorsoAnim(TORSO_DROP);
+	pmbeginanim(TORSO_DROP);
 }
 
-/*
-===============
-PM_FinishWeaponChange
-===============
-*/
 static void
-PM_FinishWeaponChange(int slot)
+pmfinishweapchange(int slot)
 {
 	int weapon;
 
@@ -765,36 +593,26 @@ PM_FinishWeaponChange(int slot)
 	pm->ps->weapon[slot] = weapon;
 	pm->ps->weaponstate[slot] = WEAPON_RAISING;
 	pm->ps->weaponTime[slot] += 50;
-	PM_StartTorsoAnim(TORSO_RAISE);
+	pmbeginanim(TORSO_RAISE);
 }
 
-/*
-==============
-PM_TorsoAnimation
-
-==============
-*/
 static void
-PM_TorsoAnimation(void)
+pmtorsoanim(void)
 {
 	if(pm->ps->weaponstate[0] == WEAPON_READY){
 		if(pm->ps->weapon[0] == WP_GAUNTLET)
-			PM_ContinueTorsoAnim(TORSO_STAND2);
+			pmfinishanim(TORSO_STAND2);
 		else
-			PM_ContinueTorsoAnim(TORSO_STAND);
+			pmfinishanim(TORSO_STAND);
 		return;
 	}
 }
 
 /*
-==============
-PM_Weapon
-
-Generates weapon events and modifes the weapon counter
-==============
+Generates weapon events and modifes the weapon counters
 */
 static void
-PM_Weapon(int slot)
+pmweapevents(int slot)
 {
 	int addTime;
 	int button;
@@ -838,23 +656,23 @@ PM_Weapon(int slot)
 	// again if lowering or raising
 	if(pm->ps->weaponTime[slot] <= 0 || pm->ps->weaponstate[slot] != WEAPON_FIRING)
 		if(pm->ps->weapon[slot] != pm->cmd.weapon[slot])
-			PM_BeginWeaponChange(slot, pm->cmd.weapon[slot]);
+			pmbeginweapchange(slot, pm->cmd.weapon[slot]);
 
 	if(pm->ps->weaponTime[slot] > 0)
 		return;
 
 	// change weapon if time
 	if(pm->ps->weaponstate[slot] == WEAPON_DROPPING){
-		PM_FinishWeaponChange(slot);
+		pmfinishweapchange(slot);
 		return;
 	}
 
 	if(pm->ps->weaponstate[slot] == WEAPON_RAISING){
 		pm->ps->weaponstate[slot] = WEAPON_READY;
 		if(pm->ps->weapon[slot] == WP_GAUNTLET)
-			PM_StartTorsoAnim(TORSO_STAND2);
+			pmbeginanim(TORSO_STAND2);
 		else
-			PM_StartTorsoAnim(TORSO_STAND);
+			pmbeginanim(TORSO_STAND);
 		return;
 	}
 
@@ -888,9 +706,9 @@ PM_Weapon(int slot)
 			pm->ps->weaponstate[slot] = WEAPON_READY;
 			return;
 		}
-		PM_StartTorsoAnim(TORSO_ATTACK2);
+		pmbeginanim(TORSO_ATTACK2);
 	}else
-		PM_StartTorsoAnim(TORSO_ATTACK);
+		pmbeginanim(TORSO_ATTACK);
 
 	if(pm->ps->weapon[slot] == WP_HOMING_LAUNCHER &&
 	   (pm->ps->lockontarget == ENTITYNUM_NONE ||
@@ -985,31 +803,20 @@ PM_Weapon(int slot)
 	pm->ps->weaponTime[slot] += addTime;
 }
 
-/*
-================
-PM_Animate
-================
-*/
-
 static void
-PM_Animate(void)
+pmanimate(void)
 {
 	if(pm->cmd.buttons & BUTTON_GESTURE){
 		if(pm->ps->torsoTimer == 0){
-			PM_StartTorsoAnim(TORSO_GESTURE);
+			pmbeginanim(TORSO_GESTURE);
 			pm->ps->torsoTimer = TIMER_GESTURE;
 			pmaddevent(EV_TAUNT);
 		}
 	}
 }
 
-/*
-================
-PM_DropTimers
-================
-*/
 static void
-PM_DropTimers(void)
+advancetimers(void)
 {
 	// drop misc timing counter
 	if(pm->ps->pm_time){
@@ -1035,15 +842,11 @@ PM_DropTimers(void)
 }
 
 /*
-================
-PM_UpdateViewAngles
-
 This can be used as another entry point when only the viewangles
 are being updated instead of a full move
-================
 */
 void
-PM_UpdateViewAngles(playerState_t *ps, const usercmd_t *cmd)
+updateviewangles(playerState_t *ps, const usercmd_t *cmd)
 {
 	short temp;
 	int i;
@@ -1061,12 +864,6 @@ PM_UpdateViewAngles(playerState_t *ps, const usercmd_t *cmd)
 	}
 }
 
-/*
-================
-PmoveSingle
-
-================
-*/
 void
 PmoveSingle(pmove_t *pmove)
 {
@@ -1148,7 +945,7 @@ PmoveSingle(pmove_t *pmove)
 	pml.frametime = pml.msec * 0.001;
 
 	// update the viewangles
-	PM_UpdateViewAngles(pm->ps, &pm->cmd);
+	updateviewangles(pm->ps, &pm->cmd);
 
 	anglevecs(pm->ps->viewangles, pml.forward, pml.right, pml.up);
 
@@ -1170,14 +967,14 @@ PmoveSingle(pmove_t *pmove)
 
 	if(pm->ps->pm_type == PM_SPECTATOR){
 		setplayerbounds();
-		PM_FlyMove();
-		PM_DropTimers();
+		specmove();
+		advancetimers();
 		return;
 	}
 
 	if(pm->ps->pm_type == PM_NOCLIP){
-		PM_NoclipMove();
-		PM_DropTimers();
+		noclipmove();
+		advancetimers();
 		return;
 	}
 
@@ -1188,61 +985,47 @@ PmoveSingle(pmove_t *pmove)
 		return;	// no movement at all
 
 	// set watertype, and waterlevel
-	PM_SetWaterLevel();
+	setwaterlevel();
 	pml.prevwaterlevel = pmove->waterlevel;
 
 	// set mins, maxs, and viewheight
 	setplayerbounds();
 
 	if(pm->ps->pm_type == PM_DEAD)
-		PM_DeadMove();
+		deadmove();
 
-	PM_DropTimers();
+	advancetimers();
 
-#ifdef MISSIONPACK
-	if(pm->ps->powerups[PW_INVULNERABILITY])
-		PM_InvulnerabilityMove();
-	else
-#endif
-	if(pm->ps->powerups[PW_FLIGHT])
-		// flight powerup doesn't allow jump and has different friction
-		PM_FlyMove();
-	else if(pm->ps->pm_flags & PMF_GRAPPLE_PULL){
-		PM_GrappleMove();
+	if(pm->ps->pm_flags & PMF_GRAPPLE_PULL){
+		grapplemove();
 		// We can wiggle a bit
-		PM_AirMove();
-	}else if(pm->ps->pm_flags & PMF_TIME_WATERJUMP)
-		PM_WaterJumpMove();
-	else if(pm->waterlevel > 1)
+		airmove();
+	}else if(pm->waterlevel > 1)
 		// swimming
-		PM_WaterMove();
+		watermove();
 	else
 		// airborne
-		PM_AirMove();
+		airmove();
 
-	PM_Animate();
+	pmanimate();
 
 	// watertype, and waterlevel
-	PM_SetWaterLevel();
+	setwaterlevel();
 
 	// weapons
-	PM_Weapon(0);
-	PM_Weapon(1);
-	PM_Weapon(2);
+	pmweapevents(0);
+	pmweapevents(1);
+	pmweapevents(2);
 
 	// torso animation
-	PM_TorsoAnimation();
+	pmtorsoanim();
 
 	// entering / leaving water splashes
-	PM_WaterEvents();
+	waterevents();
 }
 
 /*
-================
-Pmove
-
 Can be called by either the server or the client
-================
 */
 void
 Pmove(pmove_t *pmove)
@@ -1279,5 +1062,4 @@ Pmove(pmove_t *pmove)
 	pm->ps->forwardmove = pm->cmd.forwardmove;
 	pm->ps->rightmove = pm->cmd.rightmove;
 	pm->ps->upmove = pm->cmd.upmove;
-	//PM_CheckStuck();
 }

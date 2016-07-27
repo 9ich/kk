@@ -221,7 +221,7 @@ CG_InterpolatePlayerState(qboolean grabAngles)
 		cmdNum = trap_GetCurrentCmdNumber();
 		trap_GetUserCmd(cmdNum, &cmd);
 
-		PM_UpdateViewAngles(out, &cmd);
+		updateviewangles(out, &cmd);
 	}
 
 	// if the next frame is a teleport, we can't lerp to it
@@ -480,7 +480,7 @@ predictplayerstate(void)
 		trap_GetUserCmd(cmdNum, &cg_pmove.cmd);
 
 		if(cg_pmove.pmove_fixed)
-			PM_UpdateViewAngles(cg_pmove.ps, &cg_pmove.cmd);
+			updateviewangles(cg_pmove.ps, &cg_pmove.cmd);
 
 		// don't do anything if the time is before the snapshot player time
 		if(cg_pmove.cmd.serverTime <= cg.pps.commandTime)
