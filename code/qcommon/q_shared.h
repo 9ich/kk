@@ -1250,11 +1250,6 @@ typedef struct playerState_s {
 	int			torsoTimer;		// don't change low priority animations until this runs out
 	int			torsoAnim;		// mask off ANIM_TOGGLEBIT
 
-	int			movementDir;	// a number 0 to 7 that represents the relative angle
-								// of movement to the view angle (axial and diagonals)
-								// when at rest, the value will remain unchanged
-								// used to twist the legs during strafing
-
 	vec3_t		grapplePoint;	// location of grapple to pull towards if PMF_GRAPPLE_PULL
 
 	int			eFlags;			// copied to entityState_t->eFlags

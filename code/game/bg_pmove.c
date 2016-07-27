@@ -247,41 +247,6 @@ cmdscale(usercmd_t *cmd)
 #endif
 }
 
-/*
-Determine the rotation of the legs relative
-to the facing dir
-*/
-static void
-setmovementdir(void)
-{
-	if(pm->cmd.forwardmove || pm->cmd.rightmove){
-		if(pm->cmd.rightmove == 0 && pm->cmd.forwardmove > 0)
-			pm->ps->movementDir = 0;
-		else if(pm->cmd.rightmove < 0 && pm->cmd.forwardmove > 0)
-			pm->ps->movementDir = 1;
-		else if(pm->cmd.rightmove < 0 && pm->cmd.forwardmove == 0)
-			pm->ps->movementDir = 2;
-		else if(pm->cmd.rightmove < 0 && pm->cmd.forwardmove < 0)
-			pm->ps->movementDir = 3;
-		else if(pm->cmd.rightmove == 0 && pm->cmd.forwardmove < 0)
-			pm->ps->movementDir = 4;
-		else if(pm->cmd.rightmove > 0 && pm->cmd.forwardmove < 0)
-			pm->ps->movementDir = 5;
-		else if(pm->cmd.rightmove > 0 && pm->cmd.forwardmove == 0)
-			pm->ps->movementDir = 6;
-		else if(pm->cmd.rightmove > 0 && pm->cmd.forwardmove > 0)
-			pm->ps->movementDir = 7;
-	}else{
-		// if they aren't actively going directly sideways,
-		// change the animation to the diagonal so they
-		// don't stop too crooked
-		if(pm->ps->movementDir == 2)
-			pm->ps->movementDir = 1;
-		else if(pm->ps->movementDir == 6)
-			pm->ps->movementDir = 7;
-	}
-}
-
 static void
 watermove(void)
 {
@@ -382,7 +347,6 @@ airmove(void)
 	float wishspeed;
 
 	applyfriction();
-	setmovementdir();
 
 	vecmul(pml.forward, pm->cmd.forwardmove, fwd);
 	vecmul(pml.right, pm->cmd.rightmove, right);
