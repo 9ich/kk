@@ -815,12 +815,6 @@ CG_LightningBolt(centity_t *cent, vec3_t origin, int slot)
 		veccpy(cent->lerporigin, muzzlePoint);
 	}
 
-	anim = cent->currstate.legsAnim & ~ANIM_TOGGLEBIT;
-	if(anim == LEGS_WALKCR || anim == LEGS_IDLECR)
-		muzzlePoint[2] += CROUCH_VIEWHEIGHT;
-	else
-		muzzlePoint[2] += DEFAULT_VIEWHEIGHT;
-
 	vecmad(muzzlePoint, 14, forward, muzzlePoint);
 
 	// project forward by the lightning range
@@ -2024,7 +2018,6 @@ CG_CalcMuzzlePoint(int entityNum, vec3_t muzzle)
 {
 	vec3_t forward, up;
 	centity_t *cent;
-	int anim;
 
 	cent = &cg_entities[entityNum];
 
@@ -2040,13 +2033,9 @@ CG_CalcMuzzlePoint(int entityNum, vec3_t muzzle)
 		return qfalse;
 
 	veccpy(cent->lerporigin, muzzle);
+	muzzle[2] += DEFAULT_VIEWHEIGHT;
 
 	anglevecs(cent->lerpangles, forward, nil, nil);
-	anim = cent->currstate.legsAnim & ~ANIM_TOGGLEBIT;
-	if(anim == LEGS_WALKCR || anim == LEGS_IDLECR)
-		muzzle[2] += CROUCH_VIEWHEIGHT;
-	else
-		muzzle[2] += DEFAULT_VIEWHEIGHT;
 
 	vecmad(muzzle, 14, forward, muzzle);
 

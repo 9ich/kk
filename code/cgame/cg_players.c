@@ -826,12 +826,6 @@ CG_PlayerAnimation(centity_t *cent, int *torsoOld, int *torso, float *torsoBackL
 
 	ci = &cgs.clientinfo[clientNum];
 
-	// do the shuffle turn frames locally
-	if(cent->pe.legs.yawing && (cent->currstate.legsAnim & ~ANIM_TOGGLEBIT) == LEGS_IDLE)
-		CG_RunLerpFrame(ci->animations, &cent->pe.legs, LEGS_TURN, speedScale);
-	else
-		CG_RunLerpFrame(ci->animations, &cent->pe.legs, cent->currstate.legsAnim, speedScale);
-
 	CG_RunLerpFrame(ci->animations, &cent->pe.torso, cent->currstate.torsoAnim, speedScale);
 
 	*torsoOld = cent->pe.torso.oldframe;
@@ -953,9 +947,6 @@ CG_HasteTrail(centity_t *cent)
 	int anim;
 
 	if(cent->trailtime > cg.time)
-		return;
-	anim = cent->pe.legs.animnum & ~ANIM_TOGGLEBIT;
-	if(anim != LEGS_RUN && anim != LEGS_BACK)
 		return;
 
 	cent->trailtime += 100;
@@ -1467,7 +1458,7 @@ CG_PlayerShadow(centity_t *cent, float *shadowPlane)
 	// add the mark as a temporary, so it goes directly to the renderer
 	// without taking a spot in the cg_marks array
 	impactmark(cgs.media.shadowMarkShader, trace.endpos, trace.plane.normal,
-		      cent->pe.legs.yaw, alpha, alpha, alpha, 1, qfalse, 24, qtrue);
+		      0, alpha, alpha, alpha, 1, qfalse, 24, qtrue);
 
 	return qtrue;
 }
@@ -1852,7 +1843,6 @@ resetplayerent(centity_t *cent)
 	cent->errtime = -99999;	// guarantee no error decay added
 	cent->extrapolated = qfalse;
 
-	CG_ClearLerpFrame(cgs.clientinfo[cent->currstate.clientNum].animations, &cent->pe.legs, cent->currstate.legsAnim);
 	CG_ClearLerpFrame(cgs.clientinfo[cent->currstate.clientNum].animations, &cent->pe.torso, cent->currstate.torsoAnim);
 
 	evaltrajectory(&cent->currstate.pos, cg.time, cent->lerporigin);
@@ -1860,12 +1850,6 @@ resetplayerent(centity_t *cent)
 
 	veccpy(cent->lerporigin, cent->raworigin);
 	veccpy(cent->lerpangles, cent->rawangles);
-
-	memset(&cent->pe.legs, 0, sizeof(cent->pe.legs));
-	cent->pe.legs.yaw = cent->rawangles[YAW];
-	cent->pe.legs.yawing = qfalse;
-	cent->pe.legs.pitch = 0;
-	cent->pe.legs.pitching = qfalse;
 
 	memset(&cent->pe.torso, 0, sizeof(cent->pe.torso));
 	cent->pe.torso.yaw = cent->rawangles[YAW];

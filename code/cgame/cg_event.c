@@ -343,7 +343,7 @@ CG_WaterLevel(centity_t *cent)
 	int contents, sample1, sample2, anim, waterlevel;
 	int viewheight;
 
-	anim = cent->currstate.legsAnim & ~ANIM_TOGGLEBIT;
+	anim = 0;
 
 	if(anim == LEGS_WALKCR || anim == LEGS_IDLECR)
 		viewheight = CROUCH_VIEWHEIGHT;

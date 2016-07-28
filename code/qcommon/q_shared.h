@@ -1245,7 +1245,6 @@ typedef struct playerState_s {
 	int			groundEntityNum;// ENTITYNUM_NONE = in air
 
 	int			legsTimer;		// don't change low priority animations until this runs out
-	int			legsAnim;		// mask off ANIM_TOGGLEBIT
 
 	int			torsoTimer;		// don't change low priority animations until this runs out
 	int			torsoAnim;		// mask off ANIM_TOGGLEBIT
@@ -1409,7 +1408,6 @@ typedef struct entityState_s {
 	// for players
 	int		powerups;		// bit flags
 	int		weapon[WS_NUMSLOTS];			// determines weapon and flash model, etc
-	int		legsAnim;		// mask off ANIM_TOGGLEBIT
 	int		torsoAnim;		// mask off ANIM_TOGGLEBIT
 
 	int		generic1;

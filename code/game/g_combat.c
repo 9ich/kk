@@ -689,8 +689,6 @@ player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damag
 		if(self->health <= GIB_HEALTH)
 			self->health = GIB_HEALTH+1;
 
-		self->client->ps.legsAnim =
-			((self->client->ps.legsAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT) | anim;
 		self->client->ps.torsoAnim =
 			((self->client->ps.torsoAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT) | anim;
 

@@ -447,24 +447,6 @@ copytobodyqueue(gentity_t *ent)
 		body->s.pos.trType = TR_STATIONARY;
 	body->s.event = 0;
 
-	// change the animation to the last-frame only, so the sequence
-	// doesn't repeat anew for the body
-	switch(body->s.legsAnim & ~ANIM_TOGGLEBIT){
-	case BOTH_DEATH1:
-	case BOTH_DEAD1:
-		body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD1;
-		break;
-	case BOTH_DEATH2:
-	case BOTH_DEAD2:
-		body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD2;
-		break;
-	case BOTH_DEATH3:
-	case BOTH_DEAD3:
-	default:
-		body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD3;
-		break;
-	}
-
 	body->r.svFlags = ent->r.svFlags;
 	veccpy(ent->r.mins, body->r.mins);
 	veccpy(ent->r.maxs, body->r.maxs);
@@ -1182,7 +1164,6 @@ clientspawn(gentity_t *ent)
 
 	// set default animations
 	client->ps.torsoAnim = TORSO_STAND;
-	client->ps.legsAnim = LEGS_IDLE;
 
 	if(!level.intermissiontime){
 		if(ent->client->sess.team != TEAM_SPECTATOR){

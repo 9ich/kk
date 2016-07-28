@@ -160,7 +160,7 @@ typedef struct
 
 typedef struct
 {
-	lerpFrame_t	legs, torso, flag;
+	lerpFrame_t	torso, flag;
 	int		paintime;
 	int		paindir;	// flip from 0 to 1
 
