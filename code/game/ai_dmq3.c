@@ -254,7 +254,7 @@ EntityIsShooting
 qboolean
 EntityIsShooting(aas_entityinfo_t *entinfo)
 {
-	if(entinfo->flags & EF_FIRING)
+	if(entinfo->flags & (EF_FIRING | EF_FIRING2 | EF_FIRING3))
 		return qtrue;
 	return qfalse;
 }
