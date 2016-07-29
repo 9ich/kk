@@ -1193,12 +1193,6 @@ release:
 	  OPTIMIZE="-DNDEBUG $(OPTIMIZE)" OPTIMIZEVM="-DNDEBUG $(OPTIMIZEVM)" \
 	  CLIENT_CFLAGS="$(CLIENT_CFLAGS)" SERVER_CFLAGS="$(SERVER_CFLAGS)" V=$(V)
 
-ifneq ($(call bin_path, tput),)
-  TERM_COLUMNS=$(shell if c=`tput cols`; then echo $$(($$c-4)); else echo 76; fi)
-else
-  TERM_COLUMNS=76
-endif
-
 define ADD_COPY_TARGET
 TARGETS += $2
 $2: $1
@@ -1229,11 +1223,7 @@ print_list=-@for i in $(1); \
              echo "    $$i"; \
      done
 
-ifneq ($(call bin_path, fmt),)
-  print_wrapped=@echo $(1) | fmt -w $(TERM_COLUMNS) | sed -e "s/^\(.*\)$$/    \1/"
-else
-  print_wrapped=$(print_list)
-endif
+print_wrapped=$(print_list)
 
 # Create the build directories, check libraries and print out
 # an informational message, then start building
