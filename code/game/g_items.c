@@ -777,6 +777,7 @@ clearitems(void)
 	// players always start with the base weapon
 	registeritem(finditemforweapon(WP_MACHINEGUN));
 	registeritem(finditemforweapon(WP_GAUNTLET));
+	registeritem(finditemforweapon(WP_GRAPPLING_HOOK));
 #ifdef MISSIONPACK
 	if(g_gametype.integer == GT_HARVESTER){
 		registeritem(finditem("Red Cube"));
