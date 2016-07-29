@@ -881,14 +881,6 @@ typedef struct
 	qhandle_t	scoreboardScore;
 	qhandle_t	scoreboardTime;
 
-	// medals shown during gameplay
-	qhandle_t	medalImpressive;
-	qhandle_t	medalExcellent;
-	qhandle_t	medalGauntlet;
-	qhandle_t	medalDefend;
-	qhandle_t	medalAssist;
-	qhandle_t	medalCapture;
-
 	// sounds
 
 	sfxHandle_t	quadSound;

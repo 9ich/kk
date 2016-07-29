@@ -681,14 +681,6 @@ CG_RegisterSounds(void)
 	cgs.media.hitSound = trap_S_RegisterSound("sound/feedback/hit.wav", qfalse);
 	cgs.media.hitTeamSound = trap_S_RegisterSound("sound/feedback/hitteam.wav", qfalse);
 
-	// register award assets
-	for(i = 0; i < ARRAY_LEN(cg_awardlist); i++){
-		if(cg_awardlist[i].sfx != nil)
-			trap_S_RegisterSound(cg_awardlist[i].sfx, qtrue);
-		if(cg_awardlist[i].shader != nil)
-			trap_R_RegisterShaderNoMip(cg_awardlist[i].shader);
-	}
-
 	cgs.media.takenLeadSound = trap_S_RegisterSound("sound/feedback/takenlead.wav", qtrue);
 	cgs.media.tiedLeadSound = trap_S_RegisterSound("sound/feedback/tiedlead.wav", qtrue);
 	cgs.media.lostLeadSound = trap_S_RegisterSound("sound/feedback/lostlead.wav", qtrue);
@@ -999,12 +991,14 @@ CG_RegisterGraphics(void)
 	cgs.media.invulnerabilityPowerupModel = trap_R_RegisterModel("models/powerups/shield/shield.md3");
 #endif
 
-	cgs.media.medalImpressive = trap_R_RegisterShaderNoMip("medal_impressive");
-	cgs.media.medalExcellent = trap_R_RegisterShaderNoMip("medal_excellent");
-	cgs.media.medalGauntlet = trap_R_RegisterShaderNoMip("medal_gauntlet");
-	cgs.media.medalDefend = trap_R_RegisterShaderNoMip("medal_defend");
-	cgs.media.medalAssist = trap_R_RegisterShaderNoMip("medal_assist");
-	cgs.media.medalCapture = trap_R_RegisterShaderNoMip("medal_capture");
+
+	// register award assets
+	for(i = 0; i < ARRAY_LEN(cg_awardlist); i++){
+		if(cg_awardlist[i].sfx != nil)
+			trap_S_RegisterSound(cg_awardlist[i].sfx, qtrue);
+		if(cg_awardlist[i].shader != nil)
+			trap_R_RegisterShaderNoMip(cg_awardlist[i].shader);
+	}
 
 	memset(cg_items, 0, sizeof(cg_items));
 	memset(cg_weapons, 0, sizeof(cg_weapons));
