@@ -11,6 +11,8 @@ ifndef SHELL
   SHELL:=sh
 endif
 
+MAKE:="$(MAKE)"
+
 COMPILE_PLATFORM:=$(shell uname | tr [:upper:] [:lower:] | sed 's/[_-].*//; s:/:_:g; s/32//; s/mingw/mingw32/; s/msys/mingw32/')
 
 COMPILE_ARCH:=$(shell uname -m | tr [:upper:] [:lower:] | sed 's/i.86/x86/; s/\-pc//')
