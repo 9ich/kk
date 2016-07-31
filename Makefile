@@ -513,8 +513,6 @@ ifdef MINGW
       MINGW_PREFIXES=i586-mingw32msvc i686-w64-mingw32 i686-pc-mingw32
     endif
 
-    WINDRES?=windres
-
     ifndef CC
       CC=$(firstword $(strip $(foreach MINGW_PREFIX, $(MINGW_PREFIXES), \
          $(call bin_path, $(MINGW_PREFIX)-gcc))))
@@ -523,6 +521,9 @@ ifdef MINGW
     ifndef WINDRES
       WINDRES=$(firstword $(strip $(foreach MINGW_PREFIX, $(MINGW_PREFIXES), \
          $(call bin_path, $(MINGW_PREFIX)-windres))))
+    endif
+    ifeq ($(WINDRES),)
+      WINDRES=windres
     endif
   else
     # Some MinGW installations define CC to cc, but don't actually provide cc,
@@ -1174,7 +1175,7 @@ endef
 
 define DO_WINDRES
 $(echo_cmd) "WINDRES $<"
-$(Q)$(WINDRES) -i $< -o $@
+$(Q)$(WINDRES) $(WINDRES_FLAGS) -i $< -o $@
 endef
 
 
