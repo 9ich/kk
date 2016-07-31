@@ -300,7 +300,7 @@ refresh(int realtime)
 	drawpic(uis.cursorx, uis.cursory, 32, 32, uis.cursor);
 
 	setalign("topleft");
-	if(1 || uis.debug)
+	if(0 || uis.debug)
 		// cursor coordinates
 		drawstring(0, 0, va("(%.2f,%.2f)", uis.cursorx, uis.cursory),
 		   FONT2, 16, CMagenta);
