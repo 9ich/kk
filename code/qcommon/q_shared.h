@@ -1250,6 +1250,7 @@ typedef struct playerState_s {
 	int			torsoAnim;		// mask off ANIM_TOGGLEBIT
 
 	vec3_t		grapplePoint;	// location of grapple to pull towards if PMF_GRAPPLE_PULL
+	float		grappleLen;
 
 	int			eFlags;			// copied to entityState_t->eFlags
 	int			awardflags;		// copied to entityState_t->awardflags;

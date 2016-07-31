@@ -215,6 +215,24 @@ pmaccelerate(vec3_t wishdir, float wishspeed, float accel)
 #endif
 }
 
+
+static void
+pmq2accelerate(vec3_t wishdir, float wishspeed, float accel)
+{
+	// q2 style
+	int i;
+	float addspeed, accelspeed, currentspeed;
+
+	currentspeed = vecdot(pm->ps->velocity, wishdir);
+	addspeed = wishspeed - currentspeed;
+	if(addspeed <= 0)
+		return;
+	accelspeed = accel*pml.frametime*wishspeed;
+	if(accelspeed > addspeed)
+		accelspeed = addspeed;
+	vecmad(pm->ps->velocity, accelspeed, wishdir, pm->ps->velocity);
+}
+
 /*
 Returns the scale factor to apply to cmd movements
 This allows the clients to use axial -127 to 127 values for all directions
@@ -364,23 +382,43 @@ airmove(void)
 static void
 grapplemove(void)
 {
-	vec3_t vel, v;
-	float vlen;
+	vec3_t wishvel, wishdir, vel;
+	vec3_t fwd, right, up, v;
+	float wishspeed, grspd, vlen;
+	const float hookpullspeed = 400.0f;
+	const float swingstrength = 1.2f;
 
+	//
+	// add airmove
+	//
+	applyfriction();
+
+	vecmul(pml.forward, pm->cmd.forwardmove, fwd);
+	vecmul(pml.right, pm->cmd.rightmove, right);
+	vecmul(pml.up, pm->cmd.upmove, up);
+	vecadd(fwd, right, wishvel);
+	vecadd(wishvel, up, wishvel);
+
+	//
+	// add influence from hook
+	//
 	vecmul(pml.forward, -16, v);
 	vecadd(pm->ps->grapplePoint, v, v);
 	vecsub(v, pm->ps->origin, vel);
-	vlen = veclen(vel);
-	vecnorm(vel);
+	vlen = vecnorm(vel);
 
-	if(vlen <= 100)
-		vecmul(vel, 10 * vlen, vel);
-	else
-		vecmul(vel, 800, vel);
+	grspd = hookpullspeed;
+	if(pm->ps->grappleLen != 0 && vlen > pm->ps->grappleLen)
+		grspd *= (vlen - pm->ps->grappleLen) * swingstrength;
+	// save vlen for next frame
+	pm->ps->grappleLen = vlen;
 
-	veccpy(vel, pm->ps->velocity);
-
-	pml.groundplane = qfalse;
+	if(grspd < hookpullspeed)
+		grspd = hookpullspeed;
+	
+	pmq2accelerate(wishdir, wishspeed, pm_airaccelerate);
+	pmq2accelerate(vel, grspd, pm_airaccelerate);
+	pmslidemove(qtrue);
 }
 
 static void
@@ -970,6 +1008,9 @@ PmoveSingle(pmove_t *pmove)
 	else
 		// airborne
 		airmove();
+
+	if(!(pm->ps->pm_flags & PMF_GRAPPLE_PULL))
+		pm->ps->grappleLen = 0.0f;
 
 	pmanimate();
 

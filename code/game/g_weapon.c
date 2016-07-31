@@ -594,8 +594,12 @@ GRAPPLING HOOK
 void
 Weapon_GrapplingHook_Fire(gentity_t *ent)
 {
-	if(!ent->client->fireheld[2] && !ent->client->hook)
-		fire_grapple(ent, muzzle, forward);
+	gentity_t *m;
+
+	if(!ent->client->fireheld[2] && !ent->client->hook){
+		m = fire_grapple(ent, muzzle, forward);
+		inheritvel(ent, m);
+	}
 
 	ent->client->fireheld[2] = qtrue;
 }
