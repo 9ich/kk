@@ -142,14 +142,14 @@ menubackground(void)
 static void
 optionsbuttons(void)
 {
-	const float spc = 35;
+	const float spc = 24;
 	float x, y;
 
 	focusorder(".o.v .o.s .o.i .o.d .o.bk");
 
 	setalign("left");
 	x = MARGIN;
-	y = 160;
+	y = screenheight()/2 - (4*spc)/2;
 	if(button(".o.v", x, y, "Video")){
 		pop();
 		vo.initialized = qfalse;
@@ -189,7 +189,7 @@ static void
 optionname(const char *name, float y)
 {
 	pushalign("right");
-	drawstring(420, y, name, FONT3, 20, CText);
+	drawstring(420, y, name, FONT2, 16, CText);
 	popalign(1);
 }
 
@@ -853,7 +853,7 @@ errormenu(void)
 void
 mainmenu(void)
 {
-	float spc = 35;
+	float spc = 24;
 	float x, y;
 
 

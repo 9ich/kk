@@ -3,13 +3,13 @@
 qboolean
 button(const char *id, int x, int y, const char *label)
 {
-	float w = 48, h = 28;
+	float w = 24, h = 14;
 	float propw;
 	qboolean hot, changed;
 	float *clr;
 
 	hot = qfalse;
-	propw = stringwidth(label, FONT1, 32, 0, -1);
+	propw = stringwidth(label, FONT1, 16, 0, -1);
 	if(w < propw)
 		w = propw;
 
@@ -28,7 +28,7 @@ button(const char *id, int x, int y, const char *label)
 		if(strcmp(uis.active, id) == 0)
 			clr = CWActive;
 	}
-	drawstring(x, y, label, FONT1, 32, clr);
+	drawstring(x, y, label, FONT1, 16, clr);
 
 	changed = !uis.keys[K_MOUSE1] && hot && strcmp(uis.active, id) == 0;
 
