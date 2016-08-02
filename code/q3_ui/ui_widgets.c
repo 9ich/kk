@@ -43,8 +43,8 @@ button(const char *id, int x, int y, const char *label)
 qboolean
 slider(const char *id, int x, int y, float min, float max, float *val, const char *displayfmt)
 {
-	float w = 120, pad = 2, h = 12, knobw = 6, knobh = 18;
-	float knobx, knoby, ix, iy, iw;
+	float w = 120, pad = 1, h = 12;
+	float ix, iy, iw;
 	qboolean hot, updated;
 	float knobpos, mousepos;
 	char s[32];
@@ -57,7 +57,7 @@ slider(const char *id, int x, int y, float min, float max, float *val, const cha
 	iw = w - 2*pad;
 	*s = '\0';
 
-	if(mouseover(ix, y + h/2 - knobh/2, iw, knobh)){
+	if(mouseover(x, y, w, h)){
 		Q_strncpyz(uis.hot, id, sizeof uis.hot);
 		hot = qtrue;
 		if(*uis.active == '\0' && uis.keys[K_MOUSE1]){
@@ -84,15 +84,15 @@ slider(const char *id, int x, int y, float min, float max, float *val, const cha
 
 	knobpos = (iw * *val) / max;
 	*val = Com_Scale(*val, 0, max, min, max);
-	knobx = ix + knobpos - knobw/2;
-	knoby = y + h/2 - knobh/2;
 
 	if(hot || strcmp(uis.active, id) == 0)
 		clr = CWHot;
 	else
 		clr = CWText;
-	fillrect(knobx, knoby, knobw, knobh, clr);
-	drawrect(knobx, knoby, knobw, knobh, CWBorder);
+
+	fillrect(ix, iy, knobpos, h-2*pad, clr);
+	fillrect(ix+knobpos, iy, 1, h-2*pad, CWhite);
+
 	if(*displayfmt != '\0'){
 		Com_sprintf(s, sizeof s, displayfmt, *val);
 		drawstring(x+w+6, iy, s, FONT2, 12, CWText);
