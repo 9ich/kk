@@ -99,8 +99,8 @@ drawstring(float x, float y, const char *str, int font, float size, vec4_t color
 			h = charmaps[font].charh * scale;
 
 			// apply kerning if possible
-			if(*(p+1) != '\0')
-				x += kerning(font, *p, *(p+1))*scale;
+			if(p > str)
+				x += kerning(font, *(p-1), *p) * scale;
 			// add xoffset and yoffset
 			xx = x + charmaps[font].map[c][3]*scale;
 			yy = y + charmaps[font].map[c][4]*scale;
