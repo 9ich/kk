@@ -118,7 +118,7 @@ parsethrustersfile(const char *filename, clientInfo_t *ci)
 
 	for(i = 0; i < ARRAY_LEN(ci->thrusttab); i++){
 		tp = &ci->thrusttab[i];
-		memset(tp, 0, sizeof tp);
+		memset(tp, 0, sizeof *tp);
 
 		//
 		// tagname
