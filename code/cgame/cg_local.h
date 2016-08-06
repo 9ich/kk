@@ -1411,7 +1411,7 @@ void	dorailtrail(clientInfo_t *ci, vec3_t start, vec3_t end);
 void	grappletrail(centity_t *ent, const weaponInfo_t *wi);
 void	addviewweap(playerState_t *ps);
 void	addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team, int slot);
-void	drawweapsel();
+void	drawweapsel(void);
 
 void	outofammochange(void);	// should this be in pmove?
 
