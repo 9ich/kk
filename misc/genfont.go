@@ -6,6 +6,7 @@ package main
 
 import (
 	"encoding/xml"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -15,8 +16,18 @@ import (
 )
 
 type info struct {
-	Face string `xml:"face,attr"`
-	Size int    `xml:"size,attr"`
+	Face    string `xml:"face,attr"`
+	Size    int    `xml:"size,attr"`
+	Spacing string `xml:"spacing,attr"`
+}
+
+type common struct {
+	ScaleW int `xml:"scaleW,attr"`
+	ScaleH int `xml:"scaleH,attr"`
+}
+
+type page struct {
+	File string `xml:"file,attr"`
 }
 
 type char struct {
@@ -48,22 +59,18 @@ func (k kerningsort) Less(i, j int) bool {
 
 type font struct {
 	Info     info      `xml:"info"`
+	Common   common    `xml:"common"`
+	Page     page      `xml:"pages>page"`
 	Chars    []char    `xml:"chars>char"`
 	Kernings []kerning `xml:"kernings>kerning"`
 }
 
-// control characters are skipped
-var preamble string = `
-// %s, %dpx
-int map[128][6] = {
-	{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1},
-	{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1},
+var pathprefix string
 
-	{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1},
-	{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1},
-`
-var preamblekernings = `
-kerning_t kernings[%d] = {`
+func init() {
+	flag.StringVar(&pathprefix, "p", "", "image filename prefix")
+	flag.Parse()
+}
 
 func main() {
 	b, _ := ioutil.ReadAll(os.Stdin)
@@ -76,23 +83,29 @@ func main() {
 	// Format in tab-separated columns with a tab stop of 8.
 	w.Init(os.Stdout, 0, 8, 0, '\t', 0)
 
-	fmt.Println(fmt.Sprintf(preamble, font.Info.Face, font.Info.Size))
+	fmt.Fprintf(w, "// %s\nfont\t%s%s \t%d\t%d\t%d\n\n", font.Info.Face,
+		pathprefix, font.Page.File, font.Info.Size, font.Common.ScaleW,
+		font.Common.ScaleH)
 	fmt.Fprintln(w, "//\tx\ty\twidth\txofs\tyofs\txadv")
+
+	// Skip control chars.
+	for c := 0; c < int(' '); c++ {
+		fmt.Fprintf(w, "char\t0\t0\t-1\t0\t0\t0\t// \\x%02x\n", c)
+	}
 	for _, c := range font.Chars {
-		fmt.Fprintf(w, "\t{%d,\t%d,\t%d,\t%d,\t%d,\t%d},\t// '%c'\n", c.X, c.Y,
+		fmt.Fprintf(w, "char\t%d\t%d\t%d\t%d\t%d\t%d\t// '%c'\n", c.X, c.Y,
 			c.Width, c.Xoffset, c.Yoffset, c.Xadvance, c.ID)
 	}
-	fmt.Fprintln(w, "\t{0,\t0,\t-1,\t0,\t0,\t0}\t// DEL\n};")
+	fmt.Fprintln(w, "char\t0\t0\t-1\t0\t0\t0\t// DEL\n")
 
 	if len(font.Kernings) > 0 {
 		sort.Sort(kerningsort(font.Kernings))
-		fmt.Println(fmt.Sprintf(preamblekernings, len(font.Kernings)))
 		fmt.Fprintln(w, "//\tfirst\tsecond\tamount")
 		for _, k := range font.Kernings {
-			fmt.Fprintf(w, "\t{%d,\t%d,\t%d},\t// '%c%c'\n", k.First,
+			fmt.Fprintf(w, "kerning\t%d\t%d\t%d\t// '%c%c'\n", k.First,
 				k.Second, k.Amount, k.First, k.Second)
 		}
-		fmt.Fprintln(w, "};")
+		fmt.Fprintln(w, "")
 	}
 	w.Flush()
 }
