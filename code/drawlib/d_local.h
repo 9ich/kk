@@ -33,7 +33,7 @@ typedef struct
 	float		charspc;	// spacing between characters
 	qhandle_t	shader;		// the charmap
 	int		map[128][6];	// offset & dimensions info
-	kerning_t	*kernings;
+	kerning_t	kernings[1024];
 	int		nkernings;
 } charmap_t;
 
@@ -47,8 +47,7 @@ extern int font3map[128][6];
 extern int font4map[128][6];
 
 // d_font.c
-extern void	registercharmap(int font, int w, int h, float charh, float spc,
-		   const char *shader, int **map, kerning_t *kern, int nkern);
+extern void	registercharmap(int font, const char *filename);
 
 // defined by modules
 qhandle_t	trap_R_RegisterModel(const char *name);

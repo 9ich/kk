@@ -1,21 +1,74 @@
 #include "d_local.h"
 #include "d_public.h"
-#include "d_fontmap.h"
 
 charmap_t charmaps[NUMFONTS];
 
+/*
+ * Reads a character map file with entries as follows.
+ * 	font	image charsize imagew imageh
+ * 	char	x y width xofs yofs xadv
+ * 	kerning	first second amount
+ */
 void
-registercharmap(int font, int w, int h, float charh, float spc,
-   const char *shader, int **map, kerning_t *kern, int nkern)
+registercharmap(int font, const char *filename)
 {
-	charmaps[font].w = w;
-	charmaps[font].h = h;
-	charmaps[font].charh = charh;
-	charmaps[font].charspc = spc;
-	charmaps[font].shader = trap_R_RegisterShaderNoMip(shader);
-	memcpy(charmaps[font].map, map, sizeof charmaps[font].map);
-	charmaps[font].kernings = kern;
-	charmaps[font].nkernings = nkern;
+	charmap_t *m;
+	fileHandle_t f;
+	char *bufp, *tok, buf[20000];
+	int len;
+	int c, k;
+
+	// load the file
+	len = trap_FS_FOpenFile(filename, &f, FS_READ);
+	if(len <= 0){
+		Com_Printf(S_COLOR_RED "error: %s: file not found\n", filename);
+		return;
+	}
+	if(len >= sizeof(buf) - 1){
+		Com_Printf(S_COLOR_RED "error: %s: file too long\n", filename);
+		trap_FS_FCloseFile(f);
+		return;
+	}
+	trap_FS_Read(buf, len, f);
+	buf[len] = 0;
+	trap_FS_FCloseFile(f);
+
+	bufp = buf;
+	m = &charmaps[font];
+	memset(&m->map, 0, sizeof m->map);
+	memset(&m->kernings, 0, sizeof m->kernings);
+	c = 0;
+	k = 0;
+
+	for(;;){
+		tok = COM_ParseExt(&bufp, qtrue);
+		if(*tok == '\0')
+			break;
+		if(Q_stricmp(tok, "font") == 0){
+			m->shader = trap_R_RegisterShaderNoMip(COM_ParseExt(&bufp, qtrue));
+			m->charh = atof(COM_ParseExt(&bufp, qtrue));
+			m->w = atof(COM_ParseExt(&bufp, qtrue));
+			m->h = atof(COM_ParseExt(&bufp, qtrue));
+		}else if(Q_stricmp(tok, "char") == 0){
+			if(c >= ARRAY_LEN(m->map))
+				continue;
+			m->map[c][0] = atoi(COM_ParseExt(&bufp, qtrue));
+			m->map[c][1] = atoi(COM_ParseExt(&bufp, qtrue));
+			m->map[c][2] = atoi(COM_ParseExt(&bufp, qtrue));
+			m->map[c][3] = atoi(COM_ParseExt(&bufp, qtrue));
+			m->map[c][4] = atoi(COM_ParseExt(&bufp, qtrue));
+			m->map[c][5] = atoi(COM_ParseExt(&bufp, qtrue));
+			c++;
+		}else if(Q_stricmp(tok, "kerning") == 0){
+			if(k >= ARRAY_LEN(m->kernings))
+				continue;
+			m->kernings[k].first = atoi(COM_ParseExt(&bufp, qtrue));
+			m->kernings[k].second = atoi(COM_ParseExt(&bufp, qtrue));
+			m->kernings[k].amount = atof(COM_ParseExt(&bufp, qtrue));
+			k++;
+		}
+	}
+	m->nkernings = k;
 }
 
 static int
