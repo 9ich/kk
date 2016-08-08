@@ -197,6 +197,12 @@ trap_R_RegisterShaderNoMip(const char *name)
 	return syscall(UI_R_REGISTERSHADERNOMIP, name);
 }
 
+qhandle_t
+trap_R_RegisterShader(const char *name)
+{
+	return syscall(UI_R_REGISTERSHADER, name);
+}
+
 void
 trap_R_ClearScene(void)
 {

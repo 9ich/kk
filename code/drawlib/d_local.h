@@ -52,6 +52,7 @@ extern void	registercharmap(int font, const char *filename);
 // defined by modules
 qhandle_t	trap_R_RegisterModel(const char *name);
 qhandle_t	trap_R_RegisterSkin(const char *name);
+qhandle_t	trap_R_RegisterShader(const char *name);
 qhandle_t	trap_R_RegisterShaderNoMip(const char *name);
 void		trap_R_ClearScene(void);
 void		trap_R_AddRefEntityToScene(const refEntity_t *re);
