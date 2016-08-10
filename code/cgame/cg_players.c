@@ -1072,15 +1072,18 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 	}
 
 
-	if(b || (l || r) || (u || d)){
-		trap_S_AddLoopingSound(cent->currstate.number, pos, vec3_origin,
-		   thrustbacksound);
-	}else if(f){
-		trap_S_AddLoopingSound(cent->currstate.number, pos, vec3_origin,
-		   thrustsound);
-	}else{
-		trap_S_AddLoopingSound(cent->currstate.number, pos, vec3_origin,
-		   idlesound);
+	if((cent->currstate.number != cg.snap->ps.clientNum && cg_enemyThrustSounds.integer) ||
+	   (cent->currstate.number == cg.snap->ps.clientNum && cg_ownThrustSounds.integer)){
+		if(b || (l || r) || (u || d)){
+			trap_S_AddLoopingSound(cent->currstate.number, pos,
+			   vec3_origin, thrustbacksound);
+		}else if(f){
+			trap_S_AddLoopingSound(cent->currstate.number, pos,
+			   vec3_origin, thrustsound);
+		}else{
+			trap_S_AddLoopingSound(cent->currstate.number, pos,
+			   vec3_origin, idlesound);
+		}
 	}
 
 	//

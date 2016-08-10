@@ -399,30 +399,35 @@ CG_RocketTrail(centity_t *ent, const weaponInfo_t *wi)
 		return;
 	}
 
-	// flame
-	step = 4;	// msec interval
-	t = step * ((starttime + step) / step);
-	for(; t <= ent->trailtime + 0.5f*step; t += step){
-		vec3_t ofs;
+	if(cg_rocketFlame.integer){
+		// flame
+		step = 4;	// msec interval
+		t = step * ((starttime + step) / step);
+		for(; t <= ent->trailtime + 0.5f*step; t += step){
+			vec3_t ofs;
 
-		evaltrajectory(&es->pos, t, lastPos);
-		vecset(ofs, crandom(), crandom(), crandom());
-		vecnorm(ofs);
-		vecmul(ofs, 0.5f, ofs);
-		vecadd(lastPos, ofs, lastPos);
-		CG_ParticleExplosion("explode1", lastPos, ofs, 80, 2, 14);
+			evaltrajectory(&es->pos, t, lastPos);
+			vecset(ofs, crandom(), crandom(), crandom());
+			vecnorm(ofs);
+			vecmul(ofs, 0.5f, ofs);
+			vecadd(lastPos, ofs, lastPos);
+			CG_ParticleExplosion("explode1", lastPos, ofs, 80, 2, 14);
+		}
 	}
-	// smoke plume
-	step = 16;	// msec interval
-	t = step * ((starttime + step) / step);
-	for(; t <= ent->trailtime; t += step){
-		evaltrajectory(&es->pos, t, lastPos);
 
-		smoke = smokepuff(lastPos, vec3_origin, wi->trailradius,
-		   1, 1, 1, 0.40f, wi->trailtime, t, 0, 0,
-		   cgs.media.smokePuffShader);
-		// use the optimized local entity add
-		smoke->type = LE_SCALE_FADE;
+	if(cg_rocketSmoke.integer){
+		// smoke plume
+		step = 16;	// msec interval
+		t = step * ((starttime + step) / step);
+		for(; t <= ent->trailtime; t += step){
+			evaltrajectory(&es->pos, t, lastPos);
+
+			smoke = smokepuff(lastPos, vec3_origin, wi->trailradius,
+			   1, 1, 1, 0.40f, wi->trailtime, t, 0, 0,
+			   cgs.media.smokePuffShader);
+			// use the optimized local entity add
+			smoke->type = LE_SCALE_FADE;
+		}
 	}
 }
 
@@ -1670,7 +1675,8 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		lightcolor[1] = 0.45f;
 		lightcolor[2] = 0.0f;
 
-		shockwave(origin, 400);
+		if(cg_rocketExpShockwave.integer)
+			shockwave(origin, 400);
 
 		// flame
 		for(i = 0; i < 10; i++){
@@ -1680,14 +1686,6 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 			vecmul(pt, 45, pt);
 			vecadd(pt, origin, pt);
 			le = explosion(pt, dir, mod, shader, duration, isSprite);
-		}
-
-		if(cg_oldRocket.integer == 0){
-			// explosion sprite animation
-			vecmad(origin, 24, dir, sprOrg);
-			vecmul(dir, 20, sprVel);
-
-			CG_ParticleExplosion("explode1", sprOrg, sprVel, 17*20, 60, 200);
 		}
 
 		// upper flame
@@ -1702,13 +1700,16 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		}
 
 		// smoke
-		for(i = 0; i < 14; i++){
-			vec3_t pt;
+		if(cg_rocketExpSmoke.integer){
+			for(i = 0; i < 14; i++){
+				vec3_t pt;
 
-			vecset(pt, crandom(), crandom(), crandom());
-			vecmul(pt, 70, pt);
-			vecadd(pt, origin, pt);
-			smokepuff(pt, dir, 120, .5, .5, .5, 1, 5*duration, cg.time-300, 0, 0, cgs.media.shotgunSmokePuffShader);
+				vecset(pt, crandom(), crandom(), crandom());
+				vecmul(pt, 70, pt);
+				vecadd(pt, origin, pt);
+				smokepuff(pt, dir, 120, .5, .5, .5, 1, 5*duration,
+				   cg.time-300, 0, 0, cgs.media.shotgunSmokePuffShader);
+			}
 		}
 
 		break;
