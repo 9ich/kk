@@ -583,6 +583,9 @@ typedef struct
 	int		zoomtime;
 	float		zoomsens;
 
+	// weapon modifier key (enables switching secondary weapon)
+	qboolean	weapmod;
+
 	// information screen text during loading
 	char		infoscreentext[MAX_STRING_CHARS];
 
@@ -1400,8 +1403,8 @@ void	rotentontag(refEntity_t *entity, const refEntity_t *parent,
 // cg_weapons.c
 void	CG_NextWeapon_f(void);
 void	CG_PrevWeapon_f(void);
-void	CG_NextWeapon2_f(void);
-void	CG_PrevWeapon2_f(void);
+void	CG_WeapModDown_f(void);
+void	CG_WeapModUp_f(void);
 void	CG_Weapon_f(void);
 
 void	registerweap(int weaponNum);

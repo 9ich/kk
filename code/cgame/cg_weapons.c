@@ -1380,92 +1380,43 @@ CG_PrevWeapon_f
 void
 CG_PrevWeapon_f(void)
 {
-	int i;
-	int original;
+	int i, original, slot;
 
 	if(!cg.snap)
 		return;
 	if(cg.snap->ps.pm_flags & PMF_FOLLOW)
 		return;
 
-	cg.weapseltime[0] = cg.time;
-	original = cg.weapsel[0];
+	slot = 0;
+	if(cg.weapmod)
+		slot = 1;
+
+	cg.weapseltime[slot] = cg.time;
+	original = cg.weapsel[slot];
 
 	for(i = 0; i < MAX_WEAPONS; i++){
-		cg.weapsel[0]--;
-		if(cg.weapsel[0] == -1)
-			cg.weapsel[0] = MAX_WEAPONS - 1;
-		if(cg.weapsel[0] == WP_GAUNTLET)
+		cg.weapsel[slot]--;
+		if(cg.weapsel[slot] == -1)
+			cg.weapsel[slot] = MAX_WEAPONS - 1;
+		if(cg.weapsel[slot] == WP_GAUNTLET)
 			continue;	// never cycle to gauntlet
-		if(weapselectable(0, cg.weapsel[0]))
+		if(weapselectable(slot, cg.weapsel[slot]))
 			break;
 	}
 	if(i == MAX_WEAPONS)
-		cg.weapsel[0] = original;
+		cg.weapsel[slot] = original;
 }
 
-/*
-===============
-CG_NextWeapon2_f
-===============
-*/
 void
-CG_NextWeapon2_f(void)
+CG_WeapModDown_f(void)
 {
-	int i;
-	int original;
-
-	if(!cg.snap)
-		return;
-	if(cg.snap->ps.pm_flags & PMF_FOLLOW)
-		return;
-
-	cg.weapseltime[1] = cg.time;
-	original = cg.weapsel[1];
-
-	for(i = 0; i < MAX_WEAPONS; i++){
-		cg.weapsel[1]++;
-		if(cg.weapsel[1] == MAX_WEAPONS)
-			cg.weapsel[1] = 0;
-		if(cg.weapsel[1] == WP_GAUNTLET)
-			continue;	// never cycle to gauntlet
-		if(weapselectable(1, cg.weapsel[1]))
-			break;
-	}
-	if(i == MAX_WEAPONS)
-		cg.weapsel[1] = original;
+	cg.weapmod = qtrue;
 }
 
-/*
-===============
-CG_PrevWeapon2_f
-===============
-*/
 void
-CG_PrevWeapon2_f(void)
+CG_WeapModUp_f(void)
 {
-	int i;
-	int original;
-
-	if(!cg.snap)
-		return;
-	if(cg.snap->ps.pm_flags & PMF_FOLLOW)
-		return;
-
-	cg.weapseltime[1] = cg.time;
-	original = cg.weapsel[1];
-
-	for(i = 0; i < MAX_WEAPONS; i++){
-		cg.weapsel[1]--;
-		if(cg.weapsel[1] == -1)
-			cg.weapsel[1] = MAX_WEAPONS - 1;
-		if(cg.weapsel[1] == WP_GAUNTLET)
-			continue;	// never cycle to gauntlet
-		if(weapselectable(1, cg.weapsel[1]))
-			break;
-	}
-	if(i == MAX_WEAPONS)
-		cg.weapsel[1] = original;
+	cg.weapmod = qfalse;
 }
 
 /*
@@ -1476,24 +1427,28 @@ CG_Weapon_f
 void
 CG_Weapon_f(void)
 {
-	int num;
+	int num, i;
 
 	if(!cg.snap)
 		return;
 	if(cg.snap->ps.pm_flags & PMF_FOLLOW)
 		return;
 
+	i = 0;
+	if(cg.weapmod)
+		i = 1;
+
 	num = atoi(cgargv(1));
 
 	if(num < 1 || num > MAX_WEAPONS-1)
 		return;
 
-	cg.weapseltime[0] = cg.time;
+	cg.weapseltime[i] = cg.time;
 
 	if(!(cg.snap->ps.stats[STAT_WEAPONS] & (1 << num)))
 		return;	// don't have the weapon
 
-	cg.weapsel[0] = num;
+	cg.weapsel[i] = num;
 }
 
 /*
