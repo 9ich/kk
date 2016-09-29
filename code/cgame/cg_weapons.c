@@ -1604,20 +1604,11 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		mark = cgs.media.holeMarkShader;
 		radius = 12;
 		break;
-#ifdef MISSIONPACK
 	case WP_PROX_LAUNCHER:
-		mod = cgs.media.dishFlashModel;
-		shader = cgs.media.grenadeExplosionShader;
-		sfx = cgs.media.sfx_proxexp;
-		mark = cgs.media.burnMarkShader;
-		radius = 64;
-		light = 300;
-		isSprite = qtrue;
-		break;
-#endif
 	case WP_GRENADE_LAUNCHER:
 	case WP_ROCKET_LAUNCHER:
 	case WP_HOMING_LAUNCHER:
+	case WP_BFG:
 		mod = cgs.media.dishFlashModel;
 		shader = cgs.media.rocketExplosionShader;
 		sfx = PICKRANDOM(cgs.media.sfx_rockexp);
@@ -1625,10 +1616,13 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		radius = 64;
 		light = 300;
 		isSprite = qtrue;
-		duration = 16*33.333f;
+		duration = 16*16.666666f;
 		lightcolor[0] = 0.9f;
 		lightcolor[1] = 0.45f;
 		lightcolor[2] = 0.0f;
+
+		for(i = 0; i < cg_rocketExpSparks.integer; i++)
+			CG_ParticleSparks(origin, dir, 500+crandom()*400, 60, 600 + crandom()*140);
 
 		if(cg_rocketExpShockwave.integer)
 			shockwave(origin, 400);
@@ -1640,11 +1634,11 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 			vecset(pt, crandom(), crandom(), crandom());
 			vecmul(pt, 45, pt);
 			vecadd(pt, origin, pt);
-			le = explosion(pt, dir, mod, shader, duration, isSprite);
+			le = explosion(pt, dir, mod, shader, duration-6, isSprite);
 		}
 
 		// upper flame
-		for(i = 0; i < 10; i++){
+		for(i = 0; i < 14; i++){
 			vec3_t pt;
 
 			vecset(pt, crandom(), crandom(), crandom());
@@ -1656,17 +1650,50 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 
 		// smoke
 		if(cg_rocketExpSmoke.integer){
-			for(i = 0; i < 14; i++){
+			for(i = 0; i < 24; i++){
 				vec3_t pt;
 
-				vecset(pt, crandom(), crandom(), crandom());
-				vecmul(pt, 70, pt);
-				vecadd(pt, origin, pt);
-				smokepuff(pt, dir, 120, .5, .5, .5, 1, 5*duration,
+
+			vecset(pt, crandom(), crandom(), crandom());
+			vecmad(dir, 0.7f, pt, pt);
+			vecmul(pt, 70, pt);
+			vecadd(origin, pt, pt);
+				smokepuff(pt, dir, 140, .6, .6, .6, 1, 4*duration,
 				   cg.time-300, 0, 0, cgs.media.shotgunSmokePuffShader);
 			}
 		}
 
+		mod = 0;	// don't draw the usual sprite
+		break;
+	case WP_MACHINEGUN:
+		mod = cgs.media.dishFlashModel;
+		shader = cgs.media.rocketExplosionShader;
+		sfx = PICKRANDOM(cgs.media.sfx_rockexp);
+		mark = cgs.media.burnMarkShader;
+		light = 100;
+		isSprite = qtrue;
+		duration = 16*16.666666f;
+		lightcolor[0] = 0.9f;
+		lightcolor[1] = 0.45f;
+		lightcolor[2] = 0.0f;
+
+		for(i = 0; i < cg_rocketExpSparks.integer / 5; i++)
+			CG_ParticleSparks(origin, dir, 500+crandom()*400, 60, 600 + crandom()*140);
+
+		if(cg_rocketExpShockwave.integer)
+			shockwave(origin, 50);
+
+		// flame
+		for(i = 0; i < 4; i++){
+			vec3_t pt;
+
+			vecset(pt, crandom(), crandom(), crandom());
+			vecmul(pt, 20, pt);
+			vecadd(pt, origin, pt);
+			le = explosion(pt, dir, mod, shader, duration-6, isSprite);
+		}
+
+		mod = 0;	// don't draw the usual sprite
 		break;
 	case WP_RAILGUN:
 		mod = cgs.media.ringFlashModel;
@@ -1682,14 +1709,6 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		sfx = cgs.media.sfx_plasmaexp;
 		mark = cgs.media.energyMarkShader;
 		radius = 16;
-		break;
-	case WP_BFG:
-		mod = cgs.media.dishFlashModel;
-		shader = cgs.media.bfgExplosionShader;
-		sfx = PICKRANDOM(cgs.media.sfx_rockexp);
-		mark = cgs.media.burnMarkShader;
-		radius = 32;
-		isSprite = qtrue;
 		break;
 	case WP_SHOTGUN:
 		mod = cgs.media.bulletFlashModel;

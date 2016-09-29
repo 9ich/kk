@@ -199,6 +199,7 @@ vmCvar_t cg_enemyThrustSounds;
 vmCvar_t cg_ownThrustSounds;
 vmCvar_t cg_rocketExpSmoke;
 vmCvar_t cg_rocketExpShockwave;
+vmCvar_t cg_rocketExpSparks;
 vmCvar_t cg_rocketSmoke;
 vmCvar_t cg_rocketFlame;
 
@@ -340,6 +341,7 @@ static cvarTable_t cvarTable[] = {
 	{&cg_ownThrustSounds, "cg_ownThrustSounds", "1", CVAR_ARCHIVE},
 	{&cg_rocketExpShockwave, "cg_rocketExpShockwave", "1", CVAR_ARCHIVE},
 	{&cg_rocketExpSmoke, "cg_rocketExpSmoke", "1", CVAR_ARCHIVE},
+	{&cg_rocketExpSparks, "cg_rocketExpSparks", "60", CVAR_ARCHIVE},
 	{&cg_rocketFlame, "cg_rocketFlame", "1", CVAR_ARCHIVE},
 	{&cg_rocketSmoke, "cg_rocketSmoke", "1", CVAR_ARCHIVE}
 //	{ &cg_pmove_fixed, "cg_pmove_fixed", "0", CVAR_USERINFO | CVAR_ARCHIVE }

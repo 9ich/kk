@@ -1733,9 +1733,10 @@ CG_ParticleBloodCloud(centity_t *cent, vec3_t origin, vec3_t dir)
 }
 
 void
-CG_ParticleSparks(vec3_t org, vec3_t vel, int duration, float x, float y, float speed)
+CG_ParticleSparks(vec3_t org, vec3_t vel, int duration, float x, float speed)
 {
 	cparticle_t *p;
+	vec3_t dir;
 
 	if(!free_particles)
 		return;
@@ -1744,40 +1745,39 @@ CG_ParticleSparks(vec3_t org, vec3_t vel, int duration, float x, float y, float 
 	p->next = active_particles;
 	active_particles = p;
 	p->time = cg.time;
-
-	p->endtime = cg.time + duration;
-	p->startfade = cg.time + duration/2;
-
-	p->color = EMISIVEFADE;
-	p->alpha = 0.4f;
+	p->alpha = 1.0f;
 	p->alphavel = 0;
 
-	p->height = 0.5;
-	p->width = 0.5;
-	p->endheight = 0.5;
-	p->endwidth = 0.5;
+	if(duration < 0){
+		duration *= -1;
+		p->roll = 0;
+	}else
+		p->roll = crandom()*179;
 
 	p->pshader = cgs.media.tracerShader;
+
+	p->width = 1.8f;
+	p->height = 1.8f;	// for sprites that are stretch in either direction
+
+	p->endheight = 0.001f;
+	p->endwidth = 0.001f;
+
+	p->endtime = cg.time + duration;
 
 	p->type = P_SMOKE;
 
 	veccpy(org, p->org);
-
 	p->org[0] += (crandom() * x);
-	p->org[1] += (crandom() * y);
+	p->org[1] += (crandom() * x);
+	p->org[2] += (crandom() * x);
 
-	p->vel[0] = vel[0];
-	p->vel[1] = vel[1];
-	p->vel[2] = vel[2];
+	veccpy(vel, p->vel);
+	vecset(dir, crandom()*.6f, crandom()*.6f, crandom()*.6f);
+	vecadd(p->vel, dir, p->vel);
+	vecnorm(p->vel);
 
-	p->accel[0] = p->accel[1] = p->accel[2] = 0;
-
-	p->vel[0] += (crandom() * 4);
-	p->vel[1] += (crandom() * 4);
-	p->vel[2] += (20 + (crandom() * 10)) * speed;
-
-	p->accel[0] = crandom() * 4;
-	p->accel[1] = crandom() * 4;
+	vecmul(p->vel, speed, p->vel);
+	vecclear(p->accel);
 }
 
 void
