@@ -268,25 +268,59 @@ drawstatusbar(void)
 
 	setalign("left");
 
-	// ammo
+	// primary ammo
 	if(cent->currstate.weapon[0]){
-		if(cg.pps.weaponTime[0] > 100){
-			// draw weapontime indicator
-			coloralpha(clr, CWhite, sawtoothwave(cg.pps.weaponTime[0], 8, 0, 1));
-			fillrect(0.5f*screenwidth() + 100, 305, 6, 6, clr);
-		}
+		const char *s;
+
+		VectorCopy4(CWhite, clr);
+		if(cg.pps.weaponTime[0] > 100)
+			clr[3] = sawtoothwave(cg.pps.weaponTime[0], 8, 0, 1);
 
 		value = ps->ammo[cent->currstate.weapon[0]];
-		if(value > -1)
-			drawhudfield(0.5f*screenwidth() + 75, 320, va("%d", value), CWhite);
+		if(value == -1)
+			s = "inf";
+		else
+			s = va("%d", value);
+		drawhudfield(0.5f*screenwidth() + 75, 320, s, clr);
 		
 		trap_R_SetColor(nil);
 
 		// draw a 2D icon for ammo
 		if(cg_drawIcons.integer){
+			float strh;
+
 			drawpic(0.5f*screenwidth() + 74 - 2, 300 - 2, 16 + 4, 16 + 4, cgs.media.selectShader);
 			drawpic(0.5f*screenwidth() + 74, 300, 16, 16, cg_weapons[cg.pps.weapon[0]].ammoicon);
-			drawstring(0.5f*screenwidth() + 100, 316, cg_weapons[cg.pps.weapon[0]].item->pickupname, FONT3, 7, CWhite);
+			strh = stringheight(cg_weapons[cg.pps.weapon[0]].item->pickupname, FONT3, 7);
+			drawstring(0.5f*screenwidth() + 100, 300 + 8 - 0.5f*strh, cg_weapons[cg.pps.weapon[0]].item->pickupname, FONT3, 7, CWhite);
+		}
+	}
+
+	// secondary ammo
+	if(cent->currstate.weapon[1]){
+		const char *s;
+
+		VectorCopy4(CWhite, clr);
+		if(cg.pps.weaponTime[1] > 100)
+			clr[3] = sawtoothwave(cg.pps.weaponTime[1], 8, 0, 1);
+
+		value = ps->ammo[cent->currstate.weapon[1]];
+		if(value == -1)
+			s = "inf";
+		else
+			s = va("%d", value);
+		drawhudfield(0.5f*screenwidth() + 75, 320 + 80, s, clr);
+		
+		trap_R_SetColor(nil);
+
+		// draw a 2D icon for ammo
+		if(cg_drawIcons.integer){
+			float strh;
+
+			drawpic(0.5f*screenwidth() + 74 - 2, 300 - 2 + 80, 16 + 4, 16 + 4, cgs.media.selectShader);
+			drawpic(0.5f*screenwidth() + 74, 300 + 80, 16, 16, cg_weapons[cg.pps.weapon[1]].ammoicon);
+			strh = stringheight(cg_weapons[cg.pps.weapon[1]].item->pickupname, FONT3, 7);
+			drawstring(0.5f*screenwidth() + 100, 300 + 8 - 0.5f*strh + 80, cg_weapons[cg.pps.weapon[1]].item->pickupname, FONT3, 7, CWhite);
 		}
 	}
 
@@ -302,7 +336,7 @@ drawstatusbar(void)
 		// flash red to white
 		clr[0] = 1.0f;
 		clr[1] = sawtoothwave(cg.time, 4, 0, 1);
-		clr[2] = sawtoothwave(cg.time, 4, 0, 1);
+		clr[2] = clr[1];
 		clr[3] = 1-sawtoothwave(cg.time, 4, 0, 0.5f);
 	}else
 		VectorCopy4(CRed, clr);
@@ -311,7 +345,7 @@ drawstatusbar(void)
 	// armor
 	value = ps->stats[STAT_ARMOR];
 	if(value > 0){
-		drawhudfield(0.5f*screenwidth() - 75, 358, va("%d", value), CWhite);
+		drawhudfield(0.5f*screenwidth() - 75, 364, va("%d", value), CWhite);
 		// if we didn't draw a 3D icon, draw a 2D icon for armor
 		if(0 && cg_drawIcons.integer)
 			drawpic(370 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE, cgs.media.armorIcon);
@@ -458,13 +492,19 @@ drawspeedometer(void)
 	speeds[index % SPEEDOMETER_FRAMES] = speed;
 	index++;
 
-	setalign("center");
+	pushalign("center");
 
-	// draw instantaneous speed
+	// draw instantaneous speed text
 	s = va("%4i u/s", (int)speed);
 	drawfixedstr(0.5f*screenwidth(), 330, s, 1.0f);
 
-	setalign("left");
+	if(cg_drawSpeedometer.integer != 2){
+		popalign(1);
+		return;
+	}
+
+	// draw the bars
+	pushalign("left");
 
 	x = 0.5f*screenwidth();
 	y = 348;
@@ -510,7 +550,7 @@ drawspeedometer(void)
 	fillrect(x - 0.5f + width/2, y+height-2, 1, 2, CBlack);
 	fillrect(x - 1 + width, y+height-2, 1, 2, CBlack);
 
-	setalign("");
+	popalign(2);
 }
 
 /*
