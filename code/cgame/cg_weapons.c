@@ -1237,13 +1237,14 @@ drawweapsel(void)
 	const float sz = 18, h = 29, pad = 4;
 	const int font = FONT1, fontsz = 8;
 	float strw, strh;
+	float rectw, recth;
 	int i;
 	int bits;
 	int count;
-	int x, y;
+	float x, y, iconx, icony, selx, sely, labelx, labely;
 	char *name;
 	float *color, *color2;
-	vec4_t priclr, secclr;
+	vec4_t priclr, secclr, bgclr;
 
 	// don't display if dead
 	if(cg.pps.stats[STAT_HEALTH] <= 0)
@@ -1269,38 +1270,59 @@ drawweapsel(void)
 		if(bits & (1 << i))
 			count++;
 
-	//x = 0.5f*screenwidth() - count * 20;
-	x = 40;
-	//y = 50;
-	y = 0.5f*screenheight() - count * h/2;
-
 	Vector4Copy(CLightBlue, priclr);
 	Vector4Copy(CLightSalmon, secclr);
 	priclr[3] = color[3];
 	secclr[3] = color[3];
 
+	VectorCopy4(color, bgclr);
+	bgclr[3] *= 0.07f;
+
+	x = 40;
+	y = 0.5f*screenheight() - count * h/2;
+
 	for(i = 1; i < MAX_WEAPONS; i++){
 		if(!(bits & (1 << i)))
 			continue;
 
+		selx = x + 8;
+		sely = y;
+		iconx = selx + pad;
+		icony = sely + pad;
+		labelx = selx + sz + 2*pad + 2;
+		labely = y + 10;
+
 		registerweap(i);
 
+		recth = h;
+		rectw = labelx - x + 55;
+
+		if(i == cg.weapsel[0] || i == cg.weapsel[1]){
+			float w;
+
+			w = labelx - x + stringwidth(cg_weapons[i].item->pickupname, font, 8, 0, -1) + 4;
+			rectw = MAX(rectw, w);
+			bgclr[3] *= 2.0f;
+		}
+
+		fillrect(x, y, rectw - 1, recth - 1, bgclr);
+
 		// draw weapon icon
-		drawpic(x, y, sz, sz, cg_weapons[i].icon);
+		drawpic(iconx, icony, sz, sz, cg_weapons[i].icon);
 		// ammo count
 		if(cg.pps.ammo[i] != -1)
-			drawstring(x + sz + 2*pad, y + 10, va("%d", cg.pps.ammo[i]), font, 12, color);
+			drawstring(labelx, labely, va("%d", cg.pps.ammo[i]), font, 12, color);
 
 		// draw selection marker
 		if(i == cg.weapsel[0]){
 			// pri/sec
 			strw = stringwidth("1", font, 7, 0, -1);
-			drawstring(x - 2*pad - strw, y, "1", font, 7, priclr);
+			drawstring(x + 2, y, "1", font, 7, priclr);
 			// name
-			drawstring(x + sz + 2*pad, y, cg_weapons[i].item->pickupname, font, 8, priclr);
-			// icon
+			drawstring(labelx, y, cg_weapons[i].item->pickupname, font, 8, priclr);
+			// selector icon
 			trap_R_SetColor(priclr);
-			drawpic(x - pad, y - pad, sz + 2*pad, sz + 2*pad, cgs.media.selectShader);
+			drawpic(selx, sely, sz + 2*pad, sz + 2*pad, cgs.media.selectShader);
 			trap_R_SetColor(color);
 		}
 
@@ -1308,12 +1330,12 @@ drawweapsel(void)
 			// pri/sec
 			strw = stringwidth("2", font, 7, 0, -1);
 			strh = stringheight("2", font, 7);
-			drawstring(x - 2*pad - strw, y + sz - strh, "2", font, 7, secclr);
+			drawstring(x + 2, y + sz - strh, "2", font, 7, secclr);
 			// name
-			drawstring(x + sz + 2*pad, y, cg_weapons[i].item->pickupname, font, 8, secclr);
-			// icon
+			drawstring(labelx, y, cg_weapons[i].item->pickupname, font, 8, secclr);
+			// selector icon
 			trap_R_SetColor(secclr);
-			drawpic(x - pad, y - pad, sz + 2*pad, sz + 2*pad, cgs.media.selectShader);
+			drawpic(selx, sely, sz + 2*pad, sz + 2*pad, cgs.media.selectShader);
 			trap_R_SetColor(color);
 		}
 
