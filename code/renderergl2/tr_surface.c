@@ -870,7 +870,7 @@ static void RB_SurfaceTracer( void ) {
 	for ( i = 0 ; i < 4 ; i++ ) {
 		vec3_t	temp;
 
-		DoRailCore( start, end, right, len, 2 );
+		DoRailCore( start, end, right, len, 3 );
 		RotatePointAroundVector( temp, vec, right, 45 );
 		VectorCopy( temp, right );
 	}
