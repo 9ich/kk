@@ -1370,28 +1370,31 @@ CG_NextWeapon_f
 void
 CG_NextWeapon_f(void)
 {
-	int i;
-	int original;
+	int i, original, slot;
 
 	if(!cg.snap)
 		return;
 	if(cg.snap->ps.pm_flags & PMF_FOLLOW)
 		return;
 
-	cg.weapseltime[0] = cg.time;
-	original = cg.weapsel[0];
+	slot = 0;
+	if(cg.weapmod)
+		slot = 1;
+
+	cg.weapseltime[slot] = cg.time;
+	original = cg.weapsel[slot];
 
 	for(i = 0; i < MAX_WEAPONS; i++){
-		cg.weapsel[0]++;
-		if(cg.weapsel[0] == MAX_WEAPONS)
-			cg.weapsel[0] = 0;
-		if(cg.weapsel[0] == WP_GAUNTLET)
+		cg.weapsel[slot]++;
+		if(cg.weapsel[slot] == MAX_WEAPONS)
+			cg.weapsel[slot] = 0;
+		if(cg.weapsel[slot] == WP_GAUNTLET)
 			continue;	// never cycle to gauntlet
-		if(weapselectable(0, cg.weapsel[0]))
+		if(weapselectable(slot, cg.weapsel[slot]))
 			break;
 	}
 	if(i == MAX_WEAPONS)
-		cg.weapsel[0] = original;
+		cg.weapsel[slot] = original;
 }
 
 /*
