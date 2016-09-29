@@ -159,23 +159,19 @@ cacheui(void)
 	uis.cursor = trap_R_RegisterShaderNoMip("menu/art/3_cursor2");
 	uis.menuBackShader = trap_R_RegisterShaderNoMip("menuback");
 	uis.fieldUpdateSound = trap_S_RegisterSound("sound/misc/menu2", qfalse);
+	// precache shaders
+	trap_R_RegisterShaderNoMip("menu/art/tick");
+	trap_R_RegisterShaderNoMip("menu/art/left");
+	trap_R_RegisterShaderNoMip("menu/art/right");
 	drawlibinit();
 }
 
 qboolean
 consolecommand(int realTime)
 {
-	char *cmd;
-
 	uis.frametime = realTime - uis.realtime;
 	uis.realtime = realTime;
 
-	cmd = Argv(0);
-
-	if(Q_stricmp(cmd, "ui_cache") == 0){
-		cacheui();
-		return qtrue;
-	}
 	return qfalse;
 }
 
