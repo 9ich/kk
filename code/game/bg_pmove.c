@@ -36,6 +36,7 @@ float pm_swimScale = 0.50f;
 
 float pm_accelerate = 10.0f;
 float pm_airaccelerate = 6.0f;
+float pm_grappleaccelerate = 1.0f;
 float pm_wateraccelerate = 4.0f;
 float pm_flyaccelerate = 8.0f;
 
@@ -125,8 +126,6 @@ applyfriction(void)
 	vel = pm->ps->velocity;
 
 	veccpy(vel, vec);
-	if(pml.walking)
-		vec[2] = 0;	// ignore slope movement
 
 	speed = veclen(vec);
 	if(speed < 0.01f){
@@ -151,7 +150,7 @@ applyfriction(void)
 		drop += speed*pm_waterfriction*pm->waterlevel*pml.frametime;
 
 	// apply flying friction
-	if(pm->cmd.forwardmove != 0 || pm->cmd.rightmove != 0 || pm->cmd.upmove != 0)
+	if(pm->cmd.forwardmove != 0 || pm->cmd.rightmove != 0 || pm->cmd.upmove != 0 || (pm->ps->pm_flags & PMF_GRAPPLE_PULL))
 		drop += speed*pm->ps->airFriction*pml.frametime;
 	else
 		drop += speed*pm->ps->airIdleFriction*pml.frametime;
@@ -223,8 +222,9 @@ pmq2accelerate(vec3_t wishdir, float wishspeed, float accel)
 	int i;
 	float addspeed, accelspeed, currentspeed;
 
-	currentspeed = vecdot(pm->ps->velocity, wishdir);
-	addspeed = wishspeed - currentspeed;
+	//currentspeed = vecdot(pm->ps->velocity, wishdir);
+	//addspeed = wishspeed - currentspeed;
+	addspeed = wishspeed;
 	if(addspeed <= 0)
 		return;
 	accelspeed = accel*pml.frametime*wishspeed;
@@ -241,7 +241,7 @@ without getting a sqrt(2) distortion in speed.
 static float
 cmdscale(usercmd_t *cmd)
 {
-#if 1	// 1 = allow the speed distortion, 0 = don't
+#if 0	// 1 = allow the speed distortion, 0 = don't
 	float scale;
 
 	// max achievable scale with the old code
@@ -263,6 +263,30 @@ cmdscale(usercmd_t *cmd)
 	scale = max / (127.0f * total);
 	return (float)pm->ps->speed * scale;
 #endif
+}
+
+/*
+Returns the scale factor to apply to cmd movements
+This allows the clients to use axial -127 to 127 values for all directions
+without getting a sqrt(2) distortion in speed.
+*/
+static float
+q3cmdscale(usercmd_t *cmd)
+{
+	int max;
+	float total;
+	float scale;
+
+	max = abs(cmd->forwardmove);
+	if(abs(cmd->rightmove) > max)
+		max = abs(cmd->rightmove);
+	if(abs(cmd->upmove) > max)
+		max = abs(cmd->upmove);
+	if(!max)
+		return 0;
+	total = sqrt(Square(cmd->forwardmove) + Square(cmd->rightmove) + Square(cmd->upmove));
+	scale = max / (127.0f * total);
+	return (float)pm->ps->speed * scale;
 }
 
 static void
@@ -362,63 +386,110 @@ airmove(void)
 {
 	vec3_t wishvel, wishdir;
 	vec3_t fwd, right, up;
+	vec3_t dodge;
 	float wishspeed;
+	float fwdspeed, rightspeed, upspeed;
+	const float tolerance = 20;		// dodge tolerance: <20u/s
 
 	applyfriction();
 
 	vecmul(pml.forward, pm->cmd.forwardmove, fwd);
 	vecmul(pml.right, pm->cmd.rightmove, right);
 	vecmul(pml.up, pm->cmd.upmove, up);
+
+	// calc regular movement
 	vecadd(fwd, right, wishvel);
 	vecadd(wishvel, up, wishvel);
 
 	veccpy(wishvel, wishdir);
 	wishspeed = vecnorm(wishdir) * cmdscale(&pm->cmd);
 
+	//
+	// calc dodge
+	//
+	// if the player is not moving fast enough along one of their
+	// fwd/right/up dirs, and is holding the key to go in that dir,
+	// then give a boost along that dir
+	//
+
+	vecset(dodge, 0, 0, 0);
+
+	// project current vel onto player's fwd/right/up vectors to get the
+	// speed in those dirs
+	fwdspeed = vecdot(pm->ps->velocity, pml.forward);
+	rightspeed = vecdot(pm->ps->velocity, pml.right);
+	upspeed = vecdot(pm->ps->velocity, pml.up);
+
+	if((pm->cmd.forwardmove > 0 && fwdspeed < tolerance) ||
+	   (pm->cmd.forwardmove < 0 && fwdspeed > -tolerance))
+		vecmad(dodge, 3, fwd, dodge);
+	if((pm->cmd.rightmove > 0 && rightspeed < tolerance) ||
+	   (pm->cmd.rightmove < 0 && rightspeed > -tolerance))
+		vecmad(dodge, 3, right, dodge);
+	if((pm->cmd.upmove > 0 && upspeed < tolerance) ||
+	   (pm->cmd.upmove < 0 && upspeed > -tolerance))
+		vecmad(dodge, 3, up, dodge);
+
+	// accelerate along wishdir
 	pmaccelerate(wishdir, wishspeed, pm->ps->airAccel);
+	// add the dodge boost
+	vecmad(pm->ps->velocity, pml.frametime * pm->ps->airAccel, dodge, pm->ps->velocity);
 	pmslidemove(qtrue);
 }
 
+/*
+slab's hook
+*/
 static void
 grapplemove(void)
 {
-	vec3_t wishvel, wishdir, vel;
+	vec3_t wishvel, wishdir, grappledir;
 	vec3_t fwd, right, up, v;
 	float wishspeed, grspd, vlen;
 	const float hookpullspeed = 400.0f;
-	const float swingstrength = 1.2f;
+	const float swingstrength = 10.0f;
+	float pullspeedcoef, oldlen;
+	float accel;
+	vec3_t vel;
 
 	//
 	// add airmove
 	//
-	applyfriction();
+
+	vecnorm(pml.forward);
+	vecnorm(pml.right);
+	vecnorm(pml.up);
 
 	vecmul(pml.forward, pm->cmd.forwardmove, fwd);
 	vecmul(pml.right, pm->cmd.rightmove, right);
 	vecmul(pml.up, pm->cmd.upmove, up);
-	vecadd(fwd, right, wishvel);
-	vecadd(wishvel, up, wishvel);
+	vecadd(fwd, right, wishdir);
+	vecadd(wishdir, up, wishdir);
+	wishspeed = vecnorm(wishdir) * cmdscale(&pm->cmd);
+	
+	grspd = hookpullspeed;
 
-	//
-	// add influence from hook
-	//
 	vecmul(pml.forward, -16, v);
 	vecadd(pm->ps->grapplePoint, v, v);
 	vecsub(v, pm->ps->origin, vel);
-	vlen = vecnorm(vel);
-
-	grspd = hookpullspeed;
-	if(pm->ps->grappleLen != 0 && vlen > pm->ps->grappleLen)
-		grspd *= (vlen - pm->ps->grappleLen) * swingstrength;
-	// save vlen for next frame
-	pm->ps->grappleLen = vlen;
-
+	vlen = veclen(vel);
+	if(pm->ps->grappleLen == 0 /*pm->ps->grapplelast == qfalse*/)
+		oldlen = vlen;
+	else
+		oldlen = pm->ps->grappleLen;
+	if(pm->ps->grappleLen != 0 && vlen > oldlen){
+		pullspeedcoef = vlen - oldlen;
+		pullspeedcoef *= swingstrength;	/* pm->ps->swingstrength */
+		grspd *= pullspeedcoef;
+	}
 	if(grspd < hookpullspeed)
 		grspd = hookpullspeed;
 	
-	pmq2accelerate(wishdir, wishspeed, pm_airaccelerate);
-	pmq2accelerate(vel, grspd, pm_airaccelerate);
+	vecnorm(vel);
+	pmaccelerate(wishdir, wishspeed, pm_grappleaccelerate);
+	pmq2accelerate(vel, grspd, pm_grappleaccelerate);
 	pmslidemove(qtrue);
+	pm->ps->grappleLen = vlen;
 }
 
 static void
@@ -484,7 +555,7 @@ noclipmove(void)
 	vecadd(wishvel, up, wishvel);
 
 	veccpy(wishvel, wishdir);
-	wishspeed = vecnorm(wishdir);
+	wishspeed = vecnorm(wishdir) * 2;
 	wishspeed *= scale;
 
 	pmaccelerate(wishdir, wishspeed, pm_accelerate);
@@ -755,7 +826,7 @@ pmweapevents(int slot)
 		addTime = 1000;
 		break;
 	case WP_MACHINEGUN:
-		addTime = 1000/20.0;
+		addTime = 1000/20.0f;
 		break;
 	case WP_GRENADE_LAUNCHER:
 		addTime = 800;
@@ -773,11 +844,11 @@ pmweapevents(int slot)
 		addTime = 200;
 		break;
 	case WP_GRAPPLING_HOOK:
-		addTime = 400;
+		addTime = 1;
 		break;
 #ifdef MISSIONPACK
 	case WP_NAILGUN:
-		addTime = 120;
+		addTime = 64;
 		break;
 	case WP_PROX_LAUNCHER:
 		addTime = 800;
@@ -998,11 +1069,9 @@ PmoveSingle(pmove_t *pmove)
 
 	advancetimers();
 
-	if(pm->ps->pm_flags & PMF_GRAPPLE_PULL){
+	if(pm->ps->pm_flags & PMF_GRAPPLE_PULL)
 		grapplemove();
-		// We can wiggle a bit
-		airmove();
-	}else if(pm->waterlevel > 1)
+	else if(pm->waterlevel > 1)
 		// swimming
 		watermove();
 	else
@@ -1010,7 +1079,7 @@ PmoveSingle(pmove_t *pmove)
 		airmove();
 
 	if(!(pm->ps->pm_flags & PMF_GRAPPLE_PULL))
-		pm->ps->grappleLen = 0.0f;
+		pm->ps->grappleLen = 0;
 
 	pmanimate();
 
