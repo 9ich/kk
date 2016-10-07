@@ -389,7 +389,7 @@ airmove(void)
 	vec3_t dodge;
 	float wishspeed;
 	float fwdspeed, rightspeed, upspeed;
-	const float tolerance = 20;		// dodge tolerance: <20u/s
+	const float tolerance = 200;		// dodge tolerance: <200u/s
 
 	applyfriction();
 
@@ -397,7 +397,10 @@ airmove(void)
 	vecmul(pml.right, pm->cmd.rightmove, right);
 	vecmul(pml.up, pm->cmd.upmove, up);
 
+	//
 	// calc regular movement
+	//
+
 	vecadd(fwd, right, wishvel);
 	vecadd(wishvel, up, wishvel);
 
@@ -430,15 +433,40 @@ airmove(void)
 	   (pm->cmd.upmove < 0 && upspeed > -tolerance))
 		vecmad(dodge, 3, up, dodge);
 
-	// accelerate along wishdir
+	// accelerate normally towards wishdir
 	pmaccelerate(wishdir, wishspeed, pm->ps->airAccel);
-	// add the dodge boost
+	// add the dodge boost to velocity
 	vecmad(pm->ps->velocity, pml.frametime * pm->ps->airAccel, dodge, pm->ps->velocity);
+	
+	//
+	// calc air control
+	//
+	// straighten out towards wishdir if player is only holding +forward
+	// or +back
+	//
+
+	if(pm->cmd.forwardmove != 0 && pm->cmd.rightmove == 0 &&
+	   pm->cmd.upmove == 0 && wishspeed != 0){
+		float currspeed, d, airctl;
+
+		currspeed = veclen(pm->ps->velocity);
+		d = vecdot(pm->ps->velocity, wishdir);
+		if(d > 0){
+			// add scaled influence from wishdir, conserving the
+			// original total speed
+			airctl = pml.frametime * 1.5f * d;
+			vecmad(pm->ps->velocity, airctl, wishdir, pm->ps->velocity);
+			vecnorm(pm->ps->velocity);
+			vecmul(pm->ps->velocity, currspeed, pm->ps->velocity);
+		}
+	}
+
+	// perform the move
 	pmslidemove(qtrue);
 }
 
 /*
-slab's hook
+sab's hook
 */
 static void
 grapplemove(void)
