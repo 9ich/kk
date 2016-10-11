@@ -867,11 +867,11 @@ static void RB_SurfaceTracer( void ) {
 	CrossProduct( v1, v2, right );
 	VectorNormalize( right );
 
-	for ( i = 0 ; i < 4 ; i++ ) {
+	for ( i = 0 ; i < 10 ; i++ ) {
 		vec3_t	temp;
 
 		DoRailCore( start, end, right, len, 3 );
-		RotatePointAroundVector( temp, vec, right, 45 );
+		RotatePointAroundVector( temp, vec, right, 18 );
 		VectorCopy( temp, right );
 	}
 }
