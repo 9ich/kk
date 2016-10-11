@@ -457,6 +457,8 @@ domissile(centity_t *cent)
 
 	// flicker between two skins
 	ent.skinNum = cg.clframe & 1;
+	if(!weapon->missilemodel)
+		return;
 	ent.hModel = weapon->missilemodel;
 	ent.renderfx = weapon->missilerenderfx | RF_MINLIGHT;
 
