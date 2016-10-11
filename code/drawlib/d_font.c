@@ -45,7 +45,7 @@ registercharmap(int font, const char *filename)
 		if(*tok == '\0')
 			break;
 		if(Q_stricmp(tok, "font") == 0){
-			m->shader = trap_R_RegisterShaderNoMip(COM_ParseExt(&bufp, qtrue));
+			m->shader = trap_R_RegisterShader(COM_ParseExt(&bufp, qtrue));
 			m->charh = atof(COM_ParseExt(&bufp, qtrue));
 			m->w = atof(COM_ParseExt(&bufp, qtrue));
 			m->h = atof(COM_ParseExt(&bufp, qtrue));
