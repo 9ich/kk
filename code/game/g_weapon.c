@@ -177,72 +177,13 @@ snapvectortowards(vec3_t v, vec3_t to)
 void
 Bullet_Fire(gentity_t *ent, float spread, int damage, int mod)
 {
-	trace_t tr;
-	vec3_t end;
-#ifdef MISSIONPACK
-	vec3_t impactpoint, bouncedir;
-#endif
-	float r;
-	float u;
-	gentity_t *tent;
-	gentity_t *traceEnt;
-	int i, passent;
+	gentity_t       *m;
 
-	damage *= s_quadFactor;
+	m = fire_bullet(ent, muzzle, forward);
+	m->damage *= s_quadFactor;
+	m->splashdmg *= s_quadFactor;
 
-	r = random() * M_PI * 2.0f;
-	u = sin(r) * crandom() * spread * 16;
-	r = cos(r) * crandom() * spread * 16;
-	vecmad(muzzle, 8192*16, forward, end);
-	vecmad(end, r, right, end);
-	vecmad(end, u, up, end);
-
-	passent = ent->s.number;
-	for(i = 0; i < 10; i++){
-		trap_Trace(&tr, muzzle, nil, nil, end, passent, MASK_SHOT);
-		if(tr.surfaceFlags & SURF_NOIMPACT)
-			return;
-
-		traceEnt = &g_entities[tr.entityNum];
-
-		// snap the endpos to integers, but nudged towards the line
-		snapvectortowards(tr.endpos, muzzle);
-
-		// send bullet impact
-		if(traceEnt->takedmg && traceEnt->client){
-			tent = enttemp(tr.endpos, EV_BULLET_HIT_FLESH);
-			tent->s.eventParm = traceEnt->s.number;
-			if(logaccuracyhit(traceEnt, ent))
-				ent->client->accuracyhits++;
-		}else{
-			tent = enttemp(tr.endpos, EV_BULLET_HIT_WALL);
-			tent->s.eventParm = DirToByte(tr.plane.normal);
-		}
-		tent->s.otherEntityNum = ent->s.number;
-
-		if(traceEnt->takedmg){
-#ifdef MISSIONPACK
-			if(traceEnt->client && traceEnt->client->invulnerabilityTime > level.time){
-				if(invulneffect(traceEnt, forward, tr.endpos, impactpoint, bouncedir)){
-					G_BounceProjectile(muzzle, impactpoint, bouncedir, end);
-					veccpy(impactpoint, muzzle);
-					// the player can hit him/herself with the bounced rail
-					passent = ENTITYNUM_NONE;
-				}else{
-					veccpy(tr.endpos, muzzle);
-					passent = traceEnt->s.number;
-				}
-				continue;
-			}else{
-#endif
-			entdamage(traceEnt, ent, ent, forward, tr.endpos,
-				 damage, 0, mod);
-#ifdef MISSIONPACK
-		}
-#endif
-		}
-		break;
-	}
+	inheritvel(ent, m);
 }
 
 /*

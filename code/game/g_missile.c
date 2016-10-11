@@ -567,6 +567,42 @@ fire_bfg(gentity_t *self, vec3_t start, vec3_t dir)
 
 //=============================================================================
 
+gentity_t *
+fire_bullet(gentity_t *self, vec3_t start, vec3_t dir)
+{
+	gentity_t *bolt;
+
+	vecnorm(dir);
+
+	bolt = entspawn();
+	bolt->classname = "bullet";
+	bolt->nextthink = level.time + 15000;
+	bolt->think = entfree;
+	bolt->s.eType = ET_MISSILE;
+	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+	bolt->s.weapon[0] = WP_MACHINEGUN;
+	bolt->r.ownerNum = self->s.number;
+	bolt->parent = self;
+	bolt->damage = 100;
+	bolt->splashdmg = 100;
+	bolt->splashradius = 300;
+	bolt->meansofdeath = MOD_ROCKET;
+	bolt->splashmeansofdeath = MOD_ROCKET_SPLASH;
+	bolt->clipmask = MASK_SHOT;
+	bolt->target_ent = nil;
+
+	bolt->s.pos.trType = TR_LINEAR;
+	bolt->s.pos.trTime = level.time;	// move a bit on the very first frame
+	veccpy(start, bolt->s.pos.trBase);
+	vecmul(dir, 4000, bolt->s.pos.trDelta);
+//	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
+	veccpy(start, bolt->r.currentOrigin);
+
+	return bolt;
+}
+
+//=============================================================================
+
 #define ROCKET_THINKTIME 200
 
 void
