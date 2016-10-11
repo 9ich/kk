@@ -766,7 +766,7 @@ fire_grapple(gentity_t *self, vec3_t start, vec3_t dir)
 	hook->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
 	hook->s.otherEntityNum = self->s.number;// use to match beam in client
 	veccpy(start, hook->s.pos.trBase);
-	vecmul(dir, 5000, hook->s.pos.trDelta);
+	vecmul(dir, 99999999, hook->s.pos.trDelta);
 //	SnapVector(hook->s.pos.trDelta);	// save net bandwidth
 	veccpy(start, hook->r.currentOrigin);
 
