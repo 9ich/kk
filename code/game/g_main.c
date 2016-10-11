@@ -144,7 +144,7 @@ static cvarTable_t gameCvarTable[] = {
 
 	{&g_dedicated, "dedicated", "0", 0, 0, qfalse},
 
-	{&g_speed, "g_speed", "280", 0, 0, qtrue},
+	{&g_speed, "g_speed", "320", 0, 0, qtrue},
 	{&g_gravity, "g_gravity", "0", 0, 0, qtrue},
 	{&g_airAccel, "g_airAccel", "3.2", 0, 0, qtrue},
 	{&g_airFriction, "g_airFriction", "1.0", 0, 0, qtrue},

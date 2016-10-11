@@ -45,6 +45,7 @@ float pm_waterfriction = 1.0f;
 float pm_flightfriction = 0.5f;
 float pm_flightcontrolfriction = 1.9f;
 float pm_spectatorfriction = 5.0f;
+float pm_brakefriction = 5.0f;
 
 int c_pmove = 0;
 
@@ -150,13 +151,23 @@ applyfriction(void)
 		drop += speed*pm_waterfriction*pm->waterlevel*pml.frametime;
 
 	// apply flying friction
-	if(pm->cmd.forwardmove != 0 || pm->cmd.rightmove != 0 || pm->cmd.upmove != 0 || (pm->ps->pm_flags & PMF_GRAPPLE_PULL))
+	if(pm->cmd.forwardmove != 0 || pm->cmd.rightmove != 0 ||
+	   pm->cmd.upmove != 0)
 		drop += speed*pm->ps->airFriction*pml.frametime;
 	else
 		drop += speed*pm->ps->airIdleFriction*pml.frametime;
 
 	if(pm->ps->pm_type == PM_SPECTATOR)
 		drop += speed*pm_spectatorfriction*pml.frametime;
+
+	if(pm->ps->pm_flags & PMF_GRAPPLE_PULL)
+		drop = speed*pm->ps->airIdleFriction*pml.frametime;
+
+	// brake if below certain speed and holding no movement buttons
+	if(speed < 100.0f && pm->cmd.forwardmove == 0 &&
+	   pm->cmd.rightmove == 0 && pm->cmd.upmove == 0){
+		drop = speed*pm_brakefriction*pml.frametime;
+	}
 
 	// scale the velocity
 	newspeed = speed - drop;
@@ -389,7 +400,7 @@ airmove(void)
 	vec3_t dodge;
 	float wishspeed;
 	float fwdspeed, rightspeed, upspeed;
-	const float tolerance = 200;		// dodge tolerance: <200u/s
+	const float tolerance = 250;		// dodge tolerance in u/s
 
 	applyfriction();
 
@@ -425,13 +436,13 @@ airmove(void)
 
 	if((pm->cmd.forwardmove > 0 && fwdspeed < tolerance) ||
 	   (pm->cmd.forwardmove < 0 && fwdspeed > -tolerance))
-		vecmad(dodge, 3, fwd, dodge);
+		vecmad(dodge, 5, fwd, dodge);
 	if((pm->cmd.rightmove > 0 && rightspeed < tolerance) ||
 	   (pm->cmd.rightmove < 0 && rightspeed > -tolerance))
-		vecmad(dodge, 3, right, dodge);
+		vecmad(dodge, 5, right, dodge);
 	if((pm->cmd.upmove > 0 && upspeed < tolerance) ||
 	   (pm->cmd.upmove < 0 && upspeed > -tolerance))
-		vecmad(dodge, 3, up, dodge);
+		vecmad(dodge, 5, up, dodge);
 
 	// accelerate normally towards wishdir
 	pmaccelerate(wishdir, wishspeed, pm->ps->airAccel);
@@ -471,14 +482,11 @@ sab's hook
 static void
 grapplemove(void)
 {
-	vec3_t wishvel, wishdir, grappledir;
-	vec3_t fwd, right, up, v;
-	float wishspeed, grspd, vlen;
+	vec3_t v, vel;
+	float grspd, vlen;
 	const float hookpullspeed = 400.0f;
-	const float swingstrength = 10.0f;
+	const float swingstrength = 20.0f;
 	float pullspeedcoef, oldlen;
-	float accel;
-	vec3_t vel;
 
 	//
 	// add airmove
@@ -488,13 +496,6 @@ grapplemove(void)
 	vecnorm(pml.right);
 	vecnorm(pml.up);
 
-	vecmul(pml.forward, pm->cmd.forwardmove, fwd);
-	vecmul(pml.right, pm->cmd.rightmove, right);
-	vecmul(pml.up, pm->cmd.upmove, up);
-	vecadd(fwd, right, wishdir);
-	vecadd(wishdir, up, wishdir);
-	wishspeed = vecnorm(wishdir) * cmdscale(&pm->cmd);
-	
 	grspd = hookpullspeed;
 
 	vecmul(pml.forward, -16, v);
@@ -514,9 +515,8 @@ grapplemove(void)
 		grspd = hookpullspeed;
 	
 	vecnorm(vel);
-	pmaccelerate(wishdir, wishspeed, pm_grappleaccelerate);
 	pmq2accelerate(vel, grspd, pm_grappleaccelerate);
-	pmslidemove(qtrue);
+	airmove();
 	pm->ps->grappleLen = vlen;
 }
 
