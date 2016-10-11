@@ -2259,6 +2259,7 @@ void S_AL_Respatialize( int entityNum, const vec3_t origin, const vec3_t vel, ve
 	VectorCopy( sorigin, lastListenerOrigin );
 
 	// Set OpenAL listener paramaters
+	qalListenerf(AL_METERS_PER_UNIT, 30.5f/8);
 	qalListenerfv(AL_POSITION, (ALfloat *)sorigin);
 	qalListenerfv(AL_VELOCITY, svel);
 	qalListenerfv(AL_ORIENTATION, orientation);
@@ -2494,6 +2495,10 @@ qboolean S_AL_Init( soundInterface_t *si )
 	const char* device = NULL;
 	const char* inputdevice = NULL;
 	int i;
+	ALint ctxattrs[] = {
+		ALC_HRTF_SOFT, ALC_TRUE,
+		0	// end
+	};
 
 	if( !si ) {
 		return qfalse;
@@ -2614,7 +2619,7 @@ qboolean S_AL_Init( soundInterface_t *si )
 	}
 
 	// Create OpenAL context
-	alContext = qalcCreateContext( alDevice, NULL );
+	alContext = qalcCreateContext( alDevice, ctxattrs );
 	if( !alContext )
 	{
 		QAL_Shutdown( );
