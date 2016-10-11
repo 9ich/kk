@@ -502,13 +502,13 @@ grapplemove(void)
 	vecadd(pm->ps->grapplePoint, v, v);
 	vecsub(v, pm->ps->origin, vel);
 	vlen = veclen(vel);
-	if(pm->ps->grappleLen == 0 /*pm->ps->grapplelast == qfalse*/)
+	if(pm->ps->grappleLen == 0)
 		oldlen = vlen;
 	else
 		oldlen = pm->ps->grappleLen;
 	if(pm->ps->grappleLen != 0 && vlen > oldlen){
 		pullspeedcoef = vlen - oldlen;
-		pullspeedcoef *= swingstrength;	/* pm->ps->swingstrength */
+		pullspeedcoef *= swingstrength;
 		grspd *= pullspeedcoef;
 	}
 	if(grspd < hookpullspeed)
