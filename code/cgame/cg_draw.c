@@ -330,16 +330,18 @@ drawstatusbar(void)
 	value = ps->stats[STAT_HEALTH];
 	if(value > 100)
 		VectorCopy4(CMediumSlateBlue, clr);
-	else if(value > 25)
+	else if(value > 30)
 		VectorCopy4(CWhite, clr);
-	else if(value > 0){
+	else if(value > 0)
+		VectorCopy4(CRed, clr);
+	else{
+		VectorCopy4(CRed, clr);
 		// flash red to white
 		clr[0] = 1.0f;
 		clr[1] = sawtoothwave(cg.time, 4, 0, 1);
 		clr[2] = clr[1];
 		clr[3] = 1-sawtoothwave(cg.time, 4, 0, 0.5f);
-	}else
-		VectorCopy4(CRed, clr);
+	}
 	drawhudfield(0.5f*screenwidth() - 75, 320, va("%d", value), clr);
 
 	// armor
