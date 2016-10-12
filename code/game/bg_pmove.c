@@ -165,7 +165,8 @@ applyfriction(void)
 
 	// brake if below certain speed and holding no movement buttons
 	if(speed < 100.0f && pm->cmd.forwardmove == 0 &&
-	   pm->cmd.rightmove == 0 && pm->cmd.upmove == 0){
+	   pm->cmd.rightmove == 0 && pm->cmd.upmove == 0 &&
+	   !(pm->ps->pm_flags & PMF_GRAPPLE_PULL)){
 		drop = speed*pm_brakefriction*pml.frametime;
 	}
 
