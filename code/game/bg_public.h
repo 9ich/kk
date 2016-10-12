@@ -29,6 +29,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DEFAULT_GRAVITY		0
 #define GIB_HEALTH		0
 #define ARMOR_PROTECTION	0.66
+// for STAT_ARMORTYPE
+enum
+{
+	ARMOR_NONE,	// 0.00 protection
+	ARMOR_YELLOW,	// 0.66
+	ARMOR_RED	// 0.75
+};
 
 #define MAX_ITEMS		256
 #define MAX_CONTROLPOINTS	32
@@ -232,6 +239,7 @@ typedef enum
 #endif
 	STAT_WEAPONS,		// 16 bit fields
 	STAT_ARMOR,
+	STAT_ARMORTYPE,		// red=0.75 protection, yellow=0.66, green=0.5
 	STAT_DEAD_YAW,		// look this direction when dead (FIXME: get rid of?)
 	STAT_CLIENTS_READY,	// bit mask of clients wishing to exit the intermission (FIXME: configstring?)
 	STAT_MAX_HEALTH		// health / armor limit, changable by handicap

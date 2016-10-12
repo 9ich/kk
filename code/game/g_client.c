@@ -1145,6 +1145,9 @@ clientspawn(gentity_t *ent)
 	if(g_gametype.integer == GT_CA)
 		client->ps.stats[STAT_ARMOR] = 200;
 
+	if(client->ps.stats[STAT_ARMOR] != 0)
+		client->ps.stats[STAT_ARMORTYPE] = ARMOR_YELLOW;
+
 	setorigin(ent, spawn_origin);
 	veccpy(spawn_origin, client->ps.origin);
 

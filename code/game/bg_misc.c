@@ -71,7 +71,7 @@ gitem_t bg_itemlist[] =
 /* pickup */ "Armor Shard",
 		5,
 		IT_ARMOR,
-		0,
+		ARMOR_YELLOW,
 /* precache */ "",
 /* sounds */ ""
 	},
@@ -87,7 +87,7 @@ gitem_t bg_itemlist[] =
 /* pickup */ "Armor",
 		50,
 		IT_ARMOR,
-		0,
+		ARMOR_YELLOW,
 /* precache */ "",
 /* sounds */ ""
 	},
@@ -103,7 +103,7 @@ gitem_t bg_itemlist[] =
 /* pickup */ "Heavy Armor",
 		100,
 		IT_ARMOR,
-		0,
+		ARMOR_RED,
 /* precache */ "",
 /* sounds */ ""
 	},

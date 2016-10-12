@@ -302,6 +302,13 @@ Pickup_Armor(gentity_t *ent, gentity_t *other)
 
 	other->client->ps.stats[STAT_ARMOR] += ent->item->quantity;
 
+	if(Q_stricmp(ent->item->classname, "item_armor_shard") == 0){
+		if(other->client->ps.stats[STAT_ARMORTYPE] == 0)
+			other->client->ps.stats[STAT_ARMORTYPE] = ent->item->tag;
+	}else{
+		other->client->ps.stats[STAT_ARMORTYPE] = ent->item->tag;
+	}
+
 	if(other->client && bg_itemlist[other->client->ps.stats[STAT_PERSISTANT_POWERUP]].tag == PW_GUARD)
 		upperBound = other->client->ps.stats[STAT_MAX_HEALTH];
 	else

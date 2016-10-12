@@ -721,6 +721,10 @@ chkarmor(gentity_t *ent, int damage, int dflags)
 	gclient_t *client;
 	int save;
 	int count;
+	float protection;
+
+	if(client->ps.stats[STAT_ARMOR] < 1)
+		client->ps.stats[STAT_ARMORTYPE] = 0;
 
 	if(!damage)
 		return 0;
@@ -733,9 +737,22 @@ chkarmor(gentity_t *ent, int damage, int dflags)
 	if(dflags & DAMAGE_NO_ARMOR)
 		return 0;
 
+gprintf("%d\n", ent->client->ps.stats[STAT_ARMORTYPE]);
+	switch(ent->client->ps.stats[STAT_ARMORTYPE]){
+	case ARMOR_YELLOW:
+		protection = 0.66f;
+		break;
+	case ARMOR_RED:
+		protection = 0.75f;
+		break;
+	default:
+		protection = 0;
+		break;
+	}
+
 	// armor
 	count = client->ps.stats[STAT_ARMOR];
-	save = ceil(damage * ARMOR_PROTECTION);
+	save = ceil(damage * protection);
 	if(save >= count)
 		save = count;
 
