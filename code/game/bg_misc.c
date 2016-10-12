@@ -1471,6 +1471,9 @@ playerstate2entstate(playerState_t *ps, entityState_t *s, qboolean snap)
 	s->rightmove = ps->rightmove;
 	s->upmove = ps->upmove;
 
+	s->weapAnim[0] = ps->weapAnim[0];
+	s->weapAnim[1] = ps->weapAnim[1];
+
 	s->torsoAnim = ps->torsoAnim;
 	s->clientNum = ps->clientNum;	// ET_PLAYER looks here instead of at number
 	// so corpses can also reference the proper config
@@ -1550,6 +1553,9 @@ playerstate2entstatexerp(playerState_t *ps, entityState_t *s, int time, qboolean
 	s->forwardmove = ps->forwardmove;
 	s->rightmove = ps->rightmove;
 	s->upmove = ps->upmove;
+
+	s->weapAnim[0] = ps->weapAnim[0];
+	s->weapAnim[1] = ps->weapAnim[1];
 
 	s->torsoAnim = ps->torsoAnim;
 	s->clientNum = ps->clientNum;	// ET_PLAYER looks here instead of at number

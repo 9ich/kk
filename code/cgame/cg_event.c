@@ -599,6 +599,8 @@ entevent(centity_t *cent, vec3_t position)
 		break;
 	case EV_CHANGE_WEAPON:
 		DEBUGNAME("EV_CHANGE_WEAPON");
+		memset(&cent->weaplerpframe[0], 0, sizeof cent->weaplerpframe[0]);
+		memset(&cent->weaplerpframe[1], 0, sizeof cent->weaplerpframe[1]);
 		trap_S_StartSound(nil, es->number, CHAN_AUTO, cgs.media.selectSound);
 		break;
 	case EV_FIRE_WEAPON:

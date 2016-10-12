@@ -54,6 +54,27 @@ char *COM_SkipPath (char *pathname)
 }
 
 /*
+models/misc/test.md3 -> models/misc
+*/
+void COM_StripFilename ( const char *in, char *out, int destsize )
+{
+	char *p;
+	int n;
+
+	p = strrchr(in, '/');
+	if(p == nil){
+		*out = '\0';
+		return;
+	}
+	n = 0;
+	while(in != p && n < destsize-1){
+		*out++ = *in++;
+		n++;
+	}
+	*out = '\0';
+}
+
+/*
 ============
 COM_GetExtension
 ============

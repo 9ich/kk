@@ -833,6 +833,23 @@ CG_PlayerAnimation(centity_t *cent, int *torsoOld, int *torso, float *torsoBackL
 	*torsoBackLerp = cent->pe.torso.backlerp;
 }
 
+static void
+CG_WeaponAnimation(centity_t *cent, weaponInfo_t *weapinfo, int slot, int *oldframe, int *frame, int *backlerp)
+{
+	float speedScale;
+
+	if(cent->currstate.powerups & (1 << PW_HASTE))
+		speedScale = 1.5;
+	else
+		speedScale = 1;
+
+	CG_RunLerpFrame(cgs.media.itemanims[finditemforweapon(cent->currstate.weapon[slot]) - bg_itemlist],
+	   &cent->weaplerpframe[slot], cent->currstate.weapAnim[slot], 1.0f);
+	*oldframe = cent->weaplerpframe[slot].oldframe;
+	*frame = cent->weaplerpframe[slot].frame;
+	*backlerp = cent->weaplerpframe[slot].backlerp;
+}
+
 /*
 =============================================================================
 

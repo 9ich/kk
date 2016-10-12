@@ -791,6 +791,7 @@ float Com_Clamp( float min, float max, float value );
 #define Com_Sign(x)	(((x) > 0) - ((x) < 0))
 
 char	*COM_SkipPath( char *pathname );
+void	COM_StripFilename ( const char *in, char *out, int destsize );
 const char	*COM_GetExtension( const char *name );
 void	COM_StripExtension(const char *in, char *out, int destsize);
 qboolean COM_CompareExtension(const char *in, const char *ext);
@@ -1249,6 +1250,8 @@ typedef struct playerState_s {
 	int			torsoTimer;		// don't change low priority animations until this runs out
 	int			torsoAnim;		// mask off ANIM_TOGGLEBIT
 
+	int			weapAnim[WS_NUMSLOTS];
+
 	vec3_t		grapplePoint;	// location of grapple to pull towards if PMF_GRAPPLE_PULL
 	float		grappleLen;
 
@@ -1410,6 +1413,9 @@ typedef struct entityState_s {
 	int		powerups;		// bit flags
 	int		weapon[WS_NUMSLOTS];			// determines weapon and flash model, etc
 	int		torsoAnim;		// mask off ANIM_TOGGLEBIT
+
+	// player weapons
+	int		weapAnim[WS_NUMSLOTS];
 
 	int		generic1;
 

@@ -520,6 +520,9 @@ typedef enum
 	// generic entities
 	ANIM_IDLE = 0,
 
+	// weapon flash
+	ANIM_FLASH,
+
 	// ET_PLAYER
 	BOTH_DEATH1 = 0,
 	BOTH_DEAD1,

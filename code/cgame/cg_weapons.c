@@ -576,6 +576,27 @@ CG_GrenadeTrail(centity_t *ent, const weaponInfo_t *wi)
 }
 
 /*
+ * Loads model and animation.cfg.
+ */
+void
+loadmodelbundle(const char *filename, qhandle_t *model, animation_t *anims)
+{
+	char stripped[MAX_QPATH], path[MAX_QPATH];
+	char *p;
+
+	*model = trap_R_RegisterModel(filename);
+	if(!model)
+		return;
+
+	p = strrchr(filename, '/');
+	if(p == nil)
+		return;
+	COM_StripFilename(filename, stripped, sizeof stripped);
+	Com_sprintf(path, sizeof path, "%s/animation.cfg", stripped);
+	CG_ParseAnimationFile(path, anims);
+}
+
+/*
 =================
 registerweap
 
@@ -612,10 +633,11 @@ registerweap(int weaponNum)
 	registeritemgfx(item - bg_itemlist);
 
 	// load cmodel before model so filecache works
-	weapinfo->model = trap_R_RegisterModel(item->model[0]);
+	loadmodelbundle(item->model[0], &weapinfo->model.h,
+	   cgs.media.itemanims[item - bg_itemlist]);
 
 	// calc midpoint for rotation
-	trap_R_ModelBounds(weapinfo->model, mins, maxs);
+	trap_R_ModelBounds(weapinfo->model.h, mins, maxs);
 	for(i = 0; i < 3; i++)
 		weapinfo->midpoint[i] = mins[i] + 0.5 * (maxs[i] - mins[i]);
 
@@ -1068,9 +1090,11 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team,
 			Byte4Copy(ci->c1rgba, gun.shaderRGBA);
 	}
 
-	gun.hModel = weapon->model;
+	gun.hModel = weapon->model.h;
 	if(!gun.hModel)
 		return;
+
+	CG_WeaponAnimation(cent, weapon, slot, &gun.oldframe, &gun.frame, &gun.backlerp);
 
 	firingmask = EF_FIRING;
 	if(slot == 1)
@@ -1102,7 +1126,7 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team,
 	vecmad(gun.origin, lerped.origin[2], parent->axis[2], gun.origin);
 
 	MatrixMultiply(lerped.axis, ((refEntity_t*)parent)->axis, gun.axis);
-	gun.backlerp = parent->backlerp;
+	//gun.backlerp = parent->backlerp;
 
 	CG_AddWeaponWithPowerups(&gun, cent->currstate.powerups);
 
@@ -1119,7 +1143,7 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team,
 		angles[ROLL] = CG_MachinegunSpinAngle(cent);
 		AnglesToAxis(angles, barrel.axis);
 
-		rotentontag(&barrel, &gun, weapon->model, "tag_barrel");
+		rotentontag(&barrel, &gun, weapon->model.h, "tag_barrel");
 
 		CG_AddWeaponWithPowerups(&barrel, cent->currstate.powerups);
 	}
@@ -1144,7 +1168,7 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team,
 
 
 	memset(&flash, 0, sizeof(flash));
-	rotentontag(&flash, &gun, weapon->model, "tag_flash");
+	rotentontag(&flash, &gun, weapon->model.h, "tag_flash");
 
 	// add lightning bolt
 	if(ps || cg.thirdperson ||
@@ -1659,6 +1683,9 @@ fireweap(centity_t *cent, int slot)
 	// do brass ejection
 	if(weap->ejectbrass && cg_brassTime.integer > 0)
 		weap->ejectbrass(cent);
+
+	CG_SetLerpFrameAnimation(cgs.media.itemanims[finditemforweapon(cent->currstate.weapon[slot]) - bg_itemlist],
+	   &cent->weaplerpframe[slot], ANIM_FLASH);
 }
 
 /*

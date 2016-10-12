@@ -915,6 +915,17 @@ pmanimate(void)
 			pmaddevent(EV_TAUNT);
 		}
 	}
+
+	// weapon firing anim
+	if(pm->ps->weaponstate[0] == WEAPON_READY){
+		pm->ps->weapAnim[0] = ANIM_IDLE;
+	}else
+		pm->ps->weapAnim[0] = ANIM_FLASH;
+
+	if(pm->ps->weaponstate[1] == WEAPON_READY){
+		pm->ps->weapAnim[1] = ANIM_IDLE;
+	}else
+		pm->ps->weapAnim[1] = ANIM_FLASH;
 }
 
 static void

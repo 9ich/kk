@@ -360,7 +360,7 @@ doitem(centity_t *cent)
 		angles[ROLL] = 0;
 		AnglesToAxis(angles, barrel.axis);
 
-		rotentontag(&barrel, &ent, wi->model, "tag_barrel");
+		rotentontag(&barrel, &ent, wi->model.h, "tag_barrel");
 
 		barrel.nonNormalizedAxes = ent.nonNormalizedAxes;
 

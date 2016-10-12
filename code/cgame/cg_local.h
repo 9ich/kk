@@ -211,6 +211,7 @@ typedef struct centity_s
 	cpEntity_t	cp;		// if this is a GT_CP control point
 
 	lerpFrame_t	lf;		// animation control if this is not a player
+	lerpFrame_t	weaplerpframe[WS_NUMSLOTS];	// animation control for player weapon models
 
 	int		errtime;	// decay the error from this time
 	vec3_t		errorigin;
@@ -353,6 +354,12 @@ typedef struct
 	float	endsize;
 } thrusterparms_t;
 
+typedef struct
+{
+	qhandle_t	h;
+	animation_t	anims[MAX_ANIMATIONS];
+} modelbundle_t;
+
 // each client has an associated clientInfo_t
 // that contains media references necessary to present the
 // client model and other color coded effects
@@ -435,7 +442,7 @@ typedef struct weapinfo_s
 	gitem_t		*item;
 
 	qhandle_t	handsmodel;	// the hands don't actually draw, they just position the weapon
-	qhandle_t	model;
+	modelbundle_t	model;
 	qhandle_t	barrelmodel;
 	qhandle_t	flashmodel;
 
@@ -678,8 +685,6 @@ typedef struct
 	int	itempkupblendtime;	// the pulse around the crosshair is timed seperately
 
 	int	weapseltime[WS_NUMSLOTS];
-	int	weapanim[WS_NUMSLOTS];
-	int	weapanimtime[WS_NUMSLOTS];
 
 	// blend blobs
 	float	dmgtime;
@@ -1048,6 +1053,9 @@ typedef struct
 	sfxHandle_t	wstbimpmSound;
 	sfxHandle_t	wstbimpdSound;
 	sfxHandle_t	wstbactvSound;
+
+	// clunkiness to handle animations for each item type, if wanted
+	animation_t	itemanims[64][MAX_ANIMATIONS];
 } cgMedia_t;
 
 // The client game static (cgs) structure hold everything
