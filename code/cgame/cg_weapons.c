@@ -78,7 +78,7 @@ CG_MachineGunEjectBrass(centity_t *cent)
 	AxisCopy(axisDefault, re->axis);
 	re->hModel = cgs.media.machinegunBrassModel;
 
-	le->bouncefactor = 0.4 * waterScale;
+	le->bouncefactor = 0.9 * waterScale;
 
 	le->angles.trType = TR_LINEAR;
 	le->angles.trTime = cg.time;
@@ -153,7 +153,7 @@ CG_ShotgunEjectBrass(centity_t *cent)
 
 		AxisCopy(axisDefault, re->axis);
 		re->hModel = cgs.media.shotgunBrassModel;
-		le->bouncefactor = 0.3f;
+		le->bouncefactor = 0.9f;
 
 		le->angles.trType = TR_LINEAR;
 		le->angles.trTime = cg.time;
@@ -227,7 +227,7 @@ CG_NailgunEjectBrass(centity_t *cent)
 	AxisCopy(axisDefault, re->axis);
 	re->hModel = cgs.media.machinegunBrassModel;
 
-	le->bouncefactor = 0.4 * waterScale;
+	le->bouncefactor = 0.9 * waterScale;
 
 	le->angles.trType = TR_LINEAR;
 	le->angles.trTime = cg.time;

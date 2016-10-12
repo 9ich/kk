@@ -697,7 +697,7 @@ CG_LaunchExplode(vec3_t origin, vec3_t velocity, qhandle_t hModel)
 	veccpy(velocity, le->pos.trDelta);
 	le->pos.trTime = cg.time;
 
-	le->bouncefactor = 0.1f;
+	le->bouncefactor = 0.9f;
 
 	le->bouncesoundtype = LEBS_BRASS;
 	le->marktype = LEMT_NONE;
