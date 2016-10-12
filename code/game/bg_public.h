@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 enum
 {
 	ARMOR_NONE,	// 0.00 protection
+	ARMOR_GREEN,	// 0.50
 	ARMOR_YELLOW,	// 0.66
 	ARMOR_RED	// 0.75
 };
