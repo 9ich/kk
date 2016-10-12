@@ -737,7 +737,6 @@ chkarmor(gentity_t *ent, int damage, int dflags)
 	if(dflags & DAMAGE_NO_ARMOR)
 		return 0;
 
-gprintf("%d\n", ent->client->ps.stats[STAT_ARMORTYPE]);
 	switch(ent->client->ps.stats[STAT_ARMORTYPE]){
 	case ARMOR_YELLOW:
 		protection = 0.66f;
