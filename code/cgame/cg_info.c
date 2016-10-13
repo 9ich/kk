@@ -166,9 +166,7 @@ drawinfo(void)
 	trap_R_SetColor(nil);
 	drawpic(0, 0, screenwidth(), screenheight(), levelshot);
 
-	// blend a detail texture over it
-	detail = trap_R_RegisterShader("levelShotDetail");
-	trap_R_DrawStretchPic(0, 0, cgs.glconfig.vidWidth, cgs.glconfig.vidHeight, 0, 0, 2.5, 2, detail);
+	pushalign("center");
 
 	// draw the icons of things as they are loaded
 	CG_DrawLoadingIcons();
@@ -276,4 +274,6 @@ drawinfo(void)
 			y += stringheight(s, font, size);
 		}
 	}
+
+	popalign(1);
 }

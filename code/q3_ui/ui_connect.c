@@ -165,12 +165,17 @@ drawconnectscreen(qboolean overlay)
 		return;
 	}
 
+	uis.fullscreen = qfalse;
+	drawlibbeginframe(uis.realtime, uis.glconfig.vidWidth, uis.glconfig.vidHeight);
+
 	cacheui();
 
 	if(!overlay){
 		setcolour(CWhite);
 		drawpic(0, 0, screenwidth(), screenheight(), uis.menuBackShader);
 	}
+
+	pushalign("center");
 
 	// see what information we should display
 	trap_GetClientState(&cstate);
@@ -181,8 +186,6 @@ drawconnectscreen(qboolean overlay)
 		   Info_ValueForKey(info, "mapname"));
 		drawstring(screenwidth()/2, 16, s, FONT1, 32, CWhite);
 	}
-
-	setalign("center");
 
 	Com_sprintf(s, sizeof s, "Connecting to %s", cstate.servername);
 	drawstring(screenwidth()/2, 64, s, FONT1, 32, CText);
@@ -236,7 +239,7 @@ drawconnectscreen(qboolean overlay)
 
 	drawstring(screenwidth()/2, 128, s, FONT1, 32, CText);
 
-	setalign("");
+	popalign(1);
 
 	// password required / connection rejected information goes here
 }
