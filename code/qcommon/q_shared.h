@@ -779,6 +779,7 @@ void PerpendicularVector( vec3_t dst, const vec3_t src );
 #define vecdistsq	DistanceSquared
 #define vecinv		VectorInverse
 #define vecnorm		VectorNormalize
+#define vecnorm2	VectorNormalize2
 #define vecrotate	VectorRotate
 #define anglevecs	AngleVectors
 #define vecperp		PerpendicularVector
