@@ -655,25 +655,13 @@ registerweap(int weaponNum)
 		cgs.media.lightningShader = trap_R_RegisterShader("lightningBolt");
 		break;
 
-#ifdef MISSIONPACK
 	case WP_CHAINGUN:
-		weapinfo->firingsound = trap_S_RegisterSound("sound/weapons/vulcan/wvulfire.wav", qfalse);
-		MAKERGB(weapinfo->flashcolor, 1, 1, 0);
-		weapinfo->flashsnd[0] = trap_S_RegisterSound("sound/weapons/vulcan/vulcanf1b.wav", qfalse);
-		weapinfo->flashsnd[1] = trap_S_RegisterSound("sound/weapons/vulcan/vulcanf2b.wav", qfalse);
-		weapinfo->flashsnd[2] = trap_S_RegisterSound("sound/weapons/vulcan/vulcanf3b.wav", qfalse);
-		weapinfo->flashsnd[3] = trap_S_RegisterSound("sound/weapons/vulcan/vulcanf4b.wav", qfalse);
-		weapinfo->ejectbrass = machinegunejectbrass;
-		cgs.media.bulletExplosionShader = trap_R_RegisterShader("bulletExplosion");
-		break;
-#endif
-
 	case WP_MACHINEGUN:
 		MAKERGB(weapinfo->flashcolor, 1, 1, 0);
 		weapinfo->missileTrailFunc = machineguntrail;
 		weapinfo->flashsnd[0] = trap_S_RegisterSound("sound/weapons/machinegun/machgf1b.wav", qfalse);
 		weapinfo->ejectbrass = machinegunejectbrass;
-		cgs.media.bulletExplosionShader = trap_R_RegisterShader("bulletExplosion");
+		cgs.media.bulletExplosionShader = trap_R_RegisterShader("explode2");
 		break;
 
 	case WP_SHOTGUN:
@@ -1681,11 +1669,13 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 
 		mod = 0;	// don't draw the usual sprite
 		break;
+	case WP_CHAINGUN:
 	case WP_MACHINEGUN:
 		mod = cgs.media.dishFlashModel;
-		shader = cgs.media.rocketExplosionShader;
+		shader = cgs.media.bulletExplosionShader;
 		sfx = PICKRANDOM(cgs.media.sfx_rockexp);
 		mark = cgs.media.burnMarkShader;
+		radius = 20;
 		light = 100;
 		isSprite = qtrue;
 		duration = 16*16.666666f;
@@ -1733,21 +1723,6 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		sfx = 0;
 		radius = 4;
 		break;
-
-#ifdef MISSIONPACK
-	case WP_CHAINGUN:
-		mod = cgs.media.bulletFlashModel;
-		if(soundType == IMPACTSOUND_FLESH)
-			sfx = cgs.media.sfx_chghitflesh;
-		else if(soundType == IMPACTSOUND_METAL)
-			sfx = cgs.media.sfx_chghitmetal;
-		else
-			sfx = cgs.media.sfx_chghit;
-		mark = cgs.media.bulletMarkShader;
-
-		radius = 8;
-		break;
-#endif
 	}
 
 	if(sfx)
