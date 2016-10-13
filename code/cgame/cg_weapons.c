@@ -2004,31 +2004,36 @@ CG_ShotgunPellet(vec3_t start, vec3_t end, int skipNum)
 CG_ShotgunPattern
 
 Perform the same traces the server did to locate the
-hit splashes
+hit splashes.
+
+This must match code/game/g_weapon.c:/shotgunpattern/
 ================
 */
 static void
 CG_ShotgunPattern(vec3_t origin, vec3_t origin2, int seed, int otherEntNum)
 {
 	int i;
-	float r, u;
-	vec3_t end;
-	vec3_t forward, right, up;
+	float r, u, spread, angle;
+	vec3_t end, forward, right, up;
 
 	// derive the right and up vectors from the forward vector, because
 	// the client won't have any other information
-	VectorNormalize2(origin2, forward);
-	vecperp(right, forward);
+	vecnorm2(origin2, forward);
+	vecperp(right, forward );
 	veccross(forward, right, up);
 
-	// generate the "random" spread pattern
+	angle = 360.0f / DEFAULT_SHOTGUN_COUNT;
+
+	// generate the spread pattern
 	for(i = 0; i < DEFAULT_SHOTGUN_COUNT; i++){
-		r = Q_crandom(&seed) * DEFAULT_SHOTGUN_SPREAD * 16;
-		u = Q_crandom(&seed) * DEFAULT_SHOTGUN_SPREAD * 16;
+		r = sin(DEG2RAD(angle + (45 * i)));
+		u = cos(DEG2RAD(angle + (45 * i)));
+		spread = i < 8? 0.5f*DEFAULT_SHOTGUN_SPREAD : DEFAULT_SHOTGUN_SPREAD;
+		r *= spread * 16;
+		u *= spread * 16;
 		vecmad(origin, 8192 * 16, forward, end);
 		vecmad(end, r, right, end);
 		vecmad(end, u, up, end);
-
 		CG_ShotgunPellet(origin, end, otherEntNum);
 	}
 }
