@@ -883,7 +883,7 @@ pmweapevents(int slot)
 		addTime = 800;
 		break;
 	case WP_CHAINGUN:
-		addTime = 30;
+		addTime = 15;
 		break;
 #endif
 	case WP_HOMING_LAUNCHER:
