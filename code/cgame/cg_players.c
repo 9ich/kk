@@ -859,29 +859,6 @@ PLAYER ANGLES
 */
 
 /*
-=================
-CG_AddPainTwitch
-=================
-*/
-static void
-CG_AddPainTwitch(centity_t *cent, vec3_t torsoAngles)
-{
-	int t;
-	float f;
-
-	t = cg.time - cent->pe.paintime;
-	if(t >= PAIN_TWITCH_TIME)
-		return;
-
-	f = 1.0 - (float)t / PAIN_TWITCH_TIME;
-
-	if(cent->pe.paindir)
-		torsoAngles[ROLL] += f;
-	else
-		torsoAngles[ROLL] -= f;
-}
-
-/*
 Ship always looks at cent->lerpangles.
 */
 static void
@@ -890,9 +867,6 @@ CG_PlayerAngles(centity_t *cent, vec3_t ship[3])
 	vec3_t shipangles;
 
 	veccpy(cent->lerpangles, shipangles);
-
-	// pain twitch
-	CG_AddPainTwitch(cent, shipangles);
 
 	AnglesToAxis(shipangles, ship);
 }

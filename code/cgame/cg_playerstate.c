@@ -113,59 +113,6 @@ CG_DamageFeedback(int yawbyte, int pitchbyte, int damage)
 	if(kick > 10)
 		kick = 10;
 
-	// if yaw and pitch are both 255, make the damage always centered (falling, etc)
-	if(yawbyte == 255 && pitchbyte == 255){
-		cg.dmgx = 0;
-		cg.dmgy = 0;
-		cg.vdmgroll = 0;
-		cg.vdmgpitch = -kick;
-	}else{
-		// positional
-		pitch = pitchbyte / 255.0 * 360;
-		yaw = yawbyte / 255.0 * 360;
-
-		angles[PITCH] = pitch;
-		angles[YAW] = yaw;
-		angles[ROLL] = 0;
-
-		anglevecs(angles, dir, nil, nil);
-		vecsub(vec3_origin, dir, dir);
-
-		front = vecdot(dir, cg.refdef.viewaxis[0]);
-		left = vecdot(dir, cg.refdef.viewaxis[1]);
-		up = vecdot(dir, cg.refdef.viewaxis[2]);
-
-		dir[0] = front;
-		dir[1] = left;
-		dir[2] = 0;
-		dist = veclen(dir);
-		if(dist < 0.1)
-			dist = 0.1f;
-
-		cg.vdmgroll = kick * left;
-
-		cg.vdmgpitch = -kick * front;
-
-		if(front <= 0.1)
-			front = 0.1f;
-		cg.dmgx = -left / front;
-		cg.dmgy = up / dist;
-	}
-
-	// clamp the position
-	if(cg.dmgx > 1.0)
-		cg.dmgx = 1.0;
-	if(cg.dmgx < -1.0)
-		cg.dmgx = -1.0;
-
-	if(cg.dmgy > 1.0)
-		cg.dmgy = 1.0;
-	if(cg.dmgy < -1.0)
-		cg.dmgy = -1.0;
-
-	// don't let the screen flashes vary as much
-	if(kick > 10)
-		kick = 10;
 	cg.dmgval = kick;
 	cg.vdmgtime = cg.time + DAMAGE_TIME;
 	cg.dmgtime = cg.snap->serverTime;
