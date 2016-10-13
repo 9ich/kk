@@ -1247,9 +1247,6 @@ radiusdamage(vec3_t origin, gentity_t *attacker, float damage, float radius,
 			if(logaccuracyhit(ent, attacker))
 				hitClient = qtrue;
 			vecsub(ent->r.currentOrigin, origin, dir);
-			// push the center of mass higher than the origin so players
-			// get knocked into the air more
-			dir[2] += 24;
 			entdamage(ent, nil, attacker, dir, origin, (int)points, DAMAGE_RADIUS, mod);
 		}
 	}
