@@ -1300,10 +1300,10 @@ score_t *	getselscore(void);
 void		mkspecstr(void);
 
 // cg_anim.c
-void		CG_SetLerpFrameAnimation(animation_t *anims, lerpFrame_t *lf, int newanim);
-void		CG_RunLerpFrame(animation_t *anims, lerpFrame_t *lf, int newanim, float speedscale);
-void		CG_ClearLerpFrame(animation_t *anims, lerpFrame_t *lf, int animnum);
-qboolean	CG_ParseAnimationFile(const char *filename, animation_t *anims);
+void		setlerpframeanim(animation_t *anims, lerpFrame_t *lf, int newanim);
+void		runlerpframe(animation_t *anims, lerpFrame_t *lf, int newanim, float speedscale);
+void		clearlerpframe(animation_t *anims, lerpFrame_t *lf, int animnum);
+qboolean	parseanimfile(const char *filename, animation_t *anims);
 
 // cg_view.c
 void	CG_TestModel_f(void);

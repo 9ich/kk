@@ -19,16 +19,11 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-// cg_weapons.c -- events and effects dealing with weapons
+// events and effects dealing with weapons
 #include "cg_local.h"
 
-/*
-==========================
-CG_MachineGunEjectBrass
-==========================
-*/
 static void
-CG_MachineGunEjectBrass(centity_t *cent)
+machinegunejectbrass(centity_t *cent)
 {
 	localEntity_t *le;
 	refEntity_t *re;
@@ -94,13 +89,8 @@ CG_MachineGunEjectBrass(centity_t *cent)
 	le->marktype = LEMT_NONE;
 }
 
-/*
-==========================
-CG_ShotgunEjectBrass
-==========================
-*/
 static void
-CG_ShotgunEjectBrass(centity_t *cent)
+shotgunejectbrass(centity_t *cent)
 {
 	localEntity_t *le;
 	refEntity_t *re;
@@ -171,13 +161,9 @@ CG_ShotgunEjectBrass(centity_t *cent)
 }
 
 #ifdef MISSIONPACK
-/*
-==========================
-CG_NailgunEjectBrass
-==========================
-*/
+
 static void
-CG_NailgunEjectBrass(centity_t *cent)
+nailgunejectbrass(centity_t *cent)
 {
 	localEntity_t *le;
 	refEntity_t *re;
@@ -245,11 +231,6 @@ CG_NailgunEjectBrass(centity_t *cent)
 
 #endif
 
-/*
-==========================
-dorailtrail
-==========================
-*/
 void
 dorailtrail(clientInfo_t *ci, vec3_t start, vec3_t end)
 {
@@ -357,13 +338,8 @@ dorailtrail(clientInfo_t *ci, vec3_t start, vec3_t end)
 	}
 }
 
-/*
-===============
-CG_Tracer
-===============
-*/
 void
-CG_Tracer(vec3_t start, vec3_t end)
+tracer(vec3_t start, vec3_t end)
 {
 	vec3_t midpoint;
 	localEntity_t *le;
@@ -404,7 +380,7 @@ CG_Tracer(vec3_t start, vec3_t end)
 }
 
 static void
-CG_MachinegunTrail(centity_t *ent, const weaponInfo_t *wi)
+machineguntrail(centity_t *ent, const weaponInfo_t *wi)
 {
 	int step;
 	vec3_t origin, lastPos;
@@ -446,15 +422,12 @@ CG_MachinegunTrail(centity_t *ent, const weaponInfo_t *wi)
 			bubbletrail(lastPos, origin, 8);
 		return;
 	}
-				CG_Tracer(origin, end);
+
+	tracer(origin, end);
 }
-/*
-==========================
-CG_RocketTrail
-==========================
-*/
+
 static void
-CG_RocketTrail(centity_t *ent, const weaponInfo_t *wi)
+rockettrail(centity_t *ent, const weaponInfo_t *wi)
 {
 	int step;
 	vec3_t origin, lastPos;
@@ -522,11 +495,6 @@ CG_RocketTrail(centity_t *ent, const weaponInfo_t *wi)
 	}
 }
 
-/*
-==========================
-grappletrail
-==========================
-*/
 void
 grappletrail(centity_t *ent, const weaponInfo_t *wi)
 {
@@ -564,15 +532,9 @@ grappletrail(centity_t *ent, const weaponInfo_t *wi)
 	trap_R_AddRefEntityToScene(&beam);
 }
 
-/*
-==========================
-CG_GrenadeTrail
-==========================
-*/
 static void
-CG_GrenadeTrail(centity_t *ent, const weaponInfo_t *wi)
+grenadetrail(centity_t *ent, const weaponInfo_t *wi)
 {
-	CG_RocketTrail(ent, wi);
 }
 
 /*
@@ -593,15 +555,11 @@ loadmodelbundle(const char *filename, qhandle_t *model, animation_t *anims)
 		return;
 	COM_StripFilename(filename, stripped, sizeof stripped);
 	Com_sprintf(path, sizeof path, "%s/animation.cfg", stripped);
-	CG_ParseAnimationFile(path, anims);
+	parseanimfile(path, anims);
 }
 
 /*
-=================
-registerweap
-
-The server says this item is used on this level
-=================
+The server says this item is used on this level.
 */
 void
 registerweap(int weaponNum)
@@ -705,30 +663,30 @@ registerweap(int weaponNum)
 		weapinfo->flashsnd[1] = trap_S_RegisterSound("sound/weapons/vulcan/vulcanf2b.wav", qfalse);
 		weapinfo->flashsnd[2] = trap_S_RegisterSound("sound/weapons/vulcan/vulcanf3b.wav", qfalse);
 		weapinfo->flashsnd[3] = trap_S_RegisterSound("sound/weapons/vulcan/vulcanf4b.wav", qfalse);
-		weapinfo->ejectbrass = CG_MachineGunEjectBrass;
+		weapinfo->ejectbrass = machinegunejectbrass;
 		cgs.media.bulletExplosionShader = trap_R_RegisterShader("bulletExplosion");
 		break;
 #endif
 
 	case WP_MACHINEGUN:
 		MAKERGB(weapinfo->flashcolor, 1, 1, 0);
-		weapinfo->missileTrailFunc = CG_MachinegunTrail;
+		weapinfo->missileTrailFunc = machineguntrail;
 		weapinfo->flashsnd[0] = trap_S_RegisterSound("sound/weapons/machinegun/machgf1b.wav", qfalse);
-		weapinfo->ejectbrass = CG_MachineGunEjectBrass;
+		weapinfo->ejectbrass = machinegunejectbrass;
 		cgs.media.bulletExplosionShader = trap_R_RegisterShader("bulletExplosion");
 		break;
 
 	case WP_SHOTGUN:
 		MAKERGB(weapinfo->flashcolor, 1, 1, 0);
 		weapinfo->flashsnd[0] = trap_S_RegisterSound("sound/weapons/shotgun/sshotf1b.wav", qfalse);
-		weapinfo->ejectbrass = CG_ShotgunEjectBrass;
+		weapinfo->ejectbrass = shotgunejectbrass;
 		break;
 
 	case WP_ROCKET_LAUNCHER:
 	case WP_HOMING_LAUNCHER:
 		weapinfo->missilemodel = trap_R_RegisterModel("models/missiles/rocket.md3");
 		weapinfo->missilesound = trap_S_RegisterSound("sound/weapons/rocket/rockfly.wav", qfalse);
-		weapinfo->missileTrailFunc = CG_RocketTrail;
+		weapinfo->missileTrailFunc = rockettrail;
 		weapinfo->missilelight = 200;
 		weapinfo->trailtime = 2000;
 		weapinfo->trailradius = 64;
@@ -743,7 +701,7 @@ registerweap(int weaponNum)
 #ifdef MISSIONPACK
 	case WP_PROX_LAUNCHER:
 		weapinfo->missilemodel = trap_R_RegisterModel("models/weaphits/proxmine.md3");
-		weapinfo->missileTrailFunc = CG_GrenadeTrail;
+		weapinfo->missileTrailFunc = grenadetrail;
 		weapinfo->trailtime = 700;
 		weapinfo->trailradius = 32;
 		MAKERGB(weapinfo->flashcolor, 1, 0.70f, 0);
@@ -754,7 +712,7 @@ registerweap(int weaponNum)
 
 	case WP_GRENADE_LAUNCHER:
 		weapinfo->missilemodel = trap_R_RegisterModel("models/ammo/grenade1.md3");
-		weapinfo->missileTrailFunc = CG_GrenadeTrail;
+		weapinfo->missileTrailFunc = grenadetrail;
 		weapinfo->trailtime = 700;
 		weapinfo->trailradius = 32;
 		MAKERGB(weapinfo->flashcolor, 1, 0.70f, 0);
@@ -765,7 +723,7 @@ registerweap(int weaponNum)
 #ifdef MISSIONPACK
 	case WP_NAILGUN:
 		weapinfo->flashsnd[0] = trap_S_RegisterSound("sound/weapons/machinegun/machgf1b.wav", qfalse);
-		weapinfo->ejectbrass = CG_NailgunEjectBrass;
+		weapinfo->ejectbrass = nailgunejectbrass;
 		cgs.media.bulletExplosionShader = trap_R_RegisterShader("bulletExplosion");
 //		weapinfo->missilesound = trap_S_RegisterSound( "sound/weapons/nailgun/wnalflit.wav", qfalse );
 		weapinfo->missilemodel = trap_R_RegisterModel("models/missiles/rocket.md3");
@@ -811,11 +769,7 @@ registerweap(int weaponNum)
 }
 
 /*
-=================
-registeritemgfx
-
 The server says this item is used on this level
-=================
 */
 void
 registeritemgfx(int itemNum)
@@ -849,20 +803,6 @@ registeritemgfx(int itemNum)
 			itemInfo->models[1] = trap_R_RegisterModel(item->model[1]);
 }
 
-/*
-========================================================================================
-
-VIEW WEAPON
-
-========================================================================================
-*/
-
-/*
-=================
-CG_MapTorsoToWeaponFrame
-
-=================
-*/
 static int
 CG_MapTorsoToWeaponFrame(clientInfo_t *ci, int frame)
 {
@@ -885,18 +825,14 @@ CG_MapTorsoToWeaponFrame(clientInfo_t *ci, int frame)
 }
 
 /*
-===============
-CG_LightningBolt
-
 Origin will be the exact tag point, which is slightly
 different than the muzzle point used for determining hits.
 The cent should be the non-predicted cent if it is from the player,
 so the endpoint will reflect the simulated strike (lagging the predicted
 angle)
-===============
 */
 static void
-CG_LightningBolt(centity_t *cent, vec3_t origin, int slot)
+lightningbolt(centity_t *cent, vec3_t origin, int slot)
 {
 	trace_t trace;
 	refEntity_t beam;
@@ -979,15 +915,10 @@ CG_LightningBolt(centity_t *cent, vec3_t origin, int slot)
 	}
 }
 
-/*
-======================
-CG_MachinegunSpinAngle
-======================
-*/
 #define         SPIN_SPEED	0.9
 #define         COAST_TIME	1000
 static float
-CG_MachinegunSpinAngle(centity_t *cent)
+machinegunspinangle(centity_t *cent)
 {
 	int delta;
 	float angle;
@@ -1018,13 +949,8 @@ CG_MachinegunSpinAngle(centity_t *cent)
 	return angle;
 }
 
-/*
-========================
-CG_AddWeaponWithPowerups
-========================
-*/
 static void
-CG_AddWeaponWithPowerups(refEntity_t *gun, int powerups)
+addweapwithpowerups(refEntity_t *gun, int powerups)
 {
 	// add powerup effects
 	if(powerups & (1 << PW_INVIS)){
@@ -1045,13 +971,9 @@ CG_AddWeaponWithPowerups(refEntity_t *gun, int powerups)
 }
 
 /*
-=============
-addplayerweap
-
 Used for both the view weapon (ps is valid) and the world modelother character models (ps is nil)
 The main player will have this called for BOTH cases, so effects like light and
 sound should only be done on the world model case.
-=============
 */
 void
 addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team, int slot)
@@ -1128,7 +1050,7 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team,
 	MatrixMultiply(lerped.axis, ((refEntity_t*)parent)->axis, gun.axis);
 	//gun.backlerp = parent->backlerp;
 
-	CG_AddWeaponWithPowerups(&gun, cent->currstate.powerups);
+	addweapwithpowerups(&gun, cent->currstate.powerups);
 
 	// add the spinning barrel
 	if(weapon->barrelmodel){
@@ -1140,12 +1062,12 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team,
 		barrel.hModel = weapon->barrelmodel;
 		angles[YAW] = 0;
 		angles[PITCH] = 0;
-		angles[ROLL] = CG_MachinegunSpinAngle(cent);
+		angles[ROLL] = machinegunspinangle(cent);
 		AnglesToAxis(angles, barrel.axis);
 
 		rotentontag(&barrel, &gun, weapon->model.h, "tag_barrel");
 
-		CG_AddWeaponWithPowerups(&barrel, cent->currstate.powerups);
+		addweapwithpowerups(&barrel, cent->currstate.powerups);
 	}
 
 	// make sure we aren't looking at cg.pplayerent for LG
@@ -1173,7 +1095,7 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team,
 	// add lightning bolt
 	if(ps || cg.thirdperson ||
 	   cent->currstate.number != cg.pps.clientNum){
-		CG_LightningBolt(nonPredictedCent, flash.origin, slot);
+		lightningbolt(nonPredictedCent, flash.origin, slot);
 
 		if(weapon->flashcolor[0] || weapon->flashcolor[1] || weapon->flashcolor[2])
 			trap_R_AddLightToScene(flash.origin, 300 + (rand()&31), weapon->flashcolor[0],
@@ -1206,11 +1128,7 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team,
 }
 
 /*
-==============
-addviewweap
-
-Add the weapon, and flash for the player's view
-==============
+Add the weapon and flash for the player's view
 */
 void
 addviewweap(playerState_t *ps)
@@ -1243,9 +1161,9 @@ addviewweap(playerState_t *ps)
 			// special hack for lightning gun...
 			veccpy(cg.refdef.vieworg, origin);
 			vecmad(origin, -8, cg.refdef.viewaxis[2], origin);
-			CG_LightningBolt(&cg_entities[ps->clientNum], origin, 0);
-			CG_LightningBolt(&cg_entities[ps->clientNum], origin, 1);
-			CG_LightningBolt(&cg_entities[ps->clientNum], origin, 2);
+			lightningbolt(&cg_entities[ps->clientNum], origin, 0);
+			lightningbolt(&cg_entities[ps->clientNum], origin, 1);
+			lightningbolt(&cg_entities[ps->clientNum], origin, 2);
 		}
 		return;
 	}
@@ -1338,18 +1256,9 @@ addviewweap(playerState_t *ps)
 }
 
 /*
-==============================================================================
-
-WEAPON SELECTION
-
-==============================================================================
+Weapon selection.
 */
 
-/*
-===================
-drawweapsel
-===================
-*/
 void
 drawweapsel(void)
 {
@@ -1463,11 +1372,6 @@ drawweapsel(void)
 	trap_R_SetColor(nil);
 }
 
-/*
-===============
-weapselectable
-===============
-*/
 static qboolean
 weapselectable(int slot, int i)
 {
@@ -1481,11 +1385,6 @@ weapselectable(int slot, int i)
 	return qtrue;
 }
 
-/*
-===============
-CG_NextWeapon_f
-===============
-*/
 void
 CG_NextWeapon_f(void)
 {
@@ -1516,11 +1415,6 @@ CG_NextWeapon_f(void)
 		cg.weapsel[slot] = original;
 }
 
-/*
-===============
-CG_PrevWeapon_f
-===============
-*/
 void
 CG_PrevWeapon_f(void)
 {
@@ -1563,11 +1457,6 @@ CG_WeapModUp_f(void)
 	cg.weapmod = qfalse;
 }
 
-/*
-===============
-CG_Weapon_f
-===============
-*/
 void
 CG_Weapon_f(void)
 {
@@ -1596,11 +1485,7 @@ CG_Weapon_f(void)
 }
 
 /*
-===================
-outofammochange
-
 The current weapon has just run out of ammo
-===================
 */
 void
 outofammochange(void)
@@ -1617,19 +1502,7 @@ outofammochange(void)
 }
 
 /*
-===================================================================================================
-
-WEAPON EVENTS
-
-===================================================================================================
-*/
-
-/*
-================
-fireweap
-
 Caused by an EV_FIRE_WEAPON event
-================
 */
 void
 fireweap(centity_t *cent, int slot)
@@ -1684,16 +1557,12 @@ fireweap(centity_t *cent, int slot)
 	if(weap->ejectbrass && cg_brassTime.integer > 0)
 		weap->ejectbrass(cent);
 
-	CG_SetLerpFrameAnimation(cgs.media.itemanims[finditemforweapon(cent->currstate.weapon[slot]) - bg_itemlist],
+	setlerpframeanim(cgs.media.itemanims[finditemforweapon(cent->currstate.weapon[slot]) - bg_itemlist],
 	   &cent->weaplerpframe[slot], ANIM_FLASH);
 }
 
 /*
-=================
-missilehitwall
-
-Caused by an EV_MISSILE_MISS event, or directly by local bullet tracing
-=================
+Caused by an EV_MISSILE_MISS event, or directly by hitscan bullet tracing
 */
 void
 missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound_t soundType)
@@ -1913,11 +1782,6 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		impactmark(mark, origin, dir, random()*360, 1, 1, 1, 1, alphafade, radius, qfalse);
 }
 
-/*
-=================
-missilehitplayer
-=================
-*/
 void
 missilehitplayer(int weapon, vec3_t origin, vec3_t dir, int entityNum)
 {
@@ -1943,21 +1807,8 @@ missilehitplayer(int weapon, vec3_t origin, vec3_t dir, int entityNum)
 	}
 }
 
-/*
-============================================================================
-
-SHOTGUN TRACING
-
-============================================================================
-*/
-
-/*
-================
-CG_ShotgunPellet
-================
-*/
 static void
-CG_ShotgunPellet(vec3_t start, vec3_t end, int skipNum)
+shotgunpellet(vec3_t start, vec3_t end, int skipNum)
 {
 	trace_t tr;
 	int sourceContentType, destContentType;
@@ -2000,17 +1851,13 @@ CG_ShotgunPellet(vec3_t start, vec3_t end, int skipNum)
 }
 
 /*
-================
-CG_ShotgunPattern
-
 Perform the same traces the server did to locate the
 hit splashes.
 
 This must match code/game/g_weapon.c:/shotgunpattern/
-================
 */
 static void
-CG_ShotgunPattern(vec3_t origin, vec3_t origin2, int seed, int otherEntNum)
+shotgunpattern(vec3_t origin, vec3_t origin2, int seed, int otherEntNum)
 {
 	int i;
 	float r, u, spread, angle;
@@ -2034,15 +1881,10 @@ CG_ShotgunPattern(vec3_t origin, vec3_t origin2, int seed, int otherEntNum)
 		vecmad(origin, 8192 * 16, forward, end);
 		vecmad(end, r, right, end);
 		vecmad(end, u, up, end);
-		CG_ShotgunPellet(origin, end, otherEntNum);
+		shotgunpellet(origin, end, otherEntNum);
 	}
 }
 
-/*
-==============
-shotgunfire
-==============
-*/
 void
 shotgunfire(entityState_t *es)
 {
@@ -2063,24 +1905,11 @@ shotgunfire(entityState_t *es)
 			smokepuff(v, up, 32, 1, 1, 1, 0.33f, 900, cg.time, 0, LEF_PUFF_DONT_SCALE, cgs.media.shotgunSmokePuffShader);
 		}
 	}
-	CG_ShotgunPattern(es->pos.trBase, es->origin2, es->eventParm, es->otherEntityNum);
+	shotgunpattern(es->pos.trBase, es->origin2, es->eventParm, es->otherEntityNum);
 }
 
-/*
-============================================================================
-
-BULLETS
-
-============================================================================
-*/
-
-/*
-======================
-CG_CalcMuzzlePoint
-======================
-*/
 static qboolean
-CG_CalcMuzzlePoint(int entityNum, vec3_t muzzle)
+calcmuzzlepoint(int entityNum, vec3_t muzzle)
 {
 	vec3_t forward, up;
 	centity_t *cent;
@@ -2099,7 +1928,6 @@ CG_CalcMuzzlePoint(int entityNum, vec3_t muzzle)
 		return qfalse;
 
 	veccpy(cent->lerporigin, muzzle);
-	muzzle[2] += DEFAULT_VIEWHEIGHT;
 
 	anglevecs(cent->lerpangles, forward, nil, nil);
 
@@ -2109,11 +1937,7 @@ CG_CalcMuzzlePoint(int entityNum, vec3_t muzzle)
 }
 
 /*
-======================
-dobullet
-
 Renders bullet effects.
-======================
 */
 void
 dobullet(vec3_t end, int sourceEntityNum, vec3_t normal, qboolean flesh, int fleshEntityNum)
@@ -2125,7 +1949,7 @@ dobullet(vec3_t end, int sourceEntityNum, vec3_t normal, qboolean flesh, int fle
 	// if the shooter is currently valid, calc a source point and possibly
 	// do trail effects
 	if(sourceEntityNum >= 0 && cg_tracerChance.value > 0)
-		if(CG_CalcMuzzlePoint(sourceEntityNum, start)){
+		if(calcmuzzlepoint(sourceEntityNum, start)){
 			sourceContentType = pointcontents(start, 0);
 			destContentType = pointcontents(end, 0);
 
@@ -2145,7 +1969,7 @@ dobullet(vec3_t end, int sourceEntityNum, vec3_t normal, qboolean flesh, int fle
 
 			// draw a tracer
 			if(random() < cg_tracerChance.value)
-				CG_Tracer(start, end);
+				tracer(start, end);
 		}
 
 	// impact splash and mark

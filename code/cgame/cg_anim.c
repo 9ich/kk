@@ -6,7 +6,7 @@
 may include ANIM_TOGGLEBIT
 */
 void
-CG_SetLerpFrameAnimation(animation_t *anims, lerpFrame_t *lf, int newanim)
+setlerpframeanim(animation_t *anims, lerpFrame_t *lf, int newanim)
 {
 	animation_t *anim;
 
@@ -31,7 +31,7 @@ Advances a lerpFrame_t.
 cg.time should be between oldframetime and frametime after exit
 */
 void
-CG_RunLerpFrame(animation_t *anims, lerpFrame_t *lf, int newanim, float speedscale)
+runlerpframe(animation_t *anims, lerpFrame_t *lf, int newanim, float speedscale)
 {
 	int f, nframes;
 	animation_t *anim;
@@ -44,7 +44,7 @@ CG_RunLerpFrame(animation_t *anims, lerpFrame_t *lf, int newanim, float speedsca
 
 	// see if the animation sequence is switching
 	if(newanim != lf->animnum || !lf->animation)
-		CG_SetLerpFrameAnimation(anims, lf, newanim);
+		setlerpframeanim(anims, lf, newanim);
 
 	// if we have passed the current frame, move it to
 	// oldframe and calculate a new frame
@@ -107,10 +107,10 @@ CG_RunLerpFrame(animation_t *anims, lerpFrame_t *lf, int newanim, float speedsca
 }
 
 void
-CG_ClearLerpFrame(animation_t *anims, lerpFrame_t *lf, int animnum)
+clearlerpframe(animation_t *anims, lerpFrame_t *lf, int animnum)
 {
 	lf->frametime = lf->oldframetime = cg.time;
-	CG_SetLerpFrameAnimation(anims, lf, animnum);
+	setlerpframeanim(anims, lf, animnum);
 	lf->oldframe = lf->frame = lf->animation->firstframe;
 }
 
@@ -120,7 +120,7 @@ models/misc/thrustflame/animation.cfg, etc.
 See also cg_players.c:/CG_ParsePlayerAnimationFile/
 */
 qboolean
-CG_ParseAnimationFile(const char *filename, animation_t *anims)
+parseanimfile(const char *filename, animation_t *anims)
 {
 	char *p, *prev;
 	int len;

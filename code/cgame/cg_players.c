@@ -382,7 +382,7 @@ CG_RegisterClientModelname(clientInfo_t *ci, const char *modelname, const char *
 
 	// load the animations
 	Com_sprintf(filename, sizeof(filename), "models/players/%s/animation.cfg", modelname);
-	if(!CG_ParseAnimationFile(filename, ci->animations)){
+	if(!parseanimfile(filename, ci->animations)){
 		Com_Printf("Failed to load animation file %s\n", filename);
 		return qfalse;
 	}
@@ -826,7 +826,7 @@ CG_PlayerAnimation(centity_t *cent, int *torsoOld, int *torso, float *torsoBackL
 
 	ci = &cgs.clientinfo[clientNum];
 
-	CG_RunLerpFrame(ci->animations, &cent->pe.torso, cent->currstate.torsoAnim, speedScale);
+	runlerpframe(ci->animations, &cent->pe.torso, cent->currstate.torsoAnim, speedScale);
 
 	*torsoOld = cent->pe.torso.oldframe;
 	*torso = cent->pe.torso.frame;
@@ -843,7 +843,7 @@ CG_WeaponAnimation(centity_t *cent, weaponInfo_t *weapinfo, int slot, int *oldfr
 	else
 		speedScale = 1;
 
-	CG_RunLerpFrame(cgs.media.itemanims[finditemforweapon(cent->currstate.weapon[slot]) - bg_itemlist],
+	runlerpframe(cgs.media.itemanims[finditemforweapon(cent->currstate.weapon[slot]) - bg_itemlist],
 	   &cent->weaplerpframe[slot], cent->currstate.weapAnim[slot], 1.0f);
 	*oldframe = cent->weaplerpframe[slot].oldframe;
 	*frame = cent->weaplerpframe[slot].frame;
@@ -978,7 +978,7 @@ CG_PlayerFlag(centity_t *cent, refEntity_t *torso, qhandle_t flagmodel)
 	flag.renderfx = torso->renderfx;
 	// lerp the flag animation frames
 	ci = &cgs.clientinfo[cent->currstate.clientNum];
-	CG_RunLerpFrame(ci->animations, &cent->pe.flag, 0, 1);
+	runlerpframe(ci->animations, &cent->pe.flag, 0, 1);
 	flag.hModel = flagmodel;
 	flag.oldframe = cent->pe.flag.oldframe;
 	flag.frame = cent->pe.flag.frame;
@@ -1044,7 +1044,7 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 	
 	re.hModel = cgs.media.thrustFlameModel;
 	re.nonNormalizedAxes = qtrue;
-	CG_RunLerpFrame(cgs.media.thrustFlameAnims, &cent->lf, ANIM_IDLE, 1.0f);
+	runlerpframe(cgs.media.thrustFlameAnims, &cent->lf, ANIM_IDLE, 1.0f);
 	re.frame = cent->lf.frame;
 	re.oldframe = cent->lf.oldframe;
 	re.backlerp = cent->lf.backlerp;
@@ -1837,7 +1837,7 @@ resetplayerent(centity_t *cent)
 	cent->errtime = -99999;	// guarantee no error decay added
 	cent->extrapolated = qfalse;
 
-	CG_ClearLerpFrame(cgs.clientinfo[cent->currstate.clientNum].animations, &cent->pe.torso, cent->currstate.torsoAnim);
+	clearlerpframe(cgs.clientinfo[cent->currstate.clientNum].animations, &cent->pe.torso, cent->currstate.torsoAnim);
 
 	evaltrajectory(&cent->currstate.pos, cg.time, cent->lerporigin);
 	evaltrajectory(&cent->currstate.apos, cg.time, cent->lerpangles);
