@@ -423,7 +423,7 @@ machineguntrail(centity_t *ent, const weaponInfo_t *wi)
 		return;
 	}
 
-	tracer(origin, end);
+	tracer(end, origin);
 }
 
 static void

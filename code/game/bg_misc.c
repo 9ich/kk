@@ -240,7 +240,7 @@ gitem_t bg_itemlist[] =
 		IT_WEAPON,
 		WP_GRENADE_LAUNCHER,
 /* precache */ "",
-/* sounds */ "sound/weapons/grenade/hgrenb1a.wav sound/weapons/grenade/hgrenb2a.wav"
+/* sounds */ "sound/weapons2/grenade/hgrenb1a.wav sound/weapons2/grenade/hgrenb2a.wav"
 	},
 
 /*QUAKED weapon_rocketlauncher (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
@@ -867,7 +867,7 @@ Only in CTF games
 	{
 		"weapon_nailgun",
 		"sound/misc/w_pkup.wav",
-		{"models/weapons/nailgun/nailgun.md3",
+		{"models/weapons2/nailgun/nailgun.md3",
 		 nil, nil, nil},
 /* icon */ "icons/weap_nailgun",
 /* pickup */ "Nailgun",
@@ -883,7 +883,7 @@ Only in CTF games
 	{
 		"weapon_prox_launcher",
 		"sound/misc/w_pkup.wav",
-		{"models/weapons/proxmine/proxmine.md3",
+		{"models/weapons2/proxmine/proxmine.md3",
 		 nil, nil, nil},
 /* icon */ "icons/weap_proxlauncher",
 /* pickup */ "Prox Launcher",
@@ -891,12 +891,12 @@ Only in CTF games
 		IT_WEAPON,
 		WP_PROX_LAUNCHER,
 /* precache */ "",
-/* sounds */ "sound/weapons/proxmine/wstbtick.wav "
-		"sound/weapons/proxmine/wstbactv.wav "
-		"sound/weapons/proxmine/wstbimpl.wav "
-		"sound/weapons/proxmine/wstbimpm.wav "
-		"sound/weapons/proxmine/wstbimpd.wav "
-		"sound/weapons/proxmine/wstbactv.wav"
+/* sounds */ "sound/weapons2/proxmine/wstbtick.wav "
+		"sound/weapons2/proxmine/wstbactv.wav "
+		"sound/weapons2/proxmine/wstbimpl.wav "
+		"sound/weapons2/proxmine/wstbimpm.wav "
+		"sound/weapons2/proxmine/wstbimpd.wav "
+		"sound/weapons2/proxmine/wstbactv.wav"
 	},
 
 /*QUAKED weapon_heminigun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
@@ -904,7 +904,7 @@ Only in CTF games
 	{
 		"weapon_heminigun",
 		"sound/misc/w_pkup.wav",
-		{"models/weapons/heminigun/heminigun.md3",
+		{"models/weapons2/heminigun/heminigun.md3",
 		 nil, nil, nil},
 /* icon */ "icons/weap_heminigun",
 /* pickup */ "GAU-9",
@@ -912,7 +912,7 @@ Only in CTF games
 		IT_WEAPON,
 		WP_CHAINGUN,
 /* precache */ "",
-/* sounds */ "sound/weapons/heminigun/flash.wav"
+/* sounds */ "sound/weapons2/heminigun/flash.wav"
 	},
 #endif
 
