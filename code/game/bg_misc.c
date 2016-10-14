@@ -742,10 +742,10 @@ Only in CTF games
 	{
 		"ammo_belt",
 		"sound/misc/am_pkup.wav",
-		{"models/powerups/ammo/chaingunam.md3",
+		{"models/powerups/ammo/heminigunam.md3",
 		 nil, nil, nil},
 /* icon */ "icons/ammo_chaingun",
-/* pickup */ "Chaingun Belt",
+/* pickup */ "GAU-9 Belt",
 		100,
 		IT_AMMO,
 		WP_CHAINGUN,
@@ -899,20 +899,20 @@ Only in CTF games
 		"sound/weapons/proxmine/wstbactv.wav"
 	},
 
-/*QUAKED weapon_chaingun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED weapon_heminigun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"weapon_chaingun",
+		"weapon_heminigun",
 		"sound/misc/w_pkup.wav",
-		{"models/weapons/vulcan/vulcan.md3",
+		{"models/weapons/heminigun/heminigun.md3",
 		 nil, nil, nil},
-/* icon */ "icons/weap_chaingun",
-/* pickup */ "Chaingun",
+/* icon */ "icons/weap_heminigun",
+/* pickup */ "GAU-9",
 		80,
 		IT_WEAPON,
 		WP_CHAINGUN,
 /* precache */ "",
-/* sounds */ "sound/weapons/vulcan/wvulwind.wav"
+/* sounds */ "sound/weapons/heminigun/flash.wav"
 	},
 #endif
 
