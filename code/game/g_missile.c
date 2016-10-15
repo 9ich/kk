@@ -583,16 +583,16 @@ fire_bullet(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->s.weapon[0] = WP_MACHINEGUN;
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;
-	bolt->damage = 100;
-	bolt->splashdmg = 100;
-	bolt->splashradius = 300;
-	bolt->meansofdeath = MOD_ROCKET;
-	bolt->splashmeansofdeath = MOD_ROCKET_SPLASH;
+	bolt->damage = 4;
+	bolt->splashdmg = 0;
+	bolt->splashradius = 0;
+	bolt->meansofdeath = MOD_MACHINEGUN;
+	bolt->splashmeansofdeath = MOD_MACHINEGUN;
 	bolt->clipmask = MASK_SHOT;
 	bolt->target_ent = nil;
 
 	bolt->s.pos.trType = TR_LINEAR;
-	bolt->s.pos.trTime = level.time;	// move a bit on the very first frame
+	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
 	veccpy(start, bolt->s.pos.trBase);
 	vecmul(dir, 4000, bolt->s.pos.trDelta);
 //	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth

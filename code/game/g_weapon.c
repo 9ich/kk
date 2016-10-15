@@ -186,6 +186,22 @@ Bullet_Fire(gentity_t *ent, float spread, int damage, int mod)
 	inheritvel(ent, m);
 }
 
+void
+ExplosiveBullet_Fire(gentity_t *ent, float spread, int damage, int mod)
+{
+	gentity_t       *m;
+
+	m = fire_bullet(ent, muzzle, forward);
+	m->s.weapon[0] = WP_CHAINGUN;
+	m->damage = damage * s_quadFactor;
+	m->splashdmg = damage * s_quadFactor;
+	m->splashradius = 250;
+	m->meansofdeath = mod;
+	m->splashmeansofdeath = mod;
+
+	inheritvel(ent, m);
+}
+
 /*
 ======================================================================
 
@@ -843,7 +859,7 @@ fireweapon(gentity_t *ent, int slot)
 		weapon_proxlauncher_fire(ent);
 		break;
 	case WP_CHAINGUN:
-		Bullet_Fire(ent, CHAINGUN_SPREAD, CHAINGUN_DAMAGE, MOD_CHAINGUN);
+		ExplosiveBullet_Fire(ent, CHAINGUN_SPREAD, CHAINGUN_DAMAGE, MOD_CHAINGUN);
 		break;
 #endif
 	default:
