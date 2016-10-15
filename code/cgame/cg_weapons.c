@@ -656,6 +656,12 @@ registerweap(int weaponNum)
 		break;
 
 	case WP_CHAINGUN:
+		MAKERGB(weapinfo->flashcolor, 1, 1, 0);
+		weapinfo->missileTrailFunc = machineguntrail;
+		weapinfo->flashsnd[0] = trap_S_RegisterSound("sound/weapons/machinegun/machgf1b.wav", qfalse);
+		cgs.media.bulletExplosionShader = trap_R_RegisterShader("explode2");
+		break;
+
 	case WP_MACHINEGUN:
 		MAKERGB(weapinfo->flashcolor, 1, 1, 0);
 		weapinfo->missileTrailFunc = machineguntrail;
@@ -1670,7 +1676,6 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		mod = 0;	// don't draw the usual sprite
 		break;
 	case WP_CHAINGUN:
-	case WP_MACHINEGUN:
 		mod = cgs.media.dishFlashModel;
 		shader = cgs.media.bulletExplosionShader;
 		sfx = PICKRANDOM(cgs.media.sfx_rockexp);
@@ -1683,7 +1688,7 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		lightcolor[1] = 0.45f;
 		lightcolor[2] = 0.0f;
 
-		for(i = 0; i < cg_rocketExpSparks.integer / 5; i++)
+		for(i = 0; i < cg_rocketExpSparks.integer / 20; i++)
 			CG_ParticleSparks(origin, dir, 500+crandom()*400, 60, 600 + crandom()*140);
 
 		if(cg_rocketExpShockwave.integer)
@@ -1700,6 +1705,18 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		}
 
 		mod = 0;	// don't draw the usual sprite
+		break;
+	case WP_MACHINEGUN:
+		mod = cgs.media.dishFlashModel;
+		shader = cgs.media.bulletExplosionShader;
+		sfx = cgs.media.hitSound;
+		mark = cgs.media.burnMarkShader;
+		radius = 20;
+		isSprite = qtrue;
+		duration = 16*16.666666f;
+
+		for(i = 0; i < cg_rocketExpSparks.integer / 20; i++)
+			CG_ParticleSparks(origin, dir, 500+crandom()*400, 60, 600 + crandom()*140);
 		break;
 	case WP_RAILGUN:
 		mod = cgs.media.ringFlashModel;

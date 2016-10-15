@@ -917,15 +917,15 @@ pmanimate(void)
 	}
 
 	// weapon firing anim
-	if(pm->ps->weaponstate[0] == WEAPON_READY){
-		pm->ps->weapAnim[0] = ANIM_IDLE;
-	}else
+	if(pm->ps->weaponstate[0] == WEAPON_FIRING)
 		pm->ps->weapAnim[0] = ANIM_FLASH;
-
-	if(pm->ps->weaponstate[1] == WEAPON_READY){
-		pm->ps->weapAnim[1] = ANIM_IDLE;
-	}else
+	if(pm->ps->weaponstate[1] == WEAPON_FIRING)
 		pm->ps->weapAnim[1] = ANIM_FLASH;
+
+	if(pm->ps->weaponstate[0] == WEAPON_RAISING)
+		pm->ps->weapAnim[0] = ANIM_IDLE;
+	if(pm->ps->weaponstate[1] == WEAPON_RAISING)
+		pm->ps->weapAnim[1] = ANIM_IDLE;
 }
 
 static void
