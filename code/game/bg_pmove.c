@@ -861,7 +861,7 @@ pmweapevents(int slot)
 		addTime = 800;
 		break;
 	case WP_ROCKET_LAUNCHER:
-		addTime = 800;
+		addTime = 700;
 		break;
 	case WP_PLASMAGUN:
 		addTime = 100;
