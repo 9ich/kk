@@ -472,9 +472,9 @@ fire_plasma(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->s.weapon[0] = WP_PLASMAGUN;
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;
-	bolt->damage = 20;
+	bolt->damage = 24;
 	bolt->splashdmg = 15;
-	bolt->splashradius = 20;
+	bolt->splashradius = 50;
 	bolt->meansofdeath = MOD_PLASMA;
 	bolt->splashmeansofdeath = MOD_PLASMA_SPLASH;
 	bolt->clipmask = MASK_SHOT;
@@ -583,7 +583,7 @@ fire_bullet(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->s.weapon[0] = WP_MACHINEGUN;
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;
-	bolt->damage = 4;
+	bolt->damage = 6;
 	bolt->splashdmg = 0;
 	bolt->splashradius = 0;
 	bolt->meansofdeath = MOD_MACHINEGUN;
@@ -623,7 +623,7 @@ rocket_think(gentity_t *self)
 
 	veccpy(self->s.pos.trDelta, dir);
 	spd = vecnorm(dir);
-	spd += 300;
+	spd += 470;
 	vecmul(dir, spd, self->s.pos.trDelta);
 	//SnapVector(self->s.pos.trDelta);	// save net bandwidth
 	self->s.pos.trTime = level.time;
@@ -681,7 +681,7 @@ void
 homingrocket_die(gentity_t *ent, gentity_t *inflictor, gentity_t *attacker, int dmg, int mod)
 {
 	trap_UnlinkEntity(ent);
-	radiusdamage(ent->r.currentOrigin, ent, ent->splashdmg,
+	radiusdamage(ent->r.currentOrigin, ent->parent, ent->splashdmg,
 	   1.5f * ent->splashradius, ent, ent->splashmeansofdeath);
 
 	ent->s.eType = ET_EVENTS + EV_MISSILE_MISS;
@@ -769,7 +769,7 @@ fire_homingrocket(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->takedmg = qtrue;
 
 	veccpy(start, bolt->s.pos.trBase);
-	vecmul(dir, 100, bolt->s.pos.trDelta);
+	vecmul(dir, 180, bolt->s.pos.trDelta);
 	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time;

@@ -195,7 +195,7 @@ ExplosiveBullet_Fire(gentity_t *ent, float spread, int damage, int mod)
 	m->s.weapon[0] = WP_CHAINGUN;
 	m->damage = damage * s_quadFactor;
 	m->splashdmg = damage * s_quadFactor;
-	m->splashradius = 250;
+	m->splashradius = 300;
 	m->meansofdeath = mod;
 	m->splashmeansofdeath = mod;
 
@@ -371,7 +371,7 @@ ROCKET
 void
 Weapon_RocketLauncher_Fire(gentity_t *ent)
 {
-	gentity_t       *m;
+	gentity_t *m;
 
 	m = fire_rocket(ent, muzzle, forward);
 	m->damage *= s_quadFactor;
