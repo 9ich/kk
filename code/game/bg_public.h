@@ -46,7 +46,7 @@ enum
 #define DEFAULT_SHOTGUN_SPREAD	700
 #define DEFAULT_SHOTGUN_COUNT	16
 
-#define ITEM_RADIUS		38	// item sizes are needed for client side pickup detection
+#define ITEM_RADIUS		42	// item sizes are needed for client side pickup detection
 
 #define LIGHTNING_RANGE		2000
 
