@@ -814,7 +814,7 @@ pmweapevents(int slot)
 
 	if(pm->ps->weapon[slot] == WP_HOMING_LAUNCHER &&
 	   (pm->ps->lockontarget == ENTITYNUM_NONE ||
-	   pm->ps->lockontime - pm->ps->lockonstarttime < HOMING_SCANWAIT))
+	   pm->ps->lockontime - pm->ps->lockonstarttime < HOMING_SCANWAIT + HOMING_GRACEPERIOD))
 		return;
 
 	pm->ps->weaponstate[slot] = WEAPON_FIRING;
