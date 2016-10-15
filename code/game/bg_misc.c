@@ -179,15 +179,15 @@ gitem_t bg_itemlist[] =
 
 	// WEAPONS
 
-/*QUAKED weapon_gauntlet (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED weapon_melee (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"weapon_gauntlet",
+		"weapon_melee",
 		"sound/misc/w_pkup.wav",
-		{"models/weapons2/gauntlet/gauntlet.md3",
+		{"models/weapons2/melee/melee.md3",
 		 nil, nil, nil},
-/* icon */ "icons/weap_gauntlet",
-/* pickup */ "Gauntlet",
+/* icon */ "icons/weap_melee",
+/* pickup */ "Melee",
 		0,
 		IT_WEAPON,
 		WP_GAUNTLET,
@@ -211,15 +211,15 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED weapon_machinegun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED weapon_minigun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"weapon_machinegun",
+		"weapon_minigun",
 		"sound/misc/w_pkup.wav",
-		{"models/weapons2/machinegun/machinegun.md3",
+		{"models/weapons2/minigun/minigun.md3",
 		 nil, nil, nil},
-/* icon */ "icons/weap_machinegun",
-/* pickup */ "Machinegun",
+/* icon */ "icons/weap_minigun",
+/* pickup */ "Minigun",
 		40,
 		IT_WEAPON,
 		WP_MACHINEGUN,

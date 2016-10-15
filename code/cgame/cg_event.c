@@ -185,7 +185,7 @@ CG_Obituary(entityState_t *ent)
 			icon = finditemforweapon(WP_GRAPPLING_HOOK)->icon;
 			break;
 		case MOD_GAUNTLET:
-			icon = "icons/weap_gauntlet";
+			icon = "icons/weap_melee";
 			break;
 		case MOD_MACHINEGUN:
 			icon = finditemforweapon(WP_MACHINEGUN)->icon;
