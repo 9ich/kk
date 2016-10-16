@@ -749,7 +749,7 @@ fire_homingrocket(gentity_t *self, vec3_t start, vec3_t dir)
 	// bolt->count is decremented with each call to rocket_think
 	// rocket detonates when bolt->count reaches 0
 	bolt->count = HOMINGROCKET_LIFESPAN / HOMINGROCKET_THINKTIME;
-	bolt->nextthink = level.time + HOMINGROCKET_THINKTIME;
+	bolt->nextthink = level.time + 200;
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon[0] = WP_HOMING_LAUNCHER;
