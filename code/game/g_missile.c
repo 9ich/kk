@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #include "g_local.h"
 
-#define MISSILE_PRESTEP_TIME 10
+#define MISSILE_PRESTEP_TIME 20
 
 void
 bouncemissile(gentity_t *ent, trace_t *trace)
@@ -682,7 +682,7 @@ homingrocket_die(gentity_t *ent, gentity_t *inflictor, gentity_t *attacker, int 
 {
 	trap_UnlinkEntity(ent);
 	radiusdamage(ent->r.currentOrigin, ent->parent, ent->splashdmg,
-	   1.5f * ent->splashradius, ent, ent->splashmeansofdeath);
+	   0.00001f * ent->splashradius, ent, ent->splashmeansofdeath);
 
 	ent->s.eType = ET_EVENTS + EV_MISSILE_MISS;
 	ent->eventtime = level.time;
@@ -695,9 +695,11 @@ homingrocket_die(gentity_t *ent, gentity_t *inflictor, gentity_t *attacker, int 
 void
 homingrocket_think(gentity_t *ent)
 {
-	vec3_t olddir, dir;
+	vec3_t olddir, dir, dirtotarg;
 	gentity_t *targ;
-	float dot, t, spd;
+	float dot, t, spd, dist;
+	float rnd;
+	float distfrac;
 
 	// if lifespan of this rocket is up, explode
 	if(!ent->count--){
@@ -705,29 +707,48 @@ homingrocket_think(gentity_t *ent)
 		return;
 	}
 
+	rnd = random();
+
 	targ = &g_entities[ent->homingtarget];
 
 	evaltrajectory(&ent->s.pos, level.time, ent->r.currentOrigin);
 	veccpy(ent->s.pos.trDelta, olddir);
 	spd = vecnorm(olddir);
 
-	vecsub(targ->r.currentOrigin, ent->r.currentOrigin, dir);
+	dist = vecdist(targ->r.currentOrigin, ent->r.currentOrigin);
+	distfrac = Com_Clamp(0.0f, 1.0f, dist / HOMING_SCANRANGE);
+
+	if(veclensq(ent->pos1) == 0 || rnd > 0.5f || vecdist(ent->pos1, targ->r.currentOrigin) > 600){
+		vecset(ent->pos1, crandom(), crandom(), crandom());
+		vecmul(ent->pos1, dist, ent->pos1);
+		vecadd(ent->pos1, targ->r.currentOrigin, ent->pos1);
+	}
+	if(dist < 100)
+		vecsub(targ->r.currentOrigin, ent->r.currentOrigin, dir);
+	else
+		vecsub(ent->pos1, ent->r.currentOrigin, dir);
+	vecnorm(dir);
+	vecsub(targ->r.currentOrigin, ent->r.currentOrigin, dirtotarg);
 	vecnorm(dir);
 
 	veccpy(ent->r.currentOrigin, ent->s.pos.trBase);
 	ent->s.pos.trTime = level.time;
 
-	dot = vecdot(olddir, dir);
-	if(dot >= 0.707f){
-		// adjust trajectory towards target
-		t = 0.66f;	// tracking speed, 1.0 = perfect tracking
+	///dot = vecdot(olddir, dir);
+	dot = vecdot(olddir, dirtotarg);
+	if(dot >= 0.0f || (dist < 100 && dot >= -1.0f)){	// 90 deg
+		// home in on target
+		// t is tracking speed, 1.0 = perfect tracking
+		t = 0.2f + 0.01f*crandom();
+		if(dist < 100)
+			t = 1.0f;
 		dir[0] = (1-t)*olddir[0] + t*dir[0];
 		dir[1] = (1-t)*olddir[1] + t*dir[1];
 		dir[2] = (1-t)*olddir[2] + t*dir[2];
-		vecmul(dir, spd + 10, ent->s.pos.trDelta);	// accel
+		vecmul(dir, spd + 50 + 2*crandom(), ent->s.pos.trDelta);	// accel
 	}else{
 		// lost track
-		vecmul(olddir, spd + 10, ent->s.pos.trDelta);	// accel
+		vecmul(olddir, spd + 50 + 2*crandom(), ent->s.pos.trDelta);	// accel
 	}
 
 	ent->think = homingrocket_think;
@@ -762,14 +783,14 @@ fire_homingrocket(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->splashmeansofdeath = MOD_ROCKET_SPLASH;
 	bolt->clipmask = MASK_SHOT;
 	bolt->homingtarget = self->client->ps.lockontarget;
-	vecset(bolt->r.mins, -4, -4, -4);
-	vecset(bolt->r.maxs, 4, 4, 4);
+	vecset(bolt->r.mins, -6, -6, -6);
+	vecset(bolt->r.maxs, 6, 6, 6);
 	bolt->r.contents = MASK_PLAYERSOLID;
-	bolt->health = 50;
+	bolt->health = 1;
 	bolt->takedmg = qtrue;
 
 	veccpy(start, bolt->s.pos.trBase);
-	vecmul(dir, 180, bolt->s.pos.trDelta);
+	vecmul(dir, 200, bolt->s.pos.trDelta);
 	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time;

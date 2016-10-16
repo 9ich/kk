@@ -402,8 +402,8 @@ Weapon_HomingLauncher_Fire(gentity_t *ent)
 	for(i = 0; i < 3; i++){
 		r = sin(DEG2RAD(angle + (angle * i)));
 		u = cos(DEG2RAD(angle + (angle * i)));
-		vecmad(forward, .6f*r, right, dir);
-		vecmad(dir, .6f*u, up, dir);
+		vecmad(forward, .3f*r, right, dir);
+		vecmad(dir, .3f*u, up, dir);
 
 		m = fire_homingrocket(ent, muzzle, dir);
 		m->damage *= s_quadFactor;
