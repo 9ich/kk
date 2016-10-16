@@ -391,14 +391,28 @@ HOMINGLAUNCHER
 void
 Weapon_HomingLauncher_Fire(gentity_t *ent)
 {
-	gentity_t       *m;
+	gentity_t *m;
+	vec3_t dir, forward, right, up;
+	float r, u, angle;
+	int i;
 
-	m = fire_homingrocket(ent, muzzle, forward);
-	m->damage *= s_quadFactor;
-	m->splashdmg *= s_quadFactor;
+	anglevecs(ent->s.apos.trBase, forward, right, up);
+	angle = 360.0f / 3;
+
+	for(i = 0; i < 3; i++){
+		r = sin(DEG2RAD(angle + (angle * i)));
+		u = cos(DEG2RAD(angle + (angle * i)));
+		vecmad(forward, .6f*r, right, dir);
+		vecmad(dir, .6f*u, up, dir);
+
+		m = fire_homingrocket(ent, muzzle, dir);
+		m->damage *= s_quadFactor;
+		m->splashdmg *= s_quadFactor;
+
+		inheritvel(ent, m);
+	}
+
 	ent->client->ps.lockontarget = ENTITYNUM_NONE;
-
-	inheritvel(ent, m);
 }
 /*
 ======================================================================
