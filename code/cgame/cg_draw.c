@@ -2006,6 +2006,7 @@ drawreadyup(void)
 		return;
 	Q_strncpyz(lastcs, cs, sizeof lastcs);
 
+	msg = "";
 	if(Q_strncmp(cs, "ready\\", strlen("ready\\")) == 0){
 		cs += strlen("ready\\");
 		msg = "is ready";

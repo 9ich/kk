@@ -964,6 +964,23 @@ addweapwithpowerups(refEntity_t *gun, int powerups)
 	}
 }
 
+static void
+CG_WeaponAnimation(centity_t *cent, weaponInfo_t *weapinfo, int slot, int *oldframe, int *frame, float *backlerp)
+{
+	float speedScale;
+
+	if(cent->currstate.powerups & (1 << PW_HASTE))
+		speedScale = 1.5;
+	else
+		speedScale = 1;
+
+	runlerpframe(cgs.media.itemanims[finditemforweapon(cent->currstate.weapon[slot]) - bg_itemlist],
+	   &cent->weaplerpframe[slot], cent->currstate.weapAnim[slot], 1.0f);
+	*oldframe = cent->weaplerpframe[slot].oldframe;
+	*frame = cent->weaplerpframe[slot].frame;
+	*backlerp = cent->weaplerpframe[slot].backlerp;
+}
+
 /*
 Used for both the view weapon (ps is valid) and the world modelother character models (ps is nil)
 The main player will have this called for BOTH cases, so effects like light and

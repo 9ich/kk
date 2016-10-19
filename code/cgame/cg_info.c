@@ -153,7 +153,6 @@ drawinfo(void)
 	float x, y, value, size;
 	int font;
 	qhandle_t levelshot;
-	qhandle_t detail;
 	char buf[1024];
 
 	info = getconfigstr(CS_SERVERINFO);
