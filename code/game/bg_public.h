@@ -799,7 +799,6 @@ qboolean	playertouchingitem(playerState_t *ps, entityState_t *item, int atTime);
 #define KAMI_SHOCKWAVE2_MAXRADIUS	704
 
 // hominglauncher
-#define HOMING_SCANRANGE	1600
 #define HOMING_SCANWAIT		600
 // pause after locking on so player actually sees reticle change
 #define HOMING_GRACEPERIOD	250

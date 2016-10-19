@@ -472,9 +472,9 @@ fire_plasma(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->s.weapon[0] = WP_PLASMAGUN;
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;
-	bolt->damage = 24;
-	bolt->splashdmg = 15;
-	bolt->splashradius = 50;
+	bolt->damage = g_plasmaDmg.value;
+	bolt->splashdmg = g_plasmaSplashDmg.value;
+	bolt->splashradius = g_plasmaSplashRadius.value;
 	bolt->meansofdeath = MOD_PLASMA;
 	bolt->splashmeansofdeath = MOD_PLASMA_SPLASH;
 	bolt->clipmask = MASK_SHOT;
@@ -483,7 +483,7 @@ fire_plasma(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
 	veccpy(start, bolt->s.pos.trBase);
-	vecmul(dir, 2000, bolt->s.pos.trDelta);
+	vecmul(dir, g_plasmaSpeed.value, bolt->s.pos.trDelta);
 	//SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
 
 	veccpy(start, bolt->r.currentOrigin);
@@ -510,9 +510,9 @@ fire_grenade(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->s.eFlags = EF_BOUNCE_HALF;
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;
-	bolt->damage = 100;
-	bolt->splashdmg = 100;
-	bolt->splashradius = 150;
+	bolt->damage = g_grenadeDmg.value;
+	bolt->splashdmg = g_grenadeSplashDmg.value;
+	bolt->splashradius = g_grenadeSplashRadius.value;
 	bolt->meansofdeath = MOD_GRENADE;
 	bolt->splashmeansofdeath = MOD_GRENADE_SPLASH;
 	bolt->clipmask = MASK_SHOT;
@@ -521,7 +521,7 @@ fire_grenade(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->s.pos.trType = TR_GRAVITY;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
 	veccpy(start, bolt->s.pos.trBase);
-	vecmul(dir, 700, bolt->s.pos.trDelta);
+	vecmul(dir, g_grenadeSpeed.value, bolt->s.pos.trDelta);
 //	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
 
 	veccpy(start, bolt->r.currentOrigin);
@@ -583,7 +583,7 @@ fire_bullet(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->s.weapon[0] = WP_MACHINEGUN;
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;
-	bolt->damage = 6;
+	bolt->damage = g_minigunDmg.value;
 	bolt->splashdmg = 0;
 	bolt->splashradius = 0;
 	bolt->meansofdeath = MOD_MACHINEGUN;
@@ -594,7 +594,7 @@ fire_bullet(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
 	veccpy(start, bolt->s.pos.trBase);
-	vecmul(dir, 4000, bolt->s.pos.trDelta);
+	vecmul(dir, g_minigunSpeed.value, bolt->s.pos.trDelta);
 //	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
 	veccpy(start, bolt->r.currentOrigin);
 
@@ -623,7 +623,7 @@ rocket_think(gentity_t *self)
 
 	veccpy(self->s.pos.trDelta, dir);
 	spd = vecnorm(dir);
-	spd += 470;
+	spd += g_rocketAccel.value;
 	vecmul(dir, spd, self->s.pos.trDelta);
 	//SnapVector(self->s.pos.trDelta);	// save net bandwidth
 	self->s.pos.trTime = level.time;
@@ -651,9 +651,9 @@ fire_rocket(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->s.weapon[0] = WP_ROCKET_LAUNCHER;
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;
-	bolt->damage = 100;
-	bolt->splashdmg = 100;
-	bolt->splashradius = 300;
+	bolt->damage = g_rocketDmg.value;
+	bolt->splashdmg = g_rocketSplashDmg.value;
+	bolt->splashradius = g_rocketSplashRadius.value;
 	bolt->meansofdeath = MOD_ROCKET;
 	bolt->splashmeansofdeath = MOD_ROCKET_SPLASH;
 	bolt->clipmask = MASK_SHOT;
@@ -662,7 +662,7 @@ fire_rocket(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
 	veccpy(start, bolt->s.pos.trBase);
-	vecmul(dir, 700, bolt->s.pos.trDelta);
+	vecmul(dir, g_rocketSpeed.value, bolt->s.pos.trDelta);
 //	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
 	veccpy(start, bolt->r.currentOrigin);
 
@@ -681,13 +681,18 @@ void
 homingrocket_die(gentity_t *ent, gentity_t *inflictor, gentity_t *attacker, int dmg, int mod)
 {
 	trap_UnlinkEntity(ent);
+	/*
 	radiusdamage(ent->r.currentOrigin, ent->parent, ent->splashdmg,
 	   0.00001f * ent->splashradius, ent, ent->splashmeansofdeath);
+	*/
 
 	ent->s.eType = ET_EVENTS + EV_MISSILE_MISS;
 	ent->eventtime = level.time;
 	ent->freeafterevent = qtrue;
 	ent->r.contents = 0;
+	ent->damage = 0;
+	ent->splashdmg = 0;
+	ent->splashradius = 0;
 
 	trap_LinkEntity(ent);
 }
@@ -770,15 +775,15 @@ fire_homingrocket(gentity_t *self, vec3_t start, vec3_t dir)
 	// bolt->count is decremented with each call to rocket_think
 	// rocket detonates when bolt->count reaches 0
 	bolt->count = HOMINGROCKET_LIFESPAN / HOMINGROCKET_THINKTIME;
-	bolt->nextthink = level.time + 200;
+	bolt->nextthink = level.time + g_homingThinkWait.integer;
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon[0] = WP_HOMING_LAUNCHER;
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;
-	bolt->damage = 100;
-	bolt->splashdmg = 100;
-	bolt->splashradius = 300;
+	bolt->damage = g_homingDmg.value;
+	bolt->splashdmg = g_homingSplashDmg.value;
+	bolt->splashradius = g_homingSplashRadius.value;
 	bolt->meansofdeath = MOD_ROCKET;
 	bolt->splashmeansofdeath = MOD_ROCKET_SPLASH;
 	bolt->clipmask = MASK_SHOT;
@@ -790,7 +795,7 @@ fire_homingrocket(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->takedmg = qtrue;
 
 	veccpy(start, bolt->s.pos.trBase);
-	vecmul(dir, 200, bolt->s.pos.trDelta);
+	vecmul(dir, g_homingSpeed.value, bolt->s.pos.trDelta);
 	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time;

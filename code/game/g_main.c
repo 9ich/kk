@@ -99,6 +99,37 @@ vmCvar_t g_enableDust;
 vmCvar_t g_enableBreath;
 vmCvar_t g_proxMineTimeout;
 #endif
+vmCvar_t g_homingTracking;
+vmCvar_t g_homingVariation;
+vmCvar_t g_homingDivergence;
+vmCvar_t g_homingDivergenceProb;
+vmCvar_t g_homingPerfectDist;
+vmCvar_t g_homingCone;
+vmCvar_t g_homingPerfectCone;
+vmCvar_t g_homingScanRange;
+vmCvar_t g_homingLaunchAngle;
+vmCvar_t g_homingCount;
+vmCvar_t g_homingThinkWait;
+vmCvar_t g_homingSpeed;
+vmCvar_t g_homingAccel;
+vmCvar_t g_homingDmg;
+vmCvar_t g_homingSplashDmg;
+vmCvar_t g_homingSplashRadius;
+vmCvar_t g_rocketSpeed;
+vmCvar_t g_rocketAccel;
+vmCvar_t g_rocketDmg;
+vmCvar_t g_rocketSplashDmg;
+vmCvar_t g_rocketSplashRadius;
+vmCvar_t g_plasmaSpeed;
+vmCvar_t g_plasmaDmg;
+vmCvar_t g_plasmaSplashDmg;
+vmCvar_t g_plasmaSplashRadius;
+vmCvar_t g_minigunSpeed;
+vmCvar_t g_minigunDmg;
+vmCvar_t g_grenadeSpeed;
+vmCvar_t g_grenadeDmg;
+vmCvar_t g_grenadeSplashDmg;
+vmCvar_t g_grenadeSplashRadius;
 
 static cvarTable_t gameCvarTable[] = {
 	// don't override the cheat state set by the system
@@ -185,6 +216,39 @@ static cvarTable_t gameCvarTable[] = {
 	{&g_smoothClients, "g_smoothClients", "1", 0, 0, qfalse},
 	{&pmove_fixed, "pmove_fixed", "0", CVAR_SYSTEMINFO, 0, qfalse},
 	{&pmove_msec, "pmove_msec", "8", CVAR_SYSTEMINFO, 0, qfalse},
+
+	{&g_homingTracking, "g_homingTracking", "0.2", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_homingVariation, "g_homingTrackingVariation", "0.01", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_homingDivergence, "g_homingDivergence", "1.0", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_homingDivergenceProb, "g_homingDivergenceProb", "0.5", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_homingPerfectDist, "g_homingPerfectDist", "100", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_homingCone, "g_homingCone", "90", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_homingPerfectCone, "g_homingPerfectCone", "180", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_homingScanRange, "g_homingScanRange", "1700", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_homingLaunchAngle, "g_homingLaunchAngle", "0.6", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_homingCount, "g_homingCount", "3", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_homingThinkWait, "g_homingThinkWait", "200", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_homingSpeed, "g_homingSpeed", "200", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_homingAccel, "g_homingAccel", "50", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_homingDmg, "g_homingDmg", "40", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_homingSplashDmg, "g_homingSplashDmg", "40", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_homingSplashRadius, "g_homingSplashRadius", "50", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_rocketSpeed, "g_rocketSpeed", "700", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_rocketAccel, "g_rocketAccel", "470", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_rocketDmg, "g_rocketDmg", "100", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_rocketSplashDmg, "g_rocketSplashDmg", "100", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_rocketSplashRadius, "g_rocketSplashRadius", "300", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_plasmaSpeed, "g_plasmaSpeed", "2000", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_plasmaDmg, "g_plasmaDmg", "24", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_plasmaSplashDmg, "g_plasmaSplashDmg", "15", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_plasmaSplashRadius, "g_plasmaSplashRadius", "50", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_minigunSpeed, "g_minigunSpeed", "4000", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_minigunDmg, "g_minigunDmg", "6", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_grenadeSpeed, "g_grenadeSpeed", "700", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_grenadeDmg, "g_grenadeDmg", "100", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_grenadeSplashDmg, "g_grenadeSplashDmg", "100", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_grenadeSplashRadius, "g_frenadeSplashRadius", "150", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	
 
 	{&g_rankings, "g_rankings", "0", 0, 0, qfalse}
 };

@@ -397,13 +397,13 @@ Weapon_HomingLauncher_Fire(gentity_t *ent)
 	int i;
 
 	anglevecs(ent->s.apos.trBase, forward, right, up);
-	angle = 360.0f / 3;
+	angle = 360.0f / g_homingCount.integer;
 
-	for(i = 0; i < 3; i++){
+	for(i = 0; i < g_homingCount.integer; i++){
 		r = sin(DEG2RAD(angle + (angle * i)));
 		u = cos(DEG2RAD(angle + (angle * i)));
-		vecmad(forward, .3f*r, right, dir);
-		vecmad(dir, .3f*u, up, dir);
+		vecmad(forward, g_homingLaunchAngle.value*r, right, dir);
+		vecmad(dir, g_homingLaunchAngle.value*u, up, dir);
 
 		m = fire_homingrocket(ent, muzzle, dir);
 		m->damage *= s_quadFactor;
@@ -1165,7 +1165,7 @@ homing_scan(gentity_t *ent)
 		if(vecdot(forward, dir) < 0.95f)
 			continue;
 		dist = vecdist(ps->origin, entpos);
-		if(dist > HOMING_SCANRANGE)
+		if(dist > g_homingScanRange.value)
 			continue;
 		if(dist > bestdist)
 			continue;
