@@ -710,7 +710,7 @@ Only in CTF games
 	{
 		"ammo_nails",
 		"sound/misc/am_pkup.wav",
-		{"models/powerups/ammo/nailgunam.md3",
+		{"models/powerups/ammo/nanoidam.md3",
 		 nil, nil, nil},
 /* icon */ "icons/ammo_nailgun",
 /* pickup */ "Nails",
@@ -862,14 +862,14 @@ Only in CTF games
 /* precache */ "",
 /* sounds */ ""
 	},
-/*QUAKED weapon_nailgun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED weapon_nanoid (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"weapon_nailgun",
+		"weapon_nanoid",
 		"sound/misc/w_pkup.wav",
-		{"models/weapons2/nailgun/nailgun.md3",
+		{"models/weapons2/nanoid/nanoid.md3",
 		 nil, nil, nil},
-/* icon */ "icons/weap_nailgun",
+/* icon */ "icons/weap_nanoid",
 /* pickup */ "Nailgun",
 		40,
 		IT_WEAPON,
