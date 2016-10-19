@@ -704,7 +704,6 @@ homingrocket_think(gentity_t *ent)
 	gentity_t *targ;
 	float dot, t, spd, dist;
 	float rnd;
-	float distfrac;
 
 	// if lifespan of this rocket is up, explode
 	if(!ent->count--){
@@ -721,39 +720,44 @@ homingrocket_think(gentity_t *ent)
 	spd = vecnorm(olddir);
 
 	dist = vecdist(targ->r.currentOrigin, ent->r.currentOrigin);
-	distfrac = Com_Clamp(0.0f, 1.0f, dist / HOMING_SCANRANGE);
 
-	if(veclensq(ent->pos1) == 0 || rnd > 0.5f || vecdist(ent->pos1, targ->r.currentOrigin) > 600){
+	if(veclensq(ent->pos1) == 0 || rnd <= g_homingDivergenceProb.value /*|| vecdist(ent->pos1, targ->r.currentOrigin) > 600*/){
 		vecset(ent->pos1, crandom(), crandom(), crandom());
-		vecmul(ent->pos1, dist, ent->pos1);
+		vecmul(ent->pos1, g_homingDivergence.value*dist, ent->pos1);
 		vecadd(ent->pos1, targ->r.currentOrigin, ent->pos1);
 	}
-	if(dist < 100)
+	if(dist < g_homingPerfectDist.value)
 		vecsub(targ->r.currentOrigin, ent->r.currentOrigin, dir);
 	else
 		vecsub(ent->pos1, ent->r.currentOrigin, dir);
 	vecnorm(dir);
 	vecsub(targ->r.currentOrigin, ent->r.currentOrigin, dirtotarg);
-	vecnorm(dir);
+	vecnorm(dirtotarg);
 
 	veccpy(ent->r.currentOrigin, ent->s.pos.trBase);
 	ent->s.pos.trTime = level.time;
 
+	// if we're close, aim straight for the target rather than a diverging
+	// fake target
+	if(dist < g_homingPerfectDist.value)
+		veccpy(dirtotarg, dir);
+
 	///dot = vecdot(olddir, dir);
 	dot = vecdot(olddir, dirtotarg);
-	if(dot >= 0.0f || (dist < 100 && dot >= -1.0f)){	// 90 deg
+	if(dot >= cos(DEG2RAD(g_homingCone.value)) ||
+	   (dist < g_homingPerfectDist.value && dot >= cos(DEG2RAD(g_homingPerfectCone.value)))){	// 90 deg
 		// home in on target
 		// t is tracking speed, 1.0 = perfect tracking
-		t = 0.2f + 0.01f*crandom();
-		if(dist < 100)
-			t = 1.0f;
+		t = g_homingTracking.value + g_homingVariation.value*crandom();
+		if(dist < g_homingPerfectDist.value)
+			t = 0.7f;
 		dir[0] = (1-t)*olddir[0] + t*dir[0];
 		dir[1] = (1-t)*olddir[1] + t*dir[1];
 		dir[2] = (1-t)*olddir[2] + t*dir[2];
-		vecmul(dir, spd + 50 + 2*crandom(), ent->s.pos.trDelta);	// accel
+		vecmul(dir, spd + g_homingAccel.value + 2*crandom(), ent->s.pos.trDelta);	// accel
 	}else{
 		// lost track
-		vecmul(olddir, spd + 50 + 2*crandom(), ent->s.pos.trDelta);	// accel
+		vecmul(olddir, spd + g_homingAccel.value + 2*crandom(), ent->s.pos.trDelta);	// accel
 	}
 
 	ent->think = homingrocket_think;
