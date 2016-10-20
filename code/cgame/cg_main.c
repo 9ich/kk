@@ -1026,6 +1026,9 @@ CG_RegisterGraphics(void)
 			registeritemgfx(i);
 		}
 
+	// precache offhand hook
+	cgs.media.grappleTrailShader = trap_R_RegisterShader("grappletrail");
+
 	// wall marks
 	cgs.media.bulletMarkShader = trap_R_RegisterShader("gfx/damage/bullet_mrk");
 	cgs.media.burnMarkShader = trap_R_RegisterShader("gfx/damage/burn_med_mrk");

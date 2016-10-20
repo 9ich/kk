@@ -521,8 +521,7 @@ grappletrail(centity_t *ent, const weaponInfo_t *wi)
 		return;		// Don't draw if close
 
 	beam.reType = RT_LIGHTNING;
-	cgs.media.lightningShader = trap_R_RegisterShader("grappletrail");
-	beam.customShader = cgs.media.lightningShader;
+	beam.customShader = cgs.media.grappleTrailShader;
 
 	AxisClear(beam.axis);
 	beam.shaderRGBA[0] = 0;
@@ -1172,9 +1171,9 @@ addviewweap(playerState_t *ps)
 			// special hack for lightning gun...
 			veccpy(cg.refdef.vieworg, origin);
 			vecmad(origin, -8, cg.refdef.viewaxis[2], origin);
-			lightningbolt(&cg_entities[ps->clientNum], origin, 0);
-			lightningbolt(&cg_entities[ps->clientNum], origin, 1);
-			lightningbolt(&cg_entities[ps->clientNum], origin, 2);
+			//lightningbolt(&cg_entities[ps->clientNum], origin, 0);
+			//lightningbolt(&cg_entities[ps->clientNum], origin, 1);
+			//lightningbolt(&cg_entities[ps->clientNum], origin, 2);
 		}
 		return;
 	}

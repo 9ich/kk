@@ -787,6 +787,7 @@ typedef struct
 	qhandle_t	railCoreShader;
 
 	qhandle_t	lightningShader;
+	qhandle_t	grappleTrailShader;
 
 	qhandle_t	friendShader;
 
