@@ -1385,6 +1385,10 @@ drawweapsel(void)
 static qboolean
 weapselectable(int slot, int i)
 {
+	if(i <= WP_NONE || i >= WP_NUM_WEAPONS)
+		return qfalse;
+	if(slot != finditemforweapon(i)->weapslot)
+		return qfalse;
 	if(slot != 2 && i == WP_GRAPPLING_HOOK)
 		return qfalse;
 	if(!cg.snap->ps.ammo[i])
@@ -1470,28 +1474,26 @@ CG_WeapModUp_f(void)
 void
 CG_Weapon_f(void)
 {
-	int num, i;
+	int num, slot;
 
 	if(!cg.snap)
 		return;
 	if(cg.snap->ps.pm_flags & PMF_FOLLOW)
 		return;
 
-	i = 0;
-	if(cg.weapmod)
-		i = 1;
-
 	num = atoi(cgargv(1));
 
-	if(num < 1 || num > MAX_WEAPONS-1)
+	if(num < 1 || num >= WP_NUM_WEAPONS)
 		return;
 
-	cg.weapseltime[i] = cg.time;
+	slot = finditemforweapon(num)->weapslot;
+
+	cg.weapseltime[slot] = cg.time;
 
 	if(!(cg.snap->ps.stats[STAT_WEAPONS] & (1 << num)))
 		return;	// don't have the weapon
 
-	cg.weapsel[i] = num;
+	cg.weapsel[slot] = num;
 }
 
 /*
@@ -1504,7 +1506,7 @@ outofammochange(void)
 
 	cg.weapseltime[0] = cg.time;
 
-	for(i = MAX_WEAPONS-1; i > 0; i--)
+	for(i = WP_NUM_WEAPONS-1; i > 0; i--)
 		if(weapselectable(0, i)){
 			cg.weapsel[0] = i;
 			break;

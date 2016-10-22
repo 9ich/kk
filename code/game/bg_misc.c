@@ -192,7 +192,8 @@ gitem_t bg_itemlist[] =
 		IT_WEAPON,
 		WP_GAUNTLET,
 /* precache */ "",
-/* sounds */ ""
+/* sounds */ "",
+/* slot */	0
 	},
 
 /*QUAKED weapon_shotgun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
@@ -208,7 +209,8 @@ gitem_t bg_itemlist[] =
 		IT_WEAPON,
 		WP_SHOTGUN,
 /* precache */ "",
-/* sounds */ ""
+/* sounds */ "",
+/* slot */	0
 	},
 
 /*QUAKED weapon_minigun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
@@ -224,7 +226,8 @@ gitem_t bg_itemlist[] =
 		IT_WEAPON,
 		WP_MACHINEGUN,
 /* precache */ "",
-/* sounds */ ""
+/* sounds */ "",
+/* slot */	0
 	},
 
 /*QUAKED weapon_grenadelauncher (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
@@ -240,7 +243,8 @@ gitem_t bg_itemlist[] =
 		IT_WEAPON,
 		WP_GRENADE_LAUNCHER,
 /* precache */ "",
-/* sounds */ "sound/weapons2/grenade/hgrenb1a.wav sound/weapons2/grenade/hgrenb2a.wav"
+/* sounds */ "sound/weapons2/grenade/hgrenb1a.wav sound/weapons2/grenade/hgrenb2a.wav",
+/* slot */	0
 	},
 
 /*QUAKED weapon_rocketlauncher (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
@@ -256,7 +260,8 @@ gitem_t bg_itemlist[] =
 		IT_WEAPON,
 		WP_ROCKET_LAUNCHER,
 /* precache */ "",
-/* sounds */ ""
+/* sounds */ "",
+/* slot */	1
 	},
 
 /*QUAKED weapon_lightning (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
@@ -272,7 +277,8 @@ gitem_t bg_itemlist[] =
 		IT_WEAPON,
 		WP_LIGHTNING,
 /* precache */ "",
-/* sounds */ ""
+/* sounds */ "",
+/* slot */	0
 	},
 
 /*QUAKED weapon_railgun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
@@ -288,7 +294,8 @@ gitem_t bg_itemlist[] =
 		IT_WEAPON,
 		WP_RAILGUN,
 /* precache */ "",
-/* sounds */ ""
+/* sounds */ "",
+/* slot */	0
 	},
 
 /*QUAKED weapon_plasmagun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
@@ -304,7 +311,8 @@ gitem_t bg_itemlist[] =
 		IT_WEAPON,
 		WP_PLASMAGUN,
 /* precache */ "",
-/* sounds */ ""
+/* sounds */ "",
+/* slot */	0
 	},
 
 /*QUAKED weapon_bfg (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
@@ -320,7 +328,8 @@ gitem_t bg_itemlist[] =
 		IT_WEAPON,
 		WP_BFG,
 /* precache */ "",
-/* sounds */ ""
+/* sounds */ "",
+/* slot */	1
 	},
 
 /*QUAKED weapon_hominglauncher (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
@@ -336,6 +345,7 @@ gitem_t bg_itemlist[] =
 		WP_HOMING_LAUNCHER,
 		"",						// precache
 		"",						// sounds
+		1						// slot
 	},
 
 /*QUAKED weapon_grapplinghook (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
@@ -351,7 +361,8 @@ gitem_t bg_itemlist[] =
 		IT_WEAPON,
 		WP_GRAPPLING_HOOK,
 /* precache */ "",
-/* sounds */ ""
+/* sounds */ "",
+/* slot */	2
 	},
 
 	// AMMO ITEMS

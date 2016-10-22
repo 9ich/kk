@@ -323,8 +323,11 @@ CG_ItemPickup(int itemNum)
 	if(bg_itemlist[itemNum].type == IT_WEAPON)
 		// select it immediately
 		if(cg_autoswitch.integer && bg_itemlist[itemNum].tag != WP_MACHINEGUN){
-			cg.weapseltime[0] = cg.time;
-			cg.weapsel[0] = bg_itemlist[itemNum].tag;
+			int slot;
+
+			slot = bg_itemlist[itemNum].weapslot;
+			cg.weapseltime[slot] = cg.time;
+			cg.weapsel[slot] = bg_itemlist[itemNum].tag;
 		}
 
 }

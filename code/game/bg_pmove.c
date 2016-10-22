@@ -800,6 +800,11 @@ pmweapevents(int slot)
 		return;
 	}
 
+	// sanity check: slot must match the weapslot listed in item definition
+	if(pm->ps->weapon[slot] > WP_NONE && pm->ps->weapon[slot] < WP_NUM_WEAPONS &&
+	   slot != finditemforweapon(pm->ps->weapon[slot])->weapslot)
+		return;
+
 	// start the animation even if out of ammo
 	if(pm->ps->weapon[slot] == WP_GAUNTLET){
 		// the guantlet only "fires" when it actually hits something

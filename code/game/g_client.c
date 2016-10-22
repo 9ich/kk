@@ -1127,10 +1127,13 @@ clientspawn(gentity_t *ent)
 		giveweapon(client, WP_NAILGUN, 150);
 		giveweapon(client, WP_HOMING_LAUNCHER, 20);		
 	}else{
-		if(g_gametype.integer == GT_TEAM)
+		if(g_gametype.integer == GT_TEAM){
 			giveweapon(client, WP_MACHINEGUN, 50);
-		else
+			giveweapon(client, WP_HOMING_LAUNCHER, 1);
+		}else{
 			giveweapon(client, WP_MACHINEGUN, 100);
+			giveweapon(client, WP_HOMING_LAUNCHER, 2);
+		}
 	}
 	
 	giveweapon(client, WP_GAUNTLET, -1);
@@ -1176,22 +1179,12 @@ clientspawn(gentity_t *ent)
 			client->ps.weaponstate[0] = WEAPON_READY;
 			client->ps.weapon[1] = WP_MACHINEGUN;
 			client->ps.weaponstate[1] = WEAPON_READY;
+			client->ps.weapon[2] = WP_GRAPPLING_HOOK;
 			client->ps.weaponstate[2] = WEAPON_READY;
 			// fire the targets of the spawn point
 			usetargets(spawnPoint, ent);
-			// select the highest weapon number available, after any spawn given items have fired
-			client->ps.weapon[0] = 1;
-			for(i = WP_NUM_WEAPONS - 1; i > 0; i--)
-				if(client->ps.stats[STAT_WEAPONS] & (1 << i) && i != WP_GRAPPLING_HOOK){
-					client->ps.weapon[0] = i;
-					break;
-				}
-			client->ps.weapon[1] = 1;
-			for(i = WP_NUM_WEAPONS - 1; i > 0; i--)
-				if(client->ps.stats[STAT_WEAPONS] & (1 << i) && i != WP_GRAPPLING_HOOK){
-					client->ps.weapon[1] = i;
-					break;
-				}
+			client->ps.weapon[0] = WP_MACHINEGUN;
+			client->ps.weapon[1] = WP_HOMING_LAUNCHER;
 			client->ps.weapon[2] = WP_GRAPPLING_HOOK;
 			// positively link the client, even if the command times are weird
 			veccpy(ent->client->ps.origin, ent->r.currentOrigin);
