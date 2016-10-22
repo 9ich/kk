@@ -701,6 +701,7 @@ void
 homingrocket_think(gentity_t *ent)
 {
 	vec3_t olddir, dir, dirtotarg;
+	vec3_t faketarg;
 	gentity_t *targ;
 	float dot, t, spd, dist;
 	float rnd;
@@ -711,38 +712,46 @@ homingrocket_think(gentity_t *ent)
 		return;
 	}
 
-	rnd = random();
-
 	targ = &g_entities[ent->homingtarget];
 
 	evaltrajectory(&ent->s.pos, level.time, ent->r.currentOrigin);
 	veccpy(ent->s.pos.trDelta, olddir);
 	spd = vecnorm(olddir);
 
+	if(targ->health < 1)
+		ent->homingtarget = ENTITYNUM_NONE;
+	if(ent->homingtarget == ENTITYNUM_NONE){
+		// lost track of dead target
+		vecmul(olddir, spd + g_homingAccel.value + 2*crandom(), ent->s.pos.trDelta);	// accel
+	}
+
+	rnd = random();
+
 	dist = vecdist(targ->r.currentOrigin, ent->r.currentOrigin);
 
-	if(veclensq(ent->pos1) == 0 || rnd <= g_homingDivergenceProb.value /*|| vecdist(ent->pos1, targ->r.currentOrigin) > 600*/){
+	// ent->pos1 gives the offset of the fake homing target
+	if(veclensq(ent->pos1) == 0 || rnd <= g_homingDivergenceProb.value){
 		vecset(ent->pos1, crandom(), crandom(), crandom());
 		vecmul(ent->pos1, g_homingDivergence.value*dist, ent->pos1);
-		vecadd(ent->pos1, targ->r.currentOrigin, ent->pos1);
 	}
+	vecadd(ent->pos1, targ->r.currentOrigin, faketarg);
+	// if we're close, aim straight for the target rather than a diverging
+	// fake target
 	if(dist < g_homingPerfectDist.value)
 		vecsub(targ->r.currentOrigin, ent->r.currentOrigin, dir);
 	else
-		vecsub(ent->pos1, ent->r.currentOrigin, dir);
+		vecsub(faketarg, ent->r.currentOrigin, dir);
 	vecnorm(dir);
+
 	vecsub(targ->r.currentOrigin, ent->r.currentOrigin, dirtotarg);
 	vecnorm(dirtotarg);
 
 	veccpy(ent->r.currentOrigin, ent->s.pos.trBase);
 	ent->s.pos.trTime = level.time;
 
-	// if we're close, aim straight for the target rather than a diverging
-	// fake target
 	if(dist < g_homingPerfectDist.value)
 		veccpy(dirtotarg, dir);
 
-	///dot = vecdot(olddir, dir);
 	dot = vecdot(olddir, dirtotarg);
 	if(dot >= cos(DEG2RAD(g_homingCone.value)) ||
 	   (dist < g_homingPerfectDist.value && dot >= cos(DEG2RAD(g_homingPerfectCone.value)))){	// 90 deg
@@ -751,14 +760,15 @@ homingrocket_think(gentity_t *ent)
 		t = g_homingTracking.value + g_homingVariation.value*crandom();
 		if(dist < g_homingPerfectDist.value)
 			t = 0.7f;
+		// interpolate trajectory towards new dir
 		dir[0] = (1-t)*olddir[0] + t*dir[0];
 		dir[1] = (1-t)*olddir[1] + t*dir[1];
 		dir[2] = (1-t)*olddir[2] + t*dir[2];
-		vecmul(dir, spd + g_homingAccel.value + 2*crandom(), ent->s.pos.trDelta);	// accel
 	}else{
-		// lost track
-		vecmul(olddir, spd + g_homingAccel.value + 2*crandom(), ent->s.pos.trDelta);	// accel
+		// lost track; carry straight on
+		veccpy(olddir, dir);
 	}
+	vecmul(dir, spd + g_homingAccel.value + 2*crandom(), ent->s.pos.trDelta);	// accel
 
 	ent->think = homingrocket_think;
 	ent->nextthink = level.time + HOMINGROCKET_THINKTIME;
