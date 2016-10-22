@@ -51,6 +51,8 @@ static qboolean efx_ext = qfalse;
 #ifdef USE_VOIP
 static qboolean capture_ext = qfalse;
 #endif
+static ALuint reverb;
+static ALuint reverbslot;
 
 /*
 =================
@@ -713,6 +715,38 @@ static qboolean S_AL_HearingThroughEntity( int entityNum )
 		return qfalse; //not the player
 }
 
+static void
+S_AL_EFXInit( void )
+{
+	qalGenEffects(1, &reverb);
+	if(qalGetError() != AL_NO_ERROR){
+		Com_DPrintf("OpenAL: failed to create effect\n");
+		return;
+	}
+	qalEffecti(reverb, AL_EFFECT_TYPE, AL_EFFECT_REVERB);
+	qalEffectf(reverb, AL_REVERB_DECAY_TIME, 9.6f);
+	qalEffectf(reverb, AL_REVERB_DIFFUSION, 1.0f);
+	qalEffectf(reverb, AL_REVERB_ROOM_ROLLOFF_FACTOR, AL_REVERB_DEFAULT_ROOM_ROLLOFF_FACTOR);
+	qalEffectf(reverb, AL_REVERB_REFLECTIONS_DELAY, AL_REVERB_DEFAULT_REFLECTIONS_DELAY);
+	qalEffectf(reverb, AL_REVERB_GAIN, 0.16f);
+
+	qalGenAuxiliaryEffectSlots(1, &reverbslot);
+	if(qalGetError() != AL_NO_ERROR)
+		Com_DPrintf("OpenAL: failed to create aux effect slot\n");
+	qalAuxiliaryEffectSloti(reverbslot, AL_EFFECTSLOT_EFFECT, reverb);
+}
+
+static void
+S_AL_EFXShutdown(void)
+{
+	if(qalIsAuxiliaryEffectSlot(reverbslot)){
+		qalAuxiliaryEffectSloti(reverbslot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL);
+		qalDeleteAuxiliaryEffectSlots(1, &reverbslot);
+	}
+	if(qalIsEffect(reverb))
+		qalDeleteEffects(1, &reverb);
+}
+
 /*
 =================
 S_AL_SrcInit
@@ -735,6 +769,8 @@ qboolean S_AL_SrcInit( void )
 		limit = MAX_SRC;
 	else if(limit < 16)
 		limit = 16;
+
+	S_AL_EFXInit();
  
 	S_AL_ClearError( qfalse );
 	// Allocate as many sources as possible
@@ -744,6 +780,7 @@ qboolean S_AL_SrcInit( void )
 		if(qalGetError() != AL_NO_ERROR)
 			break;
 		srcCount++;
+		qalSource3i(srcList[i].alSource, AL_AUXILIARY_SEND_FILTER, reverbslot, 0, 0); 
 	}
 
 	// All done. Print this for informational purposes
@@ -780,6 +817,8 @@ void S_AL_SrcShutdown( void )
 		qalSourceStop(srcList[i].alSource);
 		qalDeleteSources(1, &srcList[i].alSource);
 	}
+
+	S_AL_EFXShutdown();
 
 	memset(srcList, 0, sizeof(srcList));
 
