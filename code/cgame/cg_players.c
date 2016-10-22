@@ -1048,13 +1048,13 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 
 	if((cent->currstate.number != cg.snap->ps.clientNum && cg_enemyThrustSounds.integer) ||
 	   (cent->currstate.number == cg.snap->ps.clientNum && cg_ownThrustSounds.integer)){
-		if(b || (l || r) || (u || d)){
-			trap_S_AddLoopingSound(cent->currstate.number, pos,
-			   vec3_origin, thrustbacksound);
-		}else if(f){
+		if(f){
 			trap_S_AddLoopingSound(cent->currstate.number, pos,
 			   vec3_origin, thrustsound);
-		}else{
+		}else if(b || (l || r) || (u || d)){
+			trap_S_AddLoopingSound(cent->currstate.number, pos,
+			   vec3_origin, thrustbacksound);
+		}else if(0){
 			trap_S_AddLoopingSound(cent->currstate.number, pos,
 			   vec3_origin, idlesound);
 		}
@@ -1071,15 +1071,13 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 	}else if(b){
 		vecmad(pos, 40, forward, v);
 		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
-	}
-	if(r){
+	}else if(r){
 		vecmad(pos, -36, right, v);
 		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
 	}else if(l){
 		vecmad(pos, 36, right, v);
 		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
-	}
-	if(u){
+	}else if(u){
 		vecmad(pos, -36, up, v);
 		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
 	}else if(d){
