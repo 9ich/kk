@@ -689,29 +689,29 @@ drawlockon(void)
 
 	ent.reType = RT_SPRITE;
 	ent.renderfx = 0;
-	ent.shaderRGBA[0] = 115;
-	ent.shaderRGBA[1] = 237;
-	ent.shaderRGBA[2] = 101;
-	ent.shaderRGBA[3] = 200;
 
 	if(cg.snap->ps.lockontime - cg.snap->ps.lockonstarttime < HOMING_SCANWAIT){
+		ent.shaderRGBA[0] = 255;
+		ent.shaderRGBA[1] = 255;
+		ent.shaderRGBA[2] = 255;
+		ent.shaderRGBA[3] = 200;
 		// acquiring
-		ent.customShader = cgs.media.lockingOnShader;
-		ent.radius = 2*42.4264068712f;
-		trap_R_AddRefEntityToScene(&ent);
-
 		ent.radius = 2*30;
 		ent.rotation = 0.05f * cg.time;
 		trap_R_AddRefEntityToScene(&ent);
 
-		trap_S_StartLocalSound(cgs.media.lockingOnSound, CHAN_ANNOUNCER);
+		//trap_S_StartLocalSound(cgs.media.lockingOnSound, CHAN_ANNOUNCER);
 	}else{
+		ent.shaderRGBA[0] = 115;
+		ent.shaderRGBA[1] = 237;
+		ent.shaderRGBA[2] = 101;
+		ent.shaderRGBA[3] = 200;
 		// locked on	
 		ent.customShader = cgs.media.lockedOnShader;
 		ent.radius = 2*72;
 		trap_R_AddRefEntityToScene(&ent);
 
-		trap_S_StartLocalSound(cgs.media.lockedOnSound, CHAN_ANNOUNCER);
+		//trap_S_StartLocalSound(cgs.media.lockedOnSound, CHAN_ANNOUNCER);
 	}
 }
 
