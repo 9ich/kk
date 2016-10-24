@@ -338,94 +338,6 @@ dorailtrail(clientInfo_t *ci, vec3_t start, vec3_t end)
 	}
 }
 
-void
-tracer(vec3_t start, vec3_t end)
-{
-	vec3_t midpoint;
-	localEntity_t *le;
-	refEntity_t *re;
-
-	le = alloclocalent();
-	re = &le->refEntity;
-
-	le->type = LE_FADE_RGB;
-	le->starttime = cg.time;
-	le->endtime = cg.time + 16;
-	le->liferate = 1.0 / (le->endtime - le->starttime);
-
-	re->shaderTime = cg.time / 1000.0f;
-	re->reType = RT_TRACER;
-	re->customShader = cgs.media.tracerShader;
-
-	re->shaderRGBA[0] = 255;
-	re->shaderRGBA[1] = 255;
-	re->shaderRGBA[2] = 255;
-	re->shaderRGBA[3] = 255;
-
-	le->color[0] = 1.0f;
-	le->color[1] = 1.0f;
-	le->color[2] = 1.0f;
-	le->color[3] = 1.0f;
-
-	veccpy(start, re->origin);
-	veccpy(end, re->oldorigin);
-
-	AxisClear(re->axis);
-/*
-	// add the tracer sound
-	vecadd(start, end, midpoint);
-	vecmul(midpoint, 0.5f, midpoint);
-	trap_S_StartSound(midpoint, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.tracerSound);
-*/
-}
-
-static void
-machineguntrail(centity_t *ent, const weaponInfo_t *wi)
-{
-	int step;
-	vec3_t origin, lastPos;
-	int t;
-	int starttime, contents;
-	int lastContents;
-	entityState_t *es;
-	localEntity_t *smoke;
-	vec3_t end;
-
-	if(cg_noProjectileTrail.integer)
-		return;
-
-	es = &ent->currstate;
-	starttime = ent->trailtime;
-
-	evaltrajectory(&es->pos, cg.time, origin);
-	contents = pointcontents(origin, -1);
-
-	veccpy(es->pos.trDelta, end);
-	vecnorm(end);
-	vecinv(end);
-	vecmul(end, 30, end);
-	vecadd(end, origin, end);
-
-	// if object (e.g. grenade) is stationary, don't toss up smoke
-	if(es->pos.trType == TR_STATIONARY){
-		ent->trailtime = cg.time;
-		return;
-	}
-
-	evaltrajectory(&es->pos, ent->trailtime, lastPos);
-	lastContents = pointcontents(lastPos, -1);
-
-	ent->trailtime = cg.time;
-
-	if(contents & (CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA)){
-		if(contents & lastContents & CONTENTS_WATER)
-			bubbletrail(lastPos, origin, 8);
-		return;
-	}
-
-	tracer(end, origin);
-}
-
 static void
 rockettrail(centity_t *ent, const weaponInfo_t *wi)
 {
@@ -656,14 +568,14 @@ registerweap(int weaponNum)
 
 	case WP_CHAINGUN:
 		MAKERGB(weapinfo->flashcolor, 1, 1, 0);
-		weapinfo->missileTrailFunc = machineguntrail;
+		weapinfo->missilemodel = trap_R_RegisterModel("models/missiles/tracer.md3");
 		weapinfo->flashsnd[0] = trap_S_RegisterSound("sound/weapons/machinegun/machgf1b.wav", qfalse);
 		cgs.media.bulletExplosionShader = trap_R_RegisterShader("explode2");
 		break;
 
 	case WP_MACHINEGUN:
 		MAKERGB(weapinfo->flashcolor, 1, 1, 0);
-		weapinfo->missileTrailFunc = machineguntrail;
+		weapinfo->missilemodel = trap_R_RegisterModel("models/missiles/tracer.md3");
 		weapinfo->flashsnd[0] = trap_S_RegisterSound("sound/weapons/machinegun/machgf1b.wav", qfalse);
 		weapinfo->ejectbrass = machinegunejectbrass;
 		cgs.media.bulletExplosionShader = trap_R_RegisterShader("explode2");
@@ -1976,10 +1888,6 @@ dobullet(vec3_t end, int sourceEntityNum, vec3_t normal, qboolean flesh, int fle
 				trap_CM_BoxTrace(&trace, start, end, nil, nil, 0, CONTENTS_WATER);
 				bubbletrail(trace.endpos, end, 32);
 			}
-
-			// draw a tracer
-			if(random() < cg_tracerChance.value)
-				tracer(start, end);
 		}
 
 	// impact splash and mark
