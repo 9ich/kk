@@ -1492,7 +1492,7 @@ void	drawinfo(void);
 
 // cg_scoreboard.c
 qboolean	drawoldscoreboard(void);
-void		CG_DrawOldTourneyScoreboard(void);
+void		drawtourneyscoreboard(void);
 
 // cg_consolecmds.c
 qboolean	consolecmd(void);

@@ -2187,12 +2187,6 @@ draw2d(stereoFrame_t stereoFrame)
 	drawcp();
 }
 
-static void
-CG_DrawTourneyScoreboard(void)
-{
-	CG_DrawOldTourneyScoreboard();
-}
-
 /*
 =====================
 drawactive
@@ -2214,7 +2208,7 @@ drawactive(stereoFrame_t stereoview)
 	// optionally draw the tournement scoreboard instead
 	if(cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR &&
 	   (cg.snap->ps.pm_flags & PMF_SCOREBOARD)){
-		CG_DrawTourneyScoreboard();
+		drawtourneyscoreboard();
 		return;
 	}
 
