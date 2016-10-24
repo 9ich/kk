@@ -244,7 +244,7 @@ gitem_t bg_itemlist[] =
 		WP_GRENADE_LAUNCHER,
 /* precache */ "",
 /* sounds */ "sound/weapons2/grenade/hgrenb1a.wav sound/weapons2/grenade/hgrenb2a.wav",
-/* slot */	0
+/* slot */	1
 	},
 
 /*QUAKED weapon_rocketlauncher (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
