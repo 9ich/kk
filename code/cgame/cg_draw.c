@@ -497,7 +497,7 @@ drawspeedometer(void)
 	pushalign("center");
 
 	// draw instantaneous speed text
-	s = va("%4i u/s", (int)speed);
+	s = va("%i u/s", (int)speed);
 	drawfixedstr(0.5f*screenwidth(), 330, s, 1.0f);
 
 	if(cg_drawSpeedometer.integer != 2){
@@ -1641,6 +1641,8 @@ drawlockonwarning(void)
 	int i;
 	entityState_t *es;
 
+	pushalign("center");
+
 	for(i = 0; i < cgs.maxclients; i++){
 		es = &cg_entities[i].currstate;
 		if(!cgs.clientinfo[i].infovalid ||
@@ -1654,6 +1656,8 @@ drawlockonwarning(void)
 			drawbigstr(screenwidth()/2, screenheight()/2 - 100, "WARNING", 1.0f);
 		break;
 	}
+
+	popalign(1);
 }
 
 /*
