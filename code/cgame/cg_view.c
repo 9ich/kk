@@ -699,6 +699,7 @@ drawlockon(void)
 		ent.shaderRGBA[2] = 255;
 		ent.shaderRGBA[3] = 200;
 		// acquiring
+		ent.customShader = cgs.media.lockingOnShader;
 		ent.radius = 2*30;
 		ent.rotation = 0.05f * cg.time;
 		trap_R_AddRefEntityToScene(&ent);
