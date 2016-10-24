@@ -247,7 +247,7 @@ static cvarTable_t gameCvarTable[] = {
 	{&g_grenadeSpeed, "g_grenadeSpeed", "700", CVAR_ARCHIVE, 0, qtrue, qfalse},
 	{&g_grenadeDmg, "g_grenadeDmg", "100", CVAR_ARCHIVE, 0, qtrue, qfalse},
 	{&g_grenadeSplashDmg, "g_grenadeSplashDmg", "100", CVAR_ARCHIVE, 0, qtrue, qfalse},
-	{&g_grenadeSplashRadius, "g_frenadeSplashRadius", "150", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_grenadeSplashRadius, "g_grenadeSplashRadius", "150", CVAR_ARCHIVE, 0, qtrue, qfalse},
 	
 
 	{&g_rankings, "g_rankings", "0", 0, 0, qfalse}
