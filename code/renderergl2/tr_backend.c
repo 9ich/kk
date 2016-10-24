@@ -51,7 +51,6 @@ void GL_BindToTMU( image_t *image, int tmu )
 			target = GL_TEXTURE_CUBE_MAP;
 
 		image->frameUsed = tr.frameCount;
-		image->uses++;
 		texture = image->texnum;
 	}
 	else

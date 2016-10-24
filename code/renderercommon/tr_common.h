@@ -54,7 +54,6 @@ typedef struct image_s {
 	GLuint		texnum;					// gl texture binding
 
 	int			frameUsed;			// for texture usage in frame statistics
-	int			uses;				// number of times referenced
 
 	int			internalFormat;
 	int			TMU;				// only needed for voodoo2

@@ -479,8 +479,6 @@ typedef struct shader_s {
 
   struct shader_s *remappedShader;                  // current shader this one is remapped too
 
-	int	uses;				// number of times this shader has been used
-
 	struct	shader_s	*next;
 } shader_t;
 
