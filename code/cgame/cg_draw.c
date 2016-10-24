@@ -1241,7 +1241,6 @@ drawlagometer(void)
 	y = screenheight();
 
 	trap_R_SetColor(nil);
-	//drawpic(x, y, 48, 48, cgs.media.lagometerShader);
 	VectorSet4(clr, 1, 1, 1, 20/255.0f);
 	fillrect(x, y, 48, 48, clr);
 

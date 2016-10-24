@@ -833,23 +833,9 @@ CG_RegisterGraphics(void)
 	for(i = 0; i<11; i++)
 		cgs.media.numberShaders[i] = trap_R_RegisterShader(sb_nums[i]);
 
-	cgs.media.botSkillShaders[0] = trap_R_RegisterShader("menu/art/skill1.tga");
-	cgs.media.botSkillShaders[1] = trap_R_RegisterShader("menu/art/skill2.tga");
-	cgs.media.botSkillShaders[2] = trap_R_RegisterShader("menu/art/skill3.tga");
-	cgs.media.botSkillShaders[3] = trap_R_RegisterShader("menu/art/skill4.tga");
-	cgs.media.botSkillShaders[4] = trap_R_RegisterShader("menu/art/skill5.tga");
-
-	cgs.media.viewBloodShader = trap_R_RegisterShader("viewBloodBlend");
-
 	cgs.media.deferShader = trap_R_RegisterShaderNoMip("gfx/2d/defer.tga");
 
-	cgs.media.scoreboardName = trap_R_RegisterShaderNoMip("menu/tab/name.tga");
-	cgs.media.scoreboardPing = trap_R_RegisterShaderNoMip("menu/tab/ping.tga");
-	cgs.media.scoreboardScore = trap_R_RegisterShaderNoMip("menu/tab/score.tga");
-	cgs.media.scoreboardTime = trap_R_RegisterShaderNoMip("menu/tab/time.tga");
-
 	cgs.media.smokePuffShader = trap_R_RegisterShader("smokePuff");
-	cgs.media.smokePuffRageProShader = trap_R_RegisterShader("smokePuffRagePro");
 	cgs.media.shotgunSmokePuffShader = trap_R_RegisterShader("shotgunSmokePuff");
 #ifdef MISSIONPACK
 	cgs.media.nailPuffShader = trap_R_RegisterShader("nailtrail");
@@ -857,7 +843,6 @@ CG_RegisterGraphics(void)
 #endif
 	cgs.media.plasmaBallShader = trap_R_RegisterShader("sprites/plasma1");
 	cgs.media.bloodTrailShader = trap_R_RegisterShader("bloodTrail");
-	cgs.media.lagometerShader = trap_R_RegisterShader("lagometer");
 	cgs.media.connectionShader = trap_R_RegisterShader("disconnected");
 
 	cgs.media.waterBubbleShader = trap_R_RegisterShader("waterBubble");
@@ -983,13 +968,11 @@ CG_RegisterGraphics(void)
 
 	cgs.media.shockwaveModel = trap_R_RegisterModel("models/weaphits/shockwave.md3");
 
-#ifdef MISSIONPACK
-	cgs.media.teleportEffectModel = trap_R_RegisterModel("models/powerups/pop.md3");
-#else
+
 	cgs.media.teleportEffectModel = trap_R_RegisterModel("models/misc/telep.md3");
 	cgs.media.teleportEffectShader = trap_R_RegisterShader("teleportEffect");
-#endif
-#ifdef MISSIONPACK
+
+#if 0 // MISSIONPACK
 	cgs.media.kamikazeEffectModel = trap_R_RegisterModel("models/weaphits/kamboom2.md3");
 	cgs.media.kamikazeShockWave = trap_R_RegisterModel("models/weaphits/kamwave.md3");
 	cgs.media.kamikazeHeadModel = trap_R_RegisterModel("models/powerups/kamikazi.md3");
@@ -1001,7 +984,6 @@ CG_RegisterGraphics(void)
 	cgs.media.invulnerabilityImpactModel = trap_R_RegisterModel("models/powerups/shield/impact.md3");
 	cgs.media.invulnerabilityJuicedModel = trap_R_RegisterModel("models/powerups/shield/juicer.md3");
 	cgs.media.medkitUsageModel = trap_R_RegisterModel("models/powerups/regen.md3");
-	cgs.media.heartShader = trap_R_RegisterShaderNoMip("ui/assets/statusbar/selectedhealth.tga");
 	cgs.media.invulnerabilityPowerupModel = trap_R_RegisterModel("models/powerups/shield/shield.md3");
 #endif
 

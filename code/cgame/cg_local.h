@@ -795,10 +795,8 @@ typedef struct
 	qhandle_t	connectionShader;
 
 	qhandle_t	selectShader;
-	qhandle_t	viewBloodShader;
 	qhandle_t	tracerShader;
 	qhandle_t	crosshairShader[NUM_CROSSHAIRS];
-	qhandle_t	lagometerShader;
 	qhandle_t	backTileShader;
 	qhandle_t	noammoShader;
 	qhandle_t	hurtLeftShader;
@@ -806,7 +804,6 @@ typedef struct
 	qhandle_t	hurtUpShader;
 
 	qhandle_t	smokePuffShader;
-	qhandle_t	smokePuffRageProShader;
 	qhandle_t	shotgunSmokePuffShader;
 	qhandle_t	plasmaBallShader;
 	qhandle_t	waterBubbleShader;
@@ -819,8 +816,6 @@ typedef struct
 	qhandle_t	numberShaders[11];
 
 	qhandle_t	shadowMarkShader;
-
-	qhandle_t	botSkillShaders[5];
 
 	// wall mark shaders
 	qhandle_t	wakeMarkShader;
@@ -883,12 +878,6 @@ typedef struct
 	qhandle_t	heartShader;
 	qhandle_t	invulnerabilityPowerupModel;
 #endif
-
-	// scoreboard headers
-	qhandle_t	scoreboardName;
-	qhandle_t	scoreboardPing;
-	qhandle_t	scoreboardScore;
-	qhandle_t	scoreboardTime;
 
 	// sounds
 
