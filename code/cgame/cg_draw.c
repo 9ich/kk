@@ -1932,7 +1932,7 @@ drawwarmup(void)
 		cg.warmup = 0;
 		sec = 0;
 	}
-	s = va("Starts in: %i", sec + 1);
+	s = va("Warmup: %i", sec + 1);
 	if(sec != cg.warmupcount){
 		cg.warmupcount = sec;
 		switch(sec){
