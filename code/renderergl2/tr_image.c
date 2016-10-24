@@ -152,7 +152,7 @@ void R_ImageList_f( void ) {
 	float displaySize;
 	char *sizeSuffix;
 
-	ri.Printf(PRINT_ALL, "\n      -w-- -h-- type  -size-- --name-------\n");
+	ri.Printf(PRINT_ALL, "\n      -w-- -h-- type  -size-- -uses- --name-------\n");
 
 	for ( i = 0 ; i < tr.numImages ; i++ )
 	{
@@ -281,7 +281,7 @@ void R_ImageList_f( void ) {
 			sizeSuffix = "Gb";
 		}
 
-		ri.Printf(PRINT_ALL, "%4i: %4i %4i %s %7.2f %s %s\n", i, image->uploadWidth, image->uploadHeight, format, displaySize, sizeSuffix, image->imgName);
+		ri.Printf(PRINT_ALL, "%4i: %4i %4i %s %7.2f %s %6i %s\n", i, image->uploadWidth, image->uploadHeight, format, displaySize, sizeSuffix, image->uses, image->imgName);
 		estTotalSize += estSize;
 	}
 

@@ -3613,10 +3613,12 @@ void	R_ShaderList_f (void) {
 			ri.Printf( PRINT_ALL, "    " );
 		}
 
+		ri.Printf( PRINT_ALL, "%6i uses", shader->uses );
+
 		if ( shader->defaultShader ) {
-			ri.Printf (PRINT_ALL,  ": %s (DEFAULTED)\n", shader->name);
+			ri.Printf (PRINT_ALL,  " : %s (DEFAULTED)\n", shader->name);
 		} else {
-			ri.Printf (PRINT_ALL,  ": %s\n", shader->name);
+			ri.Printf (PRINT_ALL,  " : %s\n", shader->name);
 		}
 		count++;
 	}
