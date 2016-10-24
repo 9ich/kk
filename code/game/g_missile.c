@@ -723,6 +723,7 @@ homingrocket_think(gentity_t *ent)
 	if(ent->homingtarget == ENTITYNUM_NONE){
 		// lost track of dead target
 		vecmul(olddir, spd + g_homingAccel.value + 2*crandom(), ent->s.pos.trDelta);	// accel
+		return;
 	}
 
 	rnd = random();
