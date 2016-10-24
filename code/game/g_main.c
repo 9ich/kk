@@ -1714,10 +1714,13 @@ beginroundwarmup(void)
 	if(g_gametype.integer != GT_LMS && g_gametype.integer != GT_CA &&
 	   g_gametype.integer != GT_LTS && g_gametype.integer != GT_CP)
 		return;
+	if(getteamcount(-1, TEAM_RED) < 1 && getteamcount(-1, TEAM_BLUE))
+		return;
 	if(g_gametype.integer == GT_CP)
 		level.roundwarmuptime = level.setuptime;
 	else
 		level.roundwarmuptime = level.time + g_roundwarmup.value*1000;
+	
 	trap_SetConfigstring(CS_ROUNDWARMUP, va("%i", level.roundwarmuptime));
 	logprintf("RoundWarmup:\n");
 }
