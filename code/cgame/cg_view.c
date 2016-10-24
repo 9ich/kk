@@ -679,6 +679,9 @@ drawlockon(void)
 	refEntity_t ent;
 	centity_t *enemy;
 
+	if(cg.scoreboardshown)
+		return;
+
 	if(cg.snap->ps.lockontarget == ENTITYNUM_NONE)
 		return;
 

@@ -236,7 +236,7 @@ drawteambg(int x, int y, int w, int h, float alpha, int team)
 	}else
 		return;
 	trap_R_SetColor(hcolor);
-	drawpic(x, y, w, h, cgs.media.teamStatusBar);
+	drawpic(x, y, w, h, cgs.media.whiteShader);
 	trap_R_SetColor(nil);
 }
 
@@ -489,6 +489,9 @@ drawspeedometer(void)
 	vec3_t dir;
 	char *s;
 	int i;
+
+	if(cg.scoreboardshown)
+		return;
 
 	speed = veclen(cg.pps.velocity);
 	speeds[index % SPEEDOMETER_FRAMES] = speed;
@@ -1185,7 +1188,6 @@ drawdisconnect(void)
 	int cmdNum;
 	usercmd_t cmd;
 	const char *s;
-	int w;
 
 	// draw the phone jack if we are completely past our buffers
 	cmdNum = trap_GetCurrentCmdNumber() - CMD_BACKUP + 1;
@@ -1196,8 +1198,9 @@ drawdisconnect(void)
 
 	// also add text in center of screen
 	s = "connection interrupted";
-	w = drawstrlen(s) * BIGCHAR_WIDTH;
-	drawbigstr(320 - w/2, 100, s, 1.0F);
+	pushalign("center");
+	drawbigstr(screenwidth()/2, 100, s, 1.0F);
+	popalign(1);
 
 	// blink the icon
 	if((cg.time >> 9) & 1)
@@ -1640,6 +1643,9 @@ drawlockonwarning(void)
 {
 	int i;
 	entityState_t *es;
+
+	if(cg.scoreboardshown)
+		return;
 
 	pushalign("center");
 
