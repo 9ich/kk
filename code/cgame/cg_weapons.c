@@ -1012,6 +1012,10 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team,
 
 
 	memset(&flash, 0, sizeof(flash));
+	angles[YAW] = 0;
+	angles[PITCH] = 0;
+	angles[ROLL] = crandom() * 10;
+	AnglesToAxis(angles, flash.axis);
 	rotentontag(&flash, &gun, weapon->model.h, "tag_flash");
 
 	// add lightning bolt
@@ -1031,10 +1035,6 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team,
 	flash.hModel = weapon->flashmodel;
 	if(!flash.hModel)
 		return;
-	angles[YAW] = 0;
-	angles[PITCH] = 0;
-	angles[ROLL] = crandom() * 10;
-	AnglesToAxis(angles, flash.axis);
 
 	// colorize the railgun blast
 	if(weaponNum == WP_RAILGUN){
