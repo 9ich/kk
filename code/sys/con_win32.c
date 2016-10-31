@@ -310,7 +310,7 @@ void CON_Init( void )
 	FlushConsoleInputBuffer( qconsole_hin ); 
 
 	GetConsoleScreenBufferInfo( qconsole_hout, &info );
-	qconsole_attrib = info.wAttributes;
+	qconsole_attrib = info.wAttributes | BACKGROUND_BLUE;
 	qconsole_backgroundAttrib = qconsole_attrib & (BACKGROUND_BLUE|BACKGROUND_GREEN|BACKGROUND_RED|BACKGROUND_INTENSITY);
 
 	SetConsoleTitle(CLIENT_WINDOW_TITLE " Dedicated Server Console");
