@@ -629,7 +629,7 @@ registerweap(int weaponNum)
 	case WP_NAILGUN:
 		weapinfo->flashsnd[0] = trap_S_RegisterSound("sound/weapons/machinegun/machgf1b.wav", qfalse);
 		weapinfo->ejectbrass = nailgunejectbrass;
-		cgs.media.bulletExplosionShader = trap_R_RegisterShader("bulletExplosion");
+		cgs.media.bulletExplosionShader = trap_R_RegisterShader("explode2");
 //		weapinfo->missilesound = trap_S_RegisterSound( "sound/weapons/nailgun/wnalflit.wav", qfalse );
 		weapinfo->missilemodel = trap_R_RegisterModel("models/missiles/rocket.md3");
 		MAKERGB(weapinfo->flashcolor, 1, 0.75f, 0);
