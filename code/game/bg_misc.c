@@ -59,16 +59,15 @@ gitem_t bg_itemlist[] =
 
 	// ARMOR
 
-/*QUAKED item_armor_shard (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED item_shield_tiny (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"item_armor_shard",
+		"item_shield_tiny",
 		"sound/misc/ar1_pkup.wav",
-		{"models/powerups/armor/shard.md3",
-		 "models/powerups/armor/shard_sphere.md3",
-		 nil, nil},
+		{"models/powerups/shield/tiny.md3",
+		 nil, nil, nil},
 /* icon */ "icons/armor_shard",
-/* pickup */ "Armor Shard",
+/* pickup */ "5 Shield",
 		5,
 		IT_ARMOR,
 		ARMOR_GREEN,
@@ -76,32 +75,48 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED item_armor_combat (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED item_shield_small (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"item_armor_combat",
+		"item_shield_small",
 		"sound/misc/ar2_pkup.wav",
-		{"models/powerups/armor/armor_yel.md3",
+		{"models/powerups/shield/small.md3",
 		 nil, nil, nil},
 /* icon */ "icons/armor_yellow",
-/* pickup */ "Armor",
+/* pickup */ "50 Shield",
 		50,
+		IT_ARMOR,
+		ARMOR_GREEN,
+/* precache */ "",
+/* sounds */ ""
+	},
+
+/*QUAKED item_shield_med (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+*/
+	{
+		"item_shield_med",
+		"sound/misc/ar2_pkup.wav",
+		{"models/powerups/shield/med.md3",
+		 nil, nil, nil},
+/* icon */ "icons/armor_yellow",
+/* pickup */ "100 Shield",
+		100,
 		IT_ARMOR,
 		ARMOR_YELLOW,
 /* precache */ "",
 /* sounds */ ""
 	},
 
-/*QUAKED item_armor_body (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED item_shield_large (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"item_armor_body",
+		"item_shield_large",
 		"sound/misc/ar2_pkup.wav",
-		{"models/powerups/armor/armor_red.md3",
+		{"models/powerups/shield/large.md3",
 		 nil, nil, nil},
 /* icon */ "icons/armor_red",
-/* pickup */ "Heavy Armor",
-		100,
+/* pickup */ "150 Shield",
+		150,
 		IT_ARMOR,
 		ARMOR_RED,
 /* precache */ "",
