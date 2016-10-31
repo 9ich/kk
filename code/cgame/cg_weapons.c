@@ -1014,7 +1014,7 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team,
 	memset(&flash, 0, sizeof(flash));
 	angles[YAW] = 0;
 	angles[PITCH] = 0;
-	angles[ROLL] = crandom() * 10;
+	angles[ROLL] = crandom() * 100;
 	AnglesToAxis(angles, flash.axis);
 	rotentontag(&flash, &gun, weapon->model.h, "tag_flash");
 
