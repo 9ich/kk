@@ -567,14 +567,14 @@ registerweap(int weaponNum)
 		break;
 
 	case WP_CHAINGUN:
-		MAKERGB(weapinfo->flashcolor, 1, 1, 0);
+		MAKERGB(weapinfo->flashcolor, 0.9f, 0.4f, 0.0f);
 		weapinfo->missilemodel = trap_R_RegisterModel("models/missiles/tracer.md3");
 		weapinfo->flashsnd[0] = trap_S_RegisterSound("sound/weapons/machinegun/machgf1b.wav", qfalse);
 		cgs.media.bulletExplosionShader = trap_R_RegisterShader("explode2");
 		break;
 
 	case WP_MACHINEGUN:
-		MAKERGB(weapinfo->flashcolor, 1, 1, 0);
+		MAKERGB(weapinfo->flashcolor, 0.9f, 0.4f, 0.0f);
 		weapinfo->missilemodel = trap_R_RegisterModel("models/missiles/tracer.md3");
 		weapinfo->flashsnd[0] = trap_S_RegisterSound("sound/weapons/machinegun/machgf1b.wav", qfalse);
 		weapinfo->ejectbrass = machinegunejectbrass;
@@ -582,7 +582,7 @@ registerweap(int weaponNum)
 		break;
 
 	case WP_SHOTGUN:
-		MAKERGB(weapinfo->flashcolor, 1, 1, 0);
+		MAKERGB(weapinfo->flashcolor, 0.9f, 0.4f, 0.0f);
 		weapinfo->flashsnd[0] = trap_S_RegisterSound("sound/weapons/shotgun/sshotf1b.wav", qfalse);
 		weapinfo->ejectbrass = shotgunejectbrass;
 		break;
