@@ -1,5 +1,7 @@
 #include "ui_local.h"
 
+vec4_t focusclr;
+
 qboolean
 button(const char *id, int x, int y, const char *label)
 {
@@ -33,7 +35,7 @@ button(const char *id, int x, int y, const char *label)
 	changed = !uis.keys[K_MOUSE1] && hot && strcmp(uis.active, id) == 0;
 
 	if(strcmp(id, uis.focus) == 0){
-		drawrect(x-2, y-2, w+4, h+4, CWFocus);
+		fillrect(x, y+h+1, w, 2, focusclr);
 		if(keydown(K_ENTER))
 			changed = qtrue;
 	}
@@ -103,7 +105,7 @@ slider(const char *id, int x, int y, float min, float max, float *val, const cha
 		char buf[32], *p;
 		float incr;
 
-		drawrect(x-2, y-2, w+4, h+4, CWFocus);
+		fillrect(x, y+h+1, w, 2, focusclr);
 
 		incr = 0.01f;
 		if(*s != '\0' && (uis.keys[K_LEFTARROW] || uis.keys[K_RIGHTARROW])){
@@ -163,7 +165,7 @@ checkbox(const char *id, int x, int y, qboolean *state)
 	changed = !uis.keys[K_MOUSE1] && hot && strcmp(uis.active, id) == 0;
 
 	if(strcmp(id, uis.focus) == 0){
-		drawrect(x-2, y-2, w+4, h+4, CWFocus);
+		fillrect(x, y+h+1, w, 2, focusclr);
 		if(keydown(K_ENTER)){
 			*state = !*state;
 			changed = qtrue;
@@ -277,7 +279,7 @@ textfield(const char *id, int x, int y, int width, char *buf, int *caret, int sz
 		trap_S_StartLocalSound(uis.fieldUpdateSound, CHAN_LOCAL_SOUND);
 
 	if(strcmp(uis.focus, id) == 0)
-		drawrect(x-2, y-2, w+4, h+4, CWFocus);
+		fillrect(x, y+h+1, w, 2, focusclr);
 	return updated;
 }
 
@@ -343,7 +345,7 @@ textspinner(const char *id, int x, int y, char **opts, int *i, int nopts)
 	popalign(1);
 
 	if(strcmp(uis.focus, id) == 0){
-		drawrect(x+bsz-2, y-2, w+4, h+4, CWFocus);
+		fillrect(x+bsz, y+h+1, w, 2, focusclr);
 		if(keydown(K_LEFTARROW)){
 			*i = (*i <= 0)? nopts-1 : *i-1;
 			changed = qtrue;

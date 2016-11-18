@@ -815,7 +815,7 @@ defaultsmenu(void)
 	menubackground();
 
 	setalign("center");
-	drawstring(screenwidth()/2, 200, "This will erase your config file.",
+	drawstring(screenwidth()/2, 200, "This will reset your config file.",
 	   FONT2, 24, CRed);
 
 	setalign("right");

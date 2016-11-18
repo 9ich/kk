@@ -28,6 +28,7 @@ Coordinates are 640*480 virtual values
 #include "ui_local.h"
 
 uiStatic_t uis;
+extern vec4_t focusclr;
 
 char *
 Argv(int arg)
@@ -273,6 +274,9 @@ refresh(int realtime)
 	}
 
 	drawlibbeginframe(realtime, uis.glconfig.vidWidth, uis.glconfig.vidHeight);
+	Vector4Copy(CWFocus, focusclr);
+	focusclr[3] = cos((float)(uis.realtime%1000) / 1000);	// pulse
+	focusclr[3] = 0.5f + (0.5f*(1+sin(M_TAU * 3 * (float)(uis.realtime%1000) / 1000)) * 0.5f);
 
 	if(uis.firstdraw){
 		uis.cursorx = 0.5f*screenwidth();

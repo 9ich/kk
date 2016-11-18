@@ -9,7 +9,7 @@ float *CWBody		= CRoyalBlue;	// widget body
 float *CWText		= CGoldenrod;	// widget text
 float *CWHot		= CLightBlue;	// widget text when hot
 float *CWActive		= CHoneydew;	// widget text when active
-float *CWFocus		= CGoldenrod;	// widget outline when active
+float *CWFocus		= CWhite;	// widget outline when active
 float *CWShadow		= vshadow;
 
 drawStatic_t draw;
