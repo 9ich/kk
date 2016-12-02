@@ -474,6 +474,44 @@ drawfps(float y)
 	return y + 16;
 }
 
+#define GRAPH_FRAMES 640
+static void
+drawfpsgraph(void)
+{
+	static int times[GRAPH_FRAMES] = {0};
+	static int beg = 0, end = ARRAY_LEN(times);
+	static int prev = 0;
+	const float h = 200, y = 200;
+	int max;
+	int i, j;
+	int t;
+	float scale;
+	vec4_t clr;
+
+	t = trap_Milliseconds();
+	if(prev == 0)
+		prev = t;
+	times[beg % ARRAY_LEN(times)] = t - prev;
+	prev = t;
+
+	max = 0;
+	for(i = beg; i < end; i++)
+		if(times[i % ARRAY_LEN(times)] > max)
+			max = times[i % ARRAY_LEN(times)];
+	if(max == 0)
+		max = 1;
+	scale = 1.0f/max;
+	coloralpha(clr, CLightSkyBlue, 0.3f);
+	for(i = beg, j = 0; i < end; i++, j++){
+		t = h * scale * times[i % ARRAY_LEN(times)];
+		fillrect(centerleft() + j, screenheight() - y - t, 1, t, clr);
+	}
+	drawstring(centerleft(), screenheight() - y - 12, "0 ms", FONT2, 12, CWhite);
+	drawstring(centerleft(), screenheight() - y - h, va("%i ms", max), FONT2, 12, CWhite);
+	beg++;
+	end++;
+}
+
 #define SPEEDOMETER_FRAMES 20
 
 static void
@@ -767,6 +805,8 @@ drawupperright(stereoFrame_t stereoFrame)
 		y = drawsnap(y);
 	if(cg_drawFPS.integer && (stereoFrame == STEREO_CENTER || stereoFrame == STEREO_RIGHT))
 		y = drawfps(y);
+	if(cg_drawFPS.integer == 2 && (stereoFrame == STEREO_CENTER || stereoFrame == STEREO_RIGHT))
+		drawfpsgraph();
 	if(cg_drawTimer.integer)
 		y = drawtimer(y);
 	if(cg_drawObituaries.integer)
