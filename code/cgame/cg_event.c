@@ -94,15 +94,11 @@ CG_Obituary(entityState_t *ent)
 {
 	int mod;
 	int target, attacker;
-	char *message;
-	char *message2;
 	const char *targetInfo;
 	const char *attackerInfo;
 	char targetName[MAX_NAME_LENGTH];
 	char attackerName[MAX_NAME_LENGTH];
 	char *icon;
-	gender_t gender;
-	clientInfo_t *ci;
 
 	target = ent->otherEntityNum;
 	attacker = ent->otherEntityNum2;
@@ -110,7 +106,6 @@ CG_Obituary(entityState_t *ent)
 
 	if(target < 0 || target >= MAX_CLIENTS)
 		cgerrorf("CG_Obituary: target out of range");
-	ci = &cgs.clientinfo[target];
 
 	if(attacker < 0 || attacker >= MAX_CLIENTS){
 		attacker = ENTITYNUM_WORLD;
@@ -123,8 +118,6 @@ CG_Obituary(entityState_t *ent)
 		return;
 	Q_strncpyz(targetName, Info_ValueForKey(targetInfo, "n"), sizeof(targetName) - 2);
 	strcat(targetName, S_COLOR_WHITE);
-
-	message2 = "";
 
 	// check for single client obituary
 

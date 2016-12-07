@@ -88,14 +88,9 @@ CG_DamageFeedback
 void
 CG_DamageFeedback(int yawbyte, int pitchbyte, int damage)
 {
-	float left, front, up;
 	float kick;
 	int health;
 	float scale;
-	vec3_t dir;
-	vec3_t angles;
-	float dist;
-	float yaw, pitch;
 
 	// show the attacking player's head and name in corner
 	cg.attackertime = cg.time;
@@ -241,9 +236,6 @@ void
 CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops)
 {
 	int highScore, reward;
-#ifdef MISSIONPACK
-	int health, armor;
-#endif
 	int i;
 
 	// don't play the sounds if the player just changed teams

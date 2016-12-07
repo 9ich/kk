@@ -1999,7 +1999,6 @@ static void
 drawroundwarmup(void)
 {
 	int sec;
-	int i;
 	const char *s;
 
 	sec = cg.roundwarmup;

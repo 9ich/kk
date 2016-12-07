@@ -918,7 +918,6 @@ CG_HasteTrail(centity_t *cent)
 {
 	localEntity_t *smoke;
 	vec3_t origin;
-	int anim;
 
 	if(cent->trailtime > cg.time)
 		return;

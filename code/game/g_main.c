@@ -1747,7 +1747,7 @@ capturerate(float baserate, int nplayers)
 void
 chkcp(void)
 {
-	gentity_t *cp, *e;
+	gentity_t *cp;
 	int i, ncp;
 	char buf[MAX_INFO_STRING], info[MAX_INFO_STRING];
 	char *p;

@@ -1254,9 +1254,10 @@ BotAIShutdownClient(int client, qboolean restart)
 	bot_state_t *bs;
 
 	bs = botstates[client];
-	if(!bs || !bs->inuse)
+	if(!bs || !bs->inuse){
 		BotAI_Print(PRT_ERROR, "BotAIShutdownClient: client %d already shutdown\n", client);
 		return qfalse;
+	}
 
 	if(restart)
 		BotWriteSessionData(bs);

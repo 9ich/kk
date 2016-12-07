@@ -744,7 +744,6 @@ lightningbolt(centity_t *cent, vec3_t origin, int slot)
 	refEntity_t beam;
 	vec3_t forward;
 	vec3_t muzzlePoint, endPoint;
-	int anim;
 
 	if(cent->currstate.weapon[slot] != WP_LIGHTNING)
 		return;
@@ -882,12 +881,12 @@ CG_WeaponAnimation(centity_t *cent, weaponInfo_t *weapinfo, int slot, int *oldfr
 	float speedScale;
 
 	if(cent->currstate.powerups & (1 << PW_HASTE))
-		speedScale = 1.5;
+		speedScale = 1.5f;
 	else
-		speedScale = 1;
+		speedScale = 1.0f;
 
 	runlerpframe(cgs.media.itemanims[finditemforweapon(cent->currstate.weapon[slot]) - bg_itemlist],
-	   &cent->weaplerpframe[slot], cent->currstate.weapAnim[slot], 1.0f);
+	   &cent->weaplerpframe[slot], cent->currstate.weapAnim[slot], speedScale);
 	*oldframe = cent->weaplerpframe[slot].oldframe;
 	*frame = cent->weaplerpframe[slot].frame;
 	*backlerp = cent->weaplerpframe[slot].backlerp;
@@ -1187,13 +1186,12 @@ drawweapsel(void)
 {
 	const float sz = 18, h = 29, pad = 4;
 	const int font = FONT1, fontsz = 8;
-	float strw, strh;
+	float strh;
 	float rectw, recth;
 	int i;
 	int bits;
 	int count;
 	float x, y, iconx, icony, selx, sely, labelx, labely;
-	char *name;
 	float *color, *color2;
 	vec4_t priclr, secclr, bgclr;
 
@@ -1251,7 +1249,7 @@ drawweapsel(void)
 		if(i == cg.weapsel[0] || i == cg.weapsel[1]){
 			float w;
 
-			w = labelx - x + stringwidth(cg_weapons[i].item->pickupname, font, 8, 0, -1) + 4;
+			w = labelx - x + stringwidth(cg_weapons[i].item->pickupname, font, fontsz, 0, -1) + 4;
 			rectw = MAX(rectw, w);
 			bgclr[3] *= 2.0f;
 		}
@@ -1267,10 +1265,9 @@ drawweapsel(void)
 		// draw selection marker
 		if(i == cg.weapsel[0]){
 			// pri/sec
-			strw = stringwidth("1", font, 7, 0, -1);
 			drawstring(x + 2, y, "1", font, 7, priclr);
 			// name
-			drawstring(labelx, y, cg_weapons[i].item->pickupname, font, 8, priclr);
+			drawstring(labelx, y, cg_weapons[i].item->pickupname, font, fontsz, priclr);
 			// selector icon
 			trap_R_SetColor(priclr);
 			drawpic(selx, sely, sz + 2*pad, sz + 2*pad, cgs.media.selectShader);
@@ -1279,11 +1276,10 @@ drawweapsel(void)
 
 		if(i == cg.weapsel[1]){
 			// pri/sec
-			strw = stringwidth("2", font, 7, 0, -1);
 			strh = stringheight("2", font, 7);
 			drawstring(x + 2, y + sz - strh, "2", font, 7, secclr);
 			// name
-			drawstring(labelx, y, cg_weapons[i].item->pickupname, font, 8, secclr);
+			drawstring(labelx, y, cg_weapons[i].item->pickupname, font, fontsz, secclr);
 			// selector icon
 			trap_R_SetColor(secclr);
 			drawpic(selx, sely, sz + 2*pad, sz + 2*pad, cgs.media.selectShader);
@@ -1504,8 +1500,6 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 	qboolean alphafade;
 	qboolean isSprite;
 	int duration;
-	vec3_t sprOrg;
-	vec3_t sprVel;
 	int i;
 
 	mod = 0;
@@ -1640,7 +1634,7 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 	case WP_MACHINEGUN:
 		mod = cgs.media.dishFlashModel;
 		shader = cgs.media.bulletExplosionShader;
-		sfx = cgs.media.hitSound;
+		sfx = cgs.media.sfx_ric1;
 		mark = cgs.media.burnMarkShader;
 		radius = 20;
 		isSprite = qtrue;

@@ -1013,7 +1013,6 @@ clientspawn(gentity_t *ent)
 	int index;
 	vec3_t spawn_origin, spawn_angles;
 	gclient_t *client, sav;
-	int i;
 	gentity_t *spawnPoint;
 	gentity_t *tent;
 	int flags;

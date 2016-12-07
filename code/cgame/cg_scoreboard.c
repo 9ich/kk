@@ -46,7 +46,6 @@ static qboolean localclient;	// true if local client has been displayed
 static void
 drawclientscore(int y, score_t *score, float *color, float fade)
 {
-	char string[1024];
 	clientInfo_t *ci;
 	int font = FONT2;
 	float sz = 12;
@@ -163,13 +162,12 @@ Draw the normal in-game scoreboard
 qboolean
 drawoldscoreboard(void)
 {
-	int x, y, w, i, n1, n2;
+	int y, i, n1, n2;
 	float fade;
 	float *fadeColor;
 	char *s;
 	int maxClients;
 	int lineHeight;
-	int topBorderSize, bottomBorderSize;
 	int font = FONT2;
 	float sz = 16;
 	vec4_t clr;
@@ -260,13 +258,9 @@ drawoldscoreboard(void)
 	if(cg.nscores > SB_MAXCLIENTS_NORMAL){
 		maxClients = SB_MAXCLIENTS_INTER;
 		lineHeight = SB_INTER_HEIGHT;
-		topBorderSize = 8;
-		bottomBorderSize = 16;
 	}else{
 		maxClients = SB_MAXCLIENTS_NORMAL;
 		lineHeight = SB_NORMAL_HEIGHT;
-		topBorderSize = 16;
-		bottomBorderSize = 16;
 	}
 
 	localclient = qfalse;

@@ -723,16 +723,15 @@ chkarmor(gentity_t *ent, int damage, int dflags)
 	int count;
 	float protection;
 
-	if(client->ps.stats[STAT_ARMOR] < 1)
-		client->ps.stats[STAT_ARMORTYPE] = 0;
-
 	if(!damage)
 		return 0;
 
 	client = ent->client;
-
 	if(!client)
 		return 0;
+
+	if(client->ps.stats[STAT_ARMOR] < 1)
+		client->ps.stats[STAT_ARMORTYPE] = 0;
 
 	if(dflags & DAMAGE_NO_ARMOR)
 		return 0;

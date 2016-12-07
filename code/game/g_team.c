@@ -1090,8 +1090,8 @@ findcpspawnpoint(team_t team, int teamstate, vec3_t origin, vec3_t angles, qbool
 	}
 
 	if(count == 0)
-		Com_Error(ERR_DROP, va("map has no %s spawnpoints assigned to this round",
-		   teamname(team)));
+		Com_Error(ERR_DROP, "map has no %s spawnpoints assigned to this round",
+		   teamname(team));
 
 	selection = rand() % count;
 	veccpy(spots[selection]->s.origin, origin);

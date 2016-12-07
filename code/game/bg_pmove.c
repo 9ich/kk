@@ -187,7 +187,6 @@ pmaccelerate(vec3_t wishdir, float wishspeed, float accel)
 {
 #if 1
 	// the konkrete way, passthrough
-	int i;
 	float accelspeed;
 
 	accelspeed = accel*pml.frametime*wishspeed;
@@ -231,8 +230,7 @@ static void
 pmq2accelerate(vec3_t wishdir, float wishspeed, float accel)
 {
 	// q2 style
-	int i;
-	float addspeed, accelspeed, currentspeed;
+	float addspeed, accelspeed;
 
 	//currentspeed = vecdot(pm->ps->velocity, wishdir);
 	//addspeed = wishspeed - currentspeed;
@@ -364,7 +362,6 @@ watermove(void)
 static void
 specmove(void)
 {
-	int i;
 	vec3_t wishvel;
 	float wishspeed;
 	vec3_t wishdir;
@@ -545,7 +542,6 @@ static void
 noclipmove(void)
 {
 	float speed, drop, friction, control, newspeed;
-	int i;
 	vec3_t wishvel, wishdir;
 	vec3_t fwd, right, up;
 	float wishspeed;
