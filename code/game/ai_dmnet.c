@@ -59,22 +59,12 @@ char nodeswitch[MAX_NODESWITCHES+1][144];
 
 #define LOOKAHEAD_DISTANCE 300
 
-/*
-==================
-BotResetNodeSwitches
-==================
-*/
 void
 BotResetNodeSwitches(void)
 {
 	numnodeswitches = 0;
 }
 
-/*
-==================
-BotDumpNodeSwitches
-==================
-*/
 void
 BotDumpNodeSwitches(bot_state_t *bs)
 {
@@ -88,11 +78,6 @@ BotDumpNodeSwitches(bot_state_t *bs)
 	BotAI_Print(PRT_FATAL, "");
 }
 
-/*
-==================
-BotRecordNodeSwitch
-==================
-*/
 void
 BotRecordNodeSwitch(bot_state_t *bs, char *node, char *str, char *s)
 {
@@ -108,11 +93,6 @@ BotRecordNodeSwitch(bot_state_t *bs, char *node, char *str, char *s)
 	numnodeswitches++;
 }
 
-/*
-==================
-BotGetAirGoal
-==================
-*/
 int
 BotGetAirGoal(bot_state_t *bs, bot_goal_t *goal)
 {
@@ -150,11 +130,6 @@ BotGetAirGoal(bot_state_t *bs, bot_goal_t *goal)
 	return qfalse;
 }
 
-/*
-==================
-BotGoForAir
-==================
-*/
 int
 BotGoForAir(bot_state_t *bs, int tfl, bot_goal_t *ltg, float range)
 {
@@ -184,11 +159,6 @@ BotGoForAir(bot_state_t *bs, int tfl, bot_goal_t *ltg, float range)
 	return qfalse;
 }
 
-/*
-==================
-BotNearbyGoal
-==================
-*/
 int
 BotNearbyGoal(bot_state_t *bs, int tfl, bot_goal_t *ltg, float range)
 {
@@ -221,11 +191,6 @@ BotNearbyGoal(bot_state_t *bs, int tfl, bot_goal_t *ltg, float range)
 	return ret;
 }
 
-/*
-==================
-BotReachedGoal
-==================
-*/
 int
 BotReachedGoal(bot_state_t *bs, bot_goal_t *goal)
 {
@@ -267,11 +232,6 @@ BotReachedGoal(bot_state_t *bs, bot_goal_t *goal)
 	return qfalse;
 }
 
-/*
-==================
-BotGetItemLongTermGoal
-==================
-*/
 int
 BotGetItemLongTermGoal(bot_state_t *bs, int tfl, bot_goal_t *goal)
 {
@@ -319,12 +279,8 @@ BotGetItemLongTermGoal(bot_state_t *bs, int tfl, bot_goal_t *goal)
 }
 
 /*
-==================
-BotGetLongTermGoal
-
 we could also create a seperate AI node for every long term goal type
 however this saves us a lot of code
-==================
 */
 int
 BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
@@ -956,11 +912,7 @@ BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 	return BotGetItemLongTermGoal(bs, tfl, goal);
 }
 
-/*
-==================
-BotLongTermGoal
-==================
-*/
+
 int
 BotLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 {
@@ -1038,11 +990,7 @@ BotLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 	return BotGetLongTermGoal(bs, tfl, retreat, goal);
 }
 
-/*
-==================
-AIEnter_Intermission
-==================
-*/
+
 void
 AIEnter_Intermission(bot_state_t *bs, char *s)
 {
@@ -1055,11 +1003,7 @@ AIEnter_Intermission(bot_state_t *bs, char *s)
 	bs->ainode = AINode_Intermission;
 }
 
-/*
-==================
-AINode_Intermission
-==================
-*/
+
 int
 AINode_Intermission(bot_state_t *bs)
 {
@@ -1074,11 +1018,7 @@ AINode_Intermission(bot_state_t *bs)
 	return qtrue;
 }
 
-/*
-==================
-AIEnter_Observer
-==================
-*/
+
 void
 AIEnter_Observer(bot_state_t *bs, char *s)
 {
@@ -1088,11 +1028,7 @@ AIEnter_Observer(bot_state_t *bs, char *s)
 	bs->ainode = AINode_Observer;
 }
 
-/*
-==================
-AINode_Observer
-==================
-*/
+
 int
 AINode_Observer(bot_state_t *bs)
 {
@@ -1102,11 +1038,7 @@ AINode_Observer(bot_state_t *bs)
 	return qtrue;
 }
 
-/*
-==================
-AIEnter_Stand
-==================
-*/
+
 void
 AIEnter_Stand(bot_state_t *bs, char *s)
 {
@@ -1115,11 +1047,7 @@ AIEnter_Stand(bot_state_t *bs, char *s)
 	bs->ainode = AINode_Stand;
 }
 
-/*
-==================
-AINode_Stand
-==================
-*/
+
 int
 AINode_Stand(bot_state_t *bs)
 {
@@ -1148,9 +1076,7 @@ AINode_Stand(bot_state_t *bs)
 }
 
 /*
-==================
 AIEnter_Respawn
-==================
 */
 void
 AIEnter_Respawn(bot_state_t *bs, char *s)
@@ -1175,9 +1101,7 @@ AIEnter_Respawn(bot_state_t *bs, char *s)
 }
 
 /*
-==================
 AINode_Respawn
-==================
 */
 int
 AINode_Respawn(bot_state_t *bs)
@@ -1204,9 +1128,7 @@ AINode_Respawn(bot_state_t *bs)
 }
 
 /*
-==================
 BotSelectActivateWeapon
-==================
 */
 int
 BotSelectActivateWeapon(bot_state_t *bs)
@@ -1240,11 +1162,9 @@ BotSelectActivateWeapon(bot_state_t *bs)
 }
 
 /*
-==================
 BotClearPath
 
  try to deactivate obstacles like proximity mines on the bot's path
-==================
 */
 void
 BotClearPath(bot_state_t *bs, bot_moveresult_t *moveresult)
@@ -1333,11 +1253,6 @@ BotClearPath(bot_state_t *bs, bot_moveresult_t *moveresult)
 	}
 }
 
-/*
-==================
-AIEnter_Seek_ActivateEntity
-==================
-*/
 void
 AIEnter_Seek_ActivateEntity(bot_state_t *bs, char *s)
 {
@@ -1345,11 +1260,6 @@ AIEnter_Seek_ActivateEntity(bot_state_t *bs, char *s)
 	bs->ainode = AINode_Seek_ActivateEntity;
 }
 
-/*
-==================
-AINode_Seek_Activate_Entity
-==================
-*/
 int
 AINode_Seek_ActivateEntity(bot_state_t *bs)
 {
@@ -1532,11 +1442,6 @@ AINode_Seek_ActivateEntity(bot_state_t *bs)
 	return qtrue;
 }
 
-/*
-==================
-AIEnter_Seek_NBG
-==================
-*/
 void
 AIEnter_Seek_NBG(bot_state_t *bs, char *s)
 {
@@ -1551,11 +1456,6 @@ AIEnter_Seek_NBG(bot_state_t *bs, char *s)
 	bs->ainode = AINode_Seek_NBG;
 }
 
-/*
-==================
-AINode_Seek_NBG
-==================
-*/
 int
 AINode_Seek_NBG(bot_state_t *bs)
 {
@@ -1659,11 +1559,6 @@ AINode_Seek_NBG(bot_state_t *bs)
 	return qtrue;
 }
 
-/*
-==================
-AIEnter_Seek_LTG
-==================
-*/
 void
 AIEnter_Seek_LTG(bot_state_t *bs, char *s)
 {
@@ -1678,11 +1573,6 @@ AIEnter_Seek_LTG(bot_state_t *bs, char *s)
 	bs->ainode = AINode_Seek_LTG;
 }
 
-/*
-==================
-AINode_Seek_LTG
-==================
-*/
 int
 AINode_Seek_LTG(bot_state_t *bs)
 {
@@ -1827,11 +1717,6 @@ AINode_Seek_LTG(bot_state_t *bs)
 	return qtrue;
 }
 
-/*
-==================
-AIEnter_Battle_Fight
-==================
-*/
 void
 AIEnter_Battle_Fight(bot_state_t *bs, char *s)
 {
@@ -1841,11 +1726,6 @@ AIEnter_Battle_Fight(bot_state_t *bs, char *s)
 	bs->flags &= ~BFL_FIGHTSUICIDAL;
 }
 
-/*
-==================
-AIEnter_Battle_SuicidalFight
-==================
-*/
 void
 AIEnter_Battle_SuicidalFight(bot_state_t *bs, char *s)
 {
@@ -1855,11 +1735,7 @@ AIEnter_Battle_SuicidalFight(bot_state_t *bs, char *s)
 	bs->flags |= BFL_FIGHTSUICIDAL;
 }
 
-/*
-==================
-AINode_Battle_Fight
-==================
-*/
+
 int
 AINode_Battle_Fight(bot_state_t *bs)
 {
@@ -2001,11 +1877,7 @@ AINode_Battle_Fight(bot_state_t *bs)
 	return qtrue;
 }
 
-/*
-==================
-AIEnter_Battle_Chase
-==================
-*/
+
 void
 AIEnter_Battle_Chase(bot_state_t *bs, char *s)
 {
@@ -2014,11 +1886,7 @@ AIEnter_Battle_Chase(bot_state_t *bs, char *s)
 	bs->ainode = AINode_Battle_Chase;
 }
 
-/*
-==================
-AINode_Battle_Chase
-==================
-*/
+
 int
 AINode_Battle_Chase(bot_state_t *bs)
 {
@@ -2133,11 +2001,7 @@ AINode_Battle_Chase(bot_state_t *bs)
 	return qtrue;
 }
 
-/*
-==================
-AIEnter_Battle_Retreat
-==================
-*/
+
 void
 AIEnter_Battle_Retreat(bot_state_t *bs, char *s)
 {
@@ -2145,11 +2009,7 @@ AIEnter_Battle_Retreat(bot_state_t *bs, char *s)
 	bs->ainode = AINode_Battle_Retreat;
 }
 
-/*
-==================
-AINode_Battle_Retreat
-==================
-*/
+
 int
 AINode_Battle_Retreat(bot_state_t *bs)
 {
@@ -2314,11 +2174,7 @@ AINode_Battle_Retreat(bot_state_t *bs)
 	return qtrue;
 }
 
-/*
-==================
-AIEnter_Battle_NBG
-==================
-*/
+
 void
 AIEnter_Battle_NBG(bot_state_t *bs, char *s)
 {
@@ -2326,11 +2182,7 @@ AIEnter_Battle_NBG(bot_state_t *bs, char *s)
 	bs->ainode = AINode_Battle_NBG;
 }
 
-/*
-==================
-AINode_Battle_NBG
-==================
-*/
+
 int
 AINode_Battle_NBG(bot_state_t *bs)
 {

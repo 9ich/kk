@@ -25,11 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "cg_local.h"
 
 /*
-==================
-bubbletrail
-
 Bullets shot underwater
-==================
 */
 void
 bubbletrail(vec3_t start, vec3_t end, float spacing)
@@ -89,11 +85,7 @@ bubbletrail(vec3_t start, vec3_t end, float spacing)
 }
 
 /*
-=====================
-smokepuff
-
 Adds a smoke puff or blood trail localEntity.
-=====================
 */
 localEntity_t *
 smokepuff(const vec3_t p, const vec3_t vel,
@@ -181,11 +173,7 @@ shockwave(vec3_t pt, float radius)
 }
 
 /*
-==================
-spawneffect
-
 Player teleporting in or out
-==================
 */
 void
 spawneffect(vec3_t org)
@@ -222,11 +210,6 @@ spawneffect(vec3_t org)
 }
 
 #ifdef MISSIONPACK
-/*
-===============
-CG_LightningBoltBeam
-===============
-*/
 void
 CG_LightningBoltBeam(vec3_t start, vec3_t end)
 {
@@ -249,11 +232,6 @@ CG_LightningBoltBeam(vec3_t start, vec3_t end)
 	beam->customShader = cgs.media.lightningShader;
 }
 
-/*
-==================
-CG_KamikazeEffect
-==================
-*/
 void
 CG_KamikazeEffect(vec3_t org)
 {
@@ -281,11 +259,6 @@ CG_KamikazeEffect(vec3_t org)
 	veccpy(org, re->origin);
 }
 
-/*
-==================
-CG_ObeliskExplode
-==================
-*/
 void
 CG_ObeliskExplode(vec3_t org, int entityNum)
 {
@@ -305,11 +278,6 @@ CG_ObeliskExplode(vec3_t org, int entityNum)
 	le->lightcolor[2] = 0.0;
 }
 
-/*
-==================
-CG_ObeliskPain
-==================
-*/
 void
 CG_ObeliskPain(vec3_t org)
 {
@@ -327,11 +295,6 @@ CG_ObeliskPain(vec3_t org)
 	trap_S_StartSound(org, ENTITYNUM_NONE, CHAN_BODY, sfx);
 }
 
-/*
-==================
-CG_InvulnerabilityImpact
-==================
-*/
 void
 CG_InvulnerabilityImpact(vec3_t org, vec3_t angles)
 {
@@ -369,11 +332,6 @@ CG_InvulnerabilityImpact(vec3_t org, vec3_t angles)
 	trap_S_StartSound(org, ENTITYNUM_NONE, CHAN_BODY, sfx);
 }
 
-/*
-==================
-CG_InvulnerabilityJuiced
-==================
-*/
 void
 CG_InvulnerabilityJuiced(vec3_t org)
 {
@@ -406,11 +364,6 @@ CG_InvulnerabilityJuiced(vec3_t org)
 
 #endif
 
-/*
-==================
-scoreplum
-==================
-*/
 void
 scoreplum(int client, vec3_t org, int score)
 {
@@ -449,11 +402,6 @@ scoreplum(int client, vec3_t org, int score)
 	AnglesToAxis(angles, re->axis);
 }
 
-/*
-====================
-explosion
-====================
-*/
 localEntity_t *
 explosion(vec3_t origin, vec3_t dir,
 		 qhandle_t hModel, qhandle_t shader,
@@ -511,11 +459,7 @@ explosion(vec3_t origin, vec3_t dir,
 }
 
 /*
-=================
-bleed
-
 This is the spurt of blood when a character gets hit
-=================
 */
 void
 bleed(vec3_t origin, int entityNum)
@@ -543,11 +487,7 @@ bleed(vec3_t origin, int entityNum)
 		ex->refEntity.renderfx |= RF_THIRD_PERSON;
 }
 
-/*
-==================
-CG_LaunchGib
-==================
-*/
+
 void
 CG_LaunchGib(vec3_t origin, vec3_t velocity, qhandle_t hModel)
 {
@@ -577,11 +517,7 @@ CG_LaunchGib(vec3_t origin, vec3_t velocity, qhandle_t hModel)
 }
 
 /*
-===================
-gibplayer
-
 Generated a bunch of gibs launching out from the bodies location
-===================
 */
 #define GIB_VELOCITY	250
 #define GIB_JUMP	250
@@ -661,11 +597,7 @@ gibplayer(vec3_t playerOrigin)
 	CG_LaunchGib(origin, velocity, cgs.media.gibLeg);
 }
 
-/*
-==================
-CG_LaunchExplode
-==================
-*/
+
 void
 CG_LaunchExplode(vec3_t origin, vec3_t velocity, qhandle_t hModel)
 {
@@ -697,11 +629,7 @@ CG_LaunchExplode(vec3_t origin, vec3_t velocity, qhandle_t hModel)
 #define EXP_VELOCITY	100
 #define EXP_JUMP	150
 /*
-===================
-CG_BigExplode
-
 Generated a bunch of gibs launching out from the bodies location
-===================
 */
 void
 CG_BigExplode(vec3_t playerOrigin)

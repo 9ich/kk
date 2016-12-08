@@ -38,12 +38,6 @@ char *cg_customSoundNames[MAX_CUSTOM_SOUNDS] = {
 	"*taunt.wav"
 };
 
-/*
-================
-customsound
-
-================
-*/
 sfxHandle_t
 customsound(int clientNum, const char *soundName)
 {
@@ -237,11 +231,6 @@ parsethrustersfile(const char *filename, clientInfo_t *ci)
 	}
 }
 
-/*
-==========================
-CG_FileExists
-==========================
-*/
 static qboolean
 CG_FileExists(const char *filename)
 {
@@ -253,11 +242,6 @@ CG_FileExists(const char *filename)
 	return qfalse;
 }
 
-/*
-==========================
-CG_FindClientModelFile
-==========================
-*/
 static qboolean
 CG_FindClientModelFile(char *filename, int length, clientInfo_t *ci, const char *teamName, const char *modelname, const char *skinname, const char *base, const char *ext)
 {
@@ -319,11 +303,6 @@ CG_FindClientModelFile(char *filename, int length, clientInfo_t *ci, const char 
 	return qfalse;
 }
 
-/*
-==========================
-CG_RegisterClientSkin
-==========================
-*/
 static qboolean
 CG_RegisterClientSkin(clientInfo_t *ci, const char *teamName, const char *modelname, const char *skinname)
 {
@@ -340,11 +319,6 @@ CG_RegisterClientSkin(clientInfo_t *ci, const char *teamName, const char *modeln
 	return qtrue;
 }
 
-/*
-=========================
-CG_RegisterClientModelname
-==========================
-*/
 static qboolean
 CG_RegisterClientModelname(clientInfo_t *ci, const char *modelname, const char *skinname, const char *teamName)
 {
@@ -390,11 +364,6 @@ CG_RegisterClientModelname(clientInfo_t *ci, const char *modelname, const char *
 	return qtrue;
 }
 
-/*
-====================
-CG_ColorFromString
-====================
-*/
 static void
 CG_ColorFromString(const char *v, vec3_t color)
 {
@@ -418,12 +387,8 @@ CG_ColorFromString(const char *v, vec3_t color)
 }
 
 /*
-===================
-CG_LoadClientInfo
-
 Load it now, taking the disk hits.
 This will usually be deferred to a safe time
-===================
 */
 static void
 CG_LoadClientInfo(int clientNum, clientInfo_t *ci)
@@ -491,11 +456,6 @@ CG_LoadClientInfo(int clientNum, clientInfo_t *ci)
 			resetplayerent(&cg_entities[i]);
 }
 
-/*
-======================
-CG_CopyClientInfoModel
-======================
-*/
 static void
 CG_CopyClientInfoModel(clientInfo_t *from, clientInfo_t *to)
 {
@@ -512,11 +472,6 @@ CG_CopyClientInfoModel(clientInfo_t *from, clientInfo_t *to)
 	memcpy(to->sounds, from->sounds, sizeof(to->sounds));
 }
 
-/*
-======================
-CG_ScanForExistingClientInfo
-======================
-*/
 static qboolean
 CG_ScanForExistingClientInfo(clientInfo_t *ci)
 {
@@ -549,12 +504,8 @@ CG_ScanForExistingClientInfo(clientInfo_t *ci)
 }
 
 /*
-======================
-CG_SetDeferredClientInfo
-
 We aren't going to load it now, so grab some other
 client's info to use until we have some spare time.
-======================
 */
 static void
 CG_SetDeferredClientInfo(int clientNum, clientInfo_t *ci)
@@ -615,11 +566,7 @@ CG_SetDeferredClientInfo(int clientNum, clientInfo_t *ci)
 	CG_LoadClientInfo(clientNum, ci);
 }
 
-/*
-======================
-newclientinfo
-======================
-*/
+
 void
 newclientinfo(int clientNum)
 {
@@ -764,13 +711,9 @@ newclientinfo(int clientNum)
 }
 
 /*
-======================
-loaddeferred
-
 Called each frame when a player is dead
 and the scoreboard is up
 so deferred players can be loaded
-======================
 */
 void
 loaddeferred(void)
@@ -800,11 +743,7 @@ PLAYER ANIMATION
 =============================================================================
 */
 
-/*
-===============
-CG_PlayerAnimation
-===============
-*/
+
 static void
 CG_PlayerAnimation(centity_t *cent, int *torsoOld, int *torso, float *torsoBackLerp)
 {
@@ -908,11 +847,7 @@ playerangles(centity_t *cent, vec3_t out)
 
 //==========================================================================
 
-/*
-===============
-CG_HasteTrail
-===============
-*/
+
 static void
 CG_HasteTrail(centity_t *cent)
 {
@@ -942,11 +877,7 @@ CG_HasteTrail(centity_t *cent)
 	smoke->type = LE_SCALE_FADE;
 }
 
-/*
-===============
-CG_PlayerFlag
-===============
-*/
+
 static void
 CG_PlayerFlag(centity_t *cent, refEntity_t *torso, qhandle_t flagmodel)
 {
@@ -1163,11 +1094,7 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 }
 
 #ifdef MISSIONPACK
-/*
-===============
-CG_PlayerTokens
-===============
-*/
+
 static void
 CG_PlayerTokens(centity_t *cent, int renderfx)
 {
@@ -1252,9 +1179,7 @@ addquadlight(centity_t *cent)
 }
 
 /*
-===============
 CG_PlayerPowerups
-===============
 */
 static void
 CG_PlayerPowerups(centity_t *cent, refEntity_t *torso)
@@ -1297,11 +1222,9 @@ CG_PlayerPowerups(centity_t *cent, refEntity_t *torso)
 }
 
 /*
-===============
 CG_PlayerFloatSprite
 
 Float a sprite over the player's head
-===============
 */
 static void
 CG_PlayerFloatSprite(centity_t *cent, qhandle_t shader)
@@ -1330,11 +1253,9 @@ CG_PlayerFloatSprite(centity_t *cent, qhandle_t shader)
 }
 
 /*
-===============
 CG_PlayerSprites
 
 Float sprites over the player's head
-===============
 */
 static void
 CG_PlayerSprites(centity_t *cent)
@@ -1386,13 +1307,9 @@ CG_PlayerSprites(centity_t *cent)
 }
 
 /*
-===============
-CG_PlayerShadow
-
 Returns the Z component of the surface being shadowed
 
   should it return a full plane instead of a Z?
-===============
 */
 #define SHADOW_DISTANCE 128
 static qboolean
@@ -1441,11 +1358,7 @@ CG_PlayerShadow(centity_t *cent, float *shadowPlane)
 }
 
 /*
-===============
-CG_PlayerSplash
-
 Draw a mark at the water surface
-===============
 */
 static void
 CG_PlayerSplash(centity_t *cent)
@@ -1526,12 +1439,8 @@ CG_PlayerSplash(centity_t *cent)
 }
 
 /*
-===============
-addrefentitywithpowerups
-
 Adds a piece with modifications or duplications for powerups
 Also called by domissile for quad rockets, but nobody can tell...
-===============
 */
 void
 addrefentitywithpowerups(refEntity_t *ent, entityState_t *state, int team)
@@ -1571,11 +1480,6 @@ addrefentitywithpowerups(refEntity_t *ent, entityState_t *state, int team)
 	}
 }
 
-/*
-=================
-CG_LightVerts
-=================
-*/
 int
 CG_LightVerts(vec3_t normal, int numVerts, polyVert_t *verts)
 {
@@ -1616,11 +1520,6 @@ CG_LightVerts(vec3_t normal, int numVerts, polyVert_t *verts)
 	return qtrue;
 }
 
-/*
-===============
-doplayer
-===============
-*/
 void
 doplayer(centity_t *cent)
 {
@@ -1808,11 +1707,7 @@ doplayer(centity_t *cent)
 //=====================================================================
 
 /*
-===============
-resetplayerent
-
 A player just came into view or teleported, so reset all animation info
-===============
 */
 void
 resetplayerent(centity_t *cent)

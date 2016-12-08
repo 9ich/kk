@@ -23,11 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "cg_local.h"
 
 /*
-================
-drawsides
-
 Coords are virtual 640x480
-================
 */
 void
 drawsides(float x, float y, float w, float h, float size)
@@ -100,11 +96,7 @@ drawhudfield(float x, float y, const char *s, vec4_t color)
 }
 
 /*
-=================
-drawstrlen
-
 Returns character count, skiping color escape codes
-=================
 */
 int
 drawstrlen(const char *str)
@@ -125,12 +117,8 @@ drawstrlen(const char *str)
 }
 
 /*
-=============
-CG_TileClearBox
-
 This repeats a 64*64 tile graphic to fill the screen around a sized down
 refresh window.
-=============
 */
 static void
 CG_TileClearBox(int x, int y, int w, int h, qhandle_t hShader)
@@ -145,11 +133,7 @@ CG_TileClearBox(int x, int y, int w, int h, qhandle_t hShader)
 }
 
 /*
-==============
-tileclear
-
 Clear around a sized down screen
-==============
 */
 void
 tileclear(void)
@@ -182,11 +166,6 @@ tileclear(void)
 	CG_TileClearBox(right, top, w - right, bottom - top + 1, cgs.media.backTileShader);
 }
 
-/*
-================
-fadecolor
-================
-*/
 float *
 fadecolor(int startMsec, int totalMsec)
 {
@@ -211,11 +190,6 @@ fadecolor(int startMsec, int totalMsec)
 	return color;
 }
 
-/*
-================
-teamcolor
-================
-*/
 float *
 teamcolor(int team)
 {
@@ -236,11 +210,6 @@ teamcolor(int team)
 	}
 }
 
-/*
-=================
-getcolorforhealth
-=================
-*/
 void
 getcolorforhealth(int health, int armor, vec4_t hcolor)
 {
@@ -278,11 +247,6 @@ getcolorforhealth(int health, int armor, vec4_t hcolor)
 		hcolor[1] = (health - 30) / 30.0;
 }
 
-/*
-=================
-colorforhealth
-=================
-*/
 void
 colorforhealth(vec4_t hcolor)
 {

@@ -73,13 +73,6 @@ SP_light(gentity_t *self)
 	trap_LinkEntity(self);
 }
 
-/*
-=================================================================================
-
-TELEPORTERS
-
-=================================================================================
-*/
 
 void
 teleportentity(gentity_t *player, vec3_t origin, vec3_t angles)

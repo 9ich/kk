@@ -27,11 +27,6 @@ gentity_t *podium1;
 gentity_t *podium2;
 gentity_t *podium3;
 
-/*
-==================
-updatetourney
-==================
-*/
 void
 updateduel(void)
 {
@@ -306,11 +301,6 @@ SpawnPodium(void)
 	return podium;
 }
 
-/*
-==================
-spawnonvictorypads
-==================
-*/
 void
 spawnonvictorypads(void)
 {
@@ -344,11 +334,6 @@ spawnonvictorypads(void)
 	}
 }
 
-/*
-===============
-Svcmd_AbortPodium_f
-===============
-*/
 void
 Svcmd_AbortPodium_f(void)
 {

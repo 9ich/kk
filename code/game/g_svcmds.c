@@ -68,11 +68,6 @@ typedef struct ipFilter_s
 static ipFilter_t ipFilters[MAX_IPFILTERS];
 static int numIPFilters;
 
-/*
-=================
-StringToFilter
-=================
-*/
 static qboolean
 StringToFilter(char *s, ipFilter_t *f)
 {
@@ -118,11 +113,6 @@ StringToFilter(char *s, ipFilter_t *f)
 	return qtrue;
 }
 
-/*
-=================
-UpdateIPBans
-=================
-*/
 static void
 UpdateIPBans(void)
 {
@@ -158,11 +148,6 @@ UpdateIPBans(void)
 	trap_Cvar_Set("g_banIPs", iplist_final);
 }
 
-/*
-=================
-filterpacket
-=================
-*/
 qboolean
 filterpacket(char *from)
 {
@@ -193,11 +178,6 @@ filterpacket(char *from)
 	return g_filterBan.integer == 0;
 }
 
-/*
-=================
-AddIP
-=================
-*/
 static void
 AddIP(char *str)
 {
@@ -220,11 +200,6 @@ AddIP(char *str)
 	UpdateIPBans();
 }
 
-/*
-=================
-processipbans
-=================
-*/
 void
 processipbans(void)
 {
@@ -245,11 +220,6 @@ processipbans(void)
 	}
 }
 
-/*
-=================
-Svcmd_AddIP_f
-=================
-*/
 void
 Svcmd_AddIP_f(void)
 {
@@ -265,11 +235,6 @@ Svcmd_AddIP_f(void)
 	AddIP(str);
 }
 
-/*
-=================
-Svcmd_RemoveIP_f
-=================
-*/
 void
 Svcmd_RemoveIP_f(void)
 {
@@ -300,11 +265,6 @@ Svcmd_RemoveIP_f(void)
 	gprintf("Didn't find %s.\n", str);
 }
 
-/*
-===================
-Svcmd_EntityList_f
-===================
-*/
 void
 Svcmd_EntityList_f(void)
 {
@@ -405,11 +365,7 @@ ClientForString(const char *s)
 }
 
 /*
-===================
-Svcmd_ForceTeam_f
-
 forceteam <player> <team>
-===================
 */
 void
 Svcmd_ForceTeam_f(void)
@@ -436,10 +392,6 @@ Svcmd_ForceTeam_f(void)
 char *ConcatArgs(int start);
 
 /*
-=================
-consolecmd
-
-=================
 */
 qboolean
 consolecmd(void)

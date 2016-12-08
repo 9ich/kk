@@ -119,11 +119,6 @@ drawclientscore(int y, score_t *score, float *color, float fade)
 		drawstring(SB_SCORE_X - 64, y, "ready", font, sz, CLightGreen);
 }
 
-/*
-=================
-CG_TeamScoreboard
-=================
-*/
 static int
 teamscoreboard(int y, team_t team, float fade, int maxClients, int lineHeight)
 {
@@ -153,11 +148,7 @@ teamscoreboard(int y, team_t team, float fade, int maxClients, int lineHeight)
 }
 
 /*
-=================
-drawscoreboard
-
 Draw the normal in-game scoreboard
-=================
 */
 qboolean
 drawoldscoreboard(void)
@@ -314,11 +305,7 @@ drawoldscoreboard(void)
 }
 
 /*
-=================
-CG_DrawTourneyScoreboard
-
 Draw the oversize scoreboard for tournements
-=================
 */
 void
 drawtourneyscoreboard(void)

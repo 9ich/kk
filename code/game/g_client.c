@@ -96,11 +96,7 @@ maytelefrag(gentity_t *spot)
 }
 
 /*
-================
-SelectNearestDeathmatchSpawnPoint
-
 Find the spot that we DON'T want to use
-================
 */
 #define MAX_SPAWN_POINTS 128
 gentity_t *
@@ -128,11 +124,7 @@ SelectNearestDeathmatchSpawnPoint(vec3_t from)
 }
 
 /*
-================
-SelectRandomDeathmatchSpawnPoint
-
 go to a random point that doesn't telefrag
-================
 */
 #define MAX_SPAWN_POINTS 128
 gentity_t *
@@ -167,11 +159,7 @@ SelectRandomDeathmatchSpawnPoint(qboolean isbot)
 }
 
 /*
-===========
-SelectRandomFurthestSpawnPoint
-
 Chooses a player start, deathmatch start, etc
-============
 */
 gentity_t *
 SelectRandomFurthestSpawnPoint(vec3_t avoidPoint, vec3_t origin, vec3_t angles, qboolean isbot)
@@ -245,11 +233,7 @@ SelectRandomFurthestSpawnPoint(vec3_t avoidPoint, vec3_t origin, vec3_t angles, 
 }
 
 /*
-===========
-selectspawnpoint
-
 Chooses a player start, deathmatch start, etc
-============
 */
 gentity_t *
 selectspawnpoint(vec3_t avoidPoint, vec3_t origin, vec3_t angles, qboolean isbot)
@@ -286,12 +270,8 @@ selectspawnpoint(vec3_t avoidPoint, vec3_t origin, vec3_t angles, qboolean isbot
 }
 
 /*
-===========
-SelectInitialSpawnPoint
-
 Try to find a spawn point marked 'initial', otherwise
 use normal spawn selection.
-============
 */
 gentity_t *
 SelectInitialSpawnPoint(vec3_t origin, vec3_t angles, qboolean isbot)
@@ -319,12 +299,6 @@ SelectInitialSpawnPoint(vec3_t origin, vec3_t angles, qboolean isbot)
 	return spot;
 }
 
-/*
-===========
-SelectSpectatorSpawnPoint
-
-============
-*/
 gentity_t *
 SelectSpectatorSpawnPoint(vec3_t origin, vec3_t angles)
 {
@@ -336,19 +310,7 @@ SelectSpectatorSpawnPoint(vec3_t origin, vec3_t angles)
 	return nil;
 }
 
-/*
-=======================================================================
 
-BODYQUE
-
-=======================================================================
-*/
-
-/*
-===============
-initbodyqueue
-===============
-*/
 void
 initbodyqueue(void)
 {
@@ -365,11 +327,7 @@ initbodyqueue(void)
 }
 
 /*
-=============
-BodySink
-
 After sitting around for five seconds, fall into the ground and dissapear
-=============
 */
 void
 bodysink(gentity_t *ent)
@@ -385,12 +343,8 @@ bodysink(gentity_t *ent)
 }
 
 /*
-=============
-copytobodyqueue
-
 A player is respawning, so make an entity that looks
 just like the existing corpse to leave behind.
-=============
 */
 void
 copytobodyqueue(gentity_t *ent)
@@ -475,12 +429,6 @@ copytobodyqueue(gentity_t *ent)
 
 //======================================================================
 
-/*
-==================
-setviewangles
-
-==================
-*/
 void
 setviewangles(gentity_t *ent, vec3_t angle)
 {
@@ -499,11 +447,6 @@ setviewangles(gentity_t *ent, vec3_t angle)
 	veccpy(ent->s.angles, ent->client->ps.viewangles);
 }
 
-/*
-================
-clientrespawn
-================
-*/
 void
 clientrespawn(gentity_t *ent)
 {
@@ -512,11 +455,7 @@ clientrespawn(gentity_t *ent)
 }
 
 /*
-================
-getteamcount
-
 Returns number of players on a team
-================
 */
 int
 getteamcount(int ignoreClientNum, team_t team)
@@ -537,11 +476,7 @@ getteamcount(int ignoreClientNum, team_t team)
 }
 
 /*
-================
-getteamleader
-
 Returns the client number of the team leader
-================
 */
 int
 getteamleader(int team)
@@ -559,12 +494,6 @@ getteamleader(int team)
 	return -1;
 }
 
-/*
-================
-pickteam
-
-================
-*/
 team_t
 pickteam(int ignoreClientNum)
 {
@@ -584,11 +513,7 @@ pickteam(int ignoreClientNum)
 }
 
 /*
-===========
-ForceClientSkin
-
 Forces a client's skin (for teamplay)
-===========
 */
 /*
 static void ForceClientSkin( gclient_t *client, char *model, const char *skin ) {
@@ -603,11 +528,6 @@ static void ForceClientSkin( gclient_t *client, char *model, const char *skin ) 
 }
 */
 
-/*
-===========
-ClientCleanName
-============
-*/
 static void
 clientnameclean(const char *in, char *out, int outSize)
 {
@@ -655,15 +575,11 @@ clientnameclean(const char *in, char *out, int outSize)
 }
 
 /*
-===========
-ClientUserInfoChanged
-
 Called from clientconnect when the player first connects and
 directly by the server system when the player updates a userinfo variable.
 
 The game can override any of the settings and call trap_SetUserinfo
 if desired.
-============
 */
 void
 clientuserinfochanged(int clientNum)
@@ -834,9 +750,6 @@ giveaward(gclient_t *cl, int award)
 }
 
 /*
-===========
-clientconnect
-
 Called when a player begins connecting to the server.
 Called again for every map change or tournement restart.
 
@@ -851,7 +764,6 @@ and will eventually get to clientbegin.
 firstTime will be qtrue the very first time a client connects
 to the server machine, but qfalse on map changes and tournement
 restarts.
-============
 */
 char *
 clientconnect(int clientNum, qboolean firstTime, qboolean isBot)
@@ -936,13 +848,9 @@ clientconnect(int clientNum, qboolean firstTime, qboolean isBot)
 }
 
 /*
-===========
-clientbegin
-
 called when a client has finished connecting, and is ready
 to be placed into the level.  This will happen every level load,
 and on transition between teams, but doesn't happen on respawns
-============
 */
 void
 clientbegin(int clientNum)
@@ -999,13 +907,9 @@ giveweapon(gclient_t *client, int wp, int ammo)
 }
 
 /*
-===========
-clientspawn
-
 Called every time a client is placed fresh in the world:
 after the first clientbegin, and after each respawn
 Initializes all non-persistant parts of playerState
-============
 */
 void
 clientspawn(gentity_t *ent)
@@ -1213,16 +1117,12 @@ clientspawn(gentity_t *ent)
 }
 
 /*
-===========
-clientdisconnect
-
 Called when a player drops from the server.
 Will not be called between levels.
 
 This should NOT be called directly by any game logic,
 call trap_DropClient(), which will call this and do
 server system housekeeping.
-============
 */
 void
 clientdisconnect(int clientNum)

@@ -78,12 +78,6 @@ model / sound configstring indexes
 =========================================================================
 */
 
-/*
-================
-findconfigstrindex
-
-================
-*/
 int
 findconfigstrindex(char *name, int start, int max, qboolean create)
 {
@@ -127,11 +121,7 @@ getsoundindex(char *name)
 //=====================================================================
 
 /*
-================
-teamcmd
-
 Broadcasts a command to only a specific team
-================
 */
 void
 teamcmd(team_t team, char *cmd)
@@ -145,16 +135,11 @@ teamcmd(team_t team, char *cmd)
 }
 
 /*
-=============
-findent
-
 Searches all active entities for the next one that holds
 the matching string at fieldofs (use the FOFS() macro) in the structure.
 
 Searches beginning at the entity after from, or the beginning if nil
 nil will be returned if the end of the list is reached.
-
-=============
 */
 gentity_t *
 findent(gentity_t *from, int fieldofs, const char *match)
@@ -180,11 +165,7 @@ findent(gentity_t *from, int fieldofs, const char *match)
 }
 
 /*
-=============
-picktarget
-
 Selects a random entity from among the targets
-=============
 */
 #define MAXCHOICES 32
 
@@ -218,15 +199,10 @@ picktarget(char *targetname)
 }
 
 /*
-==============================
-usetargets
-
 "activator" should be set to the entity that initiated the firing.
 
 Search for (string)targetname in all entities that
 match (string)self.target and call their .use function
-
-==============================
 */
 void
 usetargets(gentity_t *ent, gentity_t *activator)
@@ -260,12 +236,8 @@ usetargets(gentity_t *ent, gentity_t *activator)
 }
 
 /*
-=============
-tempvector
-
 This is just a convenience function
 for making temporary vectors for function calls
-=============
 */
 float   *
 tv(float x, float y, float z)
@@ -287,14 +259,10 @@ tv(float x, float y, float z)
 }
 
 /*
-===============
-setmovedir
-
 The editor only specifies a single value for angles (yaw),
 but we have special constants to generate an up or down direction.
 Angles will be cleared, because it is being used to represent a direction
 instead of an orientation.
-===============
 */
 void
 setmovedir(vec3_t angles, vec3_t movedir)
@@ -344,9 +312,6 @@ entinit(gentity_t *e)
 }
 
 /*
-=================
-entspawn
-
 Either finds a free entity, or allocates a new one.
 
   The slots from 0 to MAX_CLIENTS-1 are always reserved for clients, and will
@@ -356,7 +321,6 @@ Try to avoid reusing an entity that was recently freed, because it
 can cause the client to think the entity morphed into something else
 instead of being removed and recreated, which can cause interpolated
 angles and bad trails.
-=================
 */
 gentity_t *
 entspawn(void)
@@ -403,11 +367,6 @@ entspawn(void)
 	return e;
 }
 
-/*
-=================
-nentsfree
-=================
-*/
 qboolean
 numentsfree(void)
 {
@@ -425,11 +384,7 @@ numentsfree(void)
 }
 
 /*
-=================
-entfree
-
 Marks the entity as free
-=================
 */
 void
 entfree(gentity_t *ed)
@@ -446,13 +401,9 @@ entfree(gentity_t *ed)
 }
 
 /*
-=================
-enttemp
-
 Spawns an event entity that will be auto-removed
 The origin will be snapped to save net bandwidth, so care
 must be taken if the origin is right on a surface (snap towards start vector first)
-=================
 */
 gentity_t *
 enttemp(vec3_t origin, int event)
@@ -486,12 +437,8 @@ Kill box
 */
 
 /*
-=================
-killbox
-
 Kills all entities that would touch the proposed new positioning
 of ent.  Ent should be unlinked before calling this!
-=================
 */
 void
 killbox(gentity_t *ent)
@@ -519,13 +466,9 @@ killbox(gentity_t *ent)
 //==============================================================================
 
 /*
-===============
-addpredictable
-
 Use for non-pmove events that would also be predicted on the
 client side: jumppads and item pickups
 Adds an event+parm and twiddles the event counter
-===============
 */
 void
 addpredictable(gentity_t *ent, int event, int eventParm)
@@ -536,11 +479,7 @@ addpredictable(gentity_t *ent, int event, int eventParm)
 }
 
 /*
-===============
-addevent
-
 Adds an event+parm and twiddles the event counter
-===============
 */
 void
 addevent(gentity_t *ent, int event, int eventParm)
@@ -568,11 +507,6 @@ addevent(gentity_t *ent, int event, int eventParm)
 	ent->eventtime = level.time;
 }
 
-/*
-=============
-mksound
-=============
-*/
 void
 mksound(gentity_t *ent, int channel, int soundIndex)
 {
@@ -585,11 +519,7 @@ mksound(gentity_t *ent, int channel, int soundIndex)
 //==============================================================================
 
 /*
-================
-setorigin
-
 Sets the pos trajectory for a fixed position
-================
 */
 void
 setorigin(gentity_t *ent, vec3_t origin)
@@ -604,12 +534,8 @@ setorigin(gentity_t *ent, vec3_t origin)
 }
 
 /*
-================
-DebugLine
-
   debug polygons only work when running a local game
   with r_debugSurface set to 2
-================
 */
 int
 DebugLine(vec3_t start, vec3_t end, int color)

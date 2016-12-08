@@ -39,11 +39,7 @@ CG_TargetCommand_f(void)
 }
 
 /*
-=================
-CG_SizeUp_f
-
 Keybinding command
-=================
 */
 static void
 CG_SizeUp_f(void)
@@ -52,11 +48,7 @@ CG_SizeUp_f(void)
 }
 
 /*
-=================
-CG_SizeDown_f
-
 Keybinding command
-=================
 */
 static void
 CG_SizeDown_f(void)
@@ -65,11 +57,7 @@ CG_SizeDown_f(void)
 }
 
 /*
-=============
-CG_Viewpos_f
-
 Debugging command to print the current position
-=============
 */
 static void
 CG_Viewpos_f(void)
@@ -143,11 +131,6 @@ CG_TellAttacker_f(void)
 }
 
 
-/*
-==================
-CG_StartOrbit_f
-==================
-*/
 
 static void
 CG_StartOrbit_f(void)
@@ -217,12 +200,8 @@ static consoleCommand_t commands[] = {
 };
 
 /*
-=================
-consolecmd
-
 The string has been tokenized and can be retrieved with
 Cmd_Argc() / Cmd_Argv()
-=================
 */
 qboolean
 consolecmd(void)
@@ -242,12 +221,8 @@ consolecmd(void)
 }
 
 /*
-=================
-initconsolesmds
-
 Let the client system know about all of our commands
 so it can perform tab completion
-=================
 */
 void
 initconsolesmds(void)

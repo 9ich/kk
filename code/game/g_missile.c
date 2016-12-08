@@ -53,7 +53,6 @@ bouncemissile(gentity_t *ent, trace_t *trace)
 
 /*
 Explode a missile without an impact
-================
 */
 void
 explodemissile(gentity_t *ent)

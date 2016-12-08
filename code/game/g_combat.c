@@ -23,11 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
-/*
-============
-ScorePlum
-============
-*/
 void
 scoreplum(gentity_t *ent, vec3_t origin, int score)
 {
@@ -42,11 +37,7 @@ scoreplum(gentity_t *ent, vec3_t origin, int score)
 }
 
 /*
-============
-addscore
-
 Adds score to both the client and his team
-============
 */
 void
 addscore(gentity_t *ent, vec3_t origin, int score)
@@ -65,11 +56,7 @@ addscore(gentity_t *ent, vec3_t origin, int score)
 }
 
 /*
-=================
-tossclientitems
-
 Toss the weapon and powerups for the killed player
-=================
 */
 void
 tossclientitems(gentity_t *self)
@@ -129,11 +116,6 @@ tossclientitems(gentity_t *self)
 
 #ifdef MISSIONPACK
 
-/*
-=================
-TossClientCubes
-=================
-*/
 extern gentity_t *neutralObelisk;
 
 void
@@ -178,11 +160,6 @@ tossclientcubes(gentity_t *self)
 	drop->spawnflags = self->client->sess.team;
 }
 
-/*
-=================
-TossClientPersistantPowerups
-=================
-*/
 void
 tossclientpowerups(gentity_t *ent)
 {
@@ -207,11 +184,6 @@ tossclientpowerups(gentity_t *ent)
 
 #endif
 
-/*
-==================
-LookAtKiller
-==================
-*/
 void
 lookatkiller(gentity_t *self, gentity_t *inflictor, gentity_t *attacker)
 {
@@ -229,11 +201,6 @@ lookatkiller(gentity_t *self, gentity_t *inflictor, gentity_t *attacker)
 	self->client->ps.stats[STAT_DEAD_YAW] = vectoyaw(dir);
 }
 
-/*
-==================
-GibEntity
-==================
-*/
 void
 entgib(gentity_t *self, int killer)
 {
@@ -260,11 +227,6 @@ entgib(gentity_t *self, int killer)
 	self->r.contents = 0;
 }
 
-/*
-==================
-body_die
-==================
-*/
 void
 body_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath)
 {
@@ -314,11 +276,6 @@ char *modNames[] = {
 };
 
 #ifdef MISSIONPACK
-/*
-==================
-Kamikaze_DeathActivate
-==================
-*/
 void
 Kamikaze_DeathActivate(gentity_t *ent)
 {
@@ -326,11 +283,6 @@ Kamikaze_DeathActivate(gentity_t *ent)
 	entfree(ent);
 }
 
-/*
-==================
-Kamikaze_DeathTimer
-==================
-*/
 void
 Kamikaze_DeathTimer(gentity_t *self)
 {
@@ -348,11 +300,7 @@ Kamikaze_DeathTimer(gentity_t *self)
 
 #endif
 
-/*
-==================
-CheckAlmostCapture
-==================
-*/
+
 void
 chkalmostcaptured(gentity_t *self, gentity_t *attacker)
 {
@@ -393,11 +341,7 @@ chkalmostcaptured(gentity_t *self, gentity_t *attacker)
 	}
 }
 
-/*
-==================
-CheckAlmostScored
-==================
-*/
+
 void
 chkalmostscored(gentity_t *self, gentity_t *attacker)
 {
@@ -448,11 +392,7 @@ chkmultikill(gentity_t *attacker)
 	}
 }
 
-/*
-==================
-player_die
-==================
-*/
+
 void
 player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath)
 {
@@ -710,11 +650,7 @@ player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damag
 	trap_LinkEntity(self);
 }
 
-/*
-================
-CheckArmor
-================
-*/
+
 int
 chkarmor(gentity_t *ent, int damage, int dflags)
 {
@@ -762,11 +698,7 @@ chkarmor(gentity_t *ent, int damage, int dflags)
 	return save;
 }
 
-/*
-================
-RaySphereIntersections
-================
-*/
+
 int
 RaySphereIntersections(vec3_t origin, float radius, vec3_t point, vec3_t dir, vec3_t intersections[2])
 {
@@ -801,11 +733,7 @@ RaySphereIntersections(vec3_t origin, float radius, vec3_t point, vec3_t dir, ve
 }
 
 #ifdef MISSIONPACK
-/*
-================
-G_InvulnerabilityEffect
-================
-*/
+
 int
 invulneffect(gentity_t *targ, vec3_t dir, vec3_t point, vec3_t impactpoint, vec3_t bouncedir)
 {
@@ -839,7 +767,6 @@ invulneffect(gentity_t *targ, vec3_t dir, vec3_t point, vec3_t impactpoint, vec3
 
 #endif
 /*
-============
 entdamage
 
 targ		entity that is being damaged
@@ -859,7 +786,6 @@ dflags		these flags are used to control how T_Damage works
         DAMAGE_NO_ARMOR			armor does not protect from this damage
         DAMAGE_NO_KNOCKBACK		do not affect velocity, just view angles
         DAMAGE_NO_PROTECTION	kills godmode, armor, everything
-============
 */
 
 void
@@ -1085,12 +1011,10 @@ entdamage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 }
 
 /*
-============
 candamage
 
 Returns qtrue if the inflictor can directly damage the target.  Used for
 explosions and melee attacks.
-============
 */
 qboolean
 candamage(gentity_t *targ, vec3_t origin)
@@ -1190,9 +1114,7 @@ candamage(gentity_t *targ, vec3_t origin)
 }
 
 /*
-============
 radiusdamage
-============
 */
 qboolean
 radiusdamage(vec3_t origin, gentity_t *attacker, float damage, float radius,

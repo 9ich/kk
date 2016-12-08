@@ -24,12 +24,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "cg_local.h"
 
 /*
-======================
-entontag
-
 Modifies the entities position and axis by the given
 tag location
-======================
 */
 void
 entontag(refEntity_t *entity, const refEntity_t *parent,
@@ -53,12 +49,8 @@ entontag(refEntity_t *entity, const refEntity_t *parent,
 }
 
 /*
-======================
-rotentontag
-
 Modifies the entities position and axis by the given
 tag location
-======================
 */
 void
 rotentontag(refEntity_t *entity, const refEntity_t *parent,
@@ -92,11 +84,7 @@ FUNCTIONS CALLED EACH FRAME
 */
 
 /*
-======================
-setentsoundpos
-
 Also called by event processing code
-======================
 */
 void
 setentsoundpos(centity_t *cent)
@@ -113,11 +101,7 @@ setentsoundpos(centity_t *cent)
 }
 
 /*
-==================
-entfx
-
 Add continuous entity effects, like local entity emission and lighting
-==================
 */
 static void
 entfx(centity_t *cent)
@@ -149,11 +133,6 @@ entfx(centity_t *cent)
 	}
 }
 
-/*
-==================
-dogeneral
-==================
-*/
 static void
 dogeneral(centity_t *cent)
 {
@@ -190,11 +169,7 @@ dogeneral(centity_t *cent)
 }
 
 /*
-==================
-dospeaker
-
 Speaker entities can automatically play sounds
-==================
 */
 static void
 dospeaker(centity_t *cent)
@@ -212,11 +187,6 @@ dospeaker(centity_t *cent)
 	cent->misctime = cg.time + cent->currstate.frame * 100 + cent->currstate.clientNum * 100 * crandom();
 }
 
-/*
-==================
-doitem
-==================
-*/
 static void
 doitem(centity_t *cent)
 {
@@ -395,11 +365,6 @@ doitem(centity_t *cent)
 
 //============================================================================
 
-/*
-===============
-domissile
-===============
-*/
 static void
 domissile(centity_t *cent)
 {
@@ -481,11 +446,7 @@ domissile(centity_t *cent)
 }
 
 /*
-===============
-dograpple
-
 This is called when the grapple is sitting up against the wall
-===============
 */
 static void
 dograpple(centity_t *cent)
@@ -529,11 +490,6 @@ dograpple(centity_t *cent)
 	trap_R_AddRefEntityToScene(&ent);
 }
 
-/*
-===============
-domover
-===============
-*/
 static void
 domover(centity_t *cent)
 {
@@ -571,11 +527,7 @@ domover(centity_t *cent)
 }
 
 /*
-===============
-drawbeam
-
 Also called as an event
-===============
 */
 void
 drawbeam(centity_t *cent)
@@ -598,11 +550,6 @@ drawbeam(centity_t *cent)
 	trap_R_AddRefEntityToScene(&ent);
 }
 
-/*
-===============
-doportal
-===============
-*/
 static void
 doportal(centity_t *cent)
 {
@@ -633,11 +580,7 @@ doportal(centity_t *cent)
 }
 
 /*
-=========================
-adjustposformover
-
 Also called by client movement prediction code
-=========================
 */
 void
 adjustposformover(const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out, vec3_t angles_in, vec3_t angles_out)
@@ -673,11 +616,6 @@ adjustposformover(const vec3_t in, int moverNum, int fromTime, int toTime, vec3_
 	// FIXME: origin change when on a rotating object
 }
 
-/*
-=============================
-CG_InterpolateEntityPosition
-=============================
-*/
 static void
 CG_InterpolateEntityPosition(centity_t *cent)
 {
@@ -708,12 +646,6 @@ CG_InterpolateEntityPosition(centity_t *cent)
 	cent->lerpangles[2] = LerpAngle(current[2], next[2], f);
 }
 
-/*
-===============
-CG_CalcEntityLerpPositions
-
-===============
-*/
 static void
 CG_CalcEntityLerpPositions(centity_t *cent)
 {
@@ -749,11 +681,6 @@ CG_CalcEntityLerpPositions(centity_t *cent)
 					  cg.snap->serverTime, cg.time, cent->lerporigin, cent->lerpangles, cent->lerpangles);
 }
 
-/*
-===============
-doteambase
-===============
-*/
 static void
 doteambase(centity_t *cent)
 {
@@ -891,12 +818,6 @@ doteambase(centity_t *cent)
 #endif
 }
 
-/*
-===============
-CG_AddCEntity
-
-===============
-*/
 static void
 CG_AddCEntity(centity_t *cent)
 {
@@ -957,12 +878,6 @@ CG_AddCEntity(centity_t *cent)
 	}
 }
 
-/*
-===============
-addpacketents
-
-===============
-*/
 void
 addpacketents(void)
 {

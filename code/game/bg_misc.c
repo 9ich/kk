@@ -948,11 +948,6 @@ Only in CTF games
 
 int bg_nitems = ARRAY_LEN(bg_itemlist) - 1;
 
-/*
-==============
-finditemforpowerup
-==============
-*/
 gitem_t *
 finditemforpowerup(powerup_t pw)
 {
@@ -968,11 +963,6 @@ finditemforpowerup(powerup_t pw)
 	return nil;
 }
 
-/*
-==============
-finditemforholdable
-==============
-*/
 gitem_t *
 finditemforholdable(holdable_t pw)
 {
@@ -987,12 +977,6 @@ finditemforholdable(holdable_t pw)
 	return nil;
 }
 
-/*
-===============
-finditemforweapon
-
-===============
-*/
 gitem_t *
 finditemforweapon(weapon_t weapon)
 {
@@ -1006,12 +990,6 @@ finditemforweapon(weapon_t weapon)
 	return nil;
 }
 
-/*
-===============
-finditem
-
-===============
-*/
 gitem_t *
 finditem(const char *pickupName)
 {
@@ -1025,12 +1003,8 @@ finditem(const char *pickupName)
 }
 
 /*
-============
-playertouchingitem
-
 Items can be picked up without actually touching their physical bounds to make
 grabbing them easier
-============
 */
 qboolean
 playertouchingitem(playerState_t *ps, entityState_t *item, int atTime)
@@ -1051,12 +1025,8 @@ playertouchingitem(playerState_t *ps, entityState_t *item, int atTime)
 }
 
 /*
-================
-cangrabitem
-
 Returns false if the item should not be picked up.
 This needs to be the same for client side prediction and server use.
-================
 */
 qboolean
 cangrabitem(int gametype, const entityState_t *ent, const playerState_t *ps)
@@ -1195,12 +1165,6 @@ cangrabitem(int gametype, const entityState_t *ent, const playerState_t *ps)
 
 //======================================================================
 
-/*
-================
-evaltrajectory
-
-================
-*/
 void
 evaltrajectory(const trajectory_t *tr, int atTime, vec3_t result)
 {
@@ -1241,11 +1205,7 @@ evaltrajectory(const trajectory_t *tr, int atTime, vec3_t result)
 }
 
 /*
-================
-evaltrajectorydelta
-
 For determining velocity at a given time
-================
 */
 void
 evaltrajectorydelta(const trajectory_t *tr, int atTime, vec3_t result)
@@ -1383,11 +1343,7 @@ char *eventnames[] = {
 };
 
 /*
-===============
-bgaddpredictableevent
-
 Handles the sequence numbers
-===============
 */
 
 void trap_Cvar_VariableStringBuffer(const char *var_name, char *buffer, int bufsize);
@@ -1413,11 +1369,6 @@ bgaddpredictableevent(int newEvent, int eventParm, playerState_t *ps)
 	ps->eventSequence++;
 }
 
-/*
-========================
-touchjumppad
-========================
-*/
 void
 touchjumppad(playerState_t *ps, entityState_t *jumppad)
 {
@@ -1463,12 +1414,10 @@ touchtriggergravity(playerState_t *ps, entityState_t *zone, float framedur)
 }
 
 /*
-========================
 playerstate2entstate
 
 This is done after each set of usercmd_t on the server,
 and after local prediction on the client
-========================
 */
 void
 playerstate2entstate(playerState_t *ps, entityState_t *s, qboolean snap)
@@ -1542,12 +1491,10 @@ playerstate2entstate(playerState_t *ps, entityState_t *s, qboolean snap)
 }
 
 /*
-========================
 playerstate2entstatexerp
 
 This is done after each set of usercmd_t on the server,
 and after local prediction on the client
-========================
 */
 void
 playerstate2entstatexerp(playerState_t *ps, entityState_t *s, int time, qboolean snap)

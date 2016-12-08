@@ -100,11 +100,6 @@ int red_numaltroutegoals;
 aas_altroutegoal_t blue_altroutegoals[MAX_ALTROUTEGOALS];
 int blue_numaltroutegoals;
 
-/*
-==================
-BotSetUserInfo
-==================
-*/
 void
 BotSetUserInfo(bot_state_t *bs, char *key, char *value)
 {
@@ -116,11 +111,6 @@ BotSetUserInfo(bot_state_t *bs, char *key, char *value)
 	clientuserinfochanged(bs->client);
 }
 
-/*
-==================
-BotCTFCarryingFlag
-==================
-*/
 int
 BotCTFCarryingFlag(bot_state_t *bs)
 {
@@ -131,11 +121,6 @@ BotCTFCarryingFlag(bot_state_t *bs)
 	return CTF_FLAG_NONE;
 }
 
-/*
-==================
-BotTeam
-==================
-*/
 int
 BotTeam(bot_state_t *bs)
 {
@@ -150,11 +135,6 @@ BotTeam(bot_state_t *bs)
 	return TEAM_FREE;
 }
 
-/*
-==================
-BotOppositeTeam
-==================
-*/
 int
 BotOppositeTeam(bot_state_t *bs)
 {
@@ -165,11 +145,6 @@ BotOppositeTeam(bot_state_t *bs)
 	}
 }
 
-/*
-==================
-BotEnemyFlag
-==================
-*/
 bot_goal_t *
 BotEnemyFlag(bot_state_t *bs)
 {
@@ -179,11 +154,6 @@ BotEnemyFlag(bot_state_t *bs)
 		return &ctf_redflag;
 }
 
-/*
-==================
-BotTeamFlag
-==================
-*/
 bot_goal_t *
 BotTeamFlag(bot_state_t *bs)
 {
@@ -193,11 +163,6 @@ BotTeamFlag(bot_state_t *bs)
 		return &ctf_blueflag;
 }
 
-/*
-==================
-EntityIsDead
-==================
-*/
 qboolean
 EntityIsDead(aas_entityinfo_t *entinfo)
 {
@@ -211,11 +176,6 @@ EntityIsDead(aas_entityinfo_t *entinfo)
 	return qfalse;
 }
 
-/*
-==================
-EntityCarriesFlag
-==================
-*/
 qboolean
 EntityCarriesFlag(aas_entityinfo_t *entinfo)
 {
@@ -230,11 +190,7 @@ EntityCarriesFlag(aas_entityinfo_t *entinfo)
 	return qfalse;
 }
 
-/*
-==================
-EntityIsInvisible
-==================
-*/
+
 qboolean
 EntityIsInvisible(aas_entityinfo_t *entinfo)
 {
@@ -246,11 +202,7 @@ EntityIsInvisible(aas_entityinfo_t *entinfo)
 	return qfalse;
 }
 
-/*
-==================
-EntityIsShooting
-==================
-*/
+
 qboolean
 EntityIsShooting(aas_entityinfo_t *entinfo)
 {
@@ -259,11 +211,7 @@ EntityIsShooting(aas_entityinfo_t *entinfo)
 	return qfalse;
 }
 
-/*
-==================
-EntityIsChatting
-==================
-*/
+
 qboolean
 EntityIsChatting(aas_entityinfo_t *entinfo)
 {
@@ -272,11 +220,7 @@ EntityIsChatting(aas_entityinfo_t *entinfo)
 	return qfalse;
 }
 
-/*
-==================
-EntityHasQuad
-==================
-*/
+
 qboolean
 EntityHasQuad(aas_entityinfo_t *entinfo)
 {
@@ -286,11 +230,7 @@ EntityHasQuad(aas_entityinfo_t *entinfo)
 }
 
 #ifdef MISSIONPACK
-/*
-==================
-EntityHasKamikze
-==================
-*/
+
 qboolean
 EntityHasKamikaze(aas_entityinfo_t *entinfo)
 {
@@ -299,11 +239,7 @@ EntityHasKamikaze(aas_entityinfo_t *entinfo)
 	return qfalse;
 }
 
-/*
-==================
-EntityCarriesCubes
-==================
-*/
+
 qboolean
 EntityCarriesCubes(aas_entityinfo_t *entinfo)
 {
@@ -319,9 +255,7 @@ EntityCarriesCubes(aas_entityinfo_t *entinfo)
 }
 
 /*
-==================
 Bot1FCTFCarryingFlag
-==================
 */
 int
 Bot1FCTFCarryingFlag(bot_state_t *bs)
@@ -332,11 +266,7 @@ Bot1FCTFCarryingFlag(bot_state_t *bs)
 	return qfalse;
 }
 
-/*
-==================
-BotHarvesterCarryingCubes
-==================
-*/
+
 int
 BotHarvesterCarryingCubes(bot_state_t *bs)
 {
@@ -349,11 +279,7 @@ BotHarvesterCarryingCubes(bot_state_t *bs)
 
 #endif
 
-/*
-==================
-BotRememberLastOrderedTask
-==================
-*/
+
 void
 BotRememberLastOrderedTask(bot_state_t *bs)
 {
@@ -366,9 +292,7 @@ BotRememberLastOrderedTask(bot_state_t *bs)
 }
 
 /*
-==================
 BotSetTeamStatus
-==================
 */
 void
 BotSetTeamStatus(bot_state_t *bs)
@@ -430,9 +354,7 @@ BotSetTeamStatus(bot_state_t *bs)
 }
 
 /*
-==================
 BotSetLastOrderedTask
-==================
 */
 int
 BotSetLastOrderedTask(bot_state_t *bs)
@@ -476,9 +398,7 @@ BotSetLastOrderedTask(bot_state_t *bs)
 }
 
 /*
-==================
 BotRefuseOrder
-==================
 */
 void
 BotRefuseOrder(bot_state_t *bs)
@@ -492,11 +412,6 @@ BotRefuseOrder(bot_state_t *bs)
 	}
 }
 
-/*
-==================
-BotCTFSeekGoals
-==================
-*/
 void
 BotCTFSeekGoals(bot_state_t *bs)
 {
@@ -738,11 +653,6 @@ BotCTFSeekGoals(bot_state_t *bs)
 #endif	//DEBUG
 }
 
-/*
-==================
-BotCTFRetreatGoals
-==================
-*/
 void
 BotCTFRetreatGoals(bot_state_t *bs)
 {
@@ -762,9 +672,7 @@ BotCTFRetreatGoals(bot_state_t *bs)
 
 #ifdef MISSIONPACK
 /*
-==================
 Bot1FCTFSeekGoals
-==================
 */
 void
 Bot1FCTFSeekGoals(bot_state_t *bs)
@@ -965,9 +873,7 @@ Bot1FCTFSeekGoals(bot_state_t *bs)
 }
 
 /*
-==================
 Bot1FCTFRetreatGoals
-==================
 */
 void
 Bot1FCTFRetreatGoals(bot_state_t *bs)
@@ -988,11 +894,6 @@ Bot1FCTFRetreatGoals(bot_state_t *bs)
 		}
 }
 
-/*
-==================
-BotObeliskSeekGoals
-==================
-*/
 void
 BotObeliskSeekGoals(bot_state_t *bs)
 {
@@ -1071,11 +972,6 @@ BotObeliskSeekGoals(bot_state_t *bs)
 	}
 }
 
-/*
-==================
-BotGoHarvest
-==================
-*/
 void
 BotGoHarvest(bot_state_t *bs)
 {
@@ -1089,22 +985,12 @@ BotGoHarvest(bot_state_t *bs)
 	BotSetTeamStatus(bs);
 }
 
-/*
-==================
-BotObeliskRetreatGoals
-==================
-*/
 void
 BotObeliskRetreatGoals(bot_state_t *bs)
 {
 	//nothing special
 }
 
-/*
-==================
-BotHarvesterSeekGoals
-==================
-*/
 void
 BotHarvesterSeekGoals(bot_state_t *bs)
 {
@@ -1225,11 +1111,6 @@ BotHarvesterSeekGoals(bot_state_t *bs)
 	}
 }
 
-/*
-==================
-BotHarvesterRetreatGoals
-==================
-*/
 void
 BotHarvesterRetreatGoals(bot_state_t *bs)
 {
@@ -1251,11 +1132,6 @@ BotHarvesterRetreatGoals(bot_state_t *bs)
 
 #endif
 
-/*
-==================
-BotTeamGoals
-==================
-*/
 void
 BotTeamGoals(bot_state_t *bs, int retreat)
 {
@@ -1292,11 +1168,7 @@ BotTeamGoals(bot_state_t *bs, int retreat)
 	bs->order_time = 0;
 }
 
-/*
-==================
-BotPointAreaNum
-==================
-*/
+
 int
 BotPointAreaNum(vec3_t origin)
 {
@@ -1312,11 +1184,7 @@ BotPointAreaNum(vec3_t origin)
 	return 0;
 }
 
-/*
-==================
-ClientName
-==================
-*/
+
 char *
 ClientName(int client, char *name, int size)
 {
@@ -1333,11 +1201,7 @@ ClientName(int client, char *name, int size)
 	return name;
 }
 
-/*
-==================
-ClientSkin
-==================
-*/
+
 char *
 ClientSkin(int client, char *skin, int size)
 {
@@ -1353,11 +1217,7 @@ ClientSkin(int client, char *skin, int size)
 	return skin;
 }
 
-/*
-==================
-ClientFromName
-==================
-*/
+
 int
 ClientFromName(char *name)
 {
@@ -1375,11 +1235,7 @@ ClientFromName(char *name)
 	return -1;
 }
 
-/*
-==================
-ClientOnSameTeamFromName
-==================
-*/
+
 int
 ClientOnSameTeamFromName(bot_state_t *bs, char *name)
 {
@@ -1399,11 +1255,7 @@ ClientOnSameTeamFromName(bot_state_t *bs, char *name)
 	return -1;
 }
 
-/*
-==================
-stristr
-==================
-*/
+
 char *
 stristr(char *str, char *charset)
 {
@@ -1418,11 +1270,7 @@ stristr(char *str, char *charset)
 	return nil;
 }
 
-/*
-==================
-EasyClientName
-==================
-*/
+
 char *
 EasyClientName(int client, char *buf, int size)
 {
@@ -1465,11 +1313,7 @@ EasyClientName(int client, char *buf, int size)
 	return buf;
 }
 
-/*
-==================
-BotSynonymContext
-==================
-*/
+
 int
 BotSynonymContext(bot_state_t *bs)
 {
@@ -1497,9 +1341,7 @@ BotSynonymContext(bot_state_t *bs)
 }
 
 /*
-==================
 BotChooseWeapon
-==================
 */
 void
 BotChooseWeapon(bot_state_t *bs)
@@ -1519,9 +1361,7 @@ BotChooseWeapon(bot_state_t *bs)
 }
 
 /*
-==================
 BotSetupForMovement
-==================
 */
 void
 BotSetupForMovement(bot_state_t *bs)
@@ -1552,11 +1392,6 @@ BotSetupForMovement(bot_state_t *bs)
 	trap_BotInitMoveState(bs->ms, &initmove);
 }
 
-/*
-==================
-BotCheckItemPickup
-==================
-*/
 void
 BotCheckItemPickup(bot_state_t *bs, int *oldinventory)
 {
@@ -1626,11 +1461,6 @@ BotCheckItemPickup(bot_state_t *bs, int *oldinventory)
 #endif
 }
 
-/*
-==================
-BotUpdateInventory
-==================
-*/
 void
 BotUpdateInventory(bot_state_t *bs)
 {
@@ -1705,11 +1535,6 @@ BotUpdateInventory(bot_state_t *bs)
 	BotCheckItemPickup(bs, oldinventory);
 }
 
-/*
-==================
-BotUpdateBattleInventory
-==================
-*/
 void
 BotUpdateBattleInventory(bot_state_t *bs, int enemy)
 {
@@ -1725,11 +1550,6 @@ BotUpdateBattleInventory(bot_state_t *bs, int enemy)
 }
 
 #ifdef MISSIONPACK
-/*
-==================
-BotUseKamikaze
-==================
-*/
 #define KAMIKAZE_DIST 1024
 
 void
@@ -1831,11 +1651,6 @@ BotUseKamikaze(bot_state_t *bs)
 	}
 }
 
-/*
-==================
-BotUseInvulnerability
-==================
-*/
 void
 BotUseInvulnerability(bot_state_t *bs)
 {
@@ -1939,11 +1754,6 @@ BotUseInvulnerability(bot_state_t *bs)
 
 #endif
 
-/*
-==================
-BotBattleUseItems
-==================
-*/
 void
 BotBattleUseItems(bot_state_t *bs)
 {
@@ -1968,11 +1778,6 @@ BotBattleUseItems(bot_state_t *bs)
 #endif
 }
 
-/*
-==================
-BotSetTeleportTime
-==================
-*/
 void
 BotSetTeleportTime(bot_state_t *bs)
 {
@@ -1981,22 +1786,13 @@ BotSetTeleportTime(bot_state_t *bs)
 	bs->last_eFlags = bs->cur_ps.eFlags;
 }
 
-/*
-==================
-BotIsDead
-==================
-*/
 qboolean
 BotIsDead(bot_state_t *bs)
 {
 	return bs->cur_ps.pm_type == PM_DEAD;
 }
 
-/*
-==================
-BotIsObserver
-==================
-*/
+
 qboolean
 BotIsObserver(bot_state_t *bs)
 {
@@ -2007,11 +1803,7 @@ BotIsObserver(bot_state_t *bs)
 	return qfalse;
 }
 
-/*
-==================
-BotIntermission
-==================
-*/
+
 qboolean
 BotIntermission(bot_state_t *bs)
 {
@@ -2020,11 +1812,7 @@ BotIntermission(bot_state_t *bs)
 	return bs->cur_ps.pm_type == PM_FREEZE || bs->cur_ps.pm_type == PM_INTERMISSION;
 }
 
-/*
-==================
-BotInLavaOrSlime
-==================
-*/
+
 qboolean
 BotInLavaOrSlime(bot_state_t *bs)
 {
@@ -2035,11 +1823,7 @@ BotInLavaOrSlime(bot_state_t *bs)
 	return trap_AAS_PointContents(feet) & (CONTENTS_LAVA|CONTENTS_SLIME);
 }
 
-/*
-==================
-BotCreateWayPoint
-==================
-*/
+
 bot_waypoint_t *
 BotCreateWayPoint(char *name, vec3_t origin, int areanum)
 {
@@ -2063,11 +1847,7 @@ BotCreateWayPoint(char *name, vec3_t origin, int areanum)
 	return wp;
 }
 
-/*
-==================
-BotFindWayPoint
-==================
-*/
+
 bot_waypoint_t *
 BotFindWayPoint(bot_waypoint_t *waypoints, char *name)
 {
@@ -2078,11 +1858,7 @@ BotFindWayPoint(bot_waypoint_t *waypoints, char *name)
 	return nil;
 }
 
-/*
-==================
-BotFreeWaypoints
-==================
-*/
+
 void
 BotFreeWaypoints(bot_waypoint_t *wp)
 {
@@ -2095,11 +1871,7 @@ BotFreeWaypoints(bot_waypoint_t *wp)
 	}
 }
 
-/*
-==================
-BotInitWaypoints
-==================
-*/
+
 void
 BotInitWaypoints(void)
 {
@@ -2112,11 +1884,7 @@ BotInitWaypoints(void)
 	}
 }
 
-/*
-==================
-TeamPlayIsOn
-==================
-*/
+
 int
 TeamPlayIsOn(void)
 {
@@ -2124,9 +1892,7 @@ TeamPlayIsOn(void)
 }
 
 /*
-==================
 BotAggression
-==================
 */
 float
 BotAggression(bot_state_t *bs)
@@ -2171,9 +1937,7 @@ BotAggression(bot_state_t *bs)
 }
 
 /*
-==================
 BotFeelingBad
-==================
 */
 float
 BotFeelingBad(bot_state_t *bs)
@@ -2190,9 +1954,7 @@ BotFeelingBad(bot_state_t *bs)
 }
 
 /*
-==================
 BotWantsToRetreat
-==================
 */
 int
 BotWantsToRetreat(bot_state_t *bs)
@@ -2241,9 +2003,7 @@ BotWantsToRetreat(bot_state_t *bs)
 }
 
 /*
-==================
 BotWantsToChase
-==================
 */
 int
 BotWantsToChase(bot_state_t *bs)

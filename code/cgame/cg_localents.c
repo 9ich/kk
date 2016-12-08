@@ -31,11 +31,7 @@ localEntity_t cg_activeLocalEntities;	// double linked list
 localEntity_t *cg_freeLocalEntities;	// single linked list
 
 /*
-===================
-initlocalents
-
 This is called at startup and for tournement restarts
-===================
 */
 void
 initlocalents(void)
@@ -50,11 +46,6 @@ initlocalents(void)
 		cg_localEntities[i].next = &cg_localEntities[i+1];
 }
 
-/*
-==================
-CG_FreeLocalEntity
-==================
-*/
 void
 CG_FreeLocalEntity(localEntity_t *le)
 {
@@ -71,11 +62,7 @@ CG_FreeLocalEntity(localEntity_t *le)
 }
 
 /*
-===================
-alloclocalent
-
 Will always succeed, even if it requires freeing an old active entity
-===================
 */
 localEntity_t   *
 alloclocalent(void)
@@ -112,11 +99,7 @@ or generates more localentities along a trail.
 */
 
 /*
-================
-CG_BloodTrail
-
 Leave expanding blood puffs behind gibs
-================
 */
 void
 CG_BloodTrail(localEntity_t *le)
@@ -149,11 +132,6 @@ CG_BloodTrail(localEntity_t *le)
 	}
 }
 
-/*
-================
-CG_FragmentBounceMark
-================
-*/
 void
 CG_FragmentBounceMark(localEntity_t *le, trace_t *trace)
 {
@@ -174,11 +152,6 @@ CG_FragmentBounceMark(localEntity_t *le, trace_t *trace)
 	le->marktype = LEMT_NONE;
 }
 
-/*
-================
-CG_FragmentBounceSound
-================
-*/
 void
 CG_FragmentBounceSound(localEntity_t *le, trace_t *trace)
 {
@@ -204,11 +177,6 @@ CG_FragmentBounceSound(localEntity_t *le, trace_t *trace)
 	le->bouncesoundtype = LEBS_NONE;
 }
 
-/*
-================
-CG_ReflectVelocity
-================
-*/
 void
 CG_ReflectVelocity(localEntity_t *le, trace_t *trace)
 {
@@ -228,11 +196,6 @@ CG_ReflectVelocity(localEntity_t *le, trace_t *trace)
 	le->pos.trTime = cg.time;
 }
 
-/*
-================
-CG_AddFragment
-================
-*/
 void
 CG_AddFragment(localEntity_t *le)
 {
@@ -315,11 +278,6 @@ These only do simple scaling or modulation before passing to the renderer
 =====================================================================
 */
 
-/*
-====================
-CG_AddFadeRGB
-====================
-*/
 void
 CG_AddFadeRGB(localEntity_t *le)
 {
@@ -339,11 +297,6 @@ CG_AddFadeRGB(localEntity_t *le)
 	trap_R_AddRefEntityToScene(re);
 }
 
-/*
-==================
-CG_AddMoveScaleFade
-==================
-*/
 static void
 CG_AddMoveScaleFade(localEntity_t *le)
 {
@@ -381,13 +334,9 @@ CG_AddMoveScaleFade(localEntity_t *le)
 }
 
 /*
-===================
-CG_AddScaleFade
-
 For rocket smokes that hang in place, fade out, and are
 removed if the view passes through them.
 There are often many of these, so it needs to be simple.
-===================
 */
 static void
 CG_AddScaleFade(localEntity_t *le)
@@ -418,14 +367,10 @@ CG_AddScaleFade(localEntity_t *le)
 }
 
 /*
-=================
-CG_AddFallScaleFade
-
 This is just an optimized CG_AddMoveScaleFade
 For blood mists that drift down, fade out, and are
 removed if the view passes through them.
 There are often 100+ of these, so it needs to be simple.
-=================
 */
 static void
 CG_AddFallScaleFade(localEntity_t *le)
@@ -458,11 +403,6 @@ CG_AddFallScaleFade(localEntity_t *le)
 	trap_R_AddRefEntityToScene(re);
 }
 
-/*
-================
-CG_AddExplosion
-================
-*/
 static void
 CG_AddExplosion(localEntity_t *ex)
 {
@@ -487,11 +427,7 @@ CG_AddExplosion(localEntity_t *ex)
 	}
 }
 
-/*
-================
-CG_AddSpriteExplosion
-================
-*/
+
 static void
 CG_AddSpriteExplosion(localEntity_t *le)
 {
@@ -572,11 +508,7 @@ CG_AddShockwave(localEntity_t *le)
 	}
 }
 
-/*
-===================
-CG_AddScorePlum
-===================
-*/
+
 #define NUMBER_SIZE 8
 
 void
@@ -659,11 +591,7 @@ CG_AddScorePlum(localEntity_t *le)
 }
 
 #ifdef MISSIONPACK
-/*
-====================
-CG_AddKamikaze
-====================
-*/
+
 void
 CG_AddKamikaze(localEntity_t *le)
 {
@@ -781,9 +709,7 @@ CG_AddKamikaze(localEntity_t *le)
 }
 
 /*
-===================
 CG_AddInvulnerabilityImpact
-===================
 */
 void
 CG_AddInvulnerabilityImpact(localEntity_t *le)
@@ -792,9 +718,7 @@ CG_AddInvulnerabilityImpact(localEntity_t *le)
 }
 
 /*
-===================
 CG_AddInvulnerabilityJuiced
-===================
 */
 void
 CG_AddInvulnerabilityJuiced(localEntity_t *le)
@@ -814,11 +738,6 @@ CG_AddInvulnerabilityJuiced(localEntity_t *le)
 		trap_R_AddRefEntityToScene(&le->refEntity);
 }
 
-/*
-===================
-CG_AddRefEntity
-===================
-*/
 void
 CG_AddRefEntity(localEntity_t *le)
 {
@@ -833,12 +752,6 @@ CG_AddRefEntity(localEntity_t *le)
 
 //==============================================================================
 
-/*
-===================
-addlocalents
-
-===================
-*/
 void
 addlocalents(void)
 {

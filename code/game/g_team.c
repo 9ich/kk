@@ -194,12 +194,8 @@ PrintMsg(gentity_t *ent, const char *fmt, ...)
 }
 
 /*
-==============
-addteamscore
-
  used for gametype > GT_TEAM
  for gametype GT_TEAM the level.teamscores is updated in addscore in g_combat.c
-==============
 */
 void
 addteamscore(vec3_t origin, int team, int score)
@@ -235,11 +231,6 @@ addteamscore(vec3_t origin, int team, int score)
 	level.teamscores[team] += score;
 }
 
-/*
-==============
-onsameteam
-==============
-*/
 qboolean
 onsameteam(gentity_t *ent1, gentity_t *ent2)
 {
@@ -332,13 +323,9 @@ forcegesture(int team)
 }
 
 /*
-================
-teamfragbonuses
-
 Calculate the bonuses for flag defense, flag carrier defense, etc.
 Note that bonuses are not cumulative.  You get one, they are in importance
 order.
-================
 */
 void
 fragbonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker)
@@ -539,12 +526,8 @@ fragbonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker)
 }
 
 /*
-================
-teamcheckhurtcarrier
-
 Check to see if attacker hurt the flag carrier.  Needed when handing out bonuses for assistance to flag
 carrier defense.
-================
 */
 void
 chkhurtcarrier(gentity_t *targ, gentity_t *attacker)
@@ -713,13 +696,9 @@ teamfreeent(gentity_t *ent)
 }
 
 /*
-==============
-teamdroppedflag_think
-
 Automatically set in Launch_Item if the item is one of the flags
 
 Flags are unique in that if they are dropped, the base flag must be respawned when they time out
-==============
 */
 void
 droppedflag_think(gentity_t *ent)
@@ -921,11 +900,7 @@ pickupteam(gentity_t *ent, gentity_t *other)
 }
 
 /*
-===========
-teamgetlocation
-
 Report a location for the player. Uses placed nearby target_location entities
-============
 */
 gentity_t *
 teamgetlocation(gentity_t *ent)
@@ -958,11 +933,7 @@ teamgetlocation(gentity_t *ent)
 }
 
 /*
-===========
-teamgetlocation
-
 Report a location for the player. Uses placed nearby target_location entities
-============
 */
 qboolean
 teamgetlocationmsg(gentity_t *ent, char *loc, int loclen)
@@ -1108,13 +1079,8 @@ clientcmp(const void *a, const void *b)
 }
 
 /*
-==================
-TeamplayLocationsMessage
-
 Format:
 	clientNum location health armor weapon powerups
-
-==================
 */
 void
 teamplayinfomsg(gentity_t *ent)
@@ -1271,11 +1237,6 @@ SP_team_CTF_bluespawn(gentity_t *ent)
 
 #ifdef MISSIONPACK
 
-/*
-================
-Obelisks
-================
-*/
 
 static void
 ObeliskRegen(gentity_t *self)

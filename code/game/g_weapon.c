@@ -43,11 +43,6 @@ inheritvel(gentity_t *ent, gentity_t *m)
 	}
 }
 
-/*
-================
-G_BounceProjectile
-================
-*/
 void
 G_BounceProjectile(vec3_t start, vec3_t impact, vec3_t dir, vec3_t endout)
 {
@@ -62,24 +57,12 @@ G_BounceProjectile(vec3_t start, vec3_t impact, vec3_t dir, vec3_t endout)
 	vecmad(impact, 8192, newv, endout);
 }
 
-/*
-======================================================================
-
-GAUNTLET
-
-======================================================================
-*/
 
 void
 Weapon_Gauntlet(gentity_t *ent)
 {
 }
 
-/*
-===============
-chkgauntletattack
-===============
-*/
 qboolean
 chkgauntletattack(gentity_t *ent)
 {
@@ -135,23 +118,12 @@ chkgauntletattack(gentity_t *ent)
 	return qtrue;
 }
 
-/*
-======================================================================
-
-MACHINEGUN
-
-======================================================================
-*/
 
 /*
-======================
-snapvectortowards
-
 Round a vector to integers for more efficient network
 transmission, but make sure that it rounds towards a given point
 rather than blindly truncating.  This prevents it from truncating
 into a wall.
-======================
 */
 void
 snapvectortowards(vec3_t v, vec3_t to)
@@ -202,13 +174,6 @@ ExplosiveBullet_Fire(gentity_t *ent, float spread, int damage, int mod)
 	inheritvel(ent, m);
 }
 
-/*
-======================================================================
-
-BFG
-
-======================================================================
-*/
 
 void
 BFG_Fire(gentity_t *ent)
@@ -222,13 +187,6 @@ BFG_Fire(gentity_t *ent)
 	inheritvel(ent, m);
 }
 
-/*
-======================================================================
-
-SHOTGUN
-
-======================================================================
-*/
 
 // DEFAULT_SHOTGUN_SPREAD and DEFAULT_SHOTGUN_COUNT	are in bg_public.h, because
 // client predicts same spreads
@@ -338,14 +296,6 @@ weapon_supershotgun_fire(gentity_t *ent)
 	ShotgunPattern(tent->s.pos.trBase, tent->s.origin2, tent->s.eventParm, ent);
 }
 
-/*
-======================================================================
-
-GRENADE LAUNCHER
-
-======================================================================
-*/
-
 void
 weapon_grenadelauncher_fire(gentity_t *ent)
 {
@@ -360,13 +310,6 @@ weapon_grenadelauncher_fire(gentity_t *ent)
 	inheritvel(ent, m);
 }
 
-/*
-======================================================================
-
-ROCKET
-
-======================================================================
-*/
 
 void
 Weapon_RocketLauncher_Fire(gentity_t *ent)
@@ -380,13 +323,6 @@ Weapon_RocketLauncher_Fire(gentity_t *ent)
 	inheritvel(ent, m);
 }
 
-/*
-======================================================================
-
-HOMINGLAUNCHER
-
-======================================================================
-*/
 
 void
 Weapon_HomingLauncher_Fire(gentity_t *ent)
@@ -414,13 +350,6 @@ Weapon_HomingLauncher_Fire(gentity_t *ent)
 
 	ent->client->ps.lockontarget = ENTITYNUM_NONE;
 }
-/*
-======================================================================
-
-PLASMA GUN
-
-======================================================================
-*/
 
 void
 Weapon_Plasmagun_Fire(gentity_t *ent)
@@ -434,19 +363,8 @@ Weapon_Plasmagun_Fire(gentity_t *ent)
 	inheritvel(ent, m);
 }
 
-/*
-======================================================================
 
-RAILGUN
 
-======================================================================
-*/
-
-/*
-=================
-weapon_railgun_fire
-=================
-*/
 #define MAX_RAIL_HITS 4
 void
 weapon_railgun_fire(gentity_t *ent)
@@ -559,14 +477,6 @@ weapon_railgun_fire(gentity_t *ent)
 	}
 }
 
-/*
-======================================================================
-
-GRAPPLING HOOK
-
-======================================================================
-*/
-
 void
 Weapon_GrapplingHook_Fire(gentity_t *ent)
 {
@@ -605,14 +515,6 @@ weapon_hook_think(gentity_t *ent)
 
 	veccpy(ent->r.currentOrigin, ent->parent->client->ps.grapplePoint);
 }
-
-/*
-======================================================================
-
-LIGHTNING GUN
-
-======================================================================
-*/
 
 void
 Weapon_LightningFire(gentity_t *ent)
@@ -691,13 +593,6 @@ Weapon_LightningFire(gentity_t *ent)
 }
 
 #ifdef MISSIONPACK
-/*
-======================================================================
-
-NAILGUN
-
-======================================================================
-*/
 
 void
 Weapon_Nailgun_Fire(gentity_t *ent)
@@ -710,14 +605,6 @@ Weapon_Nailgun_Fire(gentity_t *ent)
 	inheritvel(ent, m);
 
 }
-
-/*
-======================================================================
-
-PROXIMITY MINE LAUNCHER
-
-======================================================================
-*/
 
 void
 weapon_proxlauncher_fire(gentity_t *ent)
@@ -739,11 +626,6 @@ weapon_proxlauncher_fire(gentity_t *ent)
 
 //======================================================================
 
-/*
-===============
-logaccuracyhit
-===============
-*/
 qboolean
 logaccuracyhit(gentity_t *target, gentity_t *attacker)
 {
@@ -769,11 +651,7 @@ logaccuracyhit(gentity_t *target, gentity_t *attacker)
 }
 
 /*
-===============
-calcmuzzlepoint
-
 set muzzle location relative to pivoting eye
-===============
 */
 void
 calcmuzzlepoint(gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint)
@@ -784,11 +662,7 @@ calcmuzzlepoint(gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t 
 }
 
 /*
-===============
-calcmuzzlepointorigin
-
 set muzzle location relative to pivoting eye
-===============
 */
 void
 calcmuzzlepointorigin(gentity_t *ent, vec3_t origin, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint)
@@ -798,11 +672,7 @@ calcmuzzlepointorigin(gentity_t *ent, vec3_t origin, vec3_t forward, vec3_t righ
 	SnapVector(muzzlePoint);
 }
 
-/*
-===============
-fireweapon
-===============
-*/
+
 void
 fireweapon(gentity_t *ent, int slot)
 {
@@ -884,11 +754,7 @@ fireweapon(gentity_t *ent, int slot)
 
 #ifdef MISSIONPACK
 
-/*
-===============
-KamikazeRadiusDamage
-===============
-*/
+
 static void
 KamikazeRadiusDamage(vec3_t origin, gentity_t *attacker, float damage, float radius)
 {
@@ -946,11 +812,6 @@ KamikazeRadiusDamage(vec3_t origin, gentity_t *attacker, float damage, float rad
 	}
 }
 
-/*
-===============
-KamikazeShockWave
-===============
-*/
 static void
 KamikazeShockWave(vec3_t origin, gentity_t *attacker, float damage, float push, float radius)
 {
@@ -1010,11 +871,6 @@ KamikazeShockWave(vec3_t origin, gentity_t *attacker, float damage, float push, 
 	}
 }
 
-/*
-===============
-KamikazeDamage
-===============
-*/
 static void
 KamikazeDamage(gentity_t *self)
 {
@@ -1067,11 +923,6 @@ KamikazeDamage(gentity_t *self)
 	veccpy(newangles, self->movedir);
 }
 
-/*
-===============
-G_StartKamikaze
-===============
-*/
 void
 G_StartKamikaze(gentity_t *ent)
 {

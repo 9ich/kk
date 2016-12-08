@@ -27,11 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "cg_local.h"
 
 /*
-==============
-CG_CheckAmmo
-
 If the ammo has gone low enough to generate the warning, play a sound
-==============
 */
 void
 CG_CheckAmmo(void)
@@ -80,11 +76,6 @@ CG_CheckAmmo(void)
 		trap_S_StartLocalSound(cgs.media.noAmmoSound, CHAN_LOCAL_SOUND);
 }
 
-/*
-==============
-CG_DamageFeedback
-==============
-*/
 void
 CG_DamageFeedback(int yawbyte, int pitchbyte, int damage)
 {
@@ -114,11 +105,7 @@ CG_DamageFeedback(int yawbyte, int pitchbyte, int damage)
 }
 
 /*
-================
-respawn
-
 A respawn happened this snapshot
-================
 */
 void
 respawn(void)
@@ -138,11 +125,6 @@ respawn(void)
 
 extern char *eventnames[];
 
-/*
-==============
-CG_CheckPlayerstateEvents
-==============
-*/
 void
 CG_CheckPlayerstateEvents(playerState_t *ps, playerState_t *ops)
 {
@@ -176,11 +158,6 @@ CG_CheckPlayerstateEvents(playerState_t *ps, playerState_t *ops)
 		}
 }
 
-/*
-==================
-chkpredictableevents
-==================
-*/
 void
 chkpredictableevents(playerState_t *ps)
 {
@@ -209,11 +186,6 @@ chkpredictableevents(playerState_t *ps)
 	}
 }
 
-/*
-==================
-pushreward
-==================
-*/
 void
 pushreward(sfxHandle_t sfx, qhandle_t shader, const char *msg, int nrewards)
 {
@@ -227,11 +199,6 @@ pushreward(sfxHandle_t sfx, qhandle_t shader, const char *msg, int nrewards)
 	}
 }
 
-/*
-==================
-CG_CheckLocalSounds
-==================
-*/
 void
 CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops)
 {
@@ -336,12 +303,6 @@ CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops)
 	}
 }
 
-/*
-===============
-pstransition
-
-===============
-*/
 void
 pstransition(playerState_t *ps, playerState_t *ops)
 {

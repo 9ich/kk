@@ -27,11 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //==========================================================================
 
 /*
-===================
-placestr
-
 Also called by scoreboard drawing
-===================
 */
 const char      *
 placestr(int rank)
@@ -84,11 +80,6 @@ queueobit(const char *killer, const char *icon, const char *victim)
 	Q_strncpyz(cg.obit[0].victim, victim, sizeof cg.obit[0].victim);
 }
 
-/*
-=============
-CG_Obituary
-=============
-*/
 static void
 CG_Obituary(entityState_t *ent)
 {
@@ -239,11 +230,6 @@ CG_Obituary(entityState_t *ent)
 
 //==========================================================================
 
-/*
-===============
-CG_UseItem
-===============
-*/
 static void
 CG_UseItem(centity_t *cent)
 {
@@ -300,11 +286,7 @@ CG_UseItem(centity_t *cent)
 }
 
 /*
-================
-CG_ItemPickup
-
 A new item was picked up this frame
-================
 */
 static void
 CG_ItemPickup(int itemNum)
@@ -326,11 +308,7 @@ CG_ItemPickup(int itemNum)
 }
 
 /*
-================
-CG_WaterLevel
-
 Returns waterlevel for entity origin
-================
 */
 int
 CG_WaterLevel(centity_t *cent)
@@ -375,11 +353,7 @@ CG_WaterLevel(centity_t *cent)
 }
 
 /*
-================
-painevent
-
 Also called by playerstate transition
-================
 */
 void
 painevent(centity_t *cent, int health)
@@ -412,12 +386,8 @@ painevent(centity_t *cent, int health)
 }
 
 /*
-==============
-entevent
-
 An entity has an event value
 also called by CG_CheckPlayerstateEvents
-==============
 */
 #define DEBUGNAME(x) if(cg_debugEvents.integer){cgprintf(x "\n"); }
 void
@@ -984,12 +954,6 @@ entevent(centity_t *cent, vec3_t position)
 	}
 }
 
-/*
-==============
-chkevents
-
-==============
-*/
 void
 chkevents(centity_t *cent)
 {

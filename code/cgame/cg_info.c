@@ -31,11 +31,6 @@ static int loadingItemIconCount;
 static qhandle_t loadingPlayerIcons[MAX_LOADING_PLAYER_ICONS];
 static qhandle_t loadingItemIcons[MAX_LOADING_ITEM_ICONS];
 
-/*
-===================
-CG_DrawLoadingIcons
-===================
-*/
 static void
 CG_DrawLoadingIcons(void)
 {
@@ -57,12 +52,6 @@ CG_DrawLoadingIcons(void)
 	}
 }
 
-/*
-======================
-loadingstr
-
-======================
-*/
 void
 loadingstr(const char *s)
 {
@@ -71,11 +60,6 @@ loadingstr(const char *s)
 	trap_UpdateScreen();
 }
 
-/*
-===================
-loadingitem
-===================
-*/
 void
 loadingitem(int itemNum)
 {
@@ -89,11 +73,6 @@ loadingitem(int itemNum)
 	loadingstr(item->pickupname);
 }
 
-/*
-===================
-loadingclient
-===================
-*/
 void
 loadingclient(int clientNum)
 {
@@ -138,11 +117,7 @@ loadingclient(int clientNum)
 }
 
 /*
-====================
-drawinfo
-
 Draw all the status / pacifier stuff during level loading
-====================
 */
 void
 drawinfo(void)

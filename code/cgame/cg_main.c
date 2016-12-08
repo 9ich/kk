@@ -29,12 +29,8 @@ void	cginit(int serverMessageNum, int serverCommandSequence, int clientNum);
 void	cgshutdown(void);
 
 /*
-================
-vmMain
-
 This is the only way control passes into the module.
 This must be the very first function compiled into the .q3vm file
-================
 */
 Q_EXPORT intptr_t
 vmMain(int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11)
@@ -349,11 +345,6 @@ static cvarTable_t cvarTable[] = {
 
 static int cvarTableSize = ARRAY_LEN(cvarTable);
 
-/*
-=================
-registercvars
-=================
-*/
 void
 registercvars(void)
 {
@@ -377,11 +368,6 @@ registercvars(void)
 	trap_Cvar_Register(nil, "team_headmodel", DEFAULT_TEAM_HEAD, CVAR_USERINFO | CVAR_ARCHIVE);
 }
 
-/*
-===================
-CG_ForceModelChange
-===================
-*/
 static void
 CG_ForceModelChange(void)
 {
@@ -397,11 +383,6 @@ CG_ForceModelChange(void)
 	}
 }
 
-/*
-=================
-updatecvars
-=================
-*/
 void
 updatecvars(void)
 {
@@ -506,11 +487,6 @@ Com_Printf(const char *msg, ...)
 	trap_Print(text);
 }
 
-/*
-================
-cgargv
-================
-*/
 const char *
 cgargv(int arg)
 {
@@ -524,11 +500,7 @@ cgargv(int arg)
 //========================================================================
 
 /*
-=================
-CG_RegisterItemSounds
-
 The server says this item is used on this level
-=================
 */
 static void
 CG_RegisterItemSounds(int itemNum)
@@ -570,11 +542,7 @@ CG_RegisterItemSounds(int itemNum)
 }
 
 /*
-=================
-CG_RegisterSounds
-
 called during a precache command
-=================
 */
 static void
 CG_RegisterSounds(void)
@@ -794,11 +762,7 @@ CG_RegisterSounds(void)
 //===================================================================================
 
 /*
-=================
-CG_RegisterGraphics
-
 This function may execute for a couple of minutes with a slow disk.
-=================
 */
 static void
 CG_RegisterGraphics(void)
@@ -1058,12 +1022,6 @@ CG_RegisterGraphics(void)
 */
 }
 
-/*
-=======================
-mkspecstr
-
-=======================
-*/
 void
 mkspecstr(void)
 {
@@ -1079,11 +1037,6 @@ mkspecstr(void)
 	}
 }
 
-/*
-===================
-CG_RegisterClients
-===================
-*/
 static void
 CG_RegisterClients(void)
 {
@@ -1109,11 +1062,6 @@ CG_RegisterClients(void)
 
 //===========================================================================
 
-/*
-=================
-getconfigstr
-=================
-*/
 const char *
 getconfigstr(int index)
 {
@@ -1124,12 +1072,6 @@ getconfigstr(int index)
 
 //==================================================================
 
-/*
-======================
-startmusic
-
-======================
-*/
 void
 startmusic(void)
 {
@@ -1147,12 +1089,8 @@ startmusic(void)
 
 
 /*
-=================
-cginit
-
 Called after every level change or subsystem restart
 Will perform callbacks to make the loading info screen update.
-=================
 */
 void
 cginit(int serverMessageNum, int serverCommandSequence, int clientNum)
@@ -1250,11 +1188,7 @@ cginit(int serverMessageNum, int serverCommandSequence, int clientNum)
 }
 
 /*
-=================
-cgshutdown
-
 Called before every level change or subsystem restart
-=================
 */
 void
 cgshutdown(void)
@@ -1263,10 +1197,7 @@ cgshutdown(void)
 	// like closing files or archiving session data
 }
 
-/*
-==================
-eventhandling
-==================
+/*==================
  type 0 - no event handling
       1 - team menu
       2 - hud editor

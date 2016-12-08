@@ -22,12 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_local.h"
 
 
-/*
-==================
-deathmatchscoreboardmsg
-
-==================
-*/
 void
 deathmatchscoreboardmsg(gentity_t *ent)
 {
@@ -85,11 +79,7 @@ deathmatchscoreboardmsg(gentity_t *ent)
 }
 
 /*
-==================
-Cmd_Score_f
-
 Request current scoreboard information
-==================
 */
 void
 Cmd_Score_f(gentity_t *ent)
@@ -97,11 +87,6 @@ Cmd_Score_f(gentity_t *ent)
 	deathmatchscoreboardmsg(ent);
 }
 
-/*
-==================
-CheatsOk
-==================
-*/
 qboolean
 CheatsOk(gentity_t *ent)
 {
@@ -116,11 +101,6 @@ CheatsOk(gentity_t *ent)
 	return qtrue;
 }
 
-/*
-==================
-ConcatArgs
-==================
-*/
 char    *
 ConcatArgs(int start)
 {
@@ -149,11 +129,6 @@ ConcatArgs(int start)
 	return line;
 }
 
-/*
-==================
-StringIsInteger
-==================
-*/
 qboolean
 StringIsInteger(const char * s)
 {
@@ -175,12 +150,8 @@ StringIsInteger(const char * s)
 }
 
 /*
-==================
-ClientNumberFromString
-
 Returns a player number for either a number or name string
 Returns -1 if invalid
-==================
 */
 int
 ClientNumberFromString(gentity_t *to, char *s)
@@ -214,11 +185,7 @@ ClientNumberFromString(gentity_t *to, char *s)
 }
 
 /*
-==================
-Cmd_Give_f
-
 Give items to a client
-==================
 */
 void
 Cmd_Give_f(gentity_t *ent)
@@ -312,13 +279,9 @@ Cmd_Give_f(gentity_t *ent)
 }
 
 /*
-==================
-Cmd_God_f
-
 Sets client to godmode
 
 argv(0) god
-==================
 */
 void
 Cmd_God_f(gentity_t *ent)
@@ -338,13 +301,9 @@ Cmd_God_f(gentity_t *ent)
 }
 
 /*
-==================
-Cmd_Notarget_f
-
 Sets client to notarget
 
 argv(0) notarget
-==================
 */
 void
 Cmd_Notarget_f(gentity_t *ent)
@@ -364,11 +323,7 @@ Cmd_Notarget_f(gentity_t *ent)
 }
 
 /*
-==================
-Cmd_Noclip_f
-
 argv(0) noclip
-==================
 */
 void
 Cmd_Noclip_f(gentity_t *ent)
@@ -388,14 +343,10 @@ Cmd_Noclip_f(gentity_t *ent)
 }
 
 /*
-==================
-Cmd_LevelShot_f
-
 This is just to help generate the level pictures
 for the menus.  It goes to the intermission immediately
 and sends over a command to the client to resize the view,
 hide the scoreboard, and take a special screenshot
-==================
 */
 void
 Cmd_LevelShot_f(gentity_t *ent)
@@ -420,11 +371,6 @@ Cmd_LevelShot_f(gentity_t *ent)
 	trap_SendServerCommand(ent-g_entities, "clientLevelShot");
 }
 
-/*
-==================
-Cmd_TeamTask_f
-==================
-*/
 void
 Cmd_TeamTask_f(gentity_t *ent)
 {
@@ -444,11 +390,6 @@ Cmd_TeamTask_f(gentity_t *ent)
 	clientuserinfochanged(client);
 }
 
-/*
-=================
-Cmd_Kill_f
-=================
-*/
 void
 Cmd_Kill_f(gentity_t *ent)
 {
@@ -462,11 +403,7 @@ Cmd_Kill_f(gentity_t *ent)
 }
 
 /*
-=================
-broadcastteamchange
-
 Let everyone know about a team change
-=================
 */
 void
 broadcastteamchange(gclient_t *client, int oldTeam)
@@ -485,11 +422,6 @@ broadcastteamchange(gclient_t *client, int oldTeam)
 					      client->pers.netname));
 }
 
-/*
-=================
-setteam
-=================
-*/
 void
 setteam(gentity_t *ent, char *s)
 {
@@ -611,12 +543,8 @@ setteam(gentity_t *ent, char *s)
 }
 
 /*
-=================
-stopfollowing
-
 If the client being followed leaves the game, or you just want to drop
 to free floating spectator mode
-=================
 */
 void
 stopfollowing(gentity_t *ent)
@@ -635,11 +563,6 @@ stopfollowing(gentity_t *ent)
 		ent->client->ps.stats[STAT_HEALTH] = 1;
 }
 
-/*
-=================
-Cmd_Team_f
-=================
-*/
 void
 Cmd_Team_f(gentity_t *ent)
 {
@@ -682,11 +605,6 @@ Cmd_Team_f(gentity_t *ent)
 	ent->client->switchteamtime = level.time + 5000;
 }
 
-/*
-=================
-Cmd_Follow_f
-=================
-*/
 void
 Cmd_Follow_f(gentity_t *ent)
 {
@@ -725,11 +643,6 @@ Cmd_Follow_f(gentity_t *ent)
 	ent->client->sess.specclient = i;
 }
 
-/*
-=================
-Cmd_FollowCycle_f
-=================
-*/
 void
 Cmd_FollowCycle_f(gentity_t *ent, int dir)
 {
@@ -782,11 +695,6 @@ Cmd_FollowCycle_f(gentity_t *ent, int dir)
 	// leave it where it was
 }
 
-/*
-==================
-G_Say
-==================
-*/
 
 static void
 G_SayTo(gentity_t *ent, gentity_t *other, int mode, int color, const char *name, const char *message)
@@ -874,11 +782,6 @@ G_Say(gentity_t *ent, gentity_t *target, int mode, const char *chatText)
 	}
 }
 
-/*
-==================
-Cmd_Say_f
-==================
-*/
 static void
 Cmd_Say_f(gentity_t *ent, int mode, qboolean arg0)
 {
@@ -895,11 +798,6 @@ Cmd_Say_f(gentity_t *ent, int mode, qboolean arg0)
 	G_Say(ent, nil, mode, p);
 }
 
-/*
-==================
-Cmd_Tell_f
-==================
-*/
 static void
 Cmd_Tell_f(gentity_t *ent)
 {
@@ -983,11 +881,6 @@ Cmd_GameCommand_f(gentity_t *ent)
 		G_Say(ent, ent, SAY_TELL, gc_orders[order]);
 }
 
-/*
-==================
-Cmd_Where_f
-==================
-*/
 void
 Cmd_Where_f(gentity_t *ent)
 {
@@ -1008,11 +901,6 @@ static const char *gameNames[] = {
 	"Harvester"
 };
 
-/*
-==================
-Cmd_CallVote_f
-==================
-*/
 void
 Cmd_CallVote_f(gentity_t *ent)
 {
@@ -1131,11 +1019,6 @@ Cmd_CallVote_f(gentity_t *ent)
 	trap_SetConfigstring(CS_VOTE_NO, va("%i", level.voteno));
 }
 
-/*
-==================
-Cmd_Vote_f
-==================
-*/
 void
 Cmd_Vote_f(gentity_t *ent)
 {
@@ -1172,11 +1055,7 @@ Cmd_Vote_f(gentity_t *ent)
 	// for players entering or leaving
 }
 
-/*
-==================
-Cmd_CallTeamVote_f
-==================
-*/
+
 void
 Cmd_CallTeamVote_f(gentity_t *ent)
 {
@@ -1296,11 +1175,7 @@ Cmd_CallTeamVote_f(gentity_t *ent)
 	trap_SetConfigstring(CS_TEAMVOTE_NO + cs_offset, va("%i", level.teamvoteno[cs_offset]));
 }
 
-/*
-==================
-Cmd_TeamVote_f
-==================
-*/
+
 void
 Cmd_TeamVote_f(gentity_t *ent)
 {
@@ -1346,11 +1221,7 @@ Cmd_TeamVote_f(gentity_t *ent)
 	// for players entering or leaving
 }
 
-/*
-=================
-Cmd_SetViewpos_f
-=================
-*/
+
 void
 Cmd_SetViewpos_f(gentity_t *ent)
 {
@@ -1379,11 +1250,7 @@ Cmd_SetViewpos_f(gentity_t *ent)
 	teleportentity(ent, origin, angles);
 }
 
-/*
-=================
-Cmd_Stats_f
-=================
-*/
+
 void
 Cmd_Stats_f(gentity_t *ent)
 {
@@ -1426,11 +1293,7 @@ Cmd_Recall_f(gentity_t *ent)
 	vecset(ent->client->ps.velocity, 0, 0, 0);
 }
 
-/*
-=================
-clientcmd
-=================
-*/
+
 void
 clientcmd(int clientNum)
 {

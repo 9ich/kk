@@ -34,13 +34,9 @@ static int cg_numTriggerEntities;
 static centity_t *cg_triggerEntities[MAX_ENTITIES_IN_SNAPSHOT];
 
 /*
-====================
-mksolidlist
-
 When a new cg.snap has been set, this function builds a sublist
 of the entities that are actually solid, to make for more
 efficient collision detection
-====================
 */
 void
 mksolidlist(void)
@@ -76,12 +72,6 @@ mksolidlist(void)
 	}
 }
 
-/*
-====================
-CG_ClipMoveToEntities
-
-====================
-*/
 static void
 CG_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
 		      int skipNumber, int mask, trace_t *tr)
@@ -135,11 +125,6 @@ CG_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, 
 	}
 }
 
-/*
-================
-cgtrace
-================
-*/
 void
 cgtrace(trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
 	 int skipNumber, int mask)
@@ -154,11 +139,6 @@ cgtrace(trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t max
 	*result = t;
 }
 
-/*
-================
-pointcontents
-================
-*/
 int
 pointcontents(const vec3_t point, int passEntityNum)
 {
@@ -192,12 +172,8 @@ pointcontents(const vec3_t point, int passEntityNum)
 }
 
 /*
-========================
-CG_InterpolatePlayerState
-
 Generates cg.pps by interpolating between
 cg.snap->player_state and cg.nextFrame->player_state
-========================
 */
 static void
 CG_InterpolatePlayerState(qboolean grabAngles)
@@ -243,11 +219,6 @@ CG_InterpolatePlayerState(qboolean grabAngles)
 	}
 }
 
-/*
-===================
-CG_TouchItem
-===================
-*/
 static void
 CG_TouchItem(centity_t *cent)
 {
@@ -302,11 +273,7 @@ CG_TouchItem(centity_t *cent)
 }
 
 /*
-=========================
-CG_TouchTriggerPrediction
-
 Predict push triggers and items
-=========================
 */
 static void
 CG_TouchTriggerPrediction(void)
@@ -365,9 +332,6 @@ CG_TouchTriggerPrediction(void)
 }
 
 /*
-=================
-predictplayerstate
-
 Generates cg.pps for the current cg.time
 cg.pps is guaranteed to be valid after exiting.
 
@@ -388,7 +352,6 @@ playerState_t during prediction.
 
 We detect prediction errors and allow them to be decayed off over several frames
 to ease the jerk.
-=================
 */
 void
 predictplayerstate(void)

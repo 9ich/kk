@@ -24,11 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 
-/*
-==================
-CG_ResetEntity
-==================
-*/
 static void
 CG_ResetEntity(centity_t *cent)
 {
@@ -46,11 +41,7 @@ CG_ResetEntity(centity_t *cent)
 }
 
 /*
-===============
-CG_TransitionEntity
-
 cent->nextstate is moved to cent->currstate and events are fired
-===============
 */
 static void
 CG_TransitionEntity(centity_t *cent)
@@ -70,15 +61,11 @@ CG_TransitionEntity(centity_t *cent)
 }
 
 /*
-==================
-CG_SetInitialSnapshot
-
 This will only happen on the very first snapshot, or
 on tourney restarts.  All other times will use
 CG_TransitionSnapshot instead.
 
 FIXME: Also called by map_restart?
-==================
 */
 void
 CG_SetInitialSnapshot(snapshot_t *snap)
@@ -117,11 +104,7 @@ CG_SetInitialSnapshot(snapshot_t *snap)
 }
 
 /*
-===================
-CG_TransitionSnapshot
-
 The transition point from snap to nextsnap has passed
-===================
 */
 static void
 CG_TransitionSnapshot(void)
@@ -184,11 +167,7 @@ CG_TransitionSnapshot(void)
 }
 
 /*
-===================
-CG_SetNextSnap
-
 A new snapshot has just been read in from the client system.
-===================
 */
 static void
 CG_SetNextSnap(snapshot_t *snap)
@@ -238,14 +217,10 @@ CG_SetNextSnap(snapshot_t *snap)
 }
 
 /*
-========================
-CG_ReadNextSnapshot
-
 This is the only place new snapshots are requested
 This may increment cgs.nprocessedsnaps multiple
 times if the client system fails to return a
 valid snapshot.
-========================
 */
 static snapshot_t *
 CG_ReadNextSnapshot(void)
@@ -296,9 +271,6 @@ CG_ReadNextSnapshot(void)
 }
 
 /*
-============
-processsnaps
-
 We are trying to set up a renderable view, so determine
 what the simulated time is, and try to get snapshots
 both before and after that time if available.
@@ -311,8 +283,6 @@ once, it will never turn invalid.
 Even if cg.snap is valid, cg.nextsnap may not be, if the snapshot
 hasn't arrived yet (it becomes an extrapolating situation instead
 of an interpolating one)
-
-============
 */
 void
 processsnaps(void)

@@ -272,12 +272,8 @@ spawn_t spawns[] = {
 };
 
 /*
-===============
-G_CallSpawn
-
 Finds the spawn function for the entity and calls it,
 returning qfalse if not found
-===============
 */
 qboolean
 callspawn(gentity_t *ent)
@@ -310,12 +306,8 @@ callspawn(gentity_t *ent)
 }
 
 /*
-=============
-newstr
-
 Builds a copy of the string, translating \n to real linefeeds
 so message texts can be multi-line
-=============
 */
 char *
 newstr(const char *string)
@@ -345,12 +337,8 @@ newstr(const char *string)
 }
 
 /*
-===============
-G_ParseField
-
 Takes a key/value pair and sets the binary values
 in a gentity
-===============
 */
 void
 parsefield(const char *key, const char *value, gentity_t *ent)
@@ -406,12 +394,8 @@ parsefield(const char *key, const char *value, gentity_t *ent)
 	}
 
 /*
-===================
-G_SpawnGEntityFromSpawnVars
-
 Spawn an entity and fill in all of the level fields from
 level.spawnvars[], then call the class specfic spawn function
-===================
 */
 void
 spawnfromspawnvars(void)
@@ -481,11 +465,6 @@ spawnfromspawnvars(void)
 		entfree(ent);
 }
 
-/*
-====================
-G_AddSpawnVarToken
-====================
-*/
 char *
 addspawnvartok(const char *string)
 {
@@ -505,14 +484,10 @@ addspawnvartok(const char *string)
 }
 
 /*
-====================
-G_ParseSpawnVars
-
 Parses a brace bounded set of key / value pairs out of the
 level's entity strings into level.spawnvars[]
 
 This does not actually spawn an entity.
-====================
 */
 qboolean
 parsespawnvars(void)
@@ -607,11 +582,7 @@ SP_worldspawn(void)
 }
 
 /*
-==============
-spawnall
-
 Parses textual entity definitions out of an entstring and spawns entities.
-==============
 */
 void
 spawnall(void)

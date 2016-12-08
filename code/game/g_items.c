@@ -329,11 +329,6 @@ Pickup_Armor(gentity_t *ent, gentity_t *other)
 
 //======================================================================
 
-/*
-===============
-itemrespawn
-===============
-*/
 void
 itemrespawn(gentity_t *ent)
 {
@@ -399,11 +394,6 @@ itemrespawn(gentity_t *ent)
 	ent->nextthink = 0;
 }
 
-/*
-===============
-item_touch
-===============
-*/
 void
 item_touch(gentity_t *ent, gentity_t *other, trace_t *trace)
 {
@@ -538,11 +528,7 @@ item_touch(gentity_t *ent, gentity_t *other, trace_t *trace)
 //======================================================================
 
 /*
-================
-itemlaunch
-
 Spawns an item and tosses it forward
-================
 */
 gentity_t *
 itemlaunch(gitem_t *item, vec3_t origin, vec3_t velocity)
@@ -590,11 +576,7 @@ itemlaunch(gitem_t *item, vec3_t origin, vec3_t velocity)
 }
 
 /*
-================
-itemdrop
-
 Spawns an item and tosses it forward
-================
 */
 gentity_t *
 itemdrop(gentity_t *ent, gitem_t *item, float angle)
@@ -613,11 +595,7 @@ itemdrop(gentity_t *ent, gitem_t *item, float angle)
 }
 
 /*
-================
-Use_Item
-
 Respawn the item
-================
 */
 void
 Use_Item(gentity_t *ent, gentity_t *other, gentity_t *activator)
@@ -628,12 +606,8 @@ Use_Item(gentity_t *ent, gentity_t *other, gentity_t *activator)
 //======================================================================
 
 /*
-================
-itemspawnfinish
-
 Traces down to find where an item should rest, instead of letting them
 free fall from their spawn points
-================
 */
 void
 itemspawnfinish(gentity_t *ent)
@@ -696,11 +670,6 @@ itemspawnfinish(gentity_t *ent)
 
 qboolean itemRegistered[MAX_ITEMS];
 
-/*
-==================
-checkteamitems
-==================
-*/
 void
 checkteamitems(void)
 {
@@ -771,11 +740,6 @@ checkteamitems(void)
 #endif
 }
 
-/*
-==============
-clearitems
-==============
-*/
 void
 clearitems(void)
 {
@@ -794,11 +758,7 @@ clearitems(void)
 }
 
 /*
-===============
-registeritem
-
 The item will be added to the precache list
-===============
 */
 void
 registeritem(gitem_t *item)
@@ -809,12 +769,8 @@ registeritem(gitem_t *item)
 }
 
 /*
-===============
-mkitemsconfigstr
-
 Write the needed items to a config string
 so the client will know which ones to precache
-===============
 */
 void
 mkitemsconfigstr(void)
@@ -837,11 +793,6 @@ mkitemsconfigstr(void)
 	trap_SetConfigstring(CS_ITEMS, string);
 }
 
-/*
-============
-G_ItemDisabled
-============
-*/
 int
 itemdisabled(gitem_t *item)
 {
@@ -852,14 +803,10 @@ itemdisabled(gitem_t *item)
 }
 
 /*
-============
-itemspawn
-
 Sets the clipping size and plants the object on the floor.
 
 Items can't be immediately dropped to floor, because they might
 be on an entity that hasn't spawned yet.
-============
 */
 void
 itemspawn(gentity_t *ent, gitem_t *item)
@@ -891,12 +838,6 @@ itemspawn(gentity_t *ent, gitem_t *item)
 #endif
 }
 
-/*
-================
-G_BounceItem
-
-================
-*/
 void
 itembounce(gentity_t *ent, trace_t *trace)
 {
@@ -927,12 +868,6 @@ itembounce(gentity_t *ent, trace_t *trace)
 	ent->s.pos.trTime = level.time;
 }
 
-/*
-================
-runitem
-
-================
-*/
 void
 runitem(gentity_t *ent)
 {

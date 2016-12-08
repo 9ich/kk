@@ -25,12 +25,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 
-/*
-=================
-CG_ParseScores
-
-=================
-*/
 static void
 CG_ParseScores(void)
 {
@@ -69,12 +63,6 @@ CG_ParseScores(void)
 	}
 }
 
-/*
-=================
-CG_ParseTeamInfo
-
-=================
-*/
 static void
 CG_ParseTeamInfo(void)
 {
@@ -106,12 +94,8 @@ CG_ParseTeamInfo(void)
 }
 
 /*
-================
-parsesrvinfo
-
 This is called explicitly when the gamestate is first received,
 and whenever the server updates any serverinfo flagged cvars
-================
 */
 void
 parsesrvinfo(void)
@@ -262,11 +246,7 @@ parsecpplayers(void)
 }
 
 /*
-================
-setconfigvals
-
 Called on load to set the initial values from configure strings
-================
 */
 void
 setconfigvals(void)
@@ -295,11 +275,6 @@ setconfigvals(void)
 	parsecpplayers();
 }
 
-/*
-=====================
-shaderstatechanged
-=====================
-*/
 void
 shaderstatechanged(void)
 {
@@ -335,12 +310,6 @@ shaderstatechanged(void)
 	}
 }
 
-/*
-================
-CG_ConfigStringModified
-
-================
-*/
 static void
 CG_ConfigStringModified(void)
 {
@@ -428,12 +397,6 @@ CG_ConfigStringModified(void)
 
 }
 
-/*
-=======================
-CG_AddToTeamChat
-
-=======================
-*/
 static void
 CG_AddToTeamChat(const char *str)
 {
@@ -502,15 +465,11 @@ CG_AddToTeamChat(const char *str)
 }
 
 /*
-===============
-CG_MapRestart
-
 The server has issued a map_restart, so the next snapshot
 is completely new and should not be interpolated to.
 
 A tournement restart will clear everything, but doesn't
 require a reload of all the media
-===============
 */
 static void
 CG_MapRestart(void)
@@ -551,11 +510,6 @@ CG_MapRestart(void)
 }
 
 
-/*
-=================
-CG_RemoveChatEscapeChar
-=================
-*/
 static void
 CG_RemoveChatEscapeChar(char *text)
 {
@@ -571,12 +525,8 @@ CG_RemoveChatEscapeChar(char *text)
 }
 
 /*
-=================
-CG_ServerCommand
-
 The string has been tokenized and can be retrieved with
 Cmd_Argc() / Cmd_Argv()
-=================
 */
 static void
 CG_ServerCommand(void)
@@ -673,12 +623,8 @@ CG_ServerCommand(void)
 }
 
 /*
-====================
-execnewsrvcmds
-
 Execute all of the server commands that were received along
 with this this snapshot.
-====================
 */
 void
 execnewsrvcmds(int latestSequence)

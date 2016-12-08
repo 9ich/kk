@@ -58,11 +58,6 @@ typedef struct bot_ctftaskpreference_s
 
 bot_ctftaskpreference_t ctftaskpreferences[MAX_CLIENTS];
 
-/*
-==================
-BotValidTeamLeader
-==================
-*/
 int
 BotValidTeamLeader(bot_state_t *bs)
 {
@@ -71,11 +66,6 @@ BotValidTeamLeader(bot_state_t *bs)
 	return qtrue;
 }
 
-/*
-==================
-BotNumTeamMates
-==================
-*/
 int
 BotNumTeamMates(bot_state_t *bs)
 {
@@ -99,11 +89,6 @@ BotNumTeamMates(bot_state_t *bs)
 	return numplayers;
 }
 
-/*
-==================
-BotClientTravelTimeToGoal
-==================
-*/
 int
 BotClientTravelTimeToGoal(int client, bot_goal_t *goal)
 {
@@ -116,11 +101,6 @@ BotClientTravelTimeToGoal(int client, bot_goal_t *goal)
 	return trap_AAS_AreaTravelTimeToGoalArea(areanum, ps.origin, goal->areanum, TFL_DEFAULT);
 }
 
-/*
-==================
-BotSortTeamMatesByBaseTravelTime
-==================
-*/
 int
 BotSortTeamMatesByBaseTravelTime(bot_state_t *bs, int *teammates, int maxteammates)
 {
@@ -178,11 +158,6 @@ BotSortTeamMatesByBaseTravelTime(bot_state_t *bs, int *teammates, int maxteammat
 	return numteammates;
 }
 
-/*
-==================
-BotSetTeamMateTaskPreference
-==================
-*/
 void
 BotSetTeamMateTaskPreference(bot_state_t *bs, int teammate, int preference)
 {
@@ -193,11 +168,6 @@ BotSetTeamMateTaskPreference(bot_state_t *bs, int teammate, int preference)
 	strcpy(ctftaskpreferences[teammate].name, teammatename);
 }
 
-/*
-==================
-BotGetTeamMateTaskPreference
-==================
-*/
 int
 BotGetTeamMateTaskPreference(bot_state_t *bs, int teammate)
 {
@@ -209,11 +179,6 @@ BotGetTeamMateTaskPreference(bot_state_t *bs, int teammate)
 	return ctftaskpreferences[teammate].preference;
 }
 
-/*
-==================
-BotSortTeamMatesByTaskPreference
-==================
-*/
 int
 BotSortTeamMatesByTaskPreference(bot_state_t *bs, int *teammates, int numteammates)
 {
@@ -246,11 +211,6 @@ BotSortTeamMatesByTaskPreference(bot_state_t *bs, int *teammates, int numteammat
 	return numteammates;
 }
 
-/*
-==================
-BotSayTeamOrders
-==================
-*/
 void
 BotSayTeamOrderAlways(bot_state_t *bs, int toclient)
 {
@@ -269,52 +229,32 @@ BotSayTeamOrderAlways(bot_state_t *bs, int toclient)
 		trap_BotEnterChat(bs->cs, toclient, CHAT_TELL);
 }
 
-/*
-==================
-BotSayTeamOrders
-==================
-*/
+
 void
 BotSayTeamOrder(bot_state_t *bs, int toclient)
 {
 	BotSayTeamOrderAlways(bs, toclient);
 }
 
-/*
-==================
-BotVoiceChat
-==================
-*/
+
 void
 BotVoiceChat(bot_state_t *bs, int toclient, char *voicechat)
 {
 }
 
-/*
-==================
-BotVoiceChatOnly
-==================
-*/
+
 void
 BotVoiceChatOnly(bot_state_t *bs, int toclient, char *voicechat)
 {
 }
 
-/*
-==================
-BotSayVoiceTeamOrder
-==================
-*/
+
 void
 BotSayVoiceTeamOrder(bot_state_t *bs, int toclient, char *voicechat)
 {
 }
 
-/*
-==================
-BotCTFOrders
-==================
-*/
+
 void
 BotCTFOrders_BothFlagsNotAtBase(bot_state_t *bs)
 {
@@ -401,11 +341,7 @@ BotCTFOrders_BothFlagsNotAtBase(bot_state_t *bs)
 	}
 }
 
-/*
-==================
-BotCTFOrders
-==================
-*/
+
 void
 BotCTFOrders_FlagNotAtBase(bot_state_t *bs)
 {
@@ -518,11 +454,7 @@ BotCTFOrders_FlagNotAtBase(bot_state_t *bs)
 	}
 }
 
-/*
-==================
-BotCTFOrders
-==================
-*/
+
 void
 BotCTFOrders_EnemyFlagNotAtBase(bot_state_t *bs)
 {
@@ -603,11 +535,7 @@ BotCTFOrders_EnemyFlagNotAtBase(bot_state_t *bs)
 	}
 }
 
-/*
-==================
-BotCTFOrders
-==================
-*/
+
 void
 BotCTFOrders_BothFlagsAtBase(bot_state_t *bs)
 {
@@ -725,9 +653,7 @@ BotCTFOrders_BothFlagsAtBase(bot_state_t *bs)
 }
 
 /*
-==================
 BotCTFOrders
-==================
 */
 void
 BotCTFOrders(bot_state_t *bs)
@@ -745,9 +671,7 @@ BotCTFOrders(bot_state_t *bs)
 }
 
 /*
-==================
 BotCreateGroup
-==================
 */
 void
 BotCreateGroup(bot_state_t *bs, int *teammates, int groupsize)
@@ -768,11 +692,9 @@ BotCreateGroup(bot_state_t *bs, int *teammates, int groupsize)
 }
 
 /*
-==================
 BotTeamOrders
 
   FIXME: defend key areas?
-==================
 */
 void
 BotTeamOrders(bot_state_t *bs)
@@ -835,11 +757,9 @@ BotTeamOrders(bot_state_t *bs)
 #ifdef MISSIONPACK
 
 /*
-==================
 Bot1FCTFOrders_FlagAtCenter
 
   X% defend the base, Y% get the flag
-==================
 */
 void
 Bot1FCTFOrders_FlagAtCenter(bot_state_t *bs)
@@ -962,11 +882,9 @@ Bot1FCTFOrders_FlagAtCenter(bot_state_t *bs)
 }
 
 /*
-==================
 Bot1FCTFOrders_TeamHasFlag
 
   X% towards neutral flag, Y% go towards enemy base and accompany flag carrier if visible
-==================
 */
 void
 Bot1FCTFOrders_TeamHasFlag(bot_state_t *bs)
@@ -1127,11 +1045,9 @@ Bot1FCTFOrders_TeamHasFlag(bot_state_t *bs)
 }
 
 /*
-==================
 Bot1FCTFOrders_EnemyHasFlag
 
   X% defend the base, Y% towards neutral flag
-==================
 */
 void
 Bot1FCTFOrders_EnemyHasFlag(bot_state_t *bs)
@@ -1253,11 +1169,9 @@ Bot1FCTFOrders_EnemyHasFlag(bot_state_t *bs)
 }
 
 /*
-==================
 Bot1FCTFOrders_EnemyDroppedFlag
 
   X% defend the base, Y% get the flag
-==================
 */
 void
 Bot1FCTFOrders_EnemyDroppedFlag(bot_state_t *bs)
@@ -1380,9 +1294,7 @@ Bot1FCTFOrders_EnemyDroppedFlag(bot_state_t *bs)
 }
 
 /*
-==================
 Bot1FCTFOrders
-==================
 */
 void
 Bot1FCTFOrders(bot_state_t *bs)
@@ -1396,11 +1308,7 @@ Bot1FCTFOrders(bot_state_t *bs)
 }
 
 /*
-==================
-BotObeliskOrders
-
   X% in defence Y% in offence
-==================
 */
 void
 BotObeliskOrders(bot_state_t *bs)
@@ -1523,11 +1431,7 @@ BotObeliskOrders(bot_state_t *bs)
 }
 
 /*
-==================
-BotHarvesterOrders
-
   X% defend the base, Y% harvest
-==================
 */
 void
 BotHarvesterOrders(bot_state_t *bs)
@@ -1651,11 +1555,6 @@ BotHarvesterOrders(bot_state_t *bs)
 
 #endif
 
-/*
-==================
-FindHumanTeamLeader
-==================
-*/
 int
 FindHumanTeamLeader(bot_state_t *bs)
 {
@@ -1681,11 +1580,6 @@ FindHumanTeamLeader(bot_state_t *bs)
 	return qfalse;
 }
 
-/*
-==================
-BotTeamAI
-==================
-*/
 void
 BotTeamAI(bot_state_t *bs)
 {

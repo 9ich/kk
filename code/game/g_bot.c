@@ -57,11 +57,6 @@ trap_Cvar_VariableValue(const char *var_name)
 	return atof(buf);
 }
 
-/*
-===============
-G_ParseInfos
-===============
-*/
 int
 G_ParseInfos(char *buf, int max, char *infos[])
 {
@@ -112,11 +107,6 @@ G_ParseInfos(char *buf, int max, char *infos[])
 	return count;
 }
 
-/*
-===============
-G_LoadArenasFromFile
-===============
-*/
 static void
 G_LoadArenasFromFile(char *filename)
 {
@@ -142,11 +132,6 @@ G_LoadArenasFromFile(char *filename)
 	g_numArenas += G_ParseInfos(buf, MAX_ARENAS - g_numArenas, &g_arenaInfos[g_numArenas]);
 }
 
-/*
-===============
-G_LoadArenas
-===============
-*/
 static void
 G_LoadArenas(void)
 {
@@ -181,11 +166,6 @@ G_LoadArenas(void)
 		Info_SetValueForKey(g_arenaInfos[n], "num", va("%i", n));
 }
 
-/*
-===============
-G_GetArenaInfoByNumber
-===============
-*/
 const char *
 G_GetArenaInfoByMap(const char *map)
 {
@@ -198,11 +178,6 @@ G_GetArenaInfoByMap(const char *map)
 	return nil;
 }
 
-/*
-=================
-PlayerIntroSound
-=================
-*/
 static void
 PlayerIntroSound(const char *modelAndSkin)
 {
@@ -222,11 +197,6 @@ PlayerIntroSound(const char *modelAndSkin)
 	trap_SendConsoleCommand(EXEC_APPEND, va("play sound/player/announce/%s.wav\n", skin));
 }
 
-/*
-===============
-G_AddRandomBot
-===============
-*/
 void
 G_AddRandomBot(int team)
 {
@@ -282,11 +252,6 @@ G_AddRandomBot(int team)
 	}
 }
 
-/*
-===============
-G_RemoveRandomBot
-===============
-*/
 int
 G_RemoveRandomBot(int team)
 {
@@ -307,11 +272,6 @@ G_RemoveRandomBot(int team)
 	return qfalse;
 }
 
-/*
-===============
-G_CountHumanPlayers
-===============
-*/
 int
 G_CountHumanPlayers(int team)
 {
@@ -332,11 +292,7 @@ G_CountHumanPlayers(int team)
 	return num;
 }
 
-/*
-===============
-G_CountBotPlayers
-===============
-*/
+
 int
 G_CountBotPlayers(int team)
 {
@@ -364,11 +320,7 @@ G_CountBotPlayers(int team)
 	return num;
 }
 
-/*
-===============
-G_CheckMinimumPlayers
-===============
-*/
+
 void
 G_CheckMinimumPlayers(void)
 {
@@ -425,11 +377,7 @@ G_CheckMinimumPlayers(void)
 	}
 }
 
-/*
-===============
-chkbotspawn
-===============
-*/
+
 void
 chkbotspawn(void)
 {
@@ -453,11 +401,7 @@ chkbotspawn(void)
 	}
 }
 
-/*
-===============
-AddBotToSpawnQueue
-===============
-*/
+
 static void
 AddBotToSpawnQueue(int clientNum, int delay)
 {
@@ -475,12 +419,8 @@ AddBotToSpawnQueue(int clientNum, int delay)
 }
 
 /*
-===============
-dequeuebotbegin
-
 Called on client disconnect to make sure the delayed spawn
 doesn't happen on a freed index
-===============
 */
 void
 dequeuebotbegin(int clientNum)
@@ -494,11 +434,7 @@ dequeuebotbegin(int clientNum)
 		}
 }
 
-/*
-===============
-botconnect
-===============
-*/
+
 qboolean
 botconnect(int clientNum, qboolean restart)
 {
@@ -519,11 +455,7 @@ botconnect(int clientNum, qboolean restart)
 	return qtrue;
 }
 
-/*
-===============
-G_AddBot
-===============
-*/
+
 static void
 G_AddBot(const char *name, float skill, const char *team, int delay, char *altname)
 {
@@ -641,11 +573,7 @@ G_AddBot(const char *name, float skill, const char *team, int delay, char *altna
 	AddBotToSpawnQueue(clientNum, delay);
 }
 
-/*
-===============
-Svcmd_AddBot_f
-===============
-*/
+
 void
 Svcmd_AddBot_f(void)
 {
@@ -697,9 +625,7 @@ Svcmd_AddBot_f(void)
 }
 
 /*
-===============
 Svcmd_BotList_f
-===============
 */
 void
 Svcmd_BotList_f(void)
@@ -729,9 +655,7 @@ Svcmd_BotList_f(void)
 }
 
 /*
-===============
 G_SpawnBots
-===============
 */
 static void
 G_SpawnBots(char *botList, int baseDelay)
@@ -783,9 +707,7 @@ G_SpawnBots(char *botList, int baseDelay)
 }
 
 /*
-===============
 G_LoadBotsFromFile
-===============
 */
 static void
 G_LoadBotsFromFile(char *filename)
@@ -813,9 +735,7 @@ G_LoadBotsFromFile(char *filename)
 }
 
 /*
-===============
 G_LoadBots
-===============
 */
 static void
 G_LoadBots(void)
@@ -851,11 +771,6 @@ G_LoadBots(void)
 	trap_Print(va("%i bots parsed\n", g_numBots));
 }
 
-/*
-===============
-botinfo
-===============
-*/
 char *
 botinfo(int num)
 {
@@ -866,11 +781,6 @@ botinfo(int num)
 	return g_botInfos[num];
 }
 
-/*
-===============
-botinfobyname
-===============
-*/
 char *
 botinfobyname(const char *name)
 {
@@ -886,11 +796,6 @@ botinfobyname(const char *name)
 	return nil;
 }
 
-/*
-===============
-initbots
-===============
-*/
 void
 initbots(qboolean restart)
 {

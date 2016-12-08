@@ -111,13 +111,6 @@ SP_trigger_multiple(gentity_t *ent)
 	trap_LinkEntity(ent);
 }
 
-/*
-==============================================================================
-
-trigger_always
-
-==============================================================================
-*/
 
 void
 trigger_always_think(gentity_t *ent)
@@ -137,13 +130,6 @@ SP_trigger_always(gentity_t *ent)
 	ent->think = trigger_always_think;
 }
 
-/*
-==============================================================================
-
-trigger_push
-
-==============================================================================
-*/
 
 void
 trigger_push_touch(gentity_t *self, gentity_t *other, trace_t *trace)
@@ -163,11 +149,7 @@ trigger_gravity_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 }
 
 /*
-=================
-AimAtTarget
-
 Calculate origin2 so the target apogee will be hit
-=================
 */
 void
 AimAtTarget(gentity_t *self)
@@ -320,13 +302,6 @@ SP_target_push(gentity_t *self)
 	self->use = Use_target_push;
 }
 
-/*
-==============================================================================
-
-trigger_teleport
-
-==============================================================================
-*/
 
 void
 trigger_teleporter_touch(gentity_t *self, gentity_t *other, trace_t *trace)
@@ -381,13 +356,6 @@ SP_trigger_teleport(gentity_t *self)
 	trap_LinkEntity(self);
 }
 
-/*
-==============================================================================
-
-trigger_hurt
-
-==============================================================================
-*/
 
 /*QUAKED trigger_hurt (.5 .5 .5) ? START_OFF - SILENT NO_PROTECTION SLOW
 Any entity that touches this will be hurt.
@@ -457,13 +425,6 @@ SP_trigger_hurt(gentity_t *self)
 		trap_LinkEntity(self);
 }
 
-/*
-==============================================================================
-
-timer
-
-==============================================================================
-*/
 
 /*QUAKED func_timer (0.3 0.1 0.6) (-8 -8 -8) (8 8 8) START_ON
 This should be renamed trigger_timer...

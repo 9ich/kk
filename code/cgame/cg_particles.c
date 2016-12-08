@@ -153,11 +153,6 @@ vec3_t rforward, rright, rup;
 
 float oldtime;
 
-/*
-===============
-CL_ClearParticles
-===============
-*/
 void
 CG_ClearParticles(void)
 {
@@ -189,11 +184,6 @@ CG_ClearParticles(void)
 	initparticles = qtrue;
 }
 
-/*
-=====================
-CG_AddParticleToScene
-=====================
-*/
 void
 CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha)
 {
@@ -771,11 +761,6 @@ CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha)
 // Ridah, made this static so it doesn't interfere with other files
 static float roll = 0.0;
 
-/*
-===============
-CG_AddParticles
-===============
-*/
 void
 CG_AddParticles(void)
 {
@@ -887,11 +872,6 @@ CG_AddParticles(void)
 	active_particles = active;
 }
 
-/*
-======================
-CG_AddParticles
-======================
-*/
 void
 CG_ParticleSnowFlurry(qhandle_t pshader, centity_t *cent)
 {
@@ -1151,11 +1131,6 @@ CG_ParticleBulletDebris(vec3_t org, vec3_t vel, int duration)
 	p->vel[2] += -20;
 }
 
-/*
-======================
-CG_ParticleExplosion
-======================
-*/
 
 void
 CG_ParticleExplosion(char *animStr, vec3_t origin, vec3_t vel, int duration, int sizeStart, int sizeEnd)

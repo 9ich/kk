@@ -41,12 +41,6 @@ sawtoothwave(int time, float hz, float phase, float amp)
 	return amp * (((time + (int)(phase*time)) % 1000) / 1000.0f);
 }
 
-/*
-================
-drawmodel
-
-================
-*/
 void
 drawmodel(float x, float y, float w, float h, qhandle_t model, qhandle_t skin, vec3_t origin, vec3_t angles)
 {
@@ -213,12 +207,6 @@ drawflagstatus(void)
 }
 
 
-/*
-================
-drawteambg
-
-================
-*/
 void
 drawteambg(int x, int y, int w, int h, float alpha, int team)
 {
@@ -240,12 +228,6 @@ drawteambg(int x, int y, int w, int h, float alpha, int team)
 	trap_R_SetColor(nil);
 }
 
-/*
-================
-drawstatusbar
-
-================
-*/
 static void
 drawstatusbar(void)
 {
@@ -410,11 +392,6 @@ drawobituaries(float y)
 	return yy;
 }
 
-/*
-==================
-drawsnap
-==================
-*/
 static float
 drawsnap(float y)
 {
@@ -430,11 +407,6 @@ drawsnap(float y)
 	return y + BIGCHAR_HEIGHT + 4;
 }
 
-/*
-==================
-drawfps
-==================
-*/
 #define FPS_FRAMES 4
 static float
 drawfps(float y)
@@ -596,11 +568,6 @@ drawspeedometer(void)
 	popalign(2);
 }
 
-/*
-=================
-drawtimer
-=================
-*/
 static float
 drawtimer(float y)
 {
@@ -625,11 +592,6 @@ drawtimer(float y)
 	return y + 16;
 }
 
-/*
-=================
-CG_DrawTeamOverlay
-=================
-*/
 
 static float
 CG_DrawTeamOverlay(float y, qboolean right, qboolean upper)
@@ -786,12 +748,6 @@ CG_DrawTeamOverlay(float y, qboolean right, qboolean upper)
 //#endif
 }
 
-/*
-=====================
-drawupperright
-
-=====================
-*/
 static void
 drawupperright(stereoFrame_t stereoFrame)
 {
@@ -821,11 +777,7 @@ drawupperright(stereoFrame_t stereoFrame)
 ===========================================================================================
 */
 
-/*
-================
-drawpowerups
-================
-*/
+
 static float
 drawpowerups(float y)
 {
@@ -917,10 +869,6 @@ drawpowerups(float y)
 
 
 /*
-=====================
-drawlowerright
-
-=====================
 */
 static void
 drawlowerright(void)
@@ -935,11 +883,7 @@ drawlowerright(void)
 }
 
 
-/*
-===================
-drawpickup
-===================
-*/
+
 static int
 drawpickup(int y)
 {
@@ -968,10 +912,6 @@ drawpickup(int y)
 
 
 /*
-=====================
-drawlowerleft
-
-=====================
 */
 static void
 drawlowerleft(void)
@@ -990,11 +930,7 @@ drawlowerleft(void)
 
 //===========================================================================================
 
-/*
-=================
-drawteaminfo
-=================
-*/
+
 static void
 drawteaminfo(void)
 {
@@ -1056,11 +992,7 @@ drawteaminfo(void)
 }
 
 
-/*
-===================
-drawholdable
-===================
-*/
+
 static void
 drawholdable(void)
 {
@@ -1075,11 +1007,7 @@ drawholdable(void)
 
 
 
-/*
-===================
-drawreward
-===================
-*/
+
 static void
 drawreward(void)
 {
@@ -1151,13 +1079,6 @@ drawreward(void)
 	trap_R_SetColor(nil);
 }
 
-/*
-===============================================================================
-
-LAGOMETER
-
-===============================================================================
-*/
 
 #define LAG_SAMPLES 128
 
@@ -1173,11 +1094,7 @@ typedef struct
 lagometer_t lagometer;
 
 /*
-==============
-lagometerframeinfo
-
 Adds the current interpolate / extrapolate bar for this frame
-==============
 */
 void
 lagometerframeinfo(void)
@@ -1190,14 +1107,12 @@ lagometerframeinfo(void)
 }
 
 /*
-==============
 lagometersnapinfo
 
 Each time a snapshot is received, log its ping time and
 the number of snapshots that were dropped before it.
 
 Pass nil for a dropped packet.
-==============
 */
 void
 lagometersnapinfo(snapshot_t *snap)
@@ -1216,11 +1131,9 @@ lagometersnapinfo(snapshot_t *snap)
 }
 
 /*
-==============
 drawdisconnect
 
 Should we draw something differnet for long lag vs no packets?
-==============
 */
 static void
 drawdisconnect(void)
@@ -1255,9 +1168,7 @@ drawdisconnect(void)
 #define MAX_LAGOMETER_RANGE	300
 
 /*
-==============
 drawlagometer
-==============
 */
 static void
 drawlagometer(void)
@@ -1371,12 +1282,8 @@ CENTER PRINTING
 */
 
 /*
-==============
-centerprint
-
 Called for important messages that should stay in the center of the screen
 for a few moments
-==============
 */
 void
 centerprint(const char *str, int y, int charWidth)
@@ -1399,11 +1306,6 @@ centerprint(const char *str, int y, int charWidth)
 	}
 }
 
-/*
-===================
-drawcenterstr
-===================
-*/
 static void
 drawcenterstr(void)
 {
@@ -1450,19 +1352,7 @@ drawcenterstr(void)
 	trap_R_SetColor(nil);
 }
 
-/*
-================================================================================
 
-CROSSHAIR
-
-================================================================================
-*/
-
-/*
-=================
-drawxhair
-=================
-*/
 static void
 drawxhair(void)
 {
@@ -1518,9 +1408,7 @@ drawxhair(void)
 }
 
 /*
-=================
 drawxhair3d
-=================
 */
 static void
 drawxhair3d(void)
@@ -1589,11 +1477,6 @@ drawxhair3d(void)
 	trap_R_AddRefEntityToScene(&ent);
 }
 
-/*
-=================
-xhairscan
-=================
-*/
 static void
 xhairscan(void)
 {
@@ -1623,11 +1506,6 @@ xhairscan(void)
 	cg.xhairclienttime = cg.time;
 }
 
-/*
-=====================
-drawxhairnames
-=====================
-*/
 static void
 drawxhairnames(void)
 {
@@ -1660,11 +1538,6 @@ drawxhairnames(void)
 
 //==============================================================================
 
-/*
-=================
-drawspec
-=================
-*/
 static void
 drawspec(void)
 {
@@ -1705,11 +1578,6 @@ drawlockonwarning(void)
 	popalign(1);
 }
 
-/*
-=================
-drawvote
-=================
-*/
 static void
 drawvote(void)
 {
@@ -1733,11 +1601,7 @@ drawvote(void)
 	drawsmallstr(0, 58, s, 1.0F);
 }
 
-/*
-=================
-drawteamvote
-=================
-*/
+
 static void
 drawteamvote(void)
 {
@@ -1774,11 +1638,7 @@ drawscoreboard(void)
 	return drawoldscoreboard();
 }
 
-/*
-=================
-drawintermission
-=================
-*/
+
 static void
 drawintermission(void)
 {
@@ -1791,11 +1651,7 @@ drawintermission(void)
 	cg.scoreboardshown = drawscoreboard();
 }
 
-/*
-=================
-drawfollow
-=================
-*/
+
 static qboolean
 drawfollow(void)
 {
@@ -1821,11 +1677,7 @@ drawfollow(void)
 	return qtrue;
 }
 
-/*
-=================
-CG_DrawAmmoWarning
-=================
-*/
+
 static void
 CG_DrawAmmoWarning(void)
 {
@@ -1847,11 +1699,7 @@ CG_DrawAmmoWarning(void)
 }
 
 #ifdef MISSIONPACK
-/*
-=================
-CG_DrawProxWarning
-=================
-*/
+
 static void
 CG_DrawProxWarning(void)
 {
@@ -1881,11 +1729,7 @@ CG_DrawProxWarning(void)
 
 #endif
 
-/*
-=================
-drawwarmup
-=================
-*/
+
 static void
 drawwarmup(void)
 {
@@ -2138,9 +1982,7 @@ drawcp(void)
 
 //==================================================================================
 /*
-=================
 draw2d
-=================
 */
 static void
 draw2d(stereoFrame_t stereoFrame)
@@ -2226,11 +2068,7 @@ draw2d(stereoFrame_t stereoFrame)
 }
 
 /*
-=====================
-drawactive
-
 Perform all drawing needed to completely fill the screen
-=====================
 */
 void
 drawactive(stereoFrame_t stereoview)

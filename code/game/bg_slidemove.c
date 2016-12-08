@@ -34,11 +34,7 @@ output: origin, velocity, impacts, stairup boolean
 */
 
 /*
-==================
-pmslidemove
-
 Returns qtrue if the velocity was clipped in some way
-==================
 */
 #define MAX_CLIP_PLANES 5
 qboolean
@@ -205,12 +201,6 @@ pmslidemove(qboolean gravity)
 	return bumpcount != 0;
 }
 
-/*
-==================
-pmstepslidemove
-
-==================
-*/
 void
 pmstepslidemove(qboolean gravity)
 {

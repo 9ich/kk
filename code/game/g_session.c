@@ -32,11 +32,7 @@ and tournament restarts.
 */
 
 /*
-================
-G_WriteClientSessionData
-
 Called on game shutdown
-================
 */
 void
 G_WriteClientSessionData(gclient_t *client)
@@ -60,11 +56,7 @@ G_WriteClientSessionData(gclient_t *client)
 }
 
 /*
-================
-sessread
-
 Called on a reconnect
-================
 */
 void
 sessread(gclient_t *client)
@@ -94,11 +86,7 @@ sessread(gclient_t *client)
 }
 
 /*
-================
-sessinit
-
 Called on a first-time connect
-================
 */
 void
 sessinit(gclient_t *client, char *userinfo)
@@ -149,12 +137,6 @@ sessinit(gclient_t *client, char *userinfo)
 	G_WriteClientSessionData(client);
 }
 
-/*
-==================
-worldsessinit
-
-==================
-*/
 void
 worldsessinit(void)
 {
@@ -172,12 +154,6 @@ worldsessinit(void)
 	}
 }
 
-/*
-==================
-sesswrite
-
-==================
-*/
 void
 sesswrite(void)
 {

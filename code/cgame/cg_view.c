@@ -70,12 +70,8 @@ static int ntestlights;
 static int testlightsi;
 
 /*
-=================
-CG_TestModel_f
-
 Creates an entity in front of the current position, which
 can then be moved around
-=================
 */
 void
 CG_TestModel_f(void)
@@ -128,11 +124,7 @@ CG_TestExplosion_f(void)
 }
 
 /*
-=================
-CG_TestGun_f
-
 Replaces the current view weapon with the given model
-=================
 */
 void
 CG_TestGun_f(void)
@@ -245,11 +237,7 @@ CG_AddTestParticles(void)
 //============================================================================
 
 /*
-=================
-CG_CalcVrect
-
 Sets the coordinates of the rendered window
-=================
 */
 static void
 CG_CalcVrect(void)
@@ -283,12 +271,6 @@ CG_CalcVrect(void)
 
 //==============================================================================
 
-/*
-===============
-CG_OffsetThirdPersonView
-
-===============
-*/
 #define FOCUS_DISTANCE 512
 static void
 CG_OffsetThirdPersonView(void)
@@ -341,12 +323,6 @@ CG_OffsetThirdPersonView(void)
 	}
 }
 
-/*
-===============
-CG_OffsetFirstPersonView
-
-===============
-*/
 static void
 CG_OffsetFirstPersonView(void)
 {
@@ -445,11 +421,7 @@ CG_ZoomUp_f(void)
 }
 
 /*
-====================
-CG_CalcFov
-
 Fixed fov at intermissions, otherwise account for fov variable and zooms.
-====================
 */
 #define WAVE_AMPLITUDE	1
 #define WAVE_FREQUENCY	0.4
@@ -531,11 +503,7 @@ CG_CalcFov(void)
 }
 
 /*
-===============
-CG_CalcViewValues
-
 Sets cg.refdef view values
-===============
 */
 static int
 CG_CalcViewValues(void)
@@ -615,11 +583,6 @@ CG_CalcViewValues(void)
 	return CG_CalcFov();
 }
 
-/*
-=====================
-CG_PowerupTimerSounds
-=====================
-*/
 static void
 CG_PowerupTimerSounds(void)
 {
@@ -638,11 +601,6 @@ CG_PowerupTimerSounds(void)
 	}
 }
 
-/*
-=====================
-addbufferedsound
-=====================
-*/
 void
 addbufferedsound(sfxHandle_t sfx)
 {
@@ -654,11 +612,6 @@ addbufferedsound(sfxHandle_t sfx)
 		cg.sndbufout++;
 }
 
-/*
-=====================
-CG_PlayBufferedSounds
-=====================
-*/
 static void
 CG_PlayBufferedSounds(void)
 {
@@ -731,11 +684,7 @@ drawtestlights(void)
 }
 
 /*
-=================
-drawframe
-
 Generates and draws a game scene and status information at the given time.
-=================
 */
 void
 drawframe(int serverTime, stereoFrame_t stereoview, qboolean demoplayback)
