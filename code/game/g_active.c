@@ -544,7 +544,7 @@ clientevents(gentity_t *ent, int oldEventSequence)
 			// make sure the invulnerability is off
 			ent->client->invulnerabilityTime = 0;
 			// start the kamikze
-			G_StartKamikaze(ent);
+			startkamikaze(ent);
 			break;
 
 		case EV_USE_ITEM4:	// portal
@@ -802,7 +802,7 @@ ClientThink_real(gentity_t *ent)
 
 	veccpy(client->ps.origin, client->oldorigin);
 
-	homing_scan(ent);
+	weapon_hominglauncher_scan(ent);
 
 	Pmove(&pm);
 

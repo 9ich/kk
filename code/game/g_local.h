@@ -578,7 +578,7 @@ void		snapvectortowards(vec3_t v, vec3_t to);
 qboolean	chkgauntletattack(gentity_t *ent);
 void		weapon_hook_free(gentity_t *ent);
 void		weapon_hook_think(gentity_t *ent);
-void		homing_scan(gentity_t *ent);
+void		weapon_hominglauncher_scan(gentity_t *ent);
 
 // g_client.c
 int		getteamcount(int ignoreClientNum, team_t team);
@@ -604,7 +604,7 @@ qboolean	filterpacket(char *from);
 // g_weapon.c
 void	fireweapon(gentity_t *ent, int slot);
 #ifdef MISSIONPACK
-void	G_StartKamikaze(gentity_t *ent);
+void	startkamikaze(gentity_t *ent);
 #endif
 
 // g_cmds.c

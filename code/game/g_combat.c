@@ -279,7 +279,7 @@ char *modNames[] = {
 void
 Kamikaze_DeathActivate(gentity_t *ent)
 {
-	G_StartKamikaze(ent);
+	startkamikaze(ent);
 	entfree(ent);
 }
 
