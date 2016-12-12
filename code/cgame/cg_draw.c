@@ -113,7 +113,7 @@ drawdmgindicator(void)
 		return;
 
 	// flicker
-	if(sawtoothwave(cg.time, 8, 0, 1.0f) < 0.5f)
+	if(sawtoothwave(cg.time - cg.dmgtime, 8, 0, 1.0f) >= 0.5f)
 		return;
 
 	hurtself = attacker == cg.pps.clientNum;
