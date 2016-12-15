@@ -484,7 +484,7 @@ drawfpsgraph(void)
 	end++;
 }
 
-#define SPEEDOMETER_FRAMES 20
+#define SPEEDOMETER_FRAMES 24
 
 static void
 drawspeedometer(void)
@@ -492,7 +492,7 @@ drawspeedometer(void)
 	static float speeds[SPEEDOMETER_FRAMES];
 	static int index;
 	const float limit = 1500.0f;
-	const float width = 100.0f, height = 16.0f;
+	const float width = 100.0f, height = 12.0f;
 	const float bgalpha = 40/255.0f, alpha = 0.7f;
 	float x, y, speed, avgspeed, frac, avgfrac;
 	vec4_t clr;
@@ -532,19 +532,11 @@ drawspeedometer(void)
 	if(0)
 		drawrect(x-1, y-1, width+2, height+2, CWhite);	// outline
 
-	// draw angle between forward and velocity
-	veccpy(cg.pps.velocity, dir);
-	vecnorm(dir);
-	Vector4Copy(CGold, clr);
-	clr[3] = alpha;
-	fillrect(x, y, width*MAX(0, vecdot(dir, cg.refdef.viewaxis[0])), height/4, clr);
-
 	// draw instantaneous speed bar
 	speed = MIN(limit, speed);
 	frac = speed / limit;
-	Vector4Copy(CWhite, clr);
-	clr[3] = alpha;
-	fillrect(x, y+(height/4), width*frac, height/4, clr);
+	coloralpha(clr, CWhite, alpha);
+	fillrect(x, y, width*frac, height/3, clr);
 
 	if(index > SPEEDOMETER_FRAMES){
 		// take root mean square of speeds over a window
@@ -555,9 +547,8 @@ drawspeedometer(void)
 		// draw RMS speed bar
 		avgspeed = MIN(limit, avgspeed);
 		avgfrac = avgspeed / limit;
-		Vector4Copy(CMediumSlateBlue, clr);
-		clr[3] = alpha;
-		fillrect(x, y+2*(height/4), width*avgfrac, height/2, clr);
+		coloralpha(clr, CWhite, alpha);
+		fillrect(x, y+(height/3)+1, width*avgfrac, 2*height/3 - 1, clr);
 	}
 
 	// draw axis ticks
