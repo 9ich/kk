@@ -56,7 +56,7 @@ drawmodel(float x, float y, float w, float h, qhandle_t model, qhandle_t skin, v
 	memset(&refdef, 0, sizeof(refdef));
 
 	memset(&ent, 0, sizeof(ent));
-	AnglesToAxis(angles, ent.axis);
+	angles2axis(angles, ent.axis);
 	veccpy(origin, ent.origin);
 	ent.hModel = model;
 	ent.customSkin = skin;

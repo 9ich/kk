@@ -790,7 +790,7 @@ CG_PlayerAngles(centity_t *cent, vec3_t ship[3])
 
 	veccpy(cent->lerpangles, shipangles);
 
-	AnglesToAxis(shipangles, ship);
+	angles2axis(shipangles, ship);
 }
 
 /*
@@ -1078,7 +1078,7 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 
 			// add flame
 			vecclear(angles);
-			AnglesToAxis(angles, re.axis);
+			angles2axis(angles, re.axis);
 			rotentontag(&re, ship, ship->hModel, tp->tagname);
 			vecmul(re.axis[0], 2, vel);
 			trap_R_AddRefEntityToScene(&re);
@@ -1675,7 +1675,7 @@ doplayer(centity_t *cent)
 		// always draw
 		powerup.renderfx &= ~RF_THIRD_PERSON;
 		vecclear(angles);
-		AnglesToAxis(angles, powerup.axis);
+		angles2axis(angles, powerup.axis);
 		veccpy(cent->lerporigin, powerup.origin);
 		powerup.origin[2] += -24 + (float)t * 80 / 500;
 		if(t > 400){

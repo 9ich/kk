@@ -49,7 +49,7 @@ machinegunejectbrass(centity_t *cent)
 	le->pos.trType = TR_GRAVITY;
 	le->pos.trTime = cg.time - (rand()&15);
 
-	AnglesToAxis(cent->lerpangles, v);
+	angles2axis(cent->lerpangles, v);
 
 	offset[0] = -4;
 	offset[1] = -12;
@@ -122,7 +122,7 @@ shotgunejectbrass(centity_t *cent)
 		le->pos.trType = TR_GRAVITY;
 		le->pos.trTime = cg.time;
 
-		AnglesToAxis(cent->lerpangles, v);
+		angles2axis(cent->lerpangles, v);
 
 		offset[0] = 8;
 		offset[1] = 0;
@@ -189,7 +189,7 @@ nailgunejectbrass(centity_t *cent)
 	le->pos.trType = TR_GRAVITY;
 	le->pos.trTime = cg.time - (rand()&15);
 
-	AnglesToAxis(cent->lerpangles, v);
+	angles2axis(cent->lerpangles, v);
 
 	offset[0] = -4;
 	offset[1] = -12;
@@ -815,7 +815,7 @@ lightningbolt(centity_t *cent, vec3_t origin, int slot)
 		angles[0] = rand() % 360;
 		angles[1] = rand() % 360;
 		angles[2] = rand() % 360;
-		AnglesToAxis(angles, beam.axis);
+		angles2axis(angles, beam.axis);
 		trap_R_AddRefEntityToScene(&beam);
 	}
 }
@@ -985,7 +985,7 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team,
 		angles[YAW] = 0;
 		angles[PITCH] = 0;
 		angles[ROLL] = machinegunspinangle(cent);
-		AnglesToAxis(angles, barrel.axis);
+		angles2axis(angles, barrel.axis);
 
 		rotentontag(&barrel, &gun, weapon->model.h, "tag_barrel");
 
@@ -1015,7 +1015,7 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team,
 	angles[YAW] = 0;
 	angles[PITCH] = 0;
 	angles[ROLL] = crandom() * 100;
-	AnglesToAxis(angles, flash.axis);
+	angles2axis(angles, flash.axis);
 	rotentontag(&flash, &gun, weapon->model.h, "tag_flash");
 
 	// add lightning bolt
@@ -1118,7 +1118,7 @@ addviewweap(playerState_t *ps)
 	vecmad(hand.origin, cg_gun_y.value, cg.refdef.viewaxis[1], hand.origin);
 	vecmad(hand.origin, (cg_gun_z.value+fovOffset), cg.refdef.viewaxis[2], hand.origin);
 
-	AnglesToAxis(angles, hand.axis);
+	angles2axis(angles, hand.axis);
 
 	// map torso animations to weapon animations
 	if(cg_gun_frame.integer){
@@ -1155,7 +1155,7 @@ addviewweap(playerState_t *ps)
 	vecmad(hand.origin, cg_gun2_y.value, cg.refdef.viewaxis[1], hand.origin);
 	vecmad(hand.origin, (cg_gun2_z.value+fovOffset), cg.refdef.viewaxis[2], hand.origin);
 
-	AnglesToAxis(angles, hand.axis);
+	angles2axis(angles, hand.axis);
 
 	// map torso animations to weapon animations
 	if(cg_gun_frame.integer){

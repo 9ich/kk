@@ -162,7 +162,7 @@ dogeneral(centity_t *cent)
 		ent.renderfx |= RF_THIRD_PERSON;	// only draw from mirrors
 
 	// convert angles to axis
-	AnglesToAxis(cent->lerpangles, ent.axis);
+	angles2axis(cent->lerpangles, ent.axis);
 
 	// add to refresh list
 	trap_R_AddRefEntityToScene(&ent);
@@ -226,7 +226,7 @@ doitem(centity_t *cent)
 
 	// item rotation
 
-	AnglesToAxis(cent->currstate.angles, ent.axis);
+	angles2axis(cent->currstate.angles, ent.axis);
 	// create an arbitrary ent.axis[1]
 	vecperp(ent.axis[1], ent.axis[2]);
 	veccpy(ent.axis[1], tmp);
@@ -328,7 +328,7 @@ doitem(centity_t *cent)
 		angles[YAW] = 0;
 		angles[PITCH] = 0;
 		angles[ROLL] = 0;
-		AnglesToAxis(angles, barrel.axis);
+		angles2axis(angles, barrel.axis);
 
 		rotentontag(&barrel, &ent, wi->model.h, "tag_barrel");
 
@@ -349,7 +349,7 @@ doitem(centity_t *cent)
 					ent.origin[2] += 12;
 					spinAngles[1] = (cg.time & 1023) * 360 / -1024.0f;
 				}
-				AnglesToAxis(spinAngles, ent.axis);
+				angles2axis(spinAngles, ent.axis);
 
 				// scale up if respawning
 				if(frac != 1.0){
@@ -502,7 +502,7 @@ domover(centity_t *cent)
 	memset(&ent, 0, sizeof(ent));
 	veccpy(cent->lerporigin, ent.origin);
 	veccpy(cent->lerporigin, ent.oldorigin);
-	AnglesToAxis(cent->lerpangles, ent.axis);
+	angles2axis(cent->lerpangles, ent.axis);
 
 	ent.renderfx = RF_NOSHADOW;
 
@@ -699,7 +699,7 @@ doteambase(centity_t *cent)
 		model.reType = RT_MODEL;
 		veccpy(cent->lerporigin, model.lightingOrigin);
 		veccpy(cent->lerporigin, model.origin);
-		AnglesToAxis(cent->currstate.angles, model.axis);
+		angles2axis(cent->currstate.angles, model.axis);
 		if(cent->currstate.modelindex == TEAM_RED)
 			model.hModel = cgs.media.redFlagBaseModel;
 		else if(cent->currstate.modelindex == TEAM_BLUE)
@@ -715,7 +715,7 @@ doteambase(centity_t *cent)
 		model.reType = RT_MODEL;
 		veccpy(cent->lerporigin, model.lightingOrigin);
 		veccpy(cent->lerporigin, model.origin);
-		AnglesToAxis(cent->currstate.angles, model.axis);
+		angles2axis(cent->currstate.angles, model.axis);
 
 		model.hModel = cgs.media.overloadBaseModel;
 		trap_R_AddRefEntityToScene(&model);
@@ -744,7 +744,7 @@ doteambase(centity_t *cent)
 			}else
 				c = 0;
 			// show the lights
-			AnglesToAxis(cent->currstate.angles, model.axis);
+			angles2axis(cent->currstate.angles, model.axis);
 			model.shaderRGBA[0] = c * 0xff;
 			model.shaderRGBA[1] = c * 0xff;
 			model.shaderRGBA[2] = c * 0xff;
@@ -760,7 +760,7 @@ doteambase(centity_t *cent)
 				}
 				veccpy(cent->currstate.angles, angles);
 				angles[YAW] += (float)16 * acos(1-c) * 180 / M_PI;
-				AnglesToAxis(angles, model.axis);
+				angles2axis(angles, model.axis);
 
 				vecmul(model.axis[0], c, model.axis[0]);
 				vecmul(model.axis[1], c, model.axis[1]);
@@ -801,7 +801,7 @@ doteambase(centity_t *cent)
 		model.reType = RT_MODEL;
 		veccpy(cent->lerporigin, model.lightingOrigin);
 		veccpy(cent->lerporigin, model.origin);
-		AnglesToAxis(cent->currstate.angles, model.axis);
+		angles2axis(cent->currstate.angles, model.axis);
 
 		if(cent->currstate.modelindex == TEAM_RED){
 			model.hModel = cgs.media.harvesterModel;

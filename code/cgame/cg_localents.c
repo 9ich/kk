@@ -237,7 +237,7 @@ CG_AddFragment(localEntity_t *le)
 			vec3_t angles;
 
 			evaltrajectory(&le->angles, cg.time, angles);
-			AnglesToAxis(angles, le->refEntity.axis);
+			angles2axis(angles, le->refEntity.axis);
 		}
 
 		trap_R_AddRefEntityToScene(&le->refEntity);
@@ -482,7 +482,7 @@ CG_AddShockwave(localEntity_t *le)
 
 	t = cg.time - le->starttime;
 	vecclear(angles);
-	AnglesToAxis(angles, axis);
+	angles2axis(angles, axis);
 
 	if(t < SHOCKWAVE_TIME){
 		memset(&shockwave, 0, sizeof(shockwave));
@@ -605,7 +605,7 @@ CG_AddKamikaze(localEntity_t *le)
 
 	t = cg.time - le->starttime;
 	vecclear(test);
-	AnglesToAxis(test, axis);
+	angles2axis(test, axis);
 
 	if(t > KAMI_SHOCKWAVE_STARTTIME && t < KAMI_SHOCKWAVE_ENDTIME){
 		if(!(le->flags & LEF_SOUND1)){
@@ -686,7 +686,7 @@ CG_AddKamikaze(localEntity_t *le)
 		test[0] = le->angles.trBase[0];
 		test[1] = le->angles.trBase[1];
 		test[2] = le->angles.trBase[2];
-		AnglesToAxis(test, axis);
+		angles2axis(test, axis);
 
 		c = (float)(t - KAMI_SHOCKWAVE2_STARTTIME) / (float)(KAMI_SHOCKWAVE2_ENDTIME - KAMI_SHOCKWAVE2_STARTTIME);
 		vecmul(axis[0], c * KAMI_SHOCKWAVE2_MAXRADIUS / KAMI_SHOCKWAVEMODEL_RADIUS, shockwave.axis[0]);

@@ -320,7 +320,7 @@ CG_InvulnerabilityImpact(vec3_t org, vec3_t angles)
 	re->hModel = cgs.media.invulnerabilityImpactModel;
 
 	veccpy(org, re->origin);
-	AnglesToAxis(angles, re->axis);
+	angles2axis(angles, re->axis);
 
 	r = rand() & 3;
 	if(r < 2)
@@ -357,7 +357,7 @@ CG_InvulnerabilityJuiced(vec3_t org)
 
 	veccpy(org, re->origin);
 	vecclear(angles);
-	AnglesToAxis(angles, re->axis);
+	angles2axis(angles, re->axis);
 
 	trap_S_StartSound(org, ENTITYNUM_NONE, CHAN_BODY, cgs.media.invulnerabilityJuicedSound);
 }
@@ -399,7 +399,7 @@ scoreplum(int client, vec3_t org, int score)
 	re->radius = 16;
 
 	vecclear(angles);
-	AnglesToAxis(angles, re->axis);
+	angles2axis(angles, re->axis);
 }
 
 localEntity_t *

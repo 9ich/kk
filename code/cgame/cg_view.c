@@ -101,7 +101,7 @@ CG_TestModel_f(void)
 	angles[YAW] = 180 + cg.refdefviewangles[1];
 	angles[ROLL] = 0;
 
-	AnglesToAxis(angles, cg.testmodelent.axis);
+	angles2axis(angles, cg.testmodelent.axis);
 	cg.testgun = qfalse;
 }
 
@@ -538,7 +538,7 @@ CG_CalcViewValues(void)
 	if(ps->pm_type == PM_INTERMISSION){
 		veccpy(ps->origin, cg.refdef.vieworg);
 		veccpy(ps->viewangles, cg.refdefviewangles);
-		AnglesToAxis(cg.refdefviewangles, cg.refdef.viewaxis);
+		angles2axis(cg.refdefviewangles, cg.refdef.viewaxis);
 		return CG_CalcFov();
 	}
 
@@ -574,7 +574,7 @@ CG_CalcViewValues(void)
 		CG_OffsetFirstPersonView();
 
 	// position eye relative to origin
-	AnglesToAxis(cg.refdefviewangles, cg.refdef.viewaxis);
+	angles2axis(cg.refdefviewangles, cg.refdef.viewaxis);
 
 	if(cg.hyperspace)
 		cg.refdef.rdflags |= RDF_NOWORLDMODEL | RDF_HYPERSPACE;

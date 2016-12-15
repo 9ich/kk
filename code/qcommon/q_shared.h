@@ -716,7 +716,8 @@ float	Q_crandom( int *seed );
 #define crandom()	(2.0 * (random() - 0.5))
 
 void vectoangles( const vec3_t value1, vec3_t angles);
-void AnglesToAxis( const vec3_t angles, vec3_t axis[3] );
+void angles2axis( const vec3_t angles, vec3_t axis[3] );
+void axis2angles( vec3_t axis[3], vec3_t angles );
 
 void AxisClear( vec3_t axis[3] );
 void AxisCopy( vec3_t in[3], vec3_t out[3] );
@@ -771,7 +772,7 @@ void PerpendicularVector( vec3_t dst, const vec3_t src );
 #define veccross	CrossProduct
 #define vecsub		VectorSubtract
 #define vecadd		VectorAdd
-#define vecmul	VectorScale
+#define vecmul		VectorScale
 #define vecmad		VectorMA
 #define veclen		VectorLength
 #define veclensq	VectorLengthSquared
