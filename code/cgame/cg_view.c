@@ -793,5 +793,8 @@ drawframe(int serverTime, stereoFrame_t stereoview, qboolean demoplayback)
 
 	if(cg_stats.integer)
 		cgprintf("cg.clframe:%i\n", cg.clframe);
+	if(cg_debugPosition.integer)
+		cgprintf("yaw=%f pitch=%f roll=%f\n", cg.refdefviewangles[YAW],
+		   cg.refdefviewangles[PITCH], cg.refdefviewangles[ROLL]);
 
 }
