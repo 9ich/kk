@@ -1293,6 +1293,29 @@ Cmd_Recall_f(gentity_t *ent)
 	vecset(ent->client->ps.velocity, 0, 0, 0);
 }
 
+static void
+Cmd_SetViewangles_f(gentity_t *ent)
+{
+	vec3_t a;
+	int i;
+
+	if(!CheatsOk(ent)){
+		return;
+	}
+	if(trap_Argc() != 4){
+		trap_SendServerCommand(ent-g_entities, "print \"usage: setviewangles pitch yaw roll\n\"");
+		return;
+	}
+
+	for(i = 0; i < 3; i++){
+		char buf[64];
+
+		trap_Argv(i+1, buf, sizeof buf);
+		a[i] = atof(buf);
+	}
+	setviewangles(ent, a);
+}
+
 
 void
 clientcmd(int clientNum)
@@ -1372,6 +1395,8 @@ clientcmd(int clientNum)
 		Cmd_Mark_f(ent);
 	else if(Q_stricmp(cmd, "recall") == 0)
 		Cmd_Recall_f(ent);
+	else if(Q_stricmp(cmd, "setviewangles") == 0)
+		Cmd_SetViewangles_f(ent);
 	else
 		trap_SendServerCommand(clientNum, va("print \"unknown cmd %s\n\"", cmd));
 }

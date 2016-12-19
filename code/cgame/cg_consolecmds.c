@@ -250,6 +250,7 @@ initconsolesmds(void)
 	trap_AddCommand("levelshot");
 	trap_AddCommand("addbot");
 	trap_AddCommand("setviewpos");
+	trap_AddCommand("setviewangles");
 	trap_AddCommand("callvote");
 	trap_AddCommand("vote");
 	trap_AddCommand("callteamvote");
