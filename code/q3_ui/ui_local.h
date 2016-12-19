@@ -75,9 +75,6 @@ typedef struct
 	qhandle_t	cursor;
 	qhandle_t	menuBackShader;
 	sfxHandle_t	fieldUpdateSound;
-	float		xscale;
-	float		yscale;
-	float		bias;
 	qboolean	demoversion;
 	qboolean	firstdraw;
 } uiStatic_t;
@@ -89,7 +86,6 @@ extern void	charevent(int key);
 extern void	mouseevent(int dx, int dy);
 extern void	refresh(int realtime);
 extern qboolean consolecommand(int realTime);
-extern float	UI_ClampCvar(float min, float max, float value);
 extern qboolean mouseover(float x, float y, float width, float height);
 extern void	setactivemenu(uiMenuCommand_t menu);
 extern void	push(void (*drawfunc)(void));

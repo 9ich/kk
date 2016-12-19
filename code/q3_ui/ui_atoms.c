@@ -74,16 +74,6 @@ UI_Cvar_VariableString(const char *var_name)
 	return buffer;
 }
 
-float
-UI_ClampCvar(float min, float max, float value)
-{
-	if(value < min)
-		return min;
-	if(value > max)
-		return max;
-	return value;
-}
-
 void
 startdemoloop(void)
 {
@@ -188,15 +178,6 @@ init(void)
 
 	trap_GetGlconfig(&uis.glconfig);
 
-	// for 640x480 virtualized screen
-	uis.xscale = uis.glconfig.vidWidth * (1.0/640.0);
-	uis.yscale = uis.glconfig.vidHeight * (1.0/480.0);
-	if(uis.glconfig.vidWidth * 480 > uis.glconfig.vidHeight * 640){
-		// widescreen
-		uis.bias = 0.5 * (uis.glconfig.vidWidth - (uis.glconfig.vidHeight * (640.0/480.0)));
-		uis.xscale = uis.yscale;
-	}else
-		uis.bias = 0;
 	cacheui();
 	uis.firstdraw = qtrue;
 	uis.sp = -1;
