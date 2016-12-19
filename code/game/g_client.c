@@ -432,19 +432,9 @@ copytobodyqueue(gentity_t *ent)
 void
 setviewangles(gentity_t *ent, vec3_t angle)
 {
-	int i;
-
-	return;
-
-	// set the delta angle
-	for(i = 0; i<3; i++){
-		int cmdAngle;
-
-		cmdAngle = ANGLE2SHORT(angle[i]);
-		ent->client->ps.delta_angles[i] = cmdAngle - ent->client->pers.cmd.angles[i];
-	}
-	veccpy(angle, ent->s.angles);
-	veccpy(ent->s.angles, ent->client->ps.viewangles);
+	angles2shorts(angle, ent->client->ps.delta_angles);
+	// send a timestamp so client knows viewangles have been forced
+	ent->client->ps.delta_angles_time = level.time;
 }
 
 void

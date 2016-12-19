@@ -1243,7 +1243,8 @@ typedef struct playerState_s {
 	float			airIdleFriction;	// pmove friction when player has released movement keys
 	int			speed;
 	int			delta_angles[3];	// add to command angles to get view direction
-									// changed by spawns, rotating objects, and teleporters
+							// changed by spawns, rotating objects, and teleporters
+	int			delta_angles_time;	// timestamp changed whenever delta_angles is set
 
 	int			groundEntityNum;// ENTITYNUM_NONE = in air
 

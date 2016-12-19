@@ -962,20 +962,13 @@ are being updated instead of a full move
 void
 updateviewangles(playerState_t *ps, const usercmd_t *cmd)
 {
-	short temp;
-	int i;
 
 	if(ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPINTERMISSION)
 		return;	// no view changes at all
-
 	if(ps->pm_type != PM_SPECTATOR && ps->stats[STAT_HEALTH] <= 0)
 		return;	// no view changes at all
 
-	// circularly clamp the angles with deltas
-	for(i = 0; i<3; i++){
-		temp = cmd->angles[i]; //+ ps->delta_angles[i];
-		ps->viewangles[i] = SHORT2ANGLE(temp);
-	}
+	shorts2angles(cmd->angles, ps->viewangles);
 }
 
 void

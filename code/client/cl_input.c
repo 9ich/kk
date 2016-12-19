@@ -596,9 +596,13 @@ CL_CreateCmd
 =================
 */
 usercmd_t CL_CreateCmd( void ) {
+	static int deltaanglestime = 0;
 	usercmd_t cmd;
 	vec3_t oldAngles, delta;
 	vec3_t axis[3], viewaxis[3], deltaaxis[3];
+	playerState_t *ps;
+
+	ps = &cl.snap.ps;
 
 	VectorCopy( cl.viewangles, oldAngles );
 	VectorSet(delta, 0, 0, 0);
@@ -618,6 +622,12 @@ usercmd_t CL_CreateCmd( void ) {
 
 	// get basic movement from joystick
 	CL_JoystickMove( &cmd, delta );
+
+	if(ps->delta_angles_time != deltaanglestime){
+		// force the new viewangles and save the timestamp
+		shorts2angles(ps->delta_angles, cl.viewangles);
+		deltaanglestime = ps->delta_angles_time;
+	}
 
 	angles2axis(cl.viewangles, viewaxis);
 	angles2axis(delta, deltaaxis);
