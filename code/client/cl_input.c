@@ -598,7 +598,7 @@ CL_CreateCmd
 usercmd_t CL_CreateCmd( void ) {
 	usercmd_t cmd;
 	vec3_t oldAngles, delta;
-	quat_t qdelta, qangles;
+	vec3_t axis[3], viewaxis[3], deltaaxis[3];
 
 	VectorCopy( cl.viewangles, oldAngles );
 	VectorSet(delta, 0, 0, 0);
@@ -619,17 +619,10 @@ usercmd_t CL_CreateCmd( void ) {
 	// get basic movement from joystick
 	CL_JoystickMove( &cmd, delta );
 
-	angles2quat(cl.viewangles, qangles);
-	angles2quat(delta, qdelta);
-	quatmul(qangles, qdelta, qangles);
-	quat2angles(qangles, cl.viewangles);
-
-	// check to make sure the angles haven't wrapped
-	if ( cl.viewangles[PITCH] - oldAngles[PITCH] > 90 ) {
-		cl.viewangles[PITCH] = oldAngles[PITCH] + 90;
-	} else if ( oldAngles[PITCH] - cl.viewangles[PITCH] > 90 ) {
-		cl.viewangles[PITCH] = oldAngles[PITCH] - 90;
-	} 
+	angles2axis(cl.viewangles, viewaxis);
+	angles2axis(delta, deltaaxis);
+	MatrixMultiply(deltaaxis, viewaxis, axis);
+	axis2angles(axis, cl.viewangles);
 
 	// store out the final values
 	CL_FinishMove( &cmd );
