@@ -49,6 +49,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define NUM_MUSIC_BUFFERS	4
 #define MUSIC_BUFFER_SIZE	4096
 #define MAX_SFX			4096
+#define NLOOP	3
 
 typedef struct src_s
 {
@@ -139,7 +140,8 @@ static qboolean alSourcesInitialised = qfalse;
 static int lastListenerNumber = -1;
 static vec3_t lastListenerOrigin = {0.0f, 0.0f, 0.0f};
 
-static sentity_t entityList[MAX_GENTITIES];
+// for an entity i, its second loop can be set by using the index i*2, and so on
+static sentity_t entityList[MAX_GENTITIES*NLOOP];
 
 static srcHandle_t streamSourceHandles[MAX_RAW_STREAMS];
 static qboolean streamPlaying[MAX_RAW_STREAMS];
@@ -1182,12 +1184,14 @@ static void
 S_AL_UpdateEntityPosition(int entityNum, const vec3_t origin)
 {
 	vec3_t sanOrigin;
+	int i;
 
 	VectorCopy(origin, sanOrigin);
 	S_AL_SanitiseVector(sanOrigin);
 	if(entityNum < 0 || entityNum >= MAX_GENTITIES)
 		Com_Error(ERR_DROP, "S_UpdateEntityPosition: bad entitynum %i", entityNum);
-	VectorCopy(sanOrigin, entityList[entityNum].origin);
+	for(i = 1; i <= NLOOP; i++)
+		VectorCopy(sanOrigin, entityList[i*entityNum].origin);
 }
 
 /*
@@ -1200,7 +1204,7 @@ Necessary for i.g. Western Quake3 mod which is buggy.
 static qboolean
 S_AL_CheckInput(int entityNum, sfxHandle_t sfx)
 {
-	if(entityNum < 0 || entityNum >= MAX_GENTITIES)
+	if(entityNum < 0 || entityNum >= MAX_GENTITIES*NLOOP)
 		Com_Error(ERR_DROP, "ERROR: S_AL_CheckInput: bad entitynum %i", entityNum);
 
 	if(sfx < 0 || sfx >= numSfx){
@@ -1339,7 +1343,6 @@ S_AL_SrcLoop(alSrcPriority_t priority, sfxHandle_t sfx,
 				    "for loop sfx %d on entity %d\n", sfx, entityNum);
 			return;
 		}
-
 		curSource = &srcList[src];
 
 		sent->startLoopingSound = qtrue;
@@ -1427,8 +1430,12 @@ S_AL_StopLoopingSound
 static void
 S_AL_StopLoopingSound(int entityNum)
 {
-	if(entityList[entityNum].srcAllocated)
-		S_AL_SrcKill(entityList[entityNum].srcIndex);
+	int i;
+
+	for(i = 1; i <= NLOOP; i++){
+		if(entityList[i*entityNum].srcAllocated)
+			S_AL_SrcKill(entityList[i*entityNum].srcIndex);
+	}
 }
 
 /*
