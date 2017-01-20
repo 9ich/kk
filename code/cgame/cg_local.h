@@ -1485,7 +1485,7 @@ void		drawtourneyscoreboard(void);
 
 // cg_consolecmds.c
 qboolean	consolecmd(void);
-void		initconsolesmds(void);
+void		initconsolecmds(void);
 
 // cg_servercmds.c
 void	execnewsrvcmds(int latestSequence);

@@ -225,7 +225,7 @@ Let the client system know about all of our commands
 so it can perform tab completion
 */
 void
-initconsolesmds(void)
+initconsolecmds(void)
 {
 	int i;
 

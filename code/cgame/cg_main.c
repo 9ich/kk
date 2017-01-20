@@ -1116,7 +1116,7 @@ cginit(int serverMessageNum, int serverCommandSequence, int clientNum)
 
 	registercvars();
 
-	initconsolesmds();
+	initconsolecmds();
 
 	cg.weapsel[0] = WP_MACHINEGUN;
 	cg.weapsel[1] = WP_MACHINEGUN;
