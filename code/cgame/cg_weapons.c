@@ -606,7 +606,7 @@ registerweap(int weaponNum)
 
 #ifdef MISSIONPACK
 	case WP_PROX_LAUNCHER:
-		weapinfo->missilemodel = trap_R_RegisterModel("models/weaphits/proxmine.md3");
+		weapinfo->missilemodel = trap_R_RegisterModel("models/missiles/proxmine.md3");
 		weapinfo->missileTrailFunc = grenadetrail;
 		weapinfo->trailtime = 700;
 		weapinfo->trailradius = 32;
@@ -617,7 +617,7 @@ registerweap(int weaponNum)
 #endif
 
 	case WP_GRENADE_LAUNCHER:
-		weapinfo->missilemodel = trap_R_RegisterModel("models/ammo/grenade1.md3");
+		weapinfo->missilemodel = trap_R_RegisterModel("models/missiles/grenade.md3");
 		weapinfo->missileTrailFunc = grenadetrail;
 		weapinfo->trailtime = 700;
 		weapinfo->trailradius = 32;

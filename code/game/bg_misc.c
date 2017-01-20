@@ -909,7 +909,7 @@ Only in CTF games
 	{
 		"weapon_prox_launcher",
 		"sound/misc/w_pkup.wav",
-		{"models/weapons2/proxmine/proxmine.md3",
+		{"models/weapons2/proxlauncher/prox.md3",
 		 nil, nil, nil},
 /* icon */ "icons/weap_proxlauncher",
 /* pickup */ "Prox Launcher",
