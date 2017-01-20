@@ -897,6 +897,8 @@ CG_RegisterGraphics(void)
 #endif
 	}
 
+	trap_R_RegisterShader("icons/worlddeath");	// precache
+
 	cgs.media.thrustFlameModel = trap_R_RegisterModel("models/players/thrust.md3");
 
 	cgs.media.armorModel = trap_R_RegisterModel("models/powerups/armor/armor_yel.md3");

@@ -163,69 +163,68 @@ CG_Obituary(entityState_t *ent)
 			Q_strncpyz(cg.killername, attackerName, sizeof(cg.killername));
 	}
 
-	if(attacker != ENTITYNUM_WORLD){
-		switch(mod){
-		case MOD_GRAPPLE:
-			icon = finditemforweapon(WP_GRAPPLING_HOOK)->icon;
-			break;
-		case MOD_GAUNTLET:
-			icon = "icons/weap_melee";
-			break;
-		case MOD_MACHINEGUN:
-			icon = finditemforweapon(WP_MACHINEGUN)->icon;
-			break;
-		case MOD_SHOTGUN:
-			icon = finditemforweapon(WP_SHOTGUN)->icon;
-			break;
-		case MOD_GRENADE:
-		case MOD_GRENADE_SPLASH:
-			icon = finditemforweapon(WP_GRAPPLING_HOOK)->icon;
-			break;
-		case MOD_ROCKET:
-		case MOD_ROCKET_SPLASH:
-			icon = finditemforweapon(WP_ROCKET_LAUNCHER)->icon;
-			break;
-		case MOD_PLASMA:
-		case MOD_PLASMA_SPLASH:
-			icon = finditemforweapon(WP_PLASMAGUN)->icon;
-			break;
-		case MOD_RAILGUN:
-			icon = finditemforweapon(WP_RAILGUN)->icon;
-			break;
-		case MOD_LIGHTNING:
-			icon = finditemforweapon(WP_LIGHTNING)->icon;
-			break;
-		case MOD_BFG:
-		case MOD_BFG_SPLASH:
-			icon = "";
-			break;
-		case MOD_NAIL:
-			icon = finditemforweapon(WP_NAILGUN)->icon;
-			break;
-		case MOD_CHAINGUN:
-			icon = "";
-			break;
-		case MOD_PROXIMITY_MINE:
-			icon = finditemforweapon(WP_PROX_LAUNCHER)->icon;
-			break;
-		case MOD_KAMIKAZE:
-			icon = "icons/kamikaze";
-			break;
-		case MOD_JUICED:
-			icon = "";
-			break;
-		case MOD_TELEFRAG:
-		default:
-			icon = "icons/worlddeath";
-			break;
-		}
-
-		queueobit(attackerName, icon, targetName);
+	if(attacker == ENTITYNUM_WORLD){
+		// we don't know what it was
+		queueobit("", "icons/worlddeath", targetName);
 		return;
 	}
+	switch(mod){
+	case MOD_GRAPPLE:
+		icon = finditemforweapon(WP_GRAPPLING_HOOK)->icon;
+		break;
+	case MOD_GAUNTLET:
+		icon = finditemforweapon(WP_GAUNTLET)->icon;
+		break;
+	case MOD_MACHINEGUN:
+		icon = finditemforweapon(WP_MACHINEGUN)->icon;
+		break;
+	case MOD_CHAINGUN:
+		icon = finditemforweapon(WP_CHAINGUN)->icon;
+		break;
+	case MOD_SHOTGUN:
+		icon = finditemforweapon(WP_SHOTGUN)->icon;
+		break;
+	case MOD_GRENADE:
+	case MOD_GRENADE_SPLASH:
+		icon = finditemforweapon(WP_GRAPPLING_HOOK)->icon;
+		break;
+	case MOD_ROCKET:
+	case MOD_ROCKET_SPLASH:
+		icon = finditemforweapon(WP_ROCKET_LAUNCHER)->icon;
+		break;
+	case MOD_PLASMA:
+	case MOD_PLASMA_SPLASH:
+		icon = finditemforweapon(WP_PLASMAGUN)->icon;
+		break;
+	case MOD_RAILGUN:
+		icon = finditemforweapon(WP_RAILGUN)->icon;
+		break;
+	case MOD_LIGHTNING:
+		icon = finditemforweapon(WP_LIGHTNING)->icon;
+		break;
+	case MOD_BFG:
+	case MOD_BFG_SPLASH:
+		icon = "";
+		break;
+	case MOD_NAIL:
+		icon = finditemforweapon(WP_NAILGUN)->icon;
+		break;
+	case MOD_PROXIMITY_MINE:
+		icon = finditemforweapon(WP_PROX_LAUNCHER)->icon;
+		break;
+	case MOD_KAMIKAZE:
+		icon = "icons/kamikaze";
+		break;
+	case MOD_JUICED:
+		icon = "";
+		break;
+	case MOD_TELEFRAG:
+	default:
+		icon = "icons/worlddeath";
+		break;
+	}
 
-	// we don't know what it was
-	queueobit("", "icons/worlddeath", targetName);
+	queueobit(attackerName, icon, targetName);
 }
 
 //==========================================================================
