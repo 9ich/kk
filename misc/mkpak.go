@@ -1,17 +1,19 @@
 /*
- usage: go run mkpak.go [dir] [pakname]
+ usage: go run mkpak.go baseq3 0
 */
 
 package main
 
 import (
 	"archive/zip"
+	"bytes"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -49,9 +51,11 @@ var blacklist = []string{
 }
 
 var (
-	root    string   // Directory to be packed.
-	pakname string   // e.g. "pak0".
-	paths   []string // Filtered files to include in the pak.
+	root     string            // Directory to be packed.
+	paknum   int               // e.g. 0 for pak0.
+	paths    []string          // Filtered files to be included in the pak.
+	pakpaths []string          // Same as paths but relative to pak's root.
+	paks     []*zip.ReadCloser // Preceding pak files (pak0 to pakN-1) opened for fast access.
 )
 
 func readable(n int64) string {
@@ -68,7 +72,41 @@ func readable(n int64) string {
 	return fmt.Sprintf("%.2f %s", f, u)
 }
 
-func writepak(fname string, paths []string, pakpaths []string) (int64, int64, error) {
+func delta(buf []byte, name string) bool {
+	occurrences := 0
+	for i := paknum - 1; i >= 0; i-- {
+		for j := 0; j < len(paks[i].File); j++ {
+			if paks[i].File[j].Name != name {
+				continue
+			}
+
+			occurrences++
+
+			rc, err := paks[i].File[j].Open()
+			if err != nil {
+				log.Fatalln(err)
+			}
+			b, err := ioutil.ReadAll(rc)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			rc.Close()
+
+			if bytes.Compare(buf, b) != 0 {
+				log.Printf("delta\t%s differs from pak%d%s\n",
+					name, i, ext)
+				return true
+			}
+		}
+	}
+
+	if occurrences == 0 {
+		log.Printf("new\t%s\n", name)
+	}
+	return occurrences == 0
+}
+
+func writepak(fname string) (int64, int64, error) {
 	f, err := os.Create(fname)
 	if err != nil {
 		return 0, 0, err
@@ -77,17 +115,19 @@ func writepak(fname string, paths []string, pakpaths []string) (int64, int64, er
 	w := zip.NewWriter(f)
 	var nwrite int64
 	for i := 0; i < len(paths); i++ {
-		log.Println("add", pakpaths[i])
-		f, err := w.Create(pakpaths[i])
-		if err != nil {
-			return 0, 0, err
-		}
-
 		b, err := ioutil.ReadFile(paths[i])
 		if err != nil {
 			return 0, 0, err
 		}
 
+		if !delta(b, pakpaths[i]) {
+			continue
+		}
+
+		f, err := w.Create(pakpaths[i])
+		if err != nil {
+			return 0, 0, err
+		}
 		n, err := f.Write(b)
 		if err != nil {
 			return 0, 0, err
@@ -146,35 +186,62 @@ func visit(path string, f os.FileInfo, err error) error {
 	return nil
 }
 
+func openPrecedingPaks() error {
+	for i := 0; i < paknum; i++ {
+		r, err := zip.OpenReader("pak" + strconv.Itoa(i) + ext)
+		if err != nil {
+			return err
+		}
+		paks = append(paks, r)
+	}
+	return nil
+}
+
+func closePrecedingPaks() {
+	for _, r := range paks {
+		if r != nil {
+			r.Close()
+		}
+	}
+}
+
 func init() {
 	flag.Parse()
 	root = flag.Arg(0)
-	pakname = flag.Arg(1)
+	paknum, _ = strconv.Atoi(flag.Arg(1))
 }
 
 func main() {
 	log.SetFlags(0)
 	log.SetOutput(os.Stdout)
 
-	if flag.NArg() < 2 {
-		log.Fatalln("usage: mkpak [dir] [pakname]")
+	if flag.NArg() != 2 {
+		log.Fatalln("usage: mkpak [dir] [paknum]")
 	}
 
+	openPrecedingPaks()
+	defer closePrecedingPaks()
+
+	// collect paths
 	err := filepath.Walk(root, visit)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	var pakpaths []string
+	// transform to pakpaths
 	for i := 0; i < len(paths); i++ {
 		pp := strings.TrimPrefix(paths[i], root)
 		pp = strings.Replace(pp, "\\", "/", -1)
 		pakpaths = append(pakpaths, pp)
 	}
-	nin, nout, err := writepak(pakname+ext, paths, pakpaths)
+
+	// write the pak
+	fname := "pak" + strconv.Itoa(paknum) + ext
+	nin, nout, err := writepak(fname)
 	if err != nil {
 		log.Fatalln(err)
 	}
 	log.Printf("\n%s: %d files, %s in, %s out\n",
-		pakname+ext, len(paths), readable(nin), readable(nout))
+		fname, len(paths),
+		readable(nin), readable(nout))
 }
