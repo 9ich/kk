@@ -501,6 +501,22 @@ and is the equivalent for 'exactVertex'.
 
 
 -------------------------------------------------------------------------------
+  SHADER STAGE IMAGE NAMES
+-------------------------------------------------------------------------------
+
+When loading an image, thre renderer also searches for accompanying shader
+stage images in the same directory.  The naming scheme is:
+
+*  `[image].tga`                    - RGBA diffuse.
+*  `[image]_n.tga`                  - RGB normal map.
+*  `[image]_nh.tga`                 - RGBA normal map. Alpha is height map for parallax mapping.
+*  `[image]_s.tga`                  - RGB specular map. R is gloss. G is metallicness.
+
+Automatically loading these shader stage images means that manually writing shader
+files is sometimes unnecessary.
+
+
+-------------------------------------------------------------------------------
   DYNAMIC SUNLIGHT AND CASCADED SHADOW MAPS
 -------------------------------------------------------------------------------
 
