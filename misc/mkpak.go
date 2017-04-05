@@ -41,6 +41,7 @@ var whitelist = []string{
 var blacklist = []string{
 	"*/*/*_ao.*", // Ambient occlusion (already blended into diffuse).
 	"*/*/*_d.*",  // Displacement map (already copied into _n alpha).
+	"*/*/*_h.*",  // Height map (same as displacement maps).
 	"*/*/*/*_ao.*",
 	"*/*/*/*_d.*",
 	"*/*test*",
@@ -73,30 +74,38 @@ func readable(n int64) string {
 }
 
 func delta(buf []byte, name string) bool {
-	occurrences := 0
+	var occurrences int
+
 	for i := paknum - 1; i >= 0; i-- {
-		for j := 0; j < len(paks[i].File); j++ {
-			if paks[i].File[j].Name != name {
-				continue
+		// Search for filename in previous paks.
+		var j int
+		for j = 0; j < len(paks[i].File); j++ {
+			if paks[i].File[j].Name == name {
+				break
 			}
+		}
+		if j == len(paks[i].File) {
+			continue	// Not found.
+		}
 
-			occurrences++
+		occurrences++
 
-			rc, err := paks[i].File[j].Open()
-			if err != nil {
-				log.Fatalln(err)
-			}
-			b, err := ioutil.ReadAll(rc)
-			if err != nil {
-				log.Fatalln(err)
-			}
-			rc.Close()
+		rc, err := paks[i].File[j].Open()
+		if err != nil {
+			log.Fatalln(err)
+		}
+		b, err := ioutil.ReadAll(rc)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		rc.Close()
 
-			if bytes.Compare(buf, b) != 0 {
-				log.Printf("delta\t%s differs from pak%d%s\n",
-					name, i, ext)
-				return true
-			}
+		if bytes.Compare(buf, b) != 0 {
+			log.Printf("delta\t%s differs from pak%d%s\n",
+				name, i, ext)
+			return true
+		} else {
+			return false
 		}
 	}
 
@@ -106,44 +115,47 @@ func delta(buf []byte, name string) bool {
 	return occurrences == 0
 }
 
-func writepak(fname string) (int64, int64, error) {
+func writepak(fname string) (int, int64, int64, error) {
 	f, err := os.Create(fname)
 	if err != nil {
-		return 0, 0, err
+		return 0, 0, 0, err
 	}
 	defer f.Close()
 	w := zip.NewWriter(f)
 	var nwrite int64
+	var nfiles int
 	for i := 0; i < len(paths); i++ {
 		b, err := ioutil.ReadFile(paths[i])
 		if err != nil {
-			return 0, 0, err
+			return 0, 0, 0, err
 		}
 
 		if !delta(b, pakpaths[i]) {
 			continue
 		}
 
+		nfiles++
+
 		f, err := w.Create(pakpaths[i])
 		if err != nil {
-			return 0, 0, err
+			return 0, 0, 0, err
 		}
 		n, err := f.Write(b)
 		if err != nil {
-			return 0, 0, err
+			return 0, 0, 0, err
 		}
 		nwrite += int64(n)
 	}
 	err = w.Close()
 	if err != nil {
-		return 0, 0, err
+		return 0, 0, 0, err
 	}
 
 	stat, err := f.Stat()
 	if err != nil {
-		return 0, 0, err
+		return 0, 0, 0, err
 	}
-	return nwrite, stat.Size(), nil
+	return nfiles, nwrite, stat.Size(), nil
 }
 
 func visit(path string, f os.FileInfo, err error) error {
@@ -237,11 +249,11 @@ func main() {
 
 	// write the pak
 	fname := "pak" + strconv.Itoa(paknum) + ext
-	nin, nout, err := writepak(fname)
+	nfiles, nin, nout, err := writepak(fname)
 	if err != nil {
 		log.Fatalln(err)
 	}
 	log.Printf("\n%s: %d files, %s in, %s out\n",
-		fname, len(paths),
+		fname, nfiles,
 		readable(nin), readable(nout))
 }
