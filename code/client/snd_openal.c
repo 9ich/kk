@@ -114,6 +114,9 @@ cvar_t *s_alGain;
 cvar_t *s_alSources;
 cvar_t *s_alDopplerFactor;
 cvar_t *s_alDopplerSpeed;
+cvar_t *s_reverbMix;
+cvar_t *s_reverbDiffusion;
+cvar_t *s_reverbDecay;
 cvar_t *s_alMinDistance;
 cvar_t *s_alMaxDistance;
 cvar_t *s_alRolloff;
@@ -739,11 +742,11 @@ S_AL_EFXInit(void)
 		return;
 	}
 	qalEffecti(reverb, AL_EFFECT_TYPE, AL_EFFECT_REVERB);
-	qalEffectf(reverb, AL_REVERB_DECAY_TIME, 9.6f);
-	qalEffectf(reverb, AL_REVERB_DIFFUSION, 1.0f);
+	qalEffectf(reverb, AL_REVERB_DECAY_TIME, s_reverbDecay->value);
+	qalEffectf(reverb, AL_REVERB_DIFFUSION, s_reverbDiffusion->value);
 	qalEffectf(reverb, AL_REVERB_ROOM_ROLLOFF_FACTOR, AL_REVERB_DEFAULT_ROOM_ROLLOFF_FACTOR);
 	qalEffectf(reverb, AL_REVERB_REFLECTIONS_DELAY, AL_REVERB_DEFAULT_REFLECTIONS_DELAY);
-	qalEffectf(reverb, AL_REVERB_GAIN, 0.16f);
+	qalEffectf(reverb, AL_REVERB_GAIN, s_reverbMix->value);
 
 	qalGenAuxiliaryEffectSlots(1, &reverbslot);
 	if(qalGetError() != AL_NO_ERROR)
@@ -1471,6 +1474,19 @@ S_AL_SrcUpdate(void)
 		if(s_alMinDistance->modified)
 			qalSourcef(curSource->alSource, AL_REFERENCE_DISTANCE, s_alMinDistance->value);
 
+		// Update effect parameters
+		if(s_reverbDecay->modified || s_reverbDiffusion->modified ||
+		   s_reverbMix->modified){
+			qalEffectf(reverb, AL_REVERB_DECAY_TIME, s_reverbDecay->value);
+			qalEffectf(reverb, AL_REVERB_DIFFUSION, s_reverbDiffusion->value);
+			qalEffectf(reverb, AL_REVERB_ROOM_ROLLOFF_FACTOR, AL_REVERB_DEFAULT_ROOM_ROLLOFF_FACTOR);
+			qalEffectf(reverb, AL_REVERB_REFLECTIONS_DELAY, AL_REVERB_DEFAULT_REFLECTIONS_DELAY);
+			qalEffectf(reverb, AL_REVERB_GAIN, s_reverbMix->value);
+
+			// Reattach effect to effect slot
+			qalAuxiliaryEffectSloti(reverbslot, AL_EFFECTSLOT_EFFECT, reverb);
+		}
+
 		if(curSource->isLooping){
 			sentity_t *sent = &entityList[entityNum];
 
@@ -1597,6 +1613,7 @@ S_AL_SrcUpdate(void)
 		}
 
 		// Query relativity of source, don't move if it's true
+		// FIXME?
 		qalGetSourcei(curSource->alSource, AL_SOURCE_RELATIVE, &state);
 
 		// See if it needs to be moved
@@ -2413,6 +2430,9 @@ S_AL_Init(soundInterface_t *si)
 	s_alSources = Cvar_Get("s_alSources", "96", CVAR_ARCHIVE);
 	s_alDopplerFactor = Cvar_Get("s_alDopplerFactor", "1.0", CVAR_ARCHIVE);
 	s_alDopplerSpeed = Cvar_Get("s_alDopplerSpeed", "15000", CVAR_ARCHIVE);
+	s_reverbMix = Cvar_Get("s_reverbMix", "0.16", CVAR_ARCHIVE);
+	s_reverbDiffusion = Cvar_Get("s_reverbDiffusion", "1.0", CVAR_ARCHIVE);
+	s_reverbDecay = Cvar_Get("s_reverbDecay", "9.6", CVAR_ARCHIVE);
 	s_alMinDistance = Cvar_Get("s_alMinDistance", "800", CVAR_CHEAT);
 	s_alMaxDistance = Cvar_Get("s_alMaxDistance", "10000", CVAR_CHEAT);
 	s_alRolloff = Cvar_Get("s_alRolloff", "0.5", CVAR_CHEAT);
