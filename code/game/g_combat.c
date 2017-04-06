@@ -673,11 +673,14 @@ chkarmor(gentity_t *ent, int damage, int dflags)
 		return 0;
 
 	switch(ent->client->ps.stats[STAT_ARMORTYPE]){
+	case ARMOR_GREEN:
+		protection = ARMOR_GREEN_PROTECTION;
+		break;
 	case ARMOR_YELLOW:
-		protection = 0.66f;
+		protection = ARMOR_YELLOW_PROECTION;
 		break;
 	case ARMOR_RED:
-		protection = 0.75f;
+		protection = ARMOR_RED_PROTECTION;
 		break;
 	default:
 		protection = 0;

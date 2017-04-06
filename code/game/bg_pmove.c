@@ -847,28 +847,28 @@ pmweapevents(int slot)
 	switch(pm->ps->weapon[slot]){
 	default:
 	case WP_GAUNTLET:
-		addTime = 400;
+		addTime = GAUNTLET_FIRERATE;
 		break;
 	case WP_LIGHTNING:
-		addTime = 50;
+		addTime = LIGHTNING_FIRERATE;
 		break;
 	case WP_SHOTGUN:
-		addTime = 1000;
+		addTime = SHOTGUN_FIRERATE;
 		break;
 	case WP_MACHINEGUN:
-		addTime = 1000/20.0f;
+		addTime = MACHINEGUN_FIRERATE;
 		break;
 	case WP_GRENADE_LAUNCHER:
-		addTime = 800;
+		addTime = GRENADE_FIRERATE;
 		break;
 	case WP_ROCKET_LAUNCHER:
-		addTime = 700;
+		addTime = ROCKET_FIRERATE;
 		break;
 	case WP_PLASMAGUN:
-		addTime = 100;
+		addTime = PLASMAGUN_FIRERATE;
 		break;
 	case WP_RAILGUN:
-		addTime = 1500;
+		addTime = RAILGUN_FIRERATE;
 		break;
 	case WP_BFG:
 		addTime = 200;
@@ -878,17 +878,17 @@ pmweapevents(int slot)
 		break;
 #ifdef MISSIONPACK
 	case WP_NAILGUN:
-		addTime = 64;
+		addTime = NAILGUN_FIRERATE;
 		break;
 	case WP_PROX_LAUNCHER:
-		addTime = 800;
+		addTime = PROX_FIRERATE;
 		break;
 	case WP_CHAINGUN:
-		addTime = 15;
+		addTime = CHAINGUN_FIRERATE;
 		break;
 #endif
 	case WP_HOMING_LAUNCHER:
-		addTime = 500;
+		addTime = HOMING_FIRERATE;
 		break;
 	}
 

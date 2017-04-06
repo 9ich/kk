@@ -23,18 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
-#ifdef MISSIONPACK
-#define CHAINGUN_SPREAD		600
-#define CHAINGUN_DAMAGE		7
-#endif
-#define MACHINEGUN_SPREAD	200
-#define MACHINEGUN_DAMAGE	7
-#define MACHINEGUN_TEAM_DAMAGE	5	// wimpier MG in teamplay
-
-// DEFAULT_SHOTGUN_SPREAD and DEFAULT_SHOTGUN_COUNT
-// are in bg_public.h, because client predicts same spreads
-#define DEFAULT_SHOTGUN_DAMAGE 10
-
 static float quadfactor;
 static vec3_t forward, right, up, muzzle;
 
@@ -157,7 +145,7 @@ shotgunpattern(vec3_t origin, vec3_t origin2, int seed, gentity_t *ent)
 }
 
 void
-weapon_machinegun_fire(gentity_t *ent, float spread, int damage, int mod)
+weapon_machinegun_fire(gentity_t *ent)
 {
 	gentity_t       *m;
 
@@ -172,17 +160,17 @@ weapon_machinegun_fire(gentity_t *ent, float spread, int damage, int mod)
 explosive bullet
 */
 void
-weapon_chaingun_fire(gentity_t *ent, float spread, int damage, int mod)
+weapon_chaingun_fire(gentity_t *ent)
 {
 	gentity_t       *m;
 
 	m = fire_bullet(ent, muzzle, forward);
 	m->s.weapon[0] = WP_CHAINGUN;
-	m->damage = damage * quadfactor;
-	m->splashdmg = damage * quadfactor;
-	m->splashradius = 300;
-	m->meansofdeath = mod;
-	m->splashmeansofdeath = mod;
+	m->damage = CHAINGUN_DAMAGE * quadfactor;
+	m->splashdmg = CHAINGUN_SPLASHDMG * quadfactor;
+	m->splashradius = CHAINGUN_SPLASHRADIUS;
+	m->meansofdeath = WP_CHAINGUN;
+	m->splashmeansofdeath = WP_CHAINGUN;
 
 	inheritvel(ent, m);
 }
@@ -352,7 +340,6 @@ weapon_plasmagun_fire(gentity_t *ent)
 	inheritvel(ent, m);
 }
 
-#define MAX_RAIL_HITS 4
 void
 weapon_railgun_fire(gentity_t *ent)
 {
@@ -370,9 +357,9 @@ weapon_railgun_fire(gentity_t *ent)
 	int passent;
 	gentity_t       *unlinkedEntities[MAX_RAIL_HITS];
 
-	damage = 100 * quadfactor;
+	damage = RAILGUN_DMG * quadfactor;
 
-	vecmad(muzzle, 8192, forward, end);
+	vecmad(muzzle, RAILGUN_RANGE, forward, end);
 
 	// trace only against the solids, so the railgun will go through people
 	unlinked = 0;
@@ -439,8 +426,8 @@ weapon_railgun_fire(gentity_t *ent)
 
 	veccpy(muzzle, tent->s.origin2);
 	// move origin a bit to come closer to the drawn gun muzzle
-	vecmad(tent->s.origin2, 4, right, tent->s.origin2);
-	vecmad(tent->s.origin2, -1, up, tent->s.origin2);
+	//vecmad(tent->s.origin2, 4, right, tent->s.origin2);
+	//vecmad(tent->s.origin2, -1, up, tent->s.origin2);
 
 	// no explosion at end if SURF_NOIMPACT, but still make the trail
 	if(trace.surfaceFlags & SURF_NOIMPACT)
@@ -514,7 +501,7 @@ weapon_lightning_fire(gentity_t *ent)
 	gentity_t       *traceEnt, *tent;
 	int damage, i, passent;
 
-	damage = 8 * quadfactor;
+	damage = LIGHTNING_DMG * quadfactor;
 
 	passent = ent->s.number;
 	for(i = 0; i < 10; i++){
@@ -599,7 +586,7 @@ weapon_proxlauncher_fire(gentity_t *ent)
 	gentity_t       *m;
 
 	// extra vertical velocity
-	forward[2] += 0.2f;
+	//forward[2] += 0.2f;
 	vecnorm(forward);
 
 	m = fire_prox(ent, muzzle, forward);
@@ -625,7 +612,7 @@ chkgauntletattack(gentity_t *ent)
 
 	calcmuzzlepoint(ent, forward, right, up, muzzle);
 
-	vecmad(muzzle, 32, forward, end);
+	vecmad(muzzle, GAUNTLET_RANGE, forward, end);
 
 	trap_Trace(&tr, muzzle, nil, nil, end, ent->s.number, MASK_SHOT);
 	if(tr.surfaceFlags & SURF_NOIMPACT)
@@ -659,7 +646,7 @@ chkgauntletattack(gentity_t *ent)
 
 #endif
 
-	damage = 50 * quadfactor;
+	damage = GAUNTLET_DMG * quadfactor;
 	entdamage(traceEnt, ent, ent, forward, tr.endpos,
 		 damage, 0, MOD_GAUNTLET);
 
@@ -767,10 +754,7 @@ fireweapon(gentity_t *ent, int slot)
 		weapon_shotgun_fire(ent);
 		break;
 	case WP_MACHINEGUN:
-		if(g_gametype.integer != GT_TEAM)
-			weapon_machinegun_fire(ent, MACHINEGUN_SPREAD, MACHINEGUN_DAMAGE, MOD_MACHINEGUN);
-		else
-			weapon_machinegun_fire(ent, MACHINEGUN_SPREAD, MACHINEGUN_TEAM_DAMAGE, MOD_MACHINEGUN);
+		weapon_machinegun_fire(ent);
 		break;
 	case WP_GRENADE_LAUNCHER:
 		weapon_grenadelauncher_fire(ent);
@@ -801,7 +785,7 @@ fireweapon(gentity_t *ent, int slot)
 		weapon_proxlauncher_fire(ent);
 		break;
 	case WP_CHAINGUN:
-		weapon_chaingun_fire(ent, CHAINGUN_SPREAD, CHAINGUN_DAMAGE, MOD_CHAINGUN);
+		weapon_chaingun_fire(ent);
 		break;
 #endif
 	default:

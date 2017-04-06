@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define DEFAULT_GRAVITY		0
 #define GIB_HEALTH		0
-#define ARMOR_PROTECTION	0.66
+#define ARMOR_PROTECTION	0.66	// FIXME: remove
 // for STAT_ARMORTYPE
 enum
 {
@@ -38,17 +38,42 @@ enum
 	ARMOR_RED	// 0.75
 };
 
+#define ARMOR_GREEN_PROTECTION	0.50
+#define ARMOR_YELLOW_PROECTION	0.66
+#define ARMOR_RED_PROTECTION	0.75
+
 #define MAX_ITEMS		256
 #define MAX_CONTROLPOINTS	32
 
 #define RANK_TIED_FLAG		0x4000
 
-#define DEFAULT_SHOTGUN_SPREAD	700
-#define DEFAULT_SHOTGUN_COUNT	16
-
 #define ITEM_RADIUS		42	// item sizes are needed for client side pickup detection
 
+#define GAUNTLET_FIRERATE	(1000 / 2.5f)
+#define GAUNTLET_DMG		50
+#define GAUNTLET_RANGE		32
+#define MACHINEGUN_FIRERATE	(1000 / 20.0f)
+#define SHOTGUN_FIRERATE	(1000 / 1.0f)
+#define DEFAULT_SHOTGUN_COUNT	16
+#define DEFAULT_SHOTGUN_SPREAD	700
+#define DEFAULT_SHOTGUN_DAMAGE	10
+#define LIGHTNING_FIRERATE	(1000 / 20.0f)
+#define LIGHTNING_DMG		8
 #define LIGHTNING_RANGE		2000
+#define GRENADE_FIRERATE	(1000 / 1.25f)
+#define ROCKET_FIRERATE		(1000 / 1.43f)
+#define PLASMAGUN_FIRERATE	(1000 / 10.0f)
+#define RAILGUN_FIRERATE	(1000 / 0.6666f)
+#define RAILGUN_DMG		100
+#define RAILGUN_RANGE		8192
+#define NAILGUN_FIRERATE	(1000 / 15.62f)
+#define MAX_RAIL_HITS		4
+#define PROX_FIRERATE		(1000 / 1.25f)
+#define CHAINGUN_FIRERATE	(1000 / 66.6666f)
+#define CHAINGUN_DAMAGE		7
+#define CHAINGUN_SPLASHDMG	7
+#define CHAINGUN_SPLASHRADIUS	300
+#define HOMING_FIRERATE		(1000 / 2.0f)
 
 #define SCORE_NOT_PRESENT	-9999	// for the CS_SCORES[12] when only one player is present
 
