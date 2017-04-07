@@ -750,30 +750,11 @@ lightningbolt(centity_t *cent, vec3_t origin, int slot)
 
 	memset(&beam, 0, sizeof(beam));
 
-	// CPMA  "true" lightning
-	if((cent->currstate.number == cg.pps.clientNum) && (cg_trueLightning.value != 0)){
-		vec3_t angle;
-		int i;
-
-		for(i = 0; i < 3; i++){
-			float a = cent->lerpangles[i] - cg.refdefviewangles[i];
-			if(a > 180)
-				a -= 360;
-			if(a < -180)
-				a += 360;
-
-			angle[i] = cg.refdefviewangles[i] + a * (1.0 - cg_trueLightning.value);
-			if(angle[i] < 0)
-				angle[i] += 360;
-			if(angle[i] > 360)
-				angle[i] -= 360;
-		}
-
-		anglevecs(angle, forward, nil, nil);
-		veccpy(cent->lerporigin, muzzlePoint);
-//		veccpy(cg.refdef.vieworg, muzzlePoint );
+	if(cent->currstate.number == cg.pps.clientNum){
+		anglevecs(cg.refdefviewangles, forward, nil, nil);
+//		veccpy(cent->lerporigin, muzzlePoint);
+		veccpy(cg.refdef.vieworg, muzzlePoint );
 	}else{
-		// !CPMA
 		anglevecs(cent->lerpangles, forward, nil, nil);
 		veccpy(cent->lerporigin, muzzlePoint);
 	}
