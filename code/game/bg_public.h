@@ -47,7 +47,7 @@ enum
 
 #define RANK_TIED_FLAG		0x4000
 
-#define ITEM_RADIUS		42	// item sizes are needed for client side pickup detection
+#define ITEM_RADIUS		70	// item sizes are needed for client side pickup detection
 
 #define GAUNTLET_FIRERATE	(1000 / 2.5f)
 #define GAUNTLET_DMG		50
