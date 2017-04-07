@@ -77,32 +77,38 @@ void
 CG_TestModel_f(void)
 {
 	vec3_t angles;
+	int i;
 
-	memset(&cg.testmodelent, 0, sizeof(cg.testmodelent));
+	i = cg.testmodeli;
+
+	memset(&cg.testmodelent[i], 0, sizeof(cg.testmodelent[i]));
 	if(trap_Argc() < 2)
 		return;
 
-	Q_strncpyz(cg.testmodelname, cgargv(1), MAX_QPATH);
-	cg.testmodelent.hModel = trap_R_RegisterModel(cg.testmodelname);
+	Q_strncpyz(cg.testmodelname[i], cgargv(1), MAX_QPATH);
+	cg.testmodelent[i].hModel = trap_R_RegisterModel(cg.testmodelname[i]);
 
 	if(trap_Argc() == 3){
-		cg.testmodelent.backlerp = atof(cgargv(2));
-		cg.testmodelent.frame = 1;
-		cg.testmodelent.oldframe = 0;
+		cg.testmodelent[i].backlerp = atof(cgargv(2));
+		cg.testmodelent[i].frame = 1;
+		cg.testmodelent[i].oldframe = 0;
 	}
-	if(!cg.testmodelent.hModel){
+	if(!cg.testmodelent[i].hModel){
 		cgprintf("Can't register model\n");
 		return;
 	}
 
-	vecmad(cg.refdef.vieworg, 100, cg.refdef.viewaxis[0], cg.testmodelent.origin);
+	vecmad(cg.refdef.vieworg, 100, cg.refdef.viewaxis[0], cg.testmodelent[i].origin);
 
 	angles[PITCH] = 0;
 	angles[YAW] = 180 + cg.refdefviewangles[1];
 	angles[ROLL] = 0;
 
-	angles2axis(angles, cg.testmodelent.axis);
+	angles2axis(angles, cg.testmodelent[i].axis);
 	cg.testgun = qfalse;
+
+	cg.testmodeli = (cg.testmodeli + 1) % ARRAY_LEN(cg.testmodelent);
+	cg.ntestmodels = MIN(cg.ntestmodels + 1, ARRAY_LEN(cg.testmodelent));
 }
 
 void
@@ -131,39 +137,63 @@ CG_TestGun_f(void)
 {
 	CG_TestModel_f();
 	cg.testgun = qtrue;
-	cg.testmodelent.renderfx = RF_MINLIGHT | RF_DEPTHHACK | RF_FIRST_PERSON;
+	cg.testmodelent[0].renderfx = RF_MINLIGHT | RF_DEPTHHACK | RF_FIRST_PERSON;
 }
 
 void
 CG_TestModelNextFrame_f(void)
 {
-	cg.testmodelent.frame++;
-	cgprintf("frame %i\n", cg.testmodelent.frame);
+	int i;
+
+	for(i = 0; i < ARRAY_LEN(cg.testmodelent); i++){
+		if(cg.testmodelent[i].hModel != 0){
+			cg.testmodelent[i].frame++;
+			cgprintf("frame %i\n", cg.testmodelent[i].frame);
+		}
+	}
 }
 
 void
 CG_TestModelPrevFrame_f(void)
 {
-	cg.testmodelent.frame--;
-	if(cg.testmodelent.frame < 0)
-		cg.testmodelent.frame = 0;
-	cgprintf("frame %i\n", cg.testmodelent.frame);
+	int i;
+
+	for(i = 0; i < ARRAY_LEN(cg.testmodelent); i++){
+		if(cg.testmodelent[i].hModel != 0){
+			cg.testmodelent[i].frame--;
+			if(cg.testmodelent[i].frame < 0)
+				cg.testmodelent[i].frame = 0;
+			cgprintf("frame %i\n", cg.testmodelent[i].frame);
+		}
+	}
 }
 
 void
 CG_TestModelNextSkin_f(void)
 {
-	cg.testmodelent.skinNum++;
-	cgprintf("skin %i\n", cg.testmodelent.skinNum);
+	int i;
+
+	for(i = 0; i < ARRAY_LEN(cg.testmodelent); i++){
+		if(cg.testmodelent[i].hModel != 0){
+			cg.testmodelent[i].skinNum++;
+			cgprintf("skin %i\n", cg.testmodelent[i].skinNum);
+		}
+	}
 }
 
 void
 CG_TestModelPrevSkin_f(void)
 {
-	cg.testmodelent.skinNum--;
-	if(cg.testmodelent.skinNum < 0)
-		cg.testmodelent.skinNum = 0;
-	cgprintf("skin %i\n", cg.testmodelent.skinNum);
+	int i;
+
+	for(i = 0; i < ARRAY_LEN(cg.testmodelent); i++){
+		if(cg.testmodelent[i].hModel != 0){
+			cg.testmodelent[i].skinNum--;
+			if(cg.testmodelent[i].skinNum < 0)
+				cg.testmodelent[i].skinNum = 0;
+			cgprintf("skin %i\n", cg.testmodelent[i].skinNum);
+		}
+	}
 }
 
 void
@@ -193,30 +223,36 @@ static void
 CG_AddTestModel(void)
 {
 	int i;
+	int k;
 
-	// re-register the model, because the level may have changed
-	cg.testmodelent.hModel = trap_R_RegisterModel(cg.testmodelname);
-	if(!cg.testmodelent.hModel){
-		cgprintf("Can't register model\n");
-		return;
+	k = cg.testmodeli;
+
+	for(k = 0; k < cg.ntestmodels; k++){
+		// re-register the model, because the level may have changed
+		cg.testmodelent[k].hModel = trap_R_RegisterModel(cg.testmodelname[k]);
+		if(!cg.testmodelent[k].hModel){
+			cgprintf("Can't register model\n");
+		}
 	}
 
 	// if testing a gun, set the origin relative to the view origin
 	if(cg.testgun){
-		veccpy(cg.refdef.vieworg, cg.testmodelent.origin);
-		veccpy(cg.refdef.viewaxis[0], cg.testmodelent.axis[0]);
-		veccpy(cg.refdef.viewaxis[1], cg.testmodelent.axis[1]);
-		veccpy(cg.refdef.viewaxis[2], cg.testmodelent.axis[2]);
+		veccpy(cg.refdef.vieworg, cg.testmodelent[0].origin);
+		veccpy(cg.refdef.viewaxis[0], cg.testmodelent[0].axis[0]);
+		veccpy(cg.refdef.viewaxis[1], cg.testmodelent[0].axis[1]);
+		veccpy(cg.refdef.viewaxis[2], cg.testmodelent[0].axis[2]);
 
 		// allow the position to be adjusted
 		for(i = 0; i<3; i++){
-			cg.testmodelent.origin[i] += cg.refdef.viewaxis[0][i] * cg_gun_x.value;
-			cg.testmodelent.origin[i] += cg.refdef.viewaxis[1][i] * cg_gun_y.value;
-			cg.testmodelent.origin[i] += cg.refdef.viewaxis[2][i] * cg_gun_z.value;
+			cg.testmodelent[0].origin[i] += cg.refdef.viewaxis[0][i] * cg_gun_x.value;
+			cg.testmodelent[0].origin[i] += cg.refdef.viewaxis[1][i] * cg_gun_y.value;
+			cg.testmodelent[0].origin[i] += cg.refdef.viewaxis[2][i] * cg_gun_z.value;
 		}
 	}
 
-	trap_R_AddRefEntityToScene(&cg.testmodelent);
+	for(k = 0; k < cg.ntestmodels; k++)
+		if(cg.testmodelent[k].hModel != 0)
+			trap_R_AddRefEntityToScene(&cg.testmodelent[k]);
 }
 
 static void
@@ -750,7 +786,7 @@ drawframe(int serverTime, stereoFrame_t stereoview, qboolean demoplayback)
 
 
 	// finish up the rest of the refdef
-	if(cg.testmodelent.hModel)
+	if(cg.testmodelent[0].hModel)
 		CG_AddTestModel();
 	CG_AddTestParticles();
 	cg.refdef.time = cg.time;

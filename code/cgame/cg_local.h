@@ -86,6 +86,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DEFAULT_REDTEAM_NAME		"Stroggs"
 #define DEFAULT_BLUETEAM_NAME		"Pagans"
 
+#define MAX_TESTMODELS			32
+
 // used to pick random sound effects
 #define PICKRANDOM(arr)	((arr)[rand() % (ARRAY_LEN(arr))])
 
@@ -701,8 +703,10 @@ typedef struct
 	//qboolean cameramode;		// if rendering from a loaded camera
 
 	// development tool
-	refEntity_t	testmodelent;
-	char		testmodelname[MAX_QPATH];
+	refEntity_t	testmodelent[MAX_TESTMODELS];
+	char		testmodelname[MAX_TESTMODELS][MAX_QPATH];
+	int		testmodeli;
+	int		ntestmodels;
 	qboolean	testgun;
 	testparticles_t	testparticles;
 } cg_t;
