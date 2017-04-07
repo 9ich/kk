@@ -645,7 +645,7 @@ registerweap(int weaponNum)
 		MAKERGB(weapinfo->flashcolor, 0.6f, 0.6f, 1.0f);
 		MAKERGB(weapinfo->missilelightcolor, 0.6f, 0.6f, 1.0f);
 		weapinfo->flashsnd[0] = trap_S_RegisterSound("sound/weapons/plasma/hyprbf1a.wav", qfalse);
-		cgs.media.plasmaExplosionShader = trap_R_RegisterShader("plasmaExplosion");
+		cgs.media.plasmaExplosionShader = trap_R_RegisterShader("models/missiles/plasmaball");
 		cgs.media.railRingsShader = trap_R_RegisterShader("railDisc");
 		break;
 
@@ -1587,7 +1587,7 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		sfx = PICKRANDOM(cgs.media.sfx_rockexp);
 		mark = cgs.media.burnMarkShader;
 		radius = 20;
-		light = 100;
+		//light = 100;
 		isSprite = qtrue;
 		duration = 16*16.666666f;
 		lightcolor[0] = 0.9f;
@@ -1613,16 +1613,11 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		mod = 0;	// don't draw the usual sprite
 		break;
 	case WP_MACHINEGUN:
-		mod = cgs.media.dishFlashModel;
+		mod = cgs.media.bulletFlashModel;
 		shader = cgs.media.bulletExplosionShader;
-		sfx = cgs.media.sfx_ric1;
-		mark = cgs.media.burnMarkShader;
-		radius = 20;
-		isSprite = qtrue;
-		duration = 16*16.666666f;
-
-		for(i = 0; i < cg_rocketExpSparks.integer / 20; i++)
-			CG_ParticleSparks(origin, dir, 500+crandom()*400, 60, 600 + crandom()*140);
+		mark = cgs.media.bulletMarkShader;
+		sfx = 0;
+		radius = 5;
 		break;
 	case WP_RAILGUN:
 		mod = cgs.media.ringFlashModel;
@@ -1637,7 +1632,21 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		shader = cgs.media.plasmaExplosionShader;
 		sfx = cgs.media.sfx_plasmaexp;
 		mark = cgs.media.energyMarkShader;
-		radius = 16;
+		isSprite = qtrue;
+		radius = 8;
+		duration = 6*16.666666f;
+
+		// flame
+		for(i = 0; i < 5; i++){
+			vec3_t pt;
+
+			vecset(pt, crandom(), crandom(), crandom());
+			vecmul(pt, 7, pt);
+			vecadd(pt, origin, pt);
+			le = explosion(pt, dir, mod, shader, duration, isSprite);
+		}
+
+		mod = 0;	// don't draw the usual sprite
 		break;
 	case WP_SHOTGUN:
 		mod = cgs.media.bulletFlashModel;
