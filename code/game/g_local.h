@@ -153,6 +153,7 @@ struct gentity_s
 	int		splashradius;
 	int		meansofdeath;
 	int		splashmeansofdeath;
+	float		flakradius;	// if >0, missile explodes within flakradius of enemies if not on course to hit enemy
 
 	int		count;
 

@@ -440,6 +440,34 @@ runmissile(gentity_t *ent)
 		if(ent->s.eType != ET_MISSILE)
 			return;	// exploded
 	}
+
+	// flak explosions
+	if(ent->flakradius > 0){
+		vec3_t dir, end;
+		int i;
+
+		veccpy(ent->s.pos.trDelta, dir);
+		vecnorm(dir);
+		vecmad(origin, ent->flakradius + 200, dir, end);
+		for(i = 0; i < g_maxclients.integer; i++){
+			gentity_t *e;
+
+			e = g_entities + i;
+
+			if(level.clients[i].pers.connected != CON_CONNECTED)
+				continue;
+			if(e->s.number == ent->r.ownerNum)
+				continue;
+			// if we aren't on course to directly hit an enemy,
+			// explode when we get near them
+			if(vecdist(e->r.currentOrigin, origin) < ent->flakradius){
+				trap_Trace(&tr, origin, ent->r.mins, ent->r.maxs, end, passent, CONTENTS_BODY);
+				if(tr.fraction == 1)
+					explodemissile(ent);
+			}
+		}
+	}
+		
 #ifdef MISSIONPACK
 	// if the prox mine wasn't yet outside the player body
 	if(ent->s.weapon[0] == WP_PROX_LAUNCHER && !ent->count){
@@ -478,6 +506,7 @@ fire_plasma(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->splashmeansofdeath = MOD_PLASMA_SPLASH;
 	bolt->clipmask = MASK_SHOT;
 	bolt->target_ent = nil;
+	bolt->flakradius = 120;
 
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
