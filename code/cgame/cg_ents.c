@@ -287,11 +287,7 @@ doitem(centity_t *cent)
 	}else
 		frac = 1.0;
 
-	// items without glow textures need to keep a minimum light value
-	// so they are always visible
-	if((item->type == IT_WEAPON) ||
-	   (item->type == IT_ARMOR))
-		ent.renderfx |= RF_MINLIGHT;
+	ent.renderfx |= RF_MINLIGHT;
 
 	// increase the size of the weapons when they are presented as items
 	if(item->type == IT_WEAPON){
@@ -345,10 +341,7 @@ doitem(centity_t *cent)
 
 		if(item->type == IT_HEALTH || item->type == IT_POWERUP)
 			if((ent.hModel = cg_items[es->modelindex].models[1]) != 0){
-				if(item->type == IT_POWERUP){
-					ent.origin[2] += 12;
-					spinAngles[1] = (cg.time & 1023) * 360 / -1024.0f;
-				}
+				spinAngles[1] = (cg.time & 1023) * 360 / 2048.0f;
 				angles2axis(spinAngles, ent.axis);
 
 				// scale up if respawning
