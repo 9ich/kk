@@ -132,7 +132,7 @@ gitem_t bg_itemlist[] =
 	{
 		"item_health_small",
 		"sound/items/s_health.wav",
-		{"models/powerups/25hp/25hp.md3",
+		{"models/powerups/5hp/5hp.md3",
 		 "models/powerups/shieldblob/shieldblob.md3",
 		 nil, nil},
 /* icon */ "icons/health_green",
@@ -149,7 +149,7 @@ gitem_t bg_itemlist[] =
 	{
 		"item_health",
 		"sound/items/n_health.wav",
-		{"models/powerups/50hp/50hp.md3",
+		{"models/powerups/25hp/25hp.md3",
 		 "models/powerups/shieldblob/shieldblob.md3",
 		 nil, nil},
 /* icon */ "icons/health_yellow",
@@ -166,8 +166,8 @@ gitem_t bg_itemlist[] =
 	{
 		"item_health_large",
 		"sound/items/l_health.wav",
-		{"models/powerups/health/large_cross.md3",
-		 "models/powerups/health/large_sphere.md3",
+		{"models/powerups/50hp/50hp.md3",
+		 "models/powerups/shieldblob/shieldblob.md3",
 		 nil, nil},
 /* icon */ "icons/health_red",
 /* pickup */ "50 Health",
@@ -554,8 +554,8 @@ gitem_t bg_itemlist[] =
 	{
 		"item_quad",
 		"sound/items/quaddamage.wav",
-		{"models/powerups/instant/quad.md3",
-		 "models/powerups/instant/quad_ring.md3",
+		{"models/powerups/quad/quad.md3",
+		 nil,
 		 nil, nil},
 /* icon */ "icons/quad",
 /* pickup */ "Quad Damage",
