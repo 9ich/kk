@@ -1245,7 +1245,6 @@ extern vmCvar_t cg_noProjectileTrail;
 extern vmCvar_t cg_oldRail;
 extern vmCvar_t cg_oldRocket;
 extern vmCvar_t cg_oldPlasma;
-extern vmCvar_t cg_trueLightning;
 extern vmCvar_t cg_enemyThrustSounds;
 extern vmCvar_t cg_ownThrustSounds;
 extern vmCvar_t cg_rocketExpSmoke;
