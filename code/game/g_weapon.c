@@ -148,6 +148,24 @@ void
 weapon_machinegun_fire(gentity_t *ent)
 {
 	gentity_t       *m;
+	float spread;
+	float angle;
+	vec3_t right, up;
+	float r, u;
+
+	vecperp(right, forward);
+	veccross(forward, right, up);
+
+	angle = random() * 2*M_PI;
+	r = sin(angle);
+	u = cos(angle);
+	// div by 8192 mimics vq3 hitscan spread
+	spread = (random()*g_minigunSpread.value) / 8192;
+	r *= spread;
+	u *= spread;
+
+	vecmad(forward, r, right, forward);
+	vecmad(forward, u, up, forward);
 
 	m = fire_bullet(ent, muzzle, forward);
 	m->damage *= quadfactor;

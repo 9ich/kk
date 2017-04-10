@@ -778,6 +778,7 @@ extern vmCvar_t g_plasmaSplashDmg;
 extern vmCvar_t g_plasmaSplashRadius;
 extern vmCvar_t g_minigunSpeed;
 extern vmCvar_t g_minigunDmg;
+extern vmCvar_t g_minigunSpread;
 extern vmCvar_t g_grenadeSpeed;
 extern vmCvar_t g_grenadeDmg;
 extern vmCvar_t g_grenadeSplashDmg;

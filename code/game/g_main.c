@@ -126,6 +126,7 @@ vmCvar_t g_plasmaSplashDmg;
 vmCvar_t g_plasmaSplashRadius;
 vmCvar_t g_minigunSpeed;
 vmCvar_t g_minigunDmg;
+vmCvar_t g_minigunSpread;
 vmCvar_t g_grenadeSpeed;
 vmCvar_t g_grenadeDmg;
 vmCvar_t g_grenadeSplashDmg;
@@ -244,6 +245,7 @@ static cvarTable_t gameCvarTable[] = {
 	{&g_plasmaSplashRadius, "g_plasmaSplashRadius", "50", CVAR_ARCHIVE, 0, qtrue, qfalse},
 	{&g_minigunSpeed, "g_minigunSpeed", "4000", CVAR_ARCHIVE, 0, qtrue, qfalse},
 	{&g_minigunDmg, "g_minigunDmg", "6", CVAR_ARCHIVE, 0, qtrue, qfalse},
+	{&g_minigunSpread, "g_minigunSpread", "200", CVAR_ARCHIVE, 0, qtrue, qfalse},
 	{&g_grenadeSpeed, "g_grenadeSpeed", "700", CVAR_ARCHIVE, 0, qtrue, qfalse},
 	{&g_grenadeDmg, "g_grenadeDmg", "100", CVAR_ARCHIVE, 0, qtrue, qfalse},
 	{&g_grenadeSplashDmg, "g_grenadeSplashDmg", "100", CVAR_ARCHIVE, 0, qtrue, qfalse},
