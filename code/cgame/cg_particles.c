@@ -110,32 +110,21 @@ static int numShaderAnims;
 static char *shaderAnimNames[MAX_SHADER_ANIMS] = {
 	"explode1",
 	"blacksmokeanim",
-	"twiltb2",
-	"expblue",
-	"blacksmokeanimb",	// uses 'explode1' sequence
-	"blood",
 	nil
 };
 static qhandle_t shaderAnims[MAX_SHADER_ANIMS][MAX_SHADER_ANIM_FRAMES];
 static int shaderAnimCounts[MAX_SHADER_ANIMS] = {
 	23,
-	25,
-	45,
-	25,
-	23,
-	5,
+	25
 };
 static float shaderAnimSTRatio[MAX_SHADER_ANIMS] = {
-	1.405f,
+	//1.405f,
 	1.0f,
-	1.0f,
-	1.0f,
-	1.0f,
-	1.0f,
+	1.0f
 };
 #endif
 
-#define         PARTICLE_GRAVITY	40
+#define         PARTICLE_GRAVITY	1
 
 #ifdef WOLF_PARTICLES
 #define         MAX_PARTICLES		1024 * 8
@@ -233,11 +222,6 @@ CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha)
 
 			p->alpha = 1;
 		}
-
-		// Ridah, had to do this or MAX_POLYS is being exceeded in village1.bsp
-		if(vecdist(cg.snap->ps.origin, org) > 1024)
-			return;
-		// done.
 
 		if(p->type == P_BUBBLE || p->type == P_BUBBLE_TURBULENT){
 			vecmad(org, -p->height, vup, point);
@@ -680,10 +664,6 @@ CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha)
 		width = p->width + (ratio * (p->endwidth - p->width));
 		height = p->height + (ratio * (p->endheight - p->height));
 
-		// if we are "inside" this sprite, don't draw
-		if(vecdist(cg.snap->ps.origin, org) < width/1.5)
-			return;
-
 		i = p->shaderAnim;
 		j = (int)floor(ratio * shaderAnimCounts[p->shaderAnim]);
 		p->pshader = shaderAnims[i][j];
@@ -870,70 +850,6 @@ CG_AddParticles(void)
 	}
 
 	active_particles = active;
-}
-
-void
-CG_ParticleSnowFlurry(qhandle_t pshader, centity_t *cent)
-{
-	cparticle_t *p;
-	qboolean turb = qtrue;
-
-	if(!pshader)
-		cgprintf("CG_ParticleSnowFlurry pshader == ZERO!\n");
-
-	if(!free_particles)
-		return;
-	p = free_particles;
-	free_particles = p->next;
-	p->next = active_particles;
-	active_particles = p;
-	p->time = cg.time;
-	p->color = 0;
-	p->alpha = 0.90f;
-	p->alphavel = 0;
-
-	p->start = cent->currstate.origin2[0];
-	p->end = cent->currstate.origin2[1];
-
-	p->endtime = cg.time + cent->currstate.time;
-	p->startfade = cg.time + cent->currstate.time2;
-
-	p->pshader = pshader;
-
-	if(rand()%100 > 90){
-		p->height = 32;
-		p->width = 32;
-		p->alpha = 0.10f;
-	}else{
-		p->height = 1;
-		p->width = 1;
-	}
-
-	p->vel[2] = -20;
-
-	p->type = P_WEATHER_FLURRY;
-
-	if(turb)
-		p->vel[2] = -10;
-
-	veccpy(cent->currstate.origin, p->org);
-
-	p->org[0] = p->org[0];
-	p->org[1] = p->org[1];
-	p->org[2] = p->org[2];
-
-	p->vel[0] = p->vel[1] = 0;
-
-	p->accel[0] = p->accel[1] = p->accel[2] = 0;
-
-	p->vel[0] += cent->currstate.angles[0] * 32 + (crandom() * 16);
-	p->vel[1] += cent->currstate.angles[1] * 32 + (crandom() * 16);
-	p->vel[2] += cent->currstate.angles[2];
-
-	if(turb){
-		p->accel[0] = crandom() * 16;
-		p->accel[1] = crandom() * 16;
-	}
 }
 
 void
@@ -1187,12 +1103,6 @@ CG_ParticleExplosion(char *animStr, vec3_t origin, vec3_t vel, int duration, int
 	vecclear(p->accel);
 }
 
-// Rafael Shrapnel
-void
-CG_AddParticleShrapnel(localEntity_t *le)
-{
-}
-
 // done.
 
 int
@@ -1261,28 +1171,6 @@ CG_NewParticleArea(int num)
 	}
 
 	return 1;
-}
-
-void
-CG_SnowLink(centity_t *cent, qboolean particleOn)
-{
-	cparticle_t *p, *next;
-	int id;
-
-	id = cent->currstate.frame;
-
-	for(p = active_particles; p; p = next){
-		next = p->next;
-
-		if(p->type == P_WEATHER || p->type == P_WEATHER_TURBULENT)
-			if(p->snum == id){
-				if(particleOn)
-					p->link = qtrue;
-				else
-					p->link = qfalse;
-			}
-
-	}
 }
 
 void
@@ -1376,336 +1264,8 @@ CG_Particle_Bleed(qhandle_t pshader, vec3_t start, vec3_t dir, int fleshEntityNu
 	p->alpha = 0.75;
 }
 
-void
-CG_Particle_OilParticle(qhandle_t pshader, centity_t *cent)
-{
-	cparticle_t *p;
-
-	int time;
-	int time2;
-	float ratio;
-
-	float duration = 1500;
-
-	time = cg.time;
-	time2 = cg.time + cent->currstate.time;
-
-	ratio = (float)1 - ((float)time / (float)time2);
-
-	if(!pshader)
-		cgprintf("CG_Particle_OilParticle == ZERO!\n");
-
-	if(!free_particles)
-		return;
-	p = free_particles;
-	free_particles = p->next;
-	p->next = active_particles;
-	active_particles = p;
-	p->time = cg.time;
-	p->alpha = 1.0;
-	p->alphavel = 0;
-	p->roll = 0;
-
-	p->pshader = pshader;
-
-	p->endtime = cg.time + duration;
-
-	p->startfade = p->endtime;
-
-	p->width = 1;
-	p->height = 3;
-
-	p->endheight = 3;
-	p->endwidth = 1;
-
-	p->type = P_SMOKE;
-
-	veccpy(cent->currstate.origin, p->org);
-
-	p->vel[0] = (cent->currstate.origin2[0] * (16 * ratio));
-	p->vel[1] = (cent->currstate.origin2[1] * (16 * ratio));
-	p->vel[2] = (cent->currstate.origin2[2]);
-
-	p->snum = 1.0f;
-
-	vecclear(p->accel);
-
-	p->accel[2] = -20;
-
-	p->rotate = qfalse;
-
-	p->roll = rand()%179;
-
-	p->alpha = 0.75;
-}
-
-void
-CG_Particle_OilSlick(qhandle_t pshader, centity_t *cent)
-{
-	cparticle_t *p;
-
-	if(!pshader)
-		cgprintf("CG_Particle_OilSlick == ZERO!\n");
-
-	if(!free_particles)
-		return;
-	p = free_particles;
-	free_particles = p->next;
-	p->next = active_particles;
-	active_particles = p;
-	p->time = cg.time;
-
-	if(cent->currstate.angles2[2])
-		p->endtime = cg.time + cent->currstate.angles2[2];
-	else
-		p->endtime = cg.time + 60000;
-
-	p->startfade = p->endtime;
-
-	p->alpha = 1.0;
-	p->alphavel = 0;
-	p->roll = 0;
-
-	p->pshader = pshader;
-
-	if(cent->currstate.angles2[0] || cent->currstate.angles2[1]){
-		p->width = cent->currstate.angles2[0];
-		p->height = cent->currstate.angles2[0];
-
-		p->endheight = cent->currstate.angles2[1];
-		p->endwidth = cent->currstate.angles2[1];
-	}else{
-		p->width = 8;
-		p->height = 8;
-
-		p->endheight = 16;
-		p->endwidth = 16;
-	}
-
-	p->type = P_FLAT_SCALEUP;
-
-	p->snum = 1.0;
-
-	veccpy(cent->currstate.origin, p->org);
-
-	p->org[2] += 0.55 + (crandom() * 0.5);
-
-	p->vel[0] = 0;
-	p->vel[1] = 0;
-	p->vel[2] = 0;
-	vecclear(p->accel);
-
-	p->rotate = qfalse;
-
-	p->roll = rand()%179;
-
-	p->alpha = 0.75;
-}
-
-void
-CG_OilSlickRemove(centity_t *cent)
-{
-	cparticle_t *p, *next;
-	int id;
-
-	id = 1.0f;
-
-	if(!id)
-		cgprintf("CG_OilSlickRevove nil id\n");
-
-	for(p = active_particles; p; p = next){
-		next = p->next;
-
-		if(p->type == P_FLAT_SCALEUP)
-			if(p->snum == id){
-				p->endtime = cg.time + 100;
-				p->startfade = p->endtime;
-				p->type = P_FLAT_SCALEUP_FADE;
-			}
-
-	}
-}
-
-qboolean
-ValidBloodPool(vec3_t start)
-{
-#define EXTRUDE_DIST 0.5
-
-	vec3_t angles;
-	vec3_t right, up;
-	vec3_t this_pos, x_pos, center_pos, end_pos;
-	int x, y;
-	int fwidth, fheight;
-	trace_t trace;
-	vec3_t normal;
-
-	fwidth = 16;
-	fheight = 16;
-
-	vecset(normal, 0, 0, 1);
-
-	vectoangles(normal, angles);
-	anglevecs(angles, nil, right, up);
-
-	vecmad(start, EXTRUDE_DIST, normal, center_pos);
-
-	for(x = -fwidth/2; x<fwidth; x += fwidth){
-		vecmad(center_pos, x, right, x_pos);
-
-		for(y = -fheight/2; y<fheight; y += fheight){
-			vecmad(x_pos, y, up, this_pos);
-			vecmad(this_pos, -EXTRUDE_DIST*2, normal, end_pos);
-
-			cgtrace(&trace, this_pos, nil, nil, end_pos, -1, CONTENTS_SOLID);
-
-			if(trace.entityNum < ENTITYNUM_WORLD)	// may only land on world
-				return qfalse;
-
-			if(!(!trace.startsolid && trace.fraction < 1))
-				return qfalse;
-		}
-	}
-
-	return qtrue;
-}
-
-void
-CG_BloodPool(localEntity_t *le, qhandle_t pshader, trace_t *tr)
-{
-	cparticle_t *p;
-	qboolean legit;
-	vec3_t start;
-	float rndSize;
-
-	if(!pshader)
-		cgprintf("CG_BloodPool pshader == ZERO!\n");
-
-	if(!free_particles)
-		return;
-
-	veccpy(tr->endpos, start);
-	legit = ValidBloodPool(start);
-
-	if(!legit)
-		return;
-
-	p = free_particles;
-	free_particles = p->next;
-	p->next = active_particles;
-	active_particles = p;
-	p->time = cg.time;
-
-	p->endtime = cg.time + 3000;
-	p->startfade = p->endtime;
-
-	p->alpha = 1.0;
-	p->alphavel = 0;
-	p->roll = 0;
-
-	p->pshader = pshader;
-
-	rndSize = 0.4 + random()*0.6;
-
-	p->width = 8*rndSize;
-	p->height = 8*rndSize;
-
-	p->endheight = 16*rndSize;
-	p->endwidth = 16*rndSize;
-
-	p->type = P_FLAT_SCALEUP;
-
-	veccpy(start, p->org);
-
-	p->vel[0] = 0;
-	p->vel[1] = 0;
-	p->vel[2] = 0;
-	vecclear(p->accel);
-
-	p->rotate = qfalse;
-
-	p->roll = rand()%179;
-
-	p->alpha = 0.75;
-
-	p->color = BLOODRED;
-}
-
 #define NORMALSIZE	16
 #define LARGESIZE	32
-
-void
-CG_ParticleBloodCloud(centity_t *cent, vec3_t origin, vec3_t dir)
-{
-	float length;
-	float dist;
-	float crittersize;
-	vec3_t angles, forward;
-	vec3_t point;
-	cparticle_t *p;
-	int i;
-
-	dist = 0;
-
-	length = veclen(dir);
-	vectoangles(dir, angles);
-	anglevecs(angles, forward, nil, nil);
-
-	crittersize = LARGESIZE;
-
-	if(length)
-		dist = length / crittersize;
-
-	if(dist < 1)
-		dist = 1;
-
-	veccpy(origin, point);
-
-	for(i = 0; i<dist; i++){
-		vecmad(point, crittersize, forward, point);
-
-		if(!free_particles)
-			return;
-
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
-
-		p->time = cg.time;
-		p->alpha = 1.0;
-		p->alphavel = 0;
-		p->roll = 0;
-
-		p->pshader = cgs.media.smokePuffShader;
-
-		p->endtime = cg.time + 350 + (crandom() * 100);
-
-		p->startfade = cg.time;
-
-		p->width = LARGESIZE;
-		p->height = LARGESIZE;
-		p->endheight = LARGESIZE;
-		p->endwidth = LARGESIZE;
-
-		p->type = P_SMOKE;
-
-		veccpy(origin, p->org);
-
-		p->vel[0] = 0;
-		p->vel[1] = 0;
-		p->vel[2] = -1;
-
-		vecclear(p->accel);
-
-		p->rotate = qfalse;
-
-		p->roll = rand()%179;
-
-		p->color = BLOODRED;
-
-		p->alpha = 0.75;
-	}
-}
 
 void
 CG_ParticleSparks(vec3_t org, vec3_t vel, int duration, float x, float speed)
