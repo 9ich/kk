@@ -1354,7 +1354,7 @@ drawxhair(void)
 	int ca;
 	vec4_t clr;
 
-	if(!cg_drawCrosshair.integer)
+	if(!cg_crosshair.integer)
 		return;
 
 	if(cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR)
@@ -1384,7 +1384,7 @@ drawxhair(void)
 	//w = round(w);
 	//h = round(h);
 
-	ca = cg_drawCrosshair.integer - 1;
+	ca = cg_crosshair.integer - 1;
 	if(ca < 0)
 		ca = 0;
 	if(ca >= NUM_CROSSHAIRS)
@@ -1415,7 +1415,7 @@ drawxhair3d(void)
 	char rendererinfos[128];
 	refEntity_t ent;
 
-	if(!cg_drawCrosshair.integer)
+	if(!cg_crosshair.integer)
 		return;
 
 	if(cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR)
@@ -1433,7 +1433,7 @@ drawxhair3d(void)
 		w *= (1 + f);
 	}
 
-	ca = cg_drawCrosshair.integer;
+	ca = cg_crosshair.integer;
 	if(ca < 0)
 		ca = 0;
 	hShader = cgs.media.crosshairShader[ca % NUM_CROSSHAIRS];
@@ -1504,9 +1504,9 @@ drawxhairnames(void)
 	char *name;
 	float w;
 
-	if(!cg_drawCrosshair.integer)
+	if(!cg_crosshair.integer)
 		return;
-	if(!cg_drawCrosshairNames.integer)
+	if(!cg_crosshairNames.integer)
 		return;
 	if(cg.thirdperson)
 		return;
