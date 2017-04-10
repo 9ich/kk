@@ -942,6 +942,7 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 	vec4_t clr;
 	refEntity_t re;
 	int i, j;
+	qboolean smokeplume;
 
 	ci = &cgs.clientinfo[cent->currstate.clientNum];
 	f = cent->currstate.forwardmove > 0;
@@ -1024,6 +1025,15 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 	if(!cg.thirdperson && cent->currstate.clientNum == cg.pps.clientNum)
 		return;
 
+	if(cg.time - cent->trailtime >= 16){
+		cent->trailtime = cg.time;
+		smokeplume = qtrue;
+	}else{
+		smokeplume = qfalse;
+	}
+	if(!cg_thrustSmoke.integer)
+		smokeplume = qfalse;
+
 	for(i = 0; i < ci->nthrusttab; i++){
 		qboolean enable;
 
@@ -1084,9 +1094,8 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 			trap_R_AddRefEntityToScene(&re);
 
 			// add smoke plume
-			vecmad(re.origin, 10, re.axis[0], smokepos);
-			if(cg.time - cent->trailtime >= 16){
-				cent->trailtime = cg.time;
+			vecmad(re.origin, 30, re.axis[0], smokepos);
+			if(smokeplume){
 				CG_ParticleThrustPlume(cent, smokepos, vel);
 			}
 		}
