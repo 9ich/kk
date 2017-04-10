@@ -924,8 +924,8 @@ CG_RegisterGraphics(void)
 
 	cgs.media.bloodExplosionShader = trap_R_RegisterShader("bloodExplosion");
 
-	cgs.media.lockingOnShader = trap_R_RegisterShader("gfx/2d/lockingon.png");
-	cgs.media.lockedOnShader = trap_R_RegisterShader("gfx/2d/lockedon.png");
+	cgs.media.lockingOnShader = trap_R_RegisterShader("gfx/2d/lockingon");
+	cgs.media.lockedOnShader = trap_R_RegisterShader("gfx/2d/lockedon");
 
 	cgs.media.bulletFlashModel = trap_R_RegisterModel("models/weaphits/bullet.md3");
 	cgs.media.ringFlashModel = trap_R_RegisterModel("models/weaphits/ring02.md3");
