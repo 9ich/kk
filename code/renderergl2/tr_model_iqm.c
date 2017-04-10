@@ -158,6 +158,8 @@ qboolean R_LoadIQM( model_t *mod, void *buffer, int filesize, const char *mod_na
 
 	header = (iqmHeader_t *)buffer;
 	if( Q_strncmp( header->magic, IQM_MAGIC, sizeof(header->magic) ) ) {
+		ri.Printf(PRINT_WARNING, "R_LoadIQM: %s: expected magic number %s, got %s\n",
+		   mod_name, IQM_MAGIC, header->magic);
 		return qfalse;
 	}
 
@@ -170,6 +172,7 @@ qboolean R_LoadIQM( model_t *mod, void *buffer, int filesize, const char *mod_na
 
 	LL( header->filesize );
 	if( header->filesize > filesize || header->filesize > 16<<20 ) {
+		ri.Printf(PRINT_WARNING, "R_LoadIQM: %s is too large according to header (%d bytes)\n", mod_name, header->filesize);
 		return qfalse;
 	}
 
@@ -212,6 +215,7 @@ qboolean R_LoadIQM( model_t *mod, void *buffer, int filesize, const char *mod_na
 	if( IQM_CheckRange( header, header->ofs_vertexarrays,
 			    header->num_vertexarrays,
 			    sizeof(iqmVertexArray_t) ) ) {
+		ri.Printf(PRINT_WARNING, "R_LoadIQM: IQM_CheckRange failed\n");
 		return qfalse;
 	}
 	vertexarray = (iqmVertexArray_t *)((byte *)header + header->ofs_vertexarrays);
@@ -231,6 +235,7 @@ qboolean R_LoadIQM( model_t *mod, void *buffer, int filesize, const char *mod_na
 			// 1 byte, no swapping necessary
 			if( IQM_CheckRange( header, vertexarray->offset,
 					    n, sizeof(byte) ) ) {
+				ri.Printf(PRINT_WARNING, "R_LoadIQM: IQM_CheckRange failed\n");
 				return qfalse;
 			}
 			break;
@@ -240,6 +245,7 @@ qboolean R_LoadIQM( model_t *mod, void *buffer, int filesize, const char *mod_na
 			// 4-byte swap
 			if( IQM_CheckRange( header, vertexarray->offset,
 					    n, sizeof(float) ) ) {
+				ri.Printf(PRINT_WARNING, "R_LoadIQM: IQM_CheckRange failed\n");
 				return qfalse;
 			}
 			intPtr = (int *)((byte *)header + vertexarray->offset);
