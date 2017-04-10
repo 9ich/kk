@@ -109,26 +109,36 @@ CG_BloodTrail(localEntity_t *le)
 	int step;
 	vec3_t newOrigin;
 	localEntity_t *blood;
+	vec3_t vel;
 
-	step = 150;
+	step = 10;
 	t = step * ((cg.time - cg.frametime + step) / step);
 	t2 = step * (cg.time / step);
 
+	vecmul(le->pos.trDelta, 0.5f, vel);
 	for(; t <= t2; t += step){
 		evaltrajectory(&le->pos, t, newOrigin);
-
+/*
 		blood = smokepuff(newOrigin, vec3_origin,
 				     20,		// radius
-				     1, 1, 1, 1,	// color
-				     2000,		// trailtime
+				     1, 1, 1, alpha,	// color
+				     400,		// trailtime
 				     t,			// starttime
 				     0,			// fadeintime
 				     0,			// flags
-				     cgs.media.bloodTrailShader);
+				     cgs.media.rocketExplosionShader);
+		blood = smokepuff(newOrigin, vec3_origin,
+				     50,		// radius
+				     .2, .2, .2, alpha,	// color
+				     1500,		// trailtime
+				     t,			// starttime
+				     0,			// fadeintime
+				     0,			// flags
+				     cgs.media.smokePuffShader);
+*/
+		CG_ParticleExplosion("explode1", newOrigin, vel, 400, 20, 5);
 		// use the optimized version
-		blood->type = LE_FALL_SCALE_FADE;
-		// drop a total of 40 units over its lifetime
-		blood->pos.trDelta[2] = 40;
+		blood->type = LE_SPRITE_EXPLOSION;
 	}
 }
 
@@ -245,6 +255,7 @@ CG_AddFragment(localEntity_t *le)
 		// add a blood trail
 		if(le->bouncesoundtype == LEBS_BLOOD)
 			CG_BloodTrail(le);
+			
 
 		return;
 	}
