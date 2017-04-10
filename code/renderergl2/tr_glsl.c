@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 extern const char *fallbackShader_bloom_vp;
 extern const char *fallbackShader_bloom_fp;
+extern const char *fallbackShader_contrast_vp;
+extern const char *fallbackShader_contrast_fp;
 extern const char *fallbackShader_bokeh_vp;
 extern const char *fallbackShader_bokeh_fp;
 extern const char *fallbackShader_calclevels4x_vp;
@@ -148,6 +150,10 @@ static uniformInfo_t uniformsInfo[] =
 	{ "u_PrimaryLightRadius",  GLSL_FLOAT },
 
 	{ "u_CubeMapInfo", GLSL_VEC4 },
+
+	{ "u_Brightness",	GLSL_FLOAT },
+	{ "u_Contrast",		GLSL_FLOAT },
+	{ "u_Gamma",		GLSL_FLOAT },
 };
 
 typedef enum
@@ -1212,6 +1218,26 @@ void GLSL_InitGPUShaders(void)
 	GLSL_SetUniformInt(&tr.bloomShader, UNIFORM_TEXTUREMAP, TB_DIFFUSEMAP);
 
 	GLSL_FinishGPUShader(&tr.bloomShader);
+
+	numEtcShaders++;
+
+
+	attribs = ATTR_POSITION | ATTR_TEXCOORD;
+	extradefines[0] = '\0';
+
+	if (!GLSL_InitGPUShader(&tr.contrastShader, "contrast", attribs, qtrue, extradefines, qtrue, fallbackShader_contrast_vp, fallbackShader_contrast_fp))
+	{
+		ri.Error(ERR_FATAL, "Could not load bloom shader!");
+	}
+
+	GLSL_InitUniforms(&tr.contrastShader);
+
+	GLSL_SetUniformInt(&tr.contrastShader, UNIFORM_TEXTUREMAP, TB_DIFFUSEMAP);
+	GLSL_SetUniformInt(&tr.contrastShader, UNIFORM_BRIGHTNESS, r_brightness->value);
+	GLSL_SetUniformInt(&tr.contrastShader, UNIFORM_CONTRAST, r_contrast->value);
+	GLSL_SetUniformInt(&tr.contrastShader, UNIFORM_GAMMA, r_gamma->value);
+
+	GLSL_FinishGPUShader(&tr.contrastShader);
 
 	numEtcShaders++;
 

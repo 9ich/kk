@@ -697,6 +697,10 @@ typedef enum
 
 	UNIFORM_CUBEMAPINFO,
 
+	UNIFORM_BRIGHTNESS,
+	UNIFORM_CONTRAST,
+	UNIFORM_GAMMA,
+
 	UNIFORM_COUNT
 } uniform_t;
 
@@ -1592,6 +1596,7 @@ typedef struct {
 	shaderProgram_t pshadowShader;
 	shaderProgram_t down4xShader;
 	shaderProgram_t bloomShader;
+	shaderProgram_t contrastShader;
 	shaderProgram_t bokehShader;
 	shaderProgram_t tonemapShader;
 	shaderProgram_t calclevels4xShader[2];
@@ -1788,6 +1793,10 @@ extern  cvar_t  *r_depthPrepass;
 extern  cvar_t  *r_ssao;
 
 extern	cvar_t	*r_bloom;
+
+extern	cvar_t	*r_brightness;
+extern	cvar_t	*r_contrast;
+extern	cvar_t	*r_gamma;
 
 extern  cvar_t  *r_normalMapping;
 extern  cvar_t  *r_specularMapping;

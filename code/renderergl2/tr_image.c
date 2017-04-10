@@ -25,24 +25,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "tr_dsa.h"
 
 static byte			 s_intensitytable[256];
-static unsigned char s_gammatable[256];
 
 int		gl_filter_min = GL_LINEAR_MIPMAP_NEAREST;
 int		gl_filter_max = GL_LINEAR;
 
 #define FILE_HASH_SIZE		1024
 static	image_t*		hashTable[FILE_HASH_SIZE];
-
-/*
-** R_GammaCorrect
-*/
-void R_GammaCorrect( byte *buffer, int bufSize ) {
-	int i;
-
-	for ( i = 0; i < bufSize; i++ ) {
-		buffer[i] = s_gammatable[buffer[i]];
-	}
-}
 
 typedef struct {
 	char *name;
@@ -1252,48 +1240,22 @@ void R_LightScaleTexture (byte *in, int inwidth, int inheight, qboolean only_gam
 {
 	if ( only_gamma )
 	{
-		if ( !glConfig.deviceSupportsGamma )
-		{
-			int		i, c;
-			byte	*p;
-
-			p = in;
-
-			c = inwidth*inheight;
-			for (i=0 ; i<c ; i++, p+=4)
-			{
-				p[0] = s_gammatable[p[0]];
-				p[1] = s_gammatable[p[1]];
-				p[2] = s_gammatable[p[2]];
-			}
-		}
+		return;
 	}
 	else
 	{
-		int		i, c;
+		int	i, c;
 		byte	*p;
 
 		p = in;
 
 		c = inwidth*inheight;
 
-		if ( glConfig.deviceSupportsGamma )
+		for (i=0 ; i<c ; i++, p+=4)
 		{
-			for (i=0 ; i<c ; i++, p+=4)
-			{
-				p[0] = s_intensitytable[p[0]];
-				p[1] = s_intensitytable[p[1]];
-				p[2] = s_intensitytable[p[2]];
-			}
-		}
-		else
-		{
-			for (i=0 ; i<c ; i++, p+=4)
-			{
-				p[0] = s_gammatable[s_intensitytable[p[0]]];
-				p[1] = s_gammatable[s_intensitytable[p[1]]];
-				p[2] = s_gammatable[s_intensitytable[p[2]]];
-			}
+			p[0] = s_intensitytable[p[0]];
+			p[1] = s_intensitytable[p[1]];
+			p[2] = s_intensitytable[p[2]];
 		}
 	}
 }
@@ -2760,7 +2722,7 @@ void R_CreateBuiltinImages( void ) {
 
 		tr.renderImage = R_CreateImage("_render", NULL, width, height, IMGTYPE_COLORALPHA, IMGFLAG_NO_COMPRESSION | IMGFLAG_CLAMPTOEDGE, hdrFormat);
 
-		if (r_shadowBlur->integer || r_ssao->integer)
+		//if (r_shadowBlur->integer || r_ssao->integer)
 			tr.screenScratchImage = R_CreateImage("screenScratch", NULL, width, height, IMGTYPE_COLORALPHA, IMGFLAG_NO_COMPRESSION | IMGFLAG_CLAMPTOEDGE, rgbFormat);
 
 		if (r_shadowBlur->integer || r_ssao->integer)
@@ -2852,8 +2814,6 @@ R_SetColorMappings
 */
 void R_SetColorMappings( void ) {
 	int		i, j;
-	float	g;
-	int		inf;
 
 	// setup the overbright lighting
 	tr.overbrightBits = r_overBrightBits->integer;
@@ -2884,35 +2844,12 @@ void R_SetColorMappings( void ) {
 		ri.Cvar_Set( "r_gamma", "3.0" );
 	}
 
-	g = r_gamma->value;
-
-	for ( i = 0; i < 256; i++ ) {
-		if ( g == 1 ) {
-			inf = i;
-		} else {
-			inf = 255 * pow ( i/255.0f, 1.0f / g ) + 0.5f;
-		}
-
-		if (inf < 0) {
-			inf = 0;
-		}
-		if (inf > 255) {
-			inf = 255;
-		}
-		s_gammatable[i] = inf;
-	}
-
 	for (i=0 ; i<256 ; i++) {
 		j = i * r_intensity->value;
 		if (j > 255) {
 			j = 255;
 		}
 		s_intensitytable[i] = j;
-	}
-
-	if ( glConfig.deviceSupportsGamma )
-	{
-		GLimp_SetGamma( s_gammatable, s_gammatable, s_gammatable );
 	}
 }
 

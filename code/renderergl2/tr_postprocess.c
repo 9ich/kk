@@ -534,3 +534,17 @@ void RB_Bloom(FBO_t *src, ivec4_t srcBox, FBO_t *dst, ivec4_t dstBox)
 	// blit to screen
 	FBO_Blit(tr.bloomFbo, srcBox, NULL, dst, dstBox, NULL, NULL, GLS_SRCBLEND_ONE | GLS_DSTBLEND_SRC_ALPHA);
 }
+
+void RB_Contrast(FBO_t *src, ivec4_t srcBox, FBO_t *dst, ivec4_t dstBox)
+{
+	float brightness = 2;
+
+	if(!glRefConfig.framebufferObject)
+		return;
+
+	GLSL_SetUniformFloat(&tr.contrastShader, UNIFORM_BRIGHTNESS, r_brightness->value);
+	GLSL_SetUniformFloat(&tr.contrastShader, UNIFORM_CONTRAST, r_contrast->value);
+	GLSL_SetUniformFloat(&tr.contrastShader, UNIFORM_GAMMA, r_gamma->value);
+	FBO_FastBlit(src, srcBox, tr.screenScratchFbo, srcBox, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	FBO_Blit(tr.screenScratchFbo, srcBox, NULL, dst, dstBox, &tr.contrastShader, NULL, 0);
+}

@@ -117,6 +117,10 @@ cvar_t  *r_cameraExposure;
 
 cvar_t	*r_bloom;
 
+cvar_t	*r_brightness;
+cvar_t	*r_contrast;
+cvar_t	*r_gamma;
+
 cvar_t  *r_externalGLSL;
 
 cvar_t  *r_hdr;
@@ -517,10 +521,6 @@ void RB_TakeScreenshot(int x, int y, int width, int height, char *fileName)
 
 	memcount = linelen * height;
 
-	// gamma correct
-	if(glConfig.deviceSupportsGamma)
-		R_GammaCorrect(allbuf + offset, memcount);
-
 	ri.FS_WriteFile(fileName, buffer, memcount + 18);
 
 	ri.Hunk_FreeTempMemory(allbuf);
@@ -540,10 +540,6 @@ void RB_TakeScreenshotJPEG(int x, int y, int width, int height, char *fileName)
 
 	buffer = RB_ReadPixels(x, y, width, height, &offset, &padlen);
 	memcount = (width * 3 + padlen) * height;
-
-	// gamma correct
-	if(glConfig.deviceSupportsGamma)
-		R_GammaCorrect(buffer + offset, memcount);
 
 	RE_SaveJPG(fileName, r_screenshotJpegQuality->integer, width, height, buffer + offset, padlen);
 	ri.Hunk_FreeTempMemory(buffer);
@@ -697,11 +693,6 @@ void R_LevelShot( void ) {
 			dst[1] = g / 12;
 			dst[2] = r / 12;
 		}
-	}
-
-	// gamma correct
-	if ( glConfig.deviceSupportsGamma ) {
-		R_GammaCorrect( buffer + 18, 128 * 128 * 3 );
 	}
 
 	ri.FS_WriteFile( checkname, buffer, 128 * 128*3 + 18 );
@@ -897,10 +888,6 @@ const void *RB_TakeVideoFrameCmd( const void *data )
 		GL_UNSIGNED_BYTE, cBuf);
 
 	memcount = padwidth * cmd->height;
-
-	// gamma correct
-	if(glConfig.deviceSupportsGamma)
-		R_GammaCorrect(cBuf, memcount);
 
 	if(cmd->motionJpeg)
 	{
@@ -1224,6 +1211,10 @@ void R_Register( void )
 	r_cameraExposure = ri.Cvar_Get( "r_cameraExposure", "0", CVAR_CHEAT );
 
 	r_bloom = ri.Cvar_Get( "r_bloom", "1", CVAR_ARCHIVE );
+
+	r_brightness = ri.Cvar_Get( "r_brightness", "0.0", CVAR_ARCHIVE );
+	r_contrast = ri.Cvar_Get( "r_contrast", "1.0", CVAR_ARCHIVE );
+	r_gamma = ri.Cvar_Get( "r_gamma", "1.0", CVAR_ARCHIVE );
 
 	r_depthPrepass = ri.Cvar_Get( "r_depthPrepass", "1", CVAR_ARCHIVE );
 	r_ssao = ri.Cvar_Get( "r_ssao", "0", CVAR_LATCH | CVAR_ARCHIVE );

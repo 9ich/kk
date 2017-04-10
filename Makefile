@@ -1627,6 +1627,8 @@ Q3R2STRINGOBJ = \
   $(B)/renderergl2/glsl/bloom_vp.o \
   $(B)/renderergl2/glsl/bokeh_fp.o \
   $(B)/renderergl2/glsl/bokeh_vp.o \
+  $(B)/renderergl2/glsl/contrast_fp.o \
+  $(B)/renderergl2/glsl/contrast_vp.o \
   $(B)/renderergl2/glsl/calclevels4x_fp.o \
   $(B)/renderergl2/glsl/calclevels4x_vp.o \
   $(B)/renderergl2/glsl/depthblur_fp.o \
