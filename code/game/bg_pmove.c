@@ -45,7 +45,7 @@ float pm_waterfriction = 1.0f;
 float pm_flightfriction = 0.5f;
 float pm_flightcontrolfriction = 1.9f;
 float pm_spectatorfriction = 5.0f;
-float pm_brakefriction = 5.0f;
+float pm_brakefriction = 500.0f;
 
 int c_pmove = 0;
 
@@ -164,10 +164,10 @@ applyfriction(void)
 		drop = speed*pm->ps->airIdleFriction*pml.frametime;
 
 	// brake if below certain speed and holding no movement buttons
-	if(speed < 100.0f && pm->cmd.forwardmove == 0 &&
+	if(speed < 300.0f && pm->cmd.forwardmove == 0 &&
 	   pm->cmd.rightmove == 0 && pm->cmd.upmove == 0 &&
 	   !(pm->ps->pm_flags & PMF_GRAPPLE_PULL)){
-		drop = speed*pm_brakefriction*pml.frametime;
+		drop = pm_brakefriction*pml.frametime;
 	}
 
 	// scale the velocity
@@ -419,7 +419,7 @@ airmove(void)
 	//
 	// calc dodge
 	//
-	// if the player is not moving fast enough along one of their
+	// if the player is NOT moving fast enough along one of their
 	// fwd/right/up dirs, and is holding the key to go in that dir,
 	// then give a boost along that dir
 	//
@@ -450,12 +450,10 @@ airmove(void)
 	//
 	// calc air control
 	//
-	// straighten out towards wishdir if player is only holding +forward
-	// or +back
+	// straighten out towards wishdir
 	//
 
-	if(pm->cmd.forwardmove != 0 && pm->cmd.rightmove == 0 &&
-	   pm->cmd.upmove == 0 && wishspeed != 0){
+	if(1){
 		float currspeed, d, airctl;
 
 		currspeed = veclen(pm->ps->velocity);
