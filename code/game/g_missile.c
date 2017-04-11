@@ -468,7 +468,6 @@ runmissile(gentity_t *ent)
 		}
 	}
 		
-#ifdef MISSIONPACK
 	// if the prox mine wasn't yet outside the player body
 	if(ent->s.weapon[0] == WP_PROX_LAUNCHER && !ent->count){
 		// check if the prox mine is outside the owner bbox
@@ -476,7 +475,6 @@ runmissile(gentity_t *ent)
 		if(!tr.startsolid || tr.entityNum != ent->r.ownerNum)
 			ent->count = 1;
 	}
-#endif
 	// check think function after bouncing
 	runthink(ent);
 }
