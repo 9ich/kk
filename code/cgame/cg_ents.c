@@ -339,7 +339,7 @@ doitem(centity_t *cent)
 
 		vecclear(spinAngles);
 
-		if(item->type == IT_HEALTH || item->type == IT_POWERUP)
+		if(item->type == IT_HEALTH || item->type == IT_POWERUP || item->type == IT_ARMOR)
 			if((ent.hModel = cg_items[es->modelindex].models[1]) != 0){
 				spinAngles[1] = (cg.time & 1023) * 360 / 1024.0f;
 				angles2axis(spinAngles, ent.axis);

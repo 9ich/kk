@@ -184,7 +184,7 @@ gitem_t bg_itemlist[] =
 		"item_health_mega",
 		"sound/items/m_health.wav",
 		{"models/powerups/refit/refit.md3",
-		 "models/powerups/shieldblob/shieldblob.md3",
+		 nil,
 		 nil, nil},
 /* icon */ "icons/health_mega",
 /* pickup */ "Mega Health",
