@@ -519,6 +519,31 @@ fire_plasma(gentity_t *self, vec3_t start, vec3_t dir)
 
 //=============================================================================
 
+void
+grenade_pain(gentity_t *ent, gentity_t *attacker, int dmg)
+{
+}
+
+void
+grenade_die(gentity_t *ent, gentity_t *inflictor, gentity_t *attacker, int dmg, int mod)
+{
+	trap_UnlinkEntity(ent);
+	/*
+	radiusdamage(ent->r.currentOrigin, ent->parent, ent->splashdmg,
+	   0.00001f * ent->splashradius, ent, ent->splashmeansofdeath);
+	*/
+
+	ent->s.eType = ET_EVENTS + EV_MISSILE_MISS;
+	ent->eventtime = level.time;
+	ent->freeafterevent = qtrue;
+	ent->r.contents = 0;
+	ent->damage = 0;
+	ent->splashdmg = 0;
+	ent->splashradius = 0;
+
+	trap_LinkEntity(ent);
+}
+
 gentity_t *
 fire_grenade(gentity_t *self, vec3_t start, vec3_t dir)
 {
@@ -543,6 +568,13 @@ fire_grenade(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->splashmeansofdeath = MOD_GRENADE_SPLASH;
 	bolt->clipmask = MASK_SHOT;
 	bolt->target_ent = nil;
+	vecset(bolt->r.mins, -17, -17, -17);
+	vecset(bolt->r.maxs, 17, 17, 17);
+	bolt->r.contents = MASK_PLAYERSOLID;
+	bolt->health = 1;
+	bolt->takedmg = qtrue;
+	bolt->pain = grenade_pain;
+	bolt->die = grenade_die;
 
 	bolt->s.pos.trType = TR_GRAVITY;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
