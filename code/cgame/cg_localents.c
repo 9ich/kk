@@ -47,7 +47,7 @@ initlocalents(void)
 }
 
 void
-CG_FreeLocalEntity(localEntity_t *le)
+freelocalent(localEntity_t *le)
 {
 	if(!le->prev)
 		cgerrorf("CG_FreeLocalEntity: not active");
@@ -64,7 +64,7 @@ CG_FreeLocalEntity(localEntity_t *le)
 /*
 Will always succeed, even if it requires freeing an old active entity
 */
-localEntity_t   *
+localEntity_t*
 alloclocalent(void)
 {
 	localEntity_t *le;
@@ -72,7 +72,7 @@ alloclocalent(void)
 	if(!cg_freeLocalEntities)
 		// no free entities, so free the one at the end of the chain
 		// remove the oldest active entity
-		CG_FreeLocalEntity(cg_activeLocalEntities.prev);
+		freelocalent(cg_activeLocalEntities.prev);
 
 	le = cg_freeLocalEntities;
 	cg_freeLocalEntities = cg_freeLocalEntities->next;
@@ -102,7 +102,7 @@ or generates more localentities along a trail.
 Leave expanding blood puffs behind gibs
 */
 void
-CG_BloodTrail(localEntity_t *le)
+bloodtrail(localEntity_t *le)
 {
 	int t;
 	int t2;
@@ -136,14 +136,14 @@ CG_BloodTrail(localEntity_t *le)
 				     0,			// flags
 				     cgs.media.smokePuffShader);
 */
-		CG_ParticleExplosion("explode1", newOrigin, vel, 400, 20, 5);
+		particleexplosion("explode1", newOrigin, vel, 400, 20, 5);
 		// use the optimized version
 		blood->type = LE_SPRITE_EXPLOSION;
 	}
 }
 
 void
-CG_FragmentBounceMark(localEntity_t *le, trace_t *trace)
+fragmentbouncemark(localEntity_t *le, trace_t *trace)
 {
 	int radius;
 
@@ -163,7 +163,7 @@ CG_FragmentBounceMark(localEntity_t *le, trace_t *trace)
 }
 
 void
-CG_FragmentBounceSound(localEntity_t *le, trace_t *trace)
+fragmentbouncesound(localEntity_t *le, trace_t *trace)
 {
 	if(le->bouncesoundtype == LEBS_BLOOD){
 		// half the gibs will make splat sounds
@@ -187,8 +187,8 @@ CG_FragmentBounceSound(localEntity_t *le, trace_t *trace)
 	le->bouncesoundtype = LEBS_NONE;
 }
 
-void
-CG_ReflectVelocity(localEntity_t *le, trace_t *trace)
+static void
+reflectvel(localEntity_t *le, trace_t *trace)
 {
 	vec3_t velocity;
 	float dot;
@@ -207,7 +207,7 @@ CG_ReflectVelocity(localEntity_t *le, trace_t *trace)
 }
 
 void
-CG_AddFragment(localEntity_t *le)
+addfragment(localEntity_t *le)
 {
 	vec3_t newOrigin;
 	trace_t trace;
@@ -254,7 +254,7 @@ CG_AddFragment(localEntity_t *le)
 
 		// add a blood trail
 		if(le->bouncesoundtype == LEBS_BLOOD)
-			CG_BloodTrail(le);
+			bloodtrail(le);
 			
 
 		return;
@@ -264,18 +264,18 @@ CG_AddFragment(localEntity_t *le)
 	// this keeps gibs from waiting at the bottom of pits of death
 	// and floating levels
 	if(pointcontents(trace.endpos, 0) & CONTENTS_NODROP){
-		CG_FreeLocalEntity(le);
+		freelocalent(le);
 		return;
 	}
 
 	// leave a mark
-	CG_FragmentBounceMark(le, &trace);
+	fragmentbouncemark(le, &trace);
 
 	// do a bouncy sound
-	CG_FragmentBounceSound(le, &trace);
+	fragmentbouncesound(le, &trace);
 
 	// reflect the velocity on the trace plane
-	CG_ReflectVelocity(le, &trace);
+	reflectvel(le, &trace);
 
 	trap_R_AddRefEntityToScene(&le->refEntity);
 }
@@ -290,7 +290,7 @@ These only do simple scaling or modulation before passing to the renderer
 */
 
 void
-CG_AddFadeRGB(localEntity_t *le)
+addrgbfade(localEntity_t *le)
 {
 	refEntity_t *re;
 	float c;
@@ -309,7 +309,7 @@ CG_AddFadeRGB(localEntity_t *le)
 }
 
 static void
-CG_AddMoveScaleFade(localEntity_t *le)
+addmovescalefade(localEntity_t *le)
 {
 	refEntity_t *re;
 	float c;
@@ -337,7 +337,7 @@ CG_AddMoveScaleFade(localEntity_t *le)
 	vecsub(re->origin, cg.refdef.vieworg, delta);
 	len = veclen(delta);
 	if(len < le->radius){
-		CG_FreeLocalEntity(le);
+		freelocalent(le);
 		return;
 	}
 
@@ -350,7 +350,7 @@ removed if the view passes through them.
 There are often many of these, so it needs to be simple.
 */
 static void
-CG_AddScaleFade(localEntity_t *le)
+addscalefade(localEntity_t *le)
 {
 	refEntity_t *re;
 	float c;
@@ -370,7 +370,7 @@ CG_AddScaleFade(localEntity_t *le)
 	vecsub(re->origin, cg.refdef.vieworg, delta);
 	len = veclen(delta);
 	if(len < le->radius){
-		CG_FreeLocalEntity(le);
+		freelocalent(le);
 		return;
 	}
 
@@ -384,7 +384,7 @@ removed if the view passes through them.
 There are often 100+ of these, so it needs to be simple.
 */
 static void
-CG_AddFallScaleFade(localEntity_t *le)
+addfallscalefade(localEntity_t *le)
 {
 	refEntity_t *re;
 	float c;
@@ -407,7 +407,7 @@ CG_AddFallScaleFade(localEntity_t *le)
 	vecsub(re->origin, cg.refdef.vieworg, delta);
 	len = veclen(delta);
 	if(len < le->radius){
-		CG_FreeLocalEntity(le);
+		freelocalent(le);
 		return;
 	}
 
@@ -415,7 +415,7 @@ CG_AddFallScaleFade(localEntity_t *le)
 }
 
 static void
-CG_AddExplosion(localEntity_t *ex)
+addexplosion(localEntity_t *ex)
 {
 	refEntity_t *ent;
 
@@ -440,7 +440,7 @@ CG_AddExplosion(localEntity_t *ex)
 
 
 static void
-CG_AddSpriteExplosion(localEntity_t *le)
+addspriteexplosion(localEntity_t *le)
 {
 	refEntity_t re;
 	float c;
@@ -481,7 +481,7 @@ CG_AddSpriteExplosion(localEntity_t *le)
 #define SHOCKWAVE_ENDRADIUS	700.0f
 
 void
-CG_AddShockwave(localEntity_t *le)
+addshockwave(localEntity_t *le)
 {
 	refEntity_t *re;
 	refEntity_t shockwave;
@@ -523,7 +523,7 @@ CG_AddShockwave(localEntity_t *le)
 #define NUMBER_SIZE 8
 
 void
-CG_AddScorePlum(localEntity_t *le)
+addscoreplum(localEntity_t *le)
 {
 	refEntity_t *re;
 	vec3_t origin, delta, dir, vec, up = {0, 0, 1};
@@ -574,7 +574,7 @@ CG_AddScorePlum(localEntity_t *le)
 	vecsub(origin, cg.refdef.vieworg, delta);
 	len = veclen(delta);
 	if(len < 20){
-		CG_FreeLocalEntity(le);
+		freelocalent(le);
 		return;
 	}
 
@@ -604,7 +604,7 @@ CG_AddScorePlum(localEntity_t *le)
 #ifdef MISSIONPACK
 
 void
-CG_AddKamikaze(localEntity_t *le)
+addkamikaze(localEntity_t *le)
 {
 	refEntity_t *re;
 	refEntity_t shockwave;
@@ -723,7 +723,7 @@ CG_AddKamikaze(localEntity_t *le)
 CG_AddInvulnerabilityImpact
 */
 void
-CG_AddInvulnerabilityImpact(localEntity_t *le)
+addinvulnimpact(localEntity_t *le)
 {
 	trap_R_AddRefEntityToScene(&le->refEntity);
 }
@@ -732,7 +732,7 @@ CG_AddInvulnerabilityImpact(localEntity_t *le)
 CG_AddInvulnerabilityJuiced
 */
 void
-CG_AddInvulnerabilityJuiced(localEntity_t *le)
+addinvulnjuiced(localEntity_t *le)
 {
 	int t;
 
@@ -750,10 +750,10 @@ CG_AddInvulnerabilityJuiced(localEntity_t *le)
 }
 
 void
-CG_AddRefEntity(localEntity_t *le)
+addrefentity(localEntity_t *le)
 {
 	if(le->endtime < cg.time){
-		CG_FreeLocalEntity(le);
+		freelocalent(le);
 		return;
 	}
 	trap_R_AddRefEntityToScene(&le->refEntity);
@@ -777,7 +777,7 @@ addlocalents(void)
 		next = le->prev;
 
 		if(cg.time >= le->endtime){
-			CG_FreeLocalEntity(le);
+			freelocalent(le);
 			continue;
 		}
 		switch(le->type){
@@ -789,53 +789,53 @@ addlocalents(void)
 			break;
 
 		case LE_SPRITE_EXPLOSION:
-			CG_AddSpriteExplosion(le);
+			addspriteexplosion(le);
 			break;
 
 		case LE_EXPLOSION:
-			CG_AddExplosion(le);
+			addexplosion(le);
 			break;
 
 		case LE_SHOCKWAVE:
-			CG_AddShockwave(le);
+			addshockwave(le);
 			break;
 
 		case LE_FRAGMENT:	// gibs and brass
-			CG_AddFragment(le);
+			addfragment(le);
 			break;
 
 		case LE_MOVE_SCALE_FADE:	// water bubbles
-			CG_AddMoveScaleFade(le);
+			addmovescalefade(le);
 			break;
 
 		case LE_FADE_RGB:	// teleporters, railtrails
-			CG_AddFadeRGB(le);
+			addrgbfade(le);
 			break;
 
 		case LE_FALL_SCALE_FADE:// gib blood trails
-			CG_AddFallScaleFade(le);
+			addfallscalefade(le);
 			break;
 
 		case LE_SCALE_FADE:	// rocket trails
-			CG_AddScaleFade(le);
+			addscalefade(le);
 			break;
 
 		case LE_SCOREPLUM:
-			CG_AddScorePlum(le);
+			addscoreplum(le);
 			break;
 
 #ifdef MISSIONPACK
 		case LE_KAMIKAZE:
-			CG_AddKamikaze(le);
+			addkamikaze(le);
 			break;
 		case LE_INVULIMPACT:
-			CG_AddInvulnerabilityImpact(le);
+			addinvulnimpact(le);
 			break;
 		case LE_INVULJUICED:
-			CG_AddInvulnerabilityJuiced(le);
+			addinvulnjuiced(le);
 			break;
 		case LE_SHOWREFENTITY:
-			CG_AddRefEntity(le);
+			addrefentity(le);
 			break;
 #endif
 		}

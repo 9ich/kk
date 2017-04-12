@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 If the ammo has gone low enough to generate the warning, play a sound
 */
 void
-CG_CheckAmmo(void)
+chkammo(void)
 {
 	int i;
 	int total;
@@ -77,7 +77,7 @@ CG_CheckAmmo(void)
 }
 
 void
-CG_DamageFeedback(int yawbyte, int pitchbyte, int damage)
+dmgfeedback(int yawbyte, int pitchbyte, int damage)
 {
 	float kick;
 	int health;
@@ -126,7 +126,7 @@ respawn(void)
 extern char *eventnames[];
 
 void
-CG_CheckPlayerstateEvents(playerState_t *ps, playerState_t *ops)
+chkplayerstateevents(playerState_t *ps, playerState_t *ops)
 {
 	int i;
 	int event;
@@ -200,7 +200,7 @@ pushreward(sfxHandle_t sfx, qhandle_t shader, const char *msg, int nrewards)
 }
 
 void
-CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops)
+chklocalsounds(playerState_t *ps, playerState_t *ops)
 {
 	int highScore, reward;
 	int i;
@@ -315,7 +315,7 @@ pstransition(playerState_t *ps, playerState_t *ops)
 
 	// damage events (player is getting wounded)
 	if(ps->damageEvent != ops->damageEvent && ps->damageCount)
-		CG_DamageFeedback(ps->damageYaw, ps->damagePitch, ps->damageCount);
+		dmgfeedback(ps->damageYaw, ps->damagePitch, ps->damageCount);
 
 	// respawning
 	if(ps->persistant[PERS_SPAWN_COUNT] != ops->persistant[PERS_SPAWN_COUNT])
@@ -328,13 +328,13 @@ pstransition(playerState_t *ps, playerState_t *ops)
 
 	if(cg.snap->ps.pm_type != PM_INTERMISSION
 	   && ps->persistant[PERS_TEAM] != TEAM_SPECTATOR)
-		CG_CheckLocalSounds(ps, ops);
+		chklocalsounds(ps, ops);
 
 	// check for going low on ammo
-	CG_CheckAmmo();
+	chkammo();
 
 	// run events
-	CG_CheckPlayerstateEvents(ps, ops);
+	chkplayerstateevents(ps, ops);
 
 	// smooth the ducking viewheight change
 	if(ps->viewheight != ops->viewheight){

@@ -1456,12 +1456,12 @@ localEntity_t	*shockwave(vec3_t pt, float radius);
 void		bubbletrail(vec3_t start, vec3_t end, float spacing);
 void		spawneffect(vec3_t org);
 #ifdef MISSIONPACK
-void		CG_KamikazeEffect(vec3_t org);
-void		CG_ObeliskExplode(vec3_t org, int entityNum);
-void		CG_ObeliskPain(vec3_t org);
-void		CG_InvulnerabilityImpact(vec3_t org, vec3_t angles);
-void		CG_InvulnerabilityJuiced(vec3_t org);
-void		CG_LightningBoltBeam(vec3_t start, vec3_t end);
+void		kamikazeeffect(vec3_t org);
+void		obeliskexplode(vec3_t org, int entityNum);
+void		obeliskpain(vec3_t org);
+void		invulnimpact(vec3_t org, vec3_t angles);
+void		invulnjuiced(vec3_t org);
+void		lightningboltbeam(vec3_t start, vec3_t end);
 #endif
 void		scoreplum(int client, vec3_t org, int score);
 
@@ -1700,17 +1700,16 @@ qboolean	trap_getCameraInfo(int time, vec3_t *origin, vec3_t *angles);
 
 qboolean	trap_GetEntityToken(char *buffer, int bufferSize);
 
-void		CG_ClearParticles(void);
-void		CG_AddParticles(void);
-void		CG_ParticleSnow(qhandle_t pshader, vec3_t origin, vec3_t origin2, int turb, float range, int snum);
-void		CG_ParticleSmoke(qhandle_t pshader, centity_t *cent);
-void		CG_AddParticleShrapnel(localEntity_t *le);
-void		CG_ParticleSnowFlurry(qhandle_t pshader, centity_t *cent);
-void		CG_ParticleBulletDebris(vec3_t org, vec3_t vel, int duration);
-void		CG_ParticleSparks(vec3_t org, vec3_t vel, int duration, float x, float speed);
-void		CG_ParticleThrustPlume(centity_t *cent, vec3_t origin, vec3_t dir);
-void		CG_ParticleMisc(qhandle_t pshader, vec3_t origin, int size, int duration, float alpha);
-void		CG_ParticleExplosion(char *animStr, vec3_t origin, vec3_t vel, int duration, int sizeStart, int sizeEnd);
-extern qboolean initparticles;
-int		CG_NewParticleArea(int num);
+void		clearparticles(void);
+void		addparticles(void);
+void		particlesnow(qhandle_t pshader, vec3_t origin, vec3_t origin2, int turb, float range, int snum);
+void		particlesmoke(qhandle_t pshader, centity_t *cent);
+void		addparticleshrapnel(localEntity_t *le);
+void		particlesnowflurry(qhandle_t pshader, centity_t *cent);
+void		particlebulletdebris(vec3_t org, vec3_t vel, int duration);
+void		particlesparks(vec3_t org, vec3_t vel, int duration, float x, float speed);
+void		particlethrustplume(centity_t *cent, vec3_t origin, vec3_t dir);
+void		particlemisc(qhandle_t pshader, vec3_t origin, int size, int duration, float alpha);
+void		particleexplosion(char *animStr, vec3_t origin, vec3_t vel, int duration, int sizeStart, int sizeEnd);
+int		newparticlearea(int num);
 

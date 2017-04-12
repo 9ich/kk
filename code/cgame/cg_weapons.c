@@ -387,7 +387,7 @@ rockettrail(centity_t *ent, const weaponInfo_t *wi)
 			vecnorm(ofs);
 			vecmul(ofs, 0.5f, ofs);
 			vecadd(lastPos, ofs, lastPos);
-			CG_ParticleExplosion("explode1", lastPos, ofs, 80, 2, 14);
+			particleexplosion("explode1", lastPos, ofs, 80, 2, 14);
 		}
 	}
 
@@ -710,7 +710,7 @@ registeritemgfx(int itemNum)
 }
 
 static int
-CG_MapTorsoToWeaponFrame(clientInfo_t *ci, int frame)
+maptorsotoweapframe(clientInfo_t *ci, int frame)
 {
 	// change weapon
 	if(frame >= ci->animations[TORSO_DROP].firstframe
@@ -857,7 +857,7 @@ addweapwithpowerups(refEntity_t *gun, int powerups)
 }
 
 static void
-CG_WeaponAnimation(centity_t *cent, weaponInfo_t *weapinfo, int slot, int *oldframe, int *frame, float *backlerp)
+weapanim(centity_t *cent, weaponInfo_t *weapinfo, int slot, int *oldframe, int *frame, float *backlerp)
 {
 	float speedScale;
 
@@ -919,7 +919,7 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team,
 	if(!gun.hModel)
 		return;
 
-	CG_WeaponAnimation(cent, weapon, slot, &gun.oldframe, &gun.frame, &gun.backlerp);
+	weapanim(cent, weapon, slot, &gun.oldframe, &gun.frame, &gun.backlerp);
 
 	firingmask = EF_FIRING;
 	if(slot == 1)
@@ -1109,8 +1109,8 @@ addviewweap(playerState_t *ps)
 	}else{
 		// get clientinfo for animation map
 		ci = &cgs.clientinfo[cent->currstate.clientNum];
-		hand.frame = CG_MapTorsoToWeaponFrame(ci, cent->pe.torso.frame);
-		hand.oldframe = CG_MapTorsoToWeaponFrame(ci, cent->pe.torso.oldframe);
+		hand.frame = maptorsotoweapframe(ci, cent->pe.torso.frame);
+		hand.oldframe = maptorsotoweapframe(ci, cent->pe.torso.oldframe);
 		hand.backlerp = cent->pe.torso.backlerp;
 	}
 
@@ -1146,8 +1146,8 @@ addviewweap(playerState_t *ps)
 	}else{
 		// get clientinfo for animation map
 		ci = &cgs.clientinfo[cent->currstate.clientNum];
-		hand.frame = CG_MapTorsoToWeaponFrame(ci, cent->pe.torso.frame);
-		hand.oldframe = CG_MapTorsoToWeaponFrame(ci, cent->pe.torso.oldframe);
+		hand.frame = maptorsotoweapframe(ci, cent->pe.torso.frame);
+		hand.oldframe = maptorsotoweapframe(ci, cent->pe.torso.oldframe);
 		hand.backlerp = cent->pe.torso.backlerp;
 	}
 
@@ -1538,7 +1538,7 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		lightcolor[2] = 0.0f;
 
 		for(i = 0; i < cg_rocketExpSparks.integer; i++)
-			CG_ParticleSparks(origin, dir, 500+crandom()*400, 60, 600 + crandom()*140);
+			particlesparks(origin, dir, 500+crandom()*400, 60, 600 + crandom()*140);
 
 		if(cg_rocketExpShockwave.integer)
 			shockwave(origin, 400);
@@ -1595,7 +1595,7 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		lightcolor[2] = 0.0f;
 
 		for(i = 0; i < cg_rocketExpSparks.integer / 20; i++)
-			CG_ParticleSparks(origin, dir, 500+crandom()*400, 60, 600 + crandom()*140);
+			particlesparks(origin, dir, 500+crandom()*400, 60, 600 + crandom()*140);
 
 		if(cg_rocketExpShockwave.integer)
 			shockwave(origin, 50);

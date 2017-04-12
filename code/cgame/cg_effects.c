@@ -211,7 +211,7 @@ spawneffect(vec3_t org)
 
 #ifdef MISSIONPACK
 void
-CG_LightningBoltBeam(vec3_t start, vec3_t end)
+lightningboltbeam(vec3_t start, vec3_t end)
 {
 	localEntity_t *le;
 	refEntity_t *beam;
@@ -233,7 +233,7 @@ CG_LightningBoltBeam(vec3_t start, vec3_t end)
 }
 
 void
-CG_KamikazeEffect(vec3_t org)
+kamikazeeffect(vec3_t org)
 {
 	localEntity_t *le;
 	refEntity_t *re;
@@ -260,7 +260,7 @@ CG_KamikazeEffect(vec3_t org)
 }
 
 void
-CG_ObeliskExplode(vec3_t org, int entityNum)
+obeliskexplode(vec3_t org, int entityNum)
 {
 	localEntity_t *le;
 	vec3_t origin;
@@ -279,7 +279,7 @@ CG_ObeliskExplode(vec3_t org, int entityNum)
 }
 
 void
-CG_ObeliskPain(vec3_t org)
+obeliskpain(vec3_t org)
 {
 	float r;
 	sfxHandle_t sfx;
@@ -296,7 +296,7 @@ CG_ObeliskPain(vec3_t org)
 }
 
 void
-CG_InvulnerabilityImpact(vec3_t org, vec3_t angles)
+invulnimpact(vec3_t org, vec3_t angles)
 {
 	localEntity_t *le;
 	refEntity_t *re;
@@ -333,7 +333,7 @@ CG_InvulnerabilityImpact(vec3_t org, vec3_t angles)
 }
 
 void
-CG_InvulnerabilityJuiced(vec3_t org)
+invulnjuiced(vec3_t org)
 {
 	localEntity_t *le;
 	refEntity_t *re;
@@ -489,7 +489,7 @@ bleed(vec3_t origin, int entityNum)
 
 
 void
-CG_LaunchGib(vec3_t origin, vec3_t velocity, qhandle_t hModel)
+launchgib(vec3_t origin, vec3_t velocity, qhandle_t hModel)
 {
 	localEntity_t *le;
 	refEntity_t *re;
@@ -540,9 +540,9 @@ gibplayer(vec3_t playerOrigin)
 	velocity[1] = crandom()*GIB_VELOCITY;
 	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
 	if(rand() & 1)
-		CG_LaunchGib(origin, velocity, cgs.media.gibSkull);
+		launchgib(origin, velocity, cgs.media.gibSkull);
 	else
-		CG_LaunchGib(origin, velocity, cgs.media.gibSkull);
+		launchgib(origin, velocity, cgs.media.gibSkull);
 
 	for(i = 0; i < 10; i++){
 		vec3_t pos;
@@ -550,7 +550,7 @@ gibplayer(vec3_t playerOrigin)
 		vecset(pos, crandom(), crandom(), crandom());
 		vecnorm(pos);
 		vecmad(origin, crandom()*80, pos, pos);
-		CG_ParticleExplosion("explode1", pos, vec3_origin, 400, 60, 150);
+		particleexplosion("explode1", pos, vec3_origin, 400, 60, 150);
 		
 		//smokepuff(pos, vec3_origin, 90, 1,  1, 1, 1, 200, cg.time, 0, 0, cgs.media.rocketExplosionShader);
 		smokepuff(pos, vec3_origin, 90, 0, 0, 0, 1, 900, cg.time, 0, 0, cgs.media.smokePuffShader);
@@ -561,60 +561,60 @@ gibplayer(vec3_t playerOrigin)
 	velocity[0] = crandom()*GIB_VELOCITY;
 	velocity[1] = crandom()*GIB_VELOCITY;
 	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-	CG_LaunchGib(origin, velocity, cgs.media.gibSkull);
+	launchgib(origin, velocity, cgs.media.gibSkull);
 
 	veccpy(playerOrigin, origin);
 	velocity[0] = crandom()*GIB_VELOCITY;
 	velocity[1] = crandom()*GIB_VELOCITY;
 	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-	CG_LaunchGib(origin, velocity, cgs.media.gibSkull);
+	launchgib(origin, velocity, cgs.media.gibSkull);
 
 	veccpy(playerOrigin, origin);
 	velocity[0] = crandom()*GIB_VELOCITY;
 	velocity[1] = crandom()*GIB_VELOCITY;
 	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-	CG_LaunchGib(origin, velocity, cgs.media.gibSkull);
+	launchgib(origin, velocity, cgs.media.gibSkull);
 
 	veccpy(playerOrigin, origin);
 	velocity[0] = crandom()*GIB_VELOCITY;
 	velocity[1] = crandom()*GIB_VELOCITY;
 	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-	CG_LaunchGib(origin, velocity, cgs.media.gibSkull);
+	launchgib(origin, velocity, cgs.media.gibSkull);
 
 	veccpy(playerOrigin, origin);
 	velocity[0] = crandom()*GIB_VELOCITY;
 	velocity[1] = crandom()*GIB_VELOCITY;
 	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-	CG_LaunchGib(origin, velocity, cgs.media.gibSkull);
+	launchgib(origin, velocity, cgs.media.gibSkull);
 
 	veccpy(playerOrigin, origin);
 	velocity[0] = crandom()*GIB_VELOCITY;
 	velocity[1] = crandom()*GIB_VELOCITY;
 	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-	CG_LaunchGib(origin, velocity, cgs.media.gibSkull);
+	launchgib(origin, velocity, cgs.media.gibSkull);
 
 	veccpy(playerOrigin, origin);
 	velocity[0] = crandom()*GIB_VELOCITY;
 	velocity[1] = crandom()*GIB_VELOCITY;
 	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-	CG_LaunchGib(origin, velocity, cgs.media.gibSkull);
+	launchgib(origin, velocity, cgs.media.gibSkull);
 
 	veccpy(playerOrigin, origin);
 	velocity[0] = crandom()*GIB_VELOCITY;
 	velocity[1] = crandom()*GIB_VELOCITY;
 	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-	CG_LaunchGib(origin, velocity, cgs.media.gibSkull);
+	launchgib(origin, velocity, cgs.media.gibSkull);
 
 	veccpy(playerOrigin, origin);
 	velocity[0] = crandom()*GIB_VELOCITY;
 	velocity[1] = crandom()*GIB_VELOCITY;
 	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-	CG_LaunchGib(origin, velocity, cgs.media.gibSkull);
+	launchgib(origin, velocity, cgs.media.gibSkull);
 }
 
 
 void
-CG_LaunchExplode(vec3_t origin, vec3_t velocity, qhandle_t hModel)
+launchexplode(vec3_t origin, vec3_t velocity, qhandle_t hModel)
 {
 	localEntity_t *le;
 	refEntity_t *re;
@@ -647,7 +647,7 @@ CG_LaunchExplode(vec3_t origin, vec3_t velocity, qhandle_t hModel)
 Generated a bunch of gibs launching out from the bodies location
 */
 void
-CG_BigExplode(vec3_t playerOrigin)
+bigexplode(vec3_t playerOrigin)
 {
 	vec3_t origin, velocity;
 
@@ -658,29 +658,29 @@ CG_BigExplode(vec3_t playerOrigin)
 	velocity[0] = crandom()*EXP_VELOCITY;
 	velocity[1] = crandom()*EXP_VELOCITY;
 	velocity[2] = EXP_JUMP + crandom()*EXP_VELOCITY;
-	CG_LaunchExplode(origin, velocity, cgs.media.smoke2);
+	launchexplode(origin, velocity, cgs.media.smoke2);
 
 	veccpy(playerOrigin, origin);
 	velocity[0] = crandom()*EXP_VELOCITY;
 	velocity[1] = crandom()*EXP_VELOCITY;
 	velocity[2] = EXP_JUMP + crandom()*EXP_VELOCITY;
-	CG_LaunchExplode(origin, velocity, cgs.media.smoke2);
+	launchexplode(origin, velocity, cgs.media.smoke2);
 
 	veccpy(playerOrigin, origin);
 	velocity[0] = crandom()*EXP_VELOCITY*1.5;
 	velocity[1] = crandom()*EXP_VELOCITY*1.5;
 	velocity[2] = EXP_JUMP + crandom()*EXP_VELOCITY;
-	CG_LaunchExplode(origin, velocity, cgs.media.smoke2);
+	launchexplode(origin, velocity, cgs.media.smoke2);
 
 	veccpy(playerOrigin, origin);
 	velocity[0] = crandom()*EXP_VELOCITY*2.0;
 	velocity[1] = crandom()*EXP_VELOCITY*2.0;
 	velocity[2] = EXP_JUMP + crandom()*EXP_VELOCITY;
-	CG_LaunchExplode(origin, velocity, cgs.media.smoke2);
+	launchexplode(origin, velocity, cgs.media.smoke2);
 
 	veccpy(playerOrigin, origin);
 	velocity[0] = crandom()*EXP_VELOCITY*2.5;
 	velocity[1] = crandom()*EXP_VELOCITY*2.5;
 	velocity[2] = EXP_JUMP + crandom()*EXP_VELOCITY;
-	CG_LaunchExplode(origin, velocity, cgs.media.smoke2);
+	launchexplode(origin, velocity, cgs.media.smoke2);
 }

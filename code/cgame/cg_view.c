@@ -220,7 +220,7 @@ CG_TestLight_f(void)
 }
 
 static void
-CG_AddTestModel(void)
+addtestmodel(void)
 {
 	int i;
 	int k;
@@ -256,7 +256,7 @@ CG_AddTestModel(void)
 }
 
 static void
-CG_AddTestParticles(void)
+addtestparticles(void)
 {
 	testparticles_t *p;
 
@@ -265,7 +265,7 @@ CG_AddTestParticles(void)
 
 	p = &cg.testparticles;
 	if(strcmp(p->typ, "explosion") == 0){
-		CG_ParticleExplosion(p->shader, p->pos, p->vel, p->dur,
+		particleexplosion(p->shader, p->pos, p->vel, p->dur,
 		   p->startsize, p->endsize);
 	}
 }
@@ -276,7 +276,7 @@ CG_AddTestParticles(void)
 Sets the coordinates of the rendered window
 */
 static void
-CG_CalcVrect(void)
+calcvrect(void)
 {
 	int size;
 
@@ -309,7 +309,7 @@ CG_CalcVrect(void)
 
 #define FOCUS_DISTANCE 512
 static void
-CG_OffsetThirdPersonView(void)
+offset3rdpersonview(void)
 {
 	vec3_t forward, right, up;
 	vec3_t view;
@@ -360,7 +360,7 @@ CG_OffsetThirdPersonView(void)
 }
 
 static void
-CG_OffsetFirstPersonView(void)
+offset1stpersonview(void)
 {
 	float *origin;
 	float *angles;
@@ -463,7 +463,7 @@ Fixed fov at intermissions, otherwise account for fov variable and zooms.
 #define WAVE_FREQUENCY	0.4
 
 static int
-CG_CalcFov(void)
+calcfov(void)
 {
 	float x;
 	float phase;
@@ -542,7 +542,7 @@ CG_CalcFov(void)
 Sets cg.refdef view values
 */
 static int
-CG_CalcViewValues(void)
+calcviewvalues(void)
 {
 	playerState_t *ps;
 
@@ -553,7 +553,7 @@ CG_CalcViewValues(void)
 	// Q_strncpyz( cg.refdef.text[1], "19", sizeof(cg.refdef.text[1]) );
 
 	// calculate size of 3D view
-	CG_CalcVrect();
+	calcvrect();
 
 	ps = &cg.pps;
 /*
@@ -575,7 +575,7 @@ CG_CalcViewValues(void)
 		veccpy(ps->origin, cg.refdef.vieworg);
 		veccpy(ps->viewangles, cg.refdefviewangles);
 		angles2axis(cg.refdefviewangles, cg.refdef.viewaxis);
-		return CG_CalcFov();
+		return calcfov();
 	}
 
 	veccpy(ps->origin, cg.refdef.vieworg);
@@ -604,10 +604,10 @@ CG_CalcViewValues(void)
 
 	if(cg.thirdperson)
 		// back away from character
-		CG_OffsetThirdPersonView();
+		offset3rdpersonview();
 	else
 		// offset for local bobbing and kicks
-		CG_OffsetFirstPersonView();
+		offset1stpersonview();
 
 	// position eye relative to origin
 	angles2axis(cg.refdefviewangles, cg.refdef.viewaxis);
@@ -616,11 +616,11 @@ CG_CalcViewValues(void)
 		cg.refdef.rdflags |= RDF_NOWORLDMODEL | RDF_HYPERSPACE;
 
 	// field of view
-	return CG_CalcFov();
+	return calcfov();
 }
 
 static void
-CG_PowerupTimerSounds(void)
+poweruptimersounds(void)
 {
 	int i;
 	int t;
@@ -649,7 +649,7 @@ addbufferedsound(sfxHandle_t sfx)
 }
 
 static void
-CG_PlayBufferedSounds(void)
+playbufferedsounds(void)
 {
 	if(cg.sndtime < cg.time)
 		if(cg.sndbufout != cg.sndbufin && cg.sndbuf[cg.sndbufout]){
@@ -770,30 +770,30 @@ drawframe(int serverTime, stereoFrame_t stereoview, qboolean demoplayback)
 	cg.thirdperson = cg_thirdPerson.integer || (cg.snap->ps.stats[STAT_HEALTH] <= 0);
 
 	// build cg.refdef
-	inwater = CG_CalcViewValues();
+	inwater = calcviewvalues();
 
 	// build the render lists
 	if(!cg.hyperspace){
 		addpacketents();	// adter calcViewValues, so predicted player state is correct
 		addmarks();
-		CG_AddParticles();
+		addparticles();
 		addlocalents();
 	}
 	addviewweap(&cg.pps);
 
 	// add buffered sounds
-	CG_PlayBufferedSounds();
+	playbufferedsounds();
 
 
 	// finish up the rest of the refdef
 	if(cg.testmodelent[0].hModel)
-		CG_AddTestModel();
-	CG_AddTestParticles();
+		addtestmodel();
+	addtestparticles();
 	cg.refdef.time = cg.time;
 	memcpy(cg.refdef.areamask, cg.snap->areamask, sizeof(cg.refdef.areamask));
 
 	// warning sounds when powerup is wearing off
-	CG_PowerupTimerSounds();
+	poweruptimersounds();
 
 	// update audio positions
 	trap_S_Respatialize(cg.snap->ps.clientNum, cg.refdef.vieworg, cg.pps.velocity, cg.refdef.viewaxis, inwater);

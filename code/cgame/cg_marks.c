@@ -54,7 +54,7 @@ initmarkpolys(void)
 }
 
 void
-CG_FreeMarkPoly(markPoly_t *le)
+freemarkpoly(markPoly_t *le)
 {
 	if(!le->prev || !le->next)
 		cgerrorf("CG_FreeLocalEntity: not active");
@@ -71,8 +71,8 @@ CG_FreeMarkPoly(markPoly_t *le)
 /*
 Will allways succeed, even if it requires freeing an old active mark
 */
-markPoly_t      *
-CG_AllocMark(void)
+markPoly_t*
+allocmark(void)
 {
 	markPoly_t *le;
 	int time;
@@ -82,7 +82,7 @@ CG_AllocMark(void)
 		// remove the oldest active entity
 		time = cg_activeMarkPolys.prev->time;
 		while(cg_activeMarkPolys.prev && time == cg_activeMarkPolys.prev->time)
-			CG_FreeMarkPoly(cg_activeMarkPolys.prev);
+			freemarkpoly(cg_activeMarkPolys.prev);
 	}
 
 	le = cg_freeMarkPolys;
@@ -187,7 +187,7 @@ impactmark(qhandle_t shader, const vec3_t origin, const vec3_t dir,
 		}
 
 		// otherwise save it persistantly
-		mark = CG_AllocMark();
+		mark = allocmark();
 		mark->time = cg.time;
 		mark->alphafade = alphafade;
 		mark->shader = shader;
@@ -223,7 +223,7 @@ addmarks(void)
 
 		// see if it is time to completely remove it
 		if(cg.time > mp->time + MARK_TOTAL_TIME){
-			CG_FreeMarkPoly(mp);
+			freemarkpoly(mp);
 			continue;
 		}
 

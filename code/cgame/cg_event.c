@@ -696,27 +696,27 @@ entevent(centity_t *cent, vec3_t position)
 		break;
 	case EV_KAMIKAZE:
 		DEBUGNAME("EV_KAMIKAZE");
-		CG_KamikazeEffect(cent->lerporigin);
+		kamikazeeffect(cent->lerporigin);
 		break;
 	case EV_OBELISKEXPLODE:
 		DEBUGNAME("EV_OBELISKEXPLODE");
-		CG_ObeliskExplode(cent->lerporigin, es->eventParm);
+		obeliskexplode(cent->lerporigin, es->eventParm);
 		break;
 	case EV_OBELISKPAIN:
 		DEBUGNAME("EV_OBELISKPAIN");
-		CG_ObeliskPain(cent->lerporigin);
+		obeliskpain(cent->lerporigin);
 		break;
 	case EV_INVUL_IMPACT:
 		DEBUGNAME("EV_INVUL_IMPACT");
-		CG_InvulnerabilityImpact(cent->lerporigin, cent->currstate.angles);
+		invulnimpact(cent->lerporigin, cent->currstate.angles);
 		break;
 	case EV_JUICED:
 		DEBUGNAME("EV_JUICED");
-		CG_InvulnerabilityJuiced(cent->lerporigin);
+		invulnjuiced(cent->lerporigin);
 		break;
 	case EV_LIGHTNINGBOLT:
 		DEBUGNAME("EV_LIGHTNINGBOLT");
-		CG_LightningBoltBeam(es->origin2, es->pos.trBase);
+		lightningboltbeam(es->origin2, es->pos.trBase);
 		break;
 #endif
 	case EV_SCOREPLUM:

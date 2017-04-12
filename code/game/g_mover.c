@@ -32,8 +32,8 @@ typedef struct
 } pushed_t;
 pushed_t pushed[MAX_GENTITIES], *pushed_p;
 
-gentity_t       *
-G_TestEntityPosition(gentity_t *ent)
+static gentity_t*
+testentpos(gentity_t *ent)
 {
 	trace_t tr;
 	int mask;
@@ -53,15 +53,15 @@ G_TestEntityPosition(gentity_t *ent)
 	return nil;
 }
 
-void
-G_CreateRotationMatrix(vec3_t angles, vec3_t matrix[3])
+static void
+mkrotmat(vec3_t angles, vec3_t matrix[3])
 {
 	anglevecs(angles, matrix[0], matrix[1], matrix[2]);
 	vecinv(matrix[1]);
 }
 
-void
-G_TransposeMatrix(vec3_t matrix[3], vec3_t transpose[3])
+static void
+transposemat(vec3_t matrix[3], vec3_t transpose[3])
 {
 	int i, j;
 	for(i = 0; i < 3; i++)
@@ -69,8 +69,8 @@ G_TransposeMatrix(vec3_t matrix[3], vec3_t transpose[3])
 			transpose[i][j] = matrix[j][i];
 }
 
-void
-G_RotatePoint(vec3_t point, vec3_t matrix[3])
+static void
+rotpoint(vec3_t point, vec3_t matrix[3])
 {
 	vec3_t tvec;
 
@@ -83,8 +83,8 @@ G_RotatePoint(vec3_t point, vec3_t matrix[3])
 /*
 Returns qfalse if the move is blocked
 */
-qboolean
-G_TryPushingEntity(gentity_t *check, gentity_t *pusher, vec3_t move, vec3_t amove)
+static qboolean
+trypushingent(gentity_t *check, gentity_t *pusher, vec3_t move, vec3_t amove)
 {
 	vec3_t matrix[3], transpose[3];
 	vec3_t org, org2, move2;
@@ -110,14 +110,14 @@ G_TryPushingEntity(gentity_t *check, gentity_t *pusher, vec3_t move, vec3_t amov
 
 	// try moving the contacted entity
 	// figure movement due to the pusher's amove
-	G_CreateRotationMatrix(amove, transpose);
-	G_TransposeMatrix(transpose, matrix);
+	mkrotmat(amove, transpose);
+	transposemat(transpose, matrix);
 	if(check->client)
 		vecsub(check->client->ps.origin, pusher->r.currentOrigin, org);
 	else
 		vecsub(check->s.pos.trBase, pusher->r.currentOrigin, org);
 	veccpy(org, org2);
-	G_RotatePoint(org2, matrix);
+	rotpoint(org2, matrix);
 	vecsub(org2, org, move2);
 	// add movement
 	vecadd(check->s.pos.trBase, move, check->s.pos.trBase);
@@ -133,7 +133,7 @@ G_TryPushingEntity(gentity_t *check, gentity_t *pusher, vec3_t move, vec3_t amov
 	if(check->s.groundEntityNum != pusher->s.number)
 		check->s.groundEntityNum = ENTITYNUM_NONE;
 
-	block = G_TestEntityPosition(check);
+	block = testentpos(check);
 	if(!block){
 		// pushed ok
 		if(check->client)
@@ -151,7 +151,7 @@ G_TryPushingEntity(gentity_t *check, gentity_t *pusher, vec3_t move, vec3_t amov
 	if(check->client)
 		veccpy((pushed_p-1)->origin, check->client->ps.origin);
 	veccpy((pushed_p-1)->angles, check->s.apos.trBase);
-	block = G_TestEntityPosition(check);
+	block = testentpos(check);
 	if(!block){
 		check->s.groundEntityNum = ENTITYNUM_NONE;
 		pushed_p--;
@@ -162,8 +162,8 @@ G_TryPushingEntity(gentity_t *check, gentity_t *pusher, vec3_t move, vec3_t amov
 	return qfalse;
 }
 
-qboolean
-G_CheckProxMinePosition(gentity_t *check)
+static qboolean
+chkproxminepos(gentity_t *check)
 {
 	vec3_t start, end;
 	trace_t tr;
@@ -178,8 +178,8 @@ G_CheckProxMinePosition(gentity_t *check)
 	return qtrue;
 }
 
-qboolean
-G_TryPushingProxMine(gentity_t *check, gentity_t *pusher, vec3_t move, vec3_t amove)
+static qboolean
+trypushingproxmine(gentity_t *check, gentity_t *pusher, vec3_t move, vec3_t amove)
 {
 	vec3_t forward, right, up;
 	vec3_t org, org2, move2;
@@ -200,7 +200,7 @@ G_TryPushingProxMine(gentity_t *check, gentity_t *pusher, vec3_t move, vec3_t am
 	vecsub(org2, org, move2);
 	vecadd(check->s.pos.trBase, move2, check->s.pos.trBase);
 
-	ret = G_CheckProxMinePosition(check);
+	ret = chkproxminepos(check);
 	if(ret){
 		veccpy(check->s.pos.trBase, check->r.currentOrigin);
 		trap_LinkEntity(check);
@@ -215,8 +215,8 @@ Objects need to be moved back on a failed push,
 otherwise riders would continue to slide.
 If qfalse is returned, *obstacle will be the blocking entity
 */
-qboolean
-G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **obstacle)
+static qboolean
+moverpush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **obstacle)
 {
 	int i, e;
 	gentity_t *check;
@@ -277,7 +277,7 @@ G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **obstacle)
 			if(!strcmp(check->classname, "prox mine")){
 				// if this prox mine is attached to this mover try to move it with the pusher
 				if(check->enemy == pusher){
-					if(!G_TryPushingProxMine(check, pusher, move, amove)){
+					if(!trypushingproxmine(check, pusher, move, amove)){
 						//explode
 						check->s.loopSound = 0;
 						addevent(check, EV_PROXIMITY_MINE_TRIGGER, 0);
@@ -290,7 +290,7 @@ G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **obstacle)
 					}
 				}else
 				//check if the prox mine is crushed by the mover
-				if(!G_CheckProxMinePosition(check)){
+				if(!chkproxminepos(check)){
 					//explode
 					check->s.loopSound = 0;
 					addevent(check, EV_PROXIMITY_MINE_TRIGGER, 0);
@@ -321,12 +321,12 @@ G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **obstacle)
 				continue;
 			// see if the ent's bbox is inside the pusher's final position
 			// this does allow a fast moving object to pass through a thin entity...
-			if(!G_TestEntityPosition(check))
+			if(!testentpos(check))
 				continue;
 		}
 
 		// the entity needs to be pushed
-		if(G_TryPushingEntity(check, pusher, move, amove))
+		if(trypushingent(check, pusher, move, amove))
 			continue;
 
 		// the move was blocked an entity
@@ -358,8 +358,8 @@ G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **obstacle)
 	return qtrue;
 }
 
-void
-G_MoverTeam(gentity_t *ent)
+static void
+moverteam(gentity_t *ent)
 {
 	vec3_t move, amove;
 	gentity_t *part, *obstacle;
@@ -377,7 +377,7 @@ G_MoverTeam(gentity_t *ent)
 		evaltrajectory(&part->s.apos, level.time, angles);
 		vecsub(origin, part->r.currentOrigin, move);
 		vecsub(angles, part->r.currentAngles, amove);
-		if(!G_MoverPush(part, move, amove, &obstacle))
+		if(!moverpush(part, move, amove, &obstacle))
 			break;	// move was blocked
 	}
 
@@ -418,7 +418,7 @@ runmover(gentity_t *ent)
 
 	// if stationary at one of the positions, don't move anything
 	if(ent->s.pos.trType != TR_STATIONARY || ent->s.apos.trType != TR_STATIONARY)
-		G_MoverTeam(ent);
+		moverteam(ent);
 
 	// check think function
 	runthink(ent);
@@ -435,8 +435,8 @@ Pos1 is "at rest", pos2 is "activated"
 */
 
 
-void
-SetMoverState(gentity_t *ent, moverState_t moverstate, int time)
+static void
+setmoverstate(gentity_t *ent, moverState_t moverstate, int time)
 {
 	vec3_t delta;
 	float f;
@@ -476,19 +476,19 @@ SetMoverState(gentity_t *ent, moverState_t moverstate, int time)
 All entities in a mover team will move from pos1 to pos2
 in the same amount of time
 */
-void
+static void
 matchteam(gentity_t *teamleader, int moverstate, int time)
 {
 	gentity_t *slave;
 
 	for(slave = teamleader; slave; slave = slave->teamchain)
-		SetMoverState(slave, moverstate, time);
+		setmoverstate(slave, moverstate, time);
 }
 
 /*
 ReturnToPos1
 */
-void
+static void
 ReturnToPos1(gentity_t *ent)
 {
 	matchteam(ent, MOVER_2TO1, level.time);
@@ -502,7 +502,7 @@ ReturnToPos1(gentity_t *ent)
 }
 
 
-void
+static void
 Reached_BinaryMover(gentity_t *ent)
 {
 	// stop the looping sound
@@ -510,7 +510,7 @@ Reached_BinaryMover(gentity_t *ent)
 
 	if(ent->moverstate == MOVER_1TO2){
 		// reached pos2
-		SetMoverState(ent, MOVER_POS2, level.time);
+		setmoverstate(ent, MOVER_POS2, level.time);
 
 		// play sound
 		if(ent->soundpos2)
@@ -526,7 +526,7 @@ Reached_BinaryMover(gentity_t *ent)
 		usetargets(ent, ent->activator);
 	}else if(ent->moverstate == MOVER_2TO1){
 		// reached pos1
-		SetMoverState(ent, MOVER_POS1, level.time);
+		setmoverstate(ent, MOVER_POS1, level.time);
 
 		// play sound
 		if(ent->soundpos1)
@@ -540,7 +540,7 @@ Reached_BinaryMover(gentity_t *ent)
 }
 
 
-void
+static void
 Use_BinaryMover(gentity_t *ent, gentity_t *other, gentity_t *activator)
 {
 	int total;
@@ -611,8 +611,8 @@ Use_BinaryMover(gentity_t *ent, gentity_t *other, gentity_t *activator)
 "pos1", "pos2", and "speed" should be set before calling,
 so the movement delta can be calculated
 */
-void
-InitMover(gentity_t *ent)
+static void
+initmover(gentity_t *ent)
 {
 	vec3_t move;
 	float distance;
@@ -688,7 +688,7 @@ targeted by another entity.
 /*
 Blocked_Door
 */
-void
+static void
 Blocked_Door(gentity_t *ent, gentity_t *other)
 {
 	// remove anything other than a client
@@ -752,7 +752,7 @@ doortrigger_touch(gentity_t *ent, gentity_t *other, trace_t *trace)
 All of the parts of a door have been spawned, so create
 a trigger that encloses all of them
 */
-void
+static void
 Think_SpawnNewDoorTrigger(gentity_t *ent)
 {
 	gentity_t *other;
@@ -798,7 +798,7 @@ Think_SpawnNewDoorTrigger(gentity_t *ent)
 	matchteam(ent, ent->moverstate, level.time);
 }
 
-void
+static void
 Think_MatchTeam(gentity_t *ent)
 {
 	matchteam(ent, ent->moverstate, level.time);
@@ -870,7 +870,7 @@ SP_func_door(gentity_t *ent)
 		veccpy(temp, ent->pos1);
 	}
 
-	InitMover(ent);
+	initmover(ent);
 
 	ent->nextthink = level.time + FRAMETIME;
 
@@ -892,7 +892,7 @@ SP_func_door(gentity_t *ent)
 /*
 Don't allow decent if a living player is on it
 */
-void
+static void
 Touch_Plat(gentity_t *ent, gentity_t *other, trace_t *trace)
 {
 	if(!other->client || other->client->ps.stats[STAT_HEALTH] <= 0)
@@ -906,7 +906,7 @@ Touch_Plat(gentity_t *ent, gentity_t *other, trace_t *trace)
 /*
 If the plat is at the bottom position, start it going up
 */
-void
+static void
 Touch_PlatCenterTrigger(gentity_t *ent, gentity_t *other, trace_t *trace)
 {
 	if(!other->client)
@@ -921,7 +921,7 @@ Spawn a trigger in the middle of the plat's low position
 Elevator cars require that the trigger extend through the entire low position,
 not just sit on top of it.
 */
-void
+static void
 SpawnPlatTrigger(gentity_t *ent)
 {
 	gentity_t *trigger;
@@ -997,7 +997,7 @@ SP_func_plat(gentity_t *ent)
 	veccpy(ent->pos2, ent->pos1);
 	ent->pos1[2] -= height;
 
-	InitMover(ent);
+	initmover(ent);
 
 	// touch function keeps the plat from returning while
 	// a live player is standing on it
@@ -1013,7 +1013,7 @@ SP_func_plat(gentity_t *ent)
 }
 
 
-void
+static void
 Touch_Button(gentity_t *ent, gentity_t *other, trace_t *trace)
 {
 	if(!other->client)
@@ -1076,7 +1076,7 @@ SP_func_button(gentity_t *ent)
 		// touchable button
 		ent->touch = Touch_Button;
 
-	InitMover(ent);
+	initmover(ent);
 }
 
 
@@ -1087,14 +1087,14 @@ SP_func_button(gentity_t *ent)
 /*
 The wait time at a corner has completed, so start moving again
 */
-void
+static void
 Think_BeginMoving(gentity_t *ent)
 {
 	ent->s.pos.trTime = level.time;
 	ent->s.pos.trType = TR_LINEAR_STOP;
 }
 
-void
+static void
 Reached_Train(gentity_t *ent)
 {
 	gentity_t *next;
@@ -1153,7 +1153,7 @@ Reached_Train(gentity_t *ent)
 	ent->s.loopSound = next->soundloop;
 
 	// start it going
-	SetMoverState(ent, MOVER_1TO2, level.time);
+	setmoverstate(ent, MOVER_1TO2, level.time);
 
 	// if there is a "wait" value on the target, don't start moving yet
 	if(next->wait){
@@ -1166,7 +1166,7 @@ Reached_Train(gentity_t *ent)
 /*
 Link all the corners together
 */
-void
+static void
 Think_SetupTrainTargets(gentity_t *ent)
 {
 	gentity_t *path, *next, *start;
@@ -1259,7 +1259,7 @@ SP_func_train(gentity_t *self)
 	}
 
 	trap_SetBrushModel(self, self->model);
-	InitMover(self);
+	initmover(self);
 
 	self->reached = Reached_Train;
 
@@ -1280,7 +1280,7 @@ void
 SP_func_static(gentity_t *ent)
 {
 	trap_SetBrushModel(ent, ent->model);
-	InitMover(ent);
+	initmover(ent);
 	veccpy(ent->s.origin, ent->s.pos.trBase);
 	veccpy(ent->s.origin, ent->r.currentOrigin);
 }
@@ -1316,7 +1316,7 @@ SP_func_rotating(gentity_t *ent)
 		ent->damage = 2;
 
 	trap_SetBrushModel(ent, ent->model);
-	InitMover(ent);
+	initmover(ent);
 
 	veccpy(ent->s.origin, ent->s.pos.trBase);
 	veccpy(ent->s.pos.trBase, ent->r.currentOrigin);
@@ -1348,7 +1348,7 @@ SP_func_bobbing(gentity_t *ent)
 	spawnfloat("phase", "0", &phase);
 
 	trap_SetBrushModel(ent, ent->model);
-	InitMover(ent);
+	initmover(ent);
 
 	veccpy(ent->s.origin, ent->s.pos.trBase);
 	veccpy(ent->s.origin, ent->r.currentOrigin);
@@ -1401,7 +1401,7 @@ SP_func_pendulum(gentity_t *ent)
 
 	ent->s.pos.trDuration = (1000 / freq);
 
-	InitMover(ent);
+	initmover(ent);
 
 	veccpy(ent->s.origin, ent->s.pos.trBase);
 	veccpy(ent->s.origin, ent->r.currentOrigin);

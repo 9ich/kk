@@ -610,7 +610,7 @@ adjustposformover(const vec3_t in, int moverNum, int fromTime, int toTime, vec3_
 }
 
 static void
-CG_InterpolateEntityPosition(centity_t *cent)
+lerpentpos(centity_t *cent)
 {
 	vec3_t current, next;
 	float f;
@@ -640,7 +640,7 @@ CG_InterpolateEntityPosition(centity_t *cent)
 }
 
 static void
-CG_CalcEntityLerpPositions(centity_t *cent)
+lerpentitypositions(centity_t *cent)
 {
 	// if this player does not want to see extrapolated players
 	if(!cg_smoothClients.integer)
@@ -651,7 +651,7 @@ CG_CalcEntityLerpPositions(centity_t *cent)
 		}
 
 	if(cent->interpolate && cent->currstate.pos.trType == TR_INTERPOLATE){
-		CG_InterpolateEntityPosition(cent);
+		lerpentpos(cent);
 		return;
 	}
 
@@ -659,7 +659,7 @@ CG_CalcEntityLerpPositions(centity_t *cent)
 	// linear extrapolated clients
 	if(cent->interpolate && cent->currstate.pos.trType == TR_LINEAR_STOP &&
 	   cent->currstate.number < MAX_CLIENTS){
-		CG_InterpolateEntityPosition(cent);
+		lerpentpos(cent);
 		return;
 	}
 
@@ -812,14 +812,14 @@ doteambase(centity_t *cent)
 }
 
 static void
-CG_AddCEntity(centity_t *cent)
+addcentity(centity_t *cent)
 {
 	// event-only entities will have been dealt with already
 	if(cent->currstate.eType >= ET_EVENTS)
 		return;
 
 	// calculate the current origin
-	CG_CalcEntityLerpPositions(cent);
+	lerpentitypositions(cent);
 
 	// add automatic effects
 	entfx(cent);
@@ -894,14 +894,14 @@ addpacketents(void)
 	// generate and add the entity from the playerstate
 	ps = &cg.pps;
 	playerstate2entstate(ps, &cg.pplayerent.currstate, qfalse);
-	CG_AddCEntity(&cg.pplayerent);
+	addcentity(&cg.pplayerent);
 
 	// lerp the non-predicted value for lightning gun origins
-	CG_CalcEntityLerpPositions(&cg_entities[cg.snap->ps.clientNum]);
+	lerpentitypositions(&cg_entities[cg.snap->ps.clientNum]);
 
 	// add each entity sent over by the server
 	for(num = 0; num < cg.snap->numEntities; num++){
 		cent = &cg_entities[cg.snap->entities[num].number];
-		CG_AddCEntity(cent);
+		addcentity(cent);
 	}
 }

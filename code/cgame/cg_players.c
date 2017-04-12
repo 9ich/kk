@@ -232,7 +232,7 @@ parsethrustersfile(const char *filename, clientInfo_t *ci)
 }
 
 static qboolean
-CG_FileExists(const char *filename)
+fileexists(const char *filename)
 {
 	int len;
 
@@ -243,7 +243,7 @@ CG_FileExists(const char *filename)
 }
 
 static qboolean
-CG_FindClientModelFile(char *filename, int length, clientInfo_t *ci, const char *teamName, const char *modelname, const char *skinname, const char *base, const char *ext)
+findclientmodelfile(char *filename, int length, clientInfo_t *ci, const char *teamName, const char *modelname, const char *skinname, const char *base, const char *ext)
 {
 	char *team;
 	int i;
@@ -266,7 +266,7 @@ CG_FindClientModelFile(char *filename, int length, clientInfo_t *ci, const char 
 		skinname = "bright";
 		// "models/players/griever/hull_bright.skin"
 		Com_sprintf(filename, length, "models/players/%s/%s_%s.%s", modelname, base, skinname, ext);
-		if(CG_FileExists(filename))
+		if(fileexists(filename))
 			return qtrue;
 	}
 
@@ -277,7 +277,7 @@ CG_FindClientModelFile(char *filename, int length, clientInfo_t *ci, const char 
 		else
 			// "models/players/james/lower_lily_red.skin"
 			Com_sprintf(filename, length, "models/players/%s/%s_%s_%s.%s", modelname, base, skinname, team, ext);
-		if(CG_FileExists(filename))
+		if(fileexists(filename))
 			return qtrue;
 		if(cgs.gametype >= GT_TEAM){
 			if(i == 0 && teamName && *teamName)
@@ -294,7 +294,7 @@ CG_FindClientModelFile(char *filename, int length, clientInfo_t *ci, const char 
 				// "models/players/james/lower_lily.skin"
 				Com_sprintf(filename, length, "models/players/%s/%s_%s.%s", modelname, base, skinname, ext);
 		}
-		if(CG_FileExists(filename))
+		if(fileexists(filename))
 			return qtrue;
 		if(!teamName || !*teamName)
 			break;
@@ -304,11 +304,11 @@ CG_FindClientModelFile(char *filename, int length, clientInfo_t *ci, const char 
 }
 
 static qboolean
-CG_RegisterClientSkin(clientInfo_t *ci, const char *teamName, const char *modelname, const char *skinname)
+regclientskin(clientInfo_t *ci, const char *teamName, const char *modelname, const char *skinname)
 {
 	char filename[MAX_QPATH];
 
-	if(CG_FindClientModelFile(filename, sizeof(filename), ci, teamName, modelname, skinname, "hull", "skin"))
+	if(findclientmodelfile(filename, sizeof(filename), ci, teamName, modelname, skinname, "hull", "skin"))
 		ci->torsoskin = trap_R_RegisterSkin(filename);
 	if(!ci->torsoskin)
 		Com_Printf("Torso skin load failure: %s\n", filename);
@@ -320,7 +320,7 @@ CG_RegisterClientSkin(clientInfo_t *ci, const char *teamName, const char *modeln
 }
 
 static qboolean
-CG_RegisterClientModelname(clientInfo_t *ci, const char *modelname, const char *skinname, const char *teamName)
+regclientmodelname(clientInfo_t *ci, const char *modelname, const char *skinname, const char *teamName)
 {
 	char filename[MAX_QPATH];
 	char newTeamName[MAX_QPATH];
@@ -333,14 +333,14 @@ CG_RegisterClientModelname(clientInfo_t *ci, const char *modelname, const char *
 	}
 
 	// if any skins failed to load, return failure
-	if(!CG_RegisterClientSkin(ci, teamName, modelname, skinname)){
+	if(!regclientskin(ci, teamName, modelname, skinname)){
 		if(teamName && *teamName){
 			Com_Printf("Failed to load skin file: %s : %s : %s\n", teamName, modelname, skinname);
 			if(ci->team == TEAM_BLUE)
 				Com_sprintf(newTeamName, sizeof(newTeamName), "%s/", DEFAULT_BLUETEAM_NAME);
 			else
 				Com_sprintf(newTeamName, sizeof(newTeamName), "%s/", DEFAULT_REDTEAM_NAME);
-			if(!CG_RegisterClientSkin(ci, newTeamName, modelname, skinname)){
+			if(!regclientskin(ci, newTeamName, modelname, skinname)){
 				Com_Printf("Failed to load skin file: %s : %s : %s\n", newTeamName, modelname, skinname);
 				return qfalse;
 			}
@@ -365,7 +365,7 @@ CG_RegisterClientModelname(clientInfo_t *ci, const char *modelname, const char *
 }
 
 static void
-CG_ColorFromString(const char *v, vec3_t color)
+colorfromstring(const char *v, vec3_t color)
 {
 	int val;
 
@@ -391,7 +391,7 @@ Load it now, taking the disk hits.
 This will usually be deferred to a safe time
 */
 static void
-CG_LoadClientInfo(int clientNum, clientInfo_t *ci)
+loadclientinfo(int clientNum, clientInfo_t *ci)
 {
 	const char *dir, *fallback;
 	int i, modelloaded;
@@ -411,7 +411,7 @@ CG_LoadClientInfo(int clientNum, clientInfo_t *ci)
 
 #endif
 	modelloaded = qtrue;
-	if(!CG_RegisterClientModelname(ci, ci->modelname, ci->skinname, teamname)){
+	if(!regclientmodelname(ci, ci->modelname, ci->skinname, teamname)){
 		if(cg_buildScript.integer)
 			cgerrorf("CG_RegisterClientModelname( %s, %s, %s ) failed", ci->modelname, ci->skinname, teamname);
 
@@ -422,9 +422,9 @@ CG_LoadClientInfo(int clientNum, clientInfo_t *ci)
 				Q_strncpyz(teamname, DEFAULT_BLUETEAM_NAME, sizeof(teamname));
 			else
 				Q_strncpyz(teamname, DEFAULT_REDTEAM_NAME, sizeof(teamname));
-			if(!CG_RegisterClientModelname(ci, DEFAULT_TEAM_MODEL, ci->skinname, teamname))
+			if(!regclientmodelname(ci, DEFAULT_TEAM_MODEL, ci->skinname, teamname))
 				cgerrorf("DEFAULT_TEAM_MODEL / skin (%s/%s) failed to register", DEFAULT_TEAM_MODEL, ci->skinname);
-		}else  if(!CG_RegisterClientModelname(ci, DEFAULT_MODEL, "default", teamname))
+		}else  if(!regclientmodelname(ci, DEFAULT_MODEL, "default", teamname))
 			cgerrorf("DEFAULT_MODEL (%s) failed to register", DEFAULT_MODEL);
 
 		modelloaded = qfalse;
@@ -457,7 +457,7 @@ CG_LoadClientInfo(int clientNum, clientInfo_t *ci)
 }
 
 static void
-CG_CopyClientInfoModel(clientInfo_t *from, clientInfo_t *to)
+cpyclientinfomodel(clientInfo_t *from, clientInfo_t *to)
 {
 	to->footsteps = from->footsteps;
 	to->gender = from->gender;
@@ -473,7 +473,7 @@ CG_CopyClientInfoModel(clientInfo_t *from, clientInfo_t *to)
 }
 
 static qboolean
-CG_ScanForExistingClientInfo(clientInfo_t *ci)
+scanforexistingclientinfo(clientInfo_t *ci)
 {
 	int i;
 	clientInfo_t *match;
@@ -493,7 +493,7 @@ CG_ScanForExistingClientInfo(clientInfo_t *ci)
 
 			ci->deferred = qfalse;
 
-			CG_CopyClientInfoModel(match, ci);
+			cpyclientinfomodel(match, ci);
 
 			return qtrue;
 		}
@@ -508,7 +508,7 @@ We aren't going to load it now, so grab some other
 client's info to use until we have some spare time.
 */
 static void
-CG_SetDeferredClientInfo(int clientNum, clientInfo_t *ci)
+setdeferredclientinfo(int clientNum, clientInfo_t *ci)
 {
 	int i;
 	clientInfo_t *match;
@@ -524,7 +524,7 @@ CG_SetDeferredClientInfo(int clientNum, clientInfo_t *ci)
 		   (cgs.gametype >= GT_TEAM && ci->team != match->team))
 			continue;
 		// just load the real info cause it uses the same models and skins
-		CG_LoadClientInfo(clientNum, ci);
+		loadclientinfo(clientNum, ci);
 		return;
 	}
 
@@ -538,14 +538,14 @@ CG_SetDeferredClientInfo(int clientNum, clientInfo_t *ci)
 			   (cgs.gametype >= GT_TEAM && ci->team != match->team))
 				continue;
 			ci->deferred = qtrue;
-			CG_CopyClientInfoModel(match, ci);
+			cpyclientinfomodel(match, ci);
 			return;
 		}
 		// load the full model, because we don't ever want to show
 		// an improper team skin.  This will cause a hitch for the first
 		// player, when the second enters.  Combat shouldn't be going on
 		// yet, so it shouldn't matter
-		CG_LoadClientInfo(clientNum, ci);
+		loadclientinfo(clientNum, ci);
 		return;
 	}
 
@@ -556,14 +556,14 @@ CG_SetDeferredClientInfo(int clientNum, clientInfo_t *ci)
 			continue;
 
 		ci->deferred = qtrue;
-		CG_CopyClientInfoModel(match, ci);
+		cpyclientinfomodel(match, ci);
 		return;
 	}
 
 	// we should never get here...
 	cgprintf("CG_SetDeferredClientInfo: no valid clients!\n");
 
-	CG_LoadClientInfo(clientNum, ci);
+	loadclientinfo(clientNum, ci);
 }
 
 
@@ -594,7 +594,7 @@ newclientinfo(int clientNum)
 
 	// colors
 	v = Info_ValueForKey(configstring, "c1");
-	CG_ColorFromString(v, newInfo.color1);
+	colorfromstring(v, newInfo.color1);
 
 	newInfo.c1rgba[0] = 255 * newInfo.color1[0];
 	newInfo.c1rgba[1] = 255 * newInfo.color1[1];
@@ -602,7 +602,7 @@ newclientinfo(int clientNum)
 	newInfo.c1rgba[3] = 255;
 
 	v = Info_ValueForKey(configstring, "c2");
-	CG_ColorFromString(v, newInfo.color2);
+	colorfromstring(v, newInfo.color2);
 
 	newInfo.c2rgba[0] = 255 * newInfo.color2[0];
 	newInfo.c2rgba[1] = 255 * newInfo.color2[1];
@@ -687,7 +687,7 @@ newclientinfo(int clientNum)
 
 	// scan for an existing clientinfo that matches this modelname
 	// so we can avoid loading checks if possible
-	if(!CG_ScanForExistingClientInfo(&newInfo)){
+	if(!scanforexistingclientinfo(&newInfo)){
 		qboolean forceDefer;
 
 		forceDefer = trap_MemoryRemaining() < 4000000;
@@ -695,14 +695,14 @@ newclientinfo(int clientNum)
 		// if we are defering loads, just have it pick the first valid
 		if(forceDefer || (cg_deferPlayers.integer && !cg_buildScript.integer && !cg.loading)){
 			// keep whatever they had if it won't violate team skins
-			CG_SetDeferredClientInfo(clientNum, &newInfo);
+			setdeferredclientinfo(clientNum, &newInfo);
 			// if we are low on memory, leave them with this model
 			if(forceDefer){
 				cgprintf("Memory is low. Using deferred model.\n");
 				newInfo.deferred = qfalse;
 			}
 		}else
-			CG_LoadClientInfo(clientNum, &newInfo);
+			loadclientinfo(clientNum, &newInfo);
 	}
 
 	// replace whatever was there with the new one
@@ -730,7 +730,7 @@ loaddeferred(void)
 				ci->deferred = qfalse;
 				continue;
 			}
-			CG_LoadClientInfo(i, ci);
+			loadclientinfo(i, ci);
 //			break;
 		}
 }
@@ -745,7 +745,7 @@ PLAYER ANIMATION
 
 
 static void
-CG_PlayerAnimation(centity_t *cent, int *torsoOld, int *torso, float *torsoBackLerp)
+playeranim(centity_t *cent, int *torsoOld, int *torso, float *torsoBackLerp)
 {
 	clientInfo_t *ci;
 	int clientNum;
@@ -779,19 +779,6 @@ PLAYER ANGLES
 
 =============================================================================
 */
-
-/*
-Ship always looks at cent->lerpangles.
-*/
-static void
-CG_PlayerAngles(centity_t *cent, vec3_t ship[3])
-{
-	vec3_t shipangles;
-
-	veccpy(cent->lerpangles, shipangles);
-
-	angles2axis(shipangles, ship);
-}
 
 /*
  * Returns position of a player's centity_t.
@@ -849,7 +836,7 @@ playerangles(centity_t *cent, vec3_t out)
 
 
 static void
-CG_HasteTrail(centity_t *cent)
+hastetrail(centity_t *cent)
 {
 	localEntity_t *smoke;
 	vec3_t origin;
@@ -879,7 +866,7 @@ CG_HasteTrail(centity_t *cent)
 
 
 static void
-CG_PlayerFlag(centity_t *cent, refEntity_t *torso, qhandle_t flagmodel)
+playerflag(centity_t *cent, refEntity_t *torso, qhandle_t flagmodel)
 {
 	clientInfo_t *ci;
 	refEntity_t flag;
@@ -931,7 +918,7 @@ calcthrusterlight(centity_t *cent, vec4_t color)
 }
 
 static void
-CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
+playerthrusters(centity_t *cent, refEntity_t *ship)
 {
 	clientInfo_t *ci;
 	qboolean f, b, u, d, l, r;
@@ -1096,7 +1083,7 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 			// add smoke plume
 			vecmad(re.origin, 30, re.axis[0], smokepos);
 			if(smokeplume){
-				CG_ParticleThrustPlume(cent, smokepos, vel);
+				particlethrustplume(cent, smokepos, vel);
 			}
 		}
 	}
@@ -1105,7 +1092,7 @@ CG_PlayerThrusters(centity_t *cent, refEntity_t *ship)
 #ifdef MISSIONPACK
 
 static void
-CG_PlayerTokens(centity_t *cent, int renderfx)
+playertokens(centity_t *cent, int renderfx)
 {
 	int tokens, i, j;
 	float angle;
@@ -1191,7 +1178,7 @@ addquadlight(centity_t *cent)
 CG_PlayerPowerups
 */
 static void
-CG_PlayerPowerups(centity_t *cent, refEntity_t *torso)
+playerpowerups(centity_t *cent, refEntity_t *torso)
 {
 	int powerups;
 
@@ -1209,25 +1196,25 @@ CG_PlayerPowerups(centity_t *cent, refEntity_t *torso)
 
 	// redflag
 	if(powerups & (1 << PW_REDFLAG)){
-		CG_PlayerFlag(cent, torso, cgs.media.redFlagModel);
+		playerflag(cent, torso, cgs.media.redFlagModel);
 		trap_R_AddLightToScene(cent->lerporigin, 200 + (rand()&31), 1.0, 0.2f, 0.2f);
 	}
 
 	// blueflag
 	if(powerups & (1 << PW_BLUEFLAG)){
-		CG_PlayerFlag(cent, torso, cgs.media.blueFlagModel);
+		playerflag(cent, torso, cgs.media.blueFlagModel);
 		trap_R_AddLightToScene(cent->lerporigin, 200 + (rand()&31), 0.2f, 0.2f, 1.0);
 	}
 
 	// neutralflag
 	if(powerups & (1 << PW_NEUTRALFLAG)){
-		CG_PlayerFlag(cent, torso, cgs.media.neutralFlagModel);
+		playerflag(cent, torso, cgs.media.neutralFlagModel);
 		trap_R_AddLightToScene(cent->lerporigin, 200 + (rand()&31), 1.0, 1.0, 1.0);
 	}
 
 	// haste leaves smoke trails
 	if(powerups & (1 << PW_HASTE))
-		CG_HasteTrail(cent);
+		hastetrail(cent);
 }
 
 /*
@@ -1236,7 +1223,7 @@ CG_PlayerFloatSprite
 Float a sprite over the player's head
 */
 static void
-CG_PlayerFloatSprite(centity_t *cent, qhandle_t shader)
+playerfloatsprite(centity_t *cent, qhandle_t shader)
 {
 	int rf;
 	refEntity_t ent;
@@ -1267,17 +1254,17 @@ CG_PlayerSprites
 Float sprites over the player's head
 */
 static void
-CG_PlayerSprites(centity_t *cent)
+playersprites(centity_t *cent)
 {
 	int team;
 
 	if(cent->currstate.eFlags & EF_CONNECTION){
-		CG_PlayerFloatSprite(cent, cgs.media.connectionShader);
+		playerfloatsprite(cent, cgs.media.connectionShader);
 		return;
 	}
 
 	if(cent->currstate.eFlags & EF_TALK){
-		CG_PlayerFloatSprite(cent, cgs.media.balloonShader);
+		playerfloatsprite(cent, cgs.media.balloonShader);
 		return;
 	}
 
@@ -1310,7 +1297,7 @@ CG_PlayerSprites(centity_t *cent)
 	   cg.snap->ps.persistant[PERS_TEAM] == team &&
 	   cgs.gametype >= GT_TEAM){
 		if(cg_drawFriend.integer)
-			CG_PlayerFloatSprite(cent, cgs.media.friendShader);
+			playerfloatsprite(cent, cgs.media.friendShader);
 		return;
 	}
 }
@@ -1322,7 +1309,7 @@ Returns the Z component of the surface being shadowed
 */
 #define SHADOW_DISTANCE 128
 static qboolean
-CG_PlayerShadow(centity_t *cent, float *shadowPlane)
+playershadow(centity_t *cent, float *shadowPlane)
 {
 	vec3_t end, mins = {-15, -15, 0}, maxs = {15, 15, 2};
 	trace_t trace;
@@ -1370,7 +1357,7 @@ CG_PlayerShadow(centity_t *cent, float *shadowPlane)
 Draw a mark at the water surface
 */
 static void
-CG_PlayerSplash(centity_t *cent)
+playersplash(centity_t *cent)
 {
 	vec3_t start, end;
 	trace_t trace;
@@ -1490,7 +1477,7 @@ addrefentitywithpowerups(refEntity_t *ent, entityState_t *state, int team)
 }
 
 int
-CG_LightVerts(vec3_t normal, int numVerts, polyVert_t *verts)
+lightverts(vec3_t normal, int numVerts, polyVert_t *verts)
 {
 	int i, j;
 	float incoming;
@@ -1570,26 +1557,27 @@ doplayer(centity_t *cent)
 	memset(&torso, 0, sizeof(torso));
 
 	// get the rotation information
-	CG_PlayerAngles(cent, torso.axis);
+	playerangles(cent, angles);
+	angles2axis(angles, torso.axis);
 
 	// get the animation state (after rotation, to allow feet shuffle)
-	CG_PlayerAnimation(cent, &torso.oldframe, &torso.frame, &torso.backlerp);
+	playeranim(cent, &torso.oldframe, &torso.frame, &torso.backlerp);
 
 	// add the talk baloon or disconnect icon
-	CG_PlayerSprites(cent);
+	playersprites(cent);
 
 	// add the shadow
-	shadow = CG_PlayerShadow(cent, &shadowPlane);
+	shadow = playershadow(cent, &shadowPlane);
 
 	// add a water splash if partially in and out of water
-	CG_PlayerSplash(cent);
+	playersplash(cent);
 
 	if(cg_shadows.integer == 3 && shadow)
 		renderfx |= RF_SHADOW_PLANE;
 	renderfx |= RF_LIGHTING_ORIGIN;	// use the same origin for all
 #ifdef MISSIONPACK
 	if(cgs.gametype == GT_HARVESTER)
-		CG_PlayerTokens(cent, renderfx);
+		playertokens(cent, renderfx);
 
 #endif
 	// add the torso
@@ -1708,9 +1696,9 @@ doplayer(centity_t *cent)
 	addplayerweap(&torso, nil, cent, ci->team, 1);
 
 	// add powerups floating behind the player
-	CG_PlayerPowerups(cent, &torso);
+	playerpowerups(cent, &torso);
 
-	CG_PlayerThrusters(cent, &torso);
+	playerthrusters(cent, &torso);
 }
 
 //=====================================================================

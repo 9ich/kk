@@ -585,7 +585,7 @@ drawtimer(float y)
 
 
 static float
-CG_DrawTeamOverlay(float y, qboolean right, qboolean upper)
+drawteamoverlay(float y, qboolean right, qboolean upper)
 {
 	int x, w, h, xx;
 	int i, j, len;
@@ -747,7 +747,7 @@ drawupperright(stereoFrame_t stereoFrame)
 	y = 0;
 
 	if(cgs.gametype >= GT_TEAM && cg_drawTeamOverlay.integer == 1)
-		y = CG_DrawTeamOverlay(y, qtrue, qtrue);
+		y = drawteamoverlay(y, qtrue, qtrue);
 	if(cg_drawSnapshot.integer)
 		y = drawsnap(y);
 	if(cg_drawFPS.integer && (stereoFrame == STEREO_CENTER || stereoFrame == STEREO_RIGHT))
@@ -869,7 +869,7 @@ drawlowerright(void)
 	y = 480 - ICON_SIZE;
 
 	if(cgs.gametype >= GT_TEAM && cg_drawTeamOverlay.integer == 2)
-		y = CG_DrawTeamOverlay(y, qtrue, qfalse);
+		y = drawteamoverlay(y, qtrue, qfalse);
 	drawpowerups(y);
 }
 
@@ -912,7 +912,7 @@ drawlowerleft(void)
 	y = 480 - ICON_SIZE;
 
 	if(cgs.gametype >= GT_TEAM && cg_drawTeamOverlay.integer == 3)
-		y = CG_DrawTeamOverlay(y, qfalse, qfalse);
+		y = drawteamoverlay(y, qfalse, qfalse);
 
 
 	drawpickup(y);
@@ -1670,7 +1670,7 @@ drawfollow(void)
 
 
 static void
-CG_DrawAmmoWarning(void)
+drawammowarning(void)
 {
 	const char *s;
 
@@ -1692,7 +1692,7 @@ CG_DrawAmmoWarning(void)
 #ifdef MISSIONPACK
 
 static void
-CG_DrawProxWarning(void)
+drawproxwarning(void)
 {
 	char s [32];
 	int w;
@@ -2008,10 +2008,10 @@ draw2d(stereoFrame_t stereoFrame)
 		if(!cg.showscores && cg.snap->ps.stats[STAT_HEALTH] > 0){
 			drawstatusbar();
 
-			CG_DrawAmmoWarning();
+			drawammowarning();
 
 #ifdef MISSIONPACK
-			CG_DrawProxWarning();
+			drawproxwarning();
 #endif
 			if(stereoFrame == STEREO_CENTER)
 				drawxhair();

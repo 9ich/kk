@@ -369,7 +369,7 @@ registercvars(void)
 }
 
 static void
-CG_ForceModelChange(void)
+forcemodelchange(void)
 {
 	int i;
 
@@ -409,7 +409,7 @@ updatecvars(void)
 	// if force model changed
 	if(forceModelModificationCount != cg_forceModel.modificationCount){
 		forceModelModificationCount = cg_forceModel.modificationCount;
-		CG_ForceModelChange();
+		forcemodelchange();
 	}
 
 	// make brightskin rgba arrays
@@ -503,7 +503,7 @@ cgargv(int arg)
 The server says this item is used on this level
 */
 static void
-CG_RegisterItemSounds(int itemNum)
+regitemsounds(int itemNum)
 {
 	gitem_t *item;
 	char data[MAX_QPATH];
@@ -545,7 +545,7 @@ CG_RegisterItemSounds(int itemNum)
 called during a precache command
 */
 static void
-CG_RegisterSounds(void)
+regsounds(void)
 {
 	int i;
 	char items[MAX_ITEMS+1];
@@ -707,7 +707,7 @@ CG_RegisterSounds(void)
 
 	for(i = 1; i < bg_nitems; i++)
 //		if ( items[ i ] == '1' || cg_buildScript.integer ) {
-		CG_RegisterItemSounds(i);
+		regitemsounds(i);
 //		}
 
 	for(i = 1; i < MAX_SOUNDS; i++){
@@ -765,7 +765,7 @@ CG_RegisterSounds(void)
 This function may execute for a couple of minutes with a slow disk.
 */
 static void
-CG_RegisterGraphics(void)
+reggraphics(void)
 {
 	int i;
 	char items[MAX_ITEMS+1];
@@ -1000,7 +1000,7 @@ CG_RegisterGraphics(void)
 		cgs.gamemodels[i] = trap_R_RegisterModel(modelname);
 	}
 
-	CG_ClearParticles();
+	clearparticles();
 /*
         for (i=1; i<MAX_PARTICLES_AREAS; i++)
         {
@@ -1031,7 +1031,7 @@ mkspecstr(void)
 }
 
 static void
-CG_RegisterClients(void)
+regclients(void)
 {
 	int i;
 
@@ -1147,15 +1147,15 @@ cginit(int serverMessageNum, int serverCommandSequence, int clientNum)
 
 	loadingstr("sounds");
 
-	CG_RegisterSounds();
+	regsounds();
 
 	loadingstr("graphics");
 
-	CG_RegisterGraphics();
+	reggraphics();
 
 	loadingstr("clients");
 
-	CG_RegisterClients();	// if low on memory, some clients will be deferred
+	regclients();	// if low on memory, some clients will be deferred
 
 
 	cg.loading = qfalse;	// future players will be deferred

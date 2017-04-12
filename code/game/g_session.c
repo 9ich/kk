@@ -35,7 +35,7 @@ and tournament restarts.
 Called on game shutdown
 */
 void
-G_WriteClientSessionData(gclient_t *client)
+writesessdata(gclient_t *client)
 {
 	const char *s;
 	const char *var;
@@ -134,7 +134,7 @@ sessinit(gclient_t *client, char *userinfo)
 	sess->specstate = SPECTATOR_FREE;
 	addduelqueue(client);
 
-	G_WriteClientSessionData(client);
+	writesessdata(client);
 }
 
 void
@@ -163,5 +163,5 @@ sesswrite(void)
 
 	for(i = 0; i < level.maxclients; i++)
 		if(level.clients[i].pers.connected == CON_CONNECTED)
-			G_WriteClientSessionData(&level.clients[i]);
+			writesessdata(&level.clients[i]);
 }

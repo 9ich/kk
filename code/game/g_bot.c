@@ -58,7 +58,7 @@ trap_Cvar_VariableValue(const char *var_name)
 }
 
 int
-G_ParseInfos(char *buf, int max, char *infos[])
+parseinfos(char *buf, int max, char *infos[])
 {
 	char *token;
 	int count;
@@ -108,7 +108,7 @@ G_ParseInfos(char *buf, int max, char *infos[])
 }
 
 static void
-G_LoadArenasFromFile(char *filename)
+loadarenasfile(char *filename)
 {
 	int len;
 	fileHandle_t f;
@@ -129,11 +129,11 @@ G_LoadArenasFromFile(char *filename)
 	buf[len] = 0;
 	trap_FS_FCloseFile(f);
 
-	g_numArenas += G_ParseInfos(buf, MAX_ARENAS - g_numArenas, &g_arenaInfos[g_numArenas]);
+	g_numArenas += parseinfos(buf, MAX_ARENAS - g_numArenas, &g_arenaInfos[g_numArenas]);
 }
 
 static void
-G_LoadArenas(void)
+loadarenas(void)
 {
 	int numdirs;
 	vmCvar_t arenasFile;
@@ -147,9 +147,9 @@ G_LoadArenas(void)
 
 	trap_Cvar_Register(&arenasFile, "g_arenasFile", "", CVAR_INIT|CVAR_ROM);
 	if(*arenasFile.string)
-		G_LoadArenasFromFile(arenasFile.string);
+		loadarenasfile(arenasFile.string);
 	else
-		G_LoadArenasFromFile("scripts/arenas.txt");
+		loadarenasfile("scripts/arenas.txt");
 
 	// get all arenas from .arena files
 	numdirs = trap_FS_GetFileList("scripts", ".arena", dirlist, 1024);
@@ -158,7 +158,7 @@ G_LoadArenas(void)
 		dirlen = strlen(dirptr);
 		strcpy(filename, "scripts/");
 		strcat(filename, dirptr);
-		G_LoadArenasFromFile(filename);
+		loadarenasfile(filename);
 	}
 	trap_Print(va("%i arenas parsed\n", g_numArenas));
 
@@ -167,7 +167,7 @@ G_LoadArenas(void)
 }
 
 const char *
-G_GetArenaInfoByMap(const char *map)
+arenainfobymap(const char *map)
 {
 	int n;
 
@@ -198,7 +198,7 @@ PlayerIntroSound(const char *modelAndSkin)
 }
 
 void
-G_AddRandomBot(int team)
+addrandombot(int team)
 {
 	int i, n, num;
 	float skill;
@@ -253,7 +253,7 @@ G_AddRandomBot(int team)
 }
 
 int
-G_RemoveRandomBot(int team)
+removerandombot(int team)
 {
 	int i;
 	gclient_t *cl;
@@ -273,7 +273,7 @@ G_RemoveRandomBot(int team)
 }
 
 int
-G_CountHumanPlayers(int team)
+numhumanplayers(int team)
 {
 	int i, num;
 	gclient_t *cl;
@@ -294,7 +294,7 @@ G_CountHumanPlayers(int team)
 
 
 int
-G_CountBotPlayers(int team)
+numbotplayers(int team)
 {
 	int i, n, num;
 	gclient_t *cl;
@@ -322,7 +322,7 @@ G_CountBotPlayers(int team)
 
 
 void
-G_CheckMinimumPlayers(void)
+chkminplayers(void)
 {
 	int minplayers;
 	int humanplayers, botplayers;
@@ -341,39 +341,39 @@ G_CheckMinimumPlayers(void)
 		if(minplayers >= g_maxclients.integer / 2)
 			minplayers = (g_maxclients.integer / 2) -1;
 
-		humanplayers = G_CountHumanPlayers(TEAM_RED);
-		botplayers = G_CountBotPlayers(TEAM_RED);
+		humanplayers = numhumanplayers(TEAM_RED);
+		botplayers = numbotplayers(TEAM_RED);
 		if(humanplayers + botplayers < minplayers)
-			G_AddRandomBot(TEAM_RED);
+			addrandombot(TEAM_RED);
 		else if(humanplayers + botplayers > minplayers && botplayers)
-			G_RemoveRandomBot(TEAM_RED);
-		humanplayers = G_CountHumanPlayers(TEAM_BLUE);
-		botplayers = G_CountBotPlayers(TEAM_BLUE);
+			removerandombot(TEAM_RED);
+		humanplayers = numhumanplayers(TEAM_BLUE);
+		botplayers = numbotplayers(TEAM_BLUE);
 		if(humanplayers + botplayers < minplayers)
-			G_AddRandomBot(TEAM_BLUE);
+			addrandombot(TEAM_BLUE);
 		else if(humanplayers + botplayers > minplayers && botplayers)
-			G_RemoveRandomBot(TEAM_BLUE);
+			removerandombot(TEAM_BLUE);
 	}else if(g_gametype.integer == GT_TOURNAMENT){
 		if(minplayers >= g_maxclients.integer)
 			minplayers = g_maxclients.integer-1;
-		humanplayers = G_CountHumanPlayers(-1);
-		botplayers = G_CountBotPlayers(-1);
+		humanplayers = numhumanplayers(-1);
+		botplayers = numbotplayers(-1);
 		if(humanplayers + botplayers < minplayers)
-			G_AddRandomBot(TEAM_FREE);
+			addrandombot(TEAM_FREE);
 		else if(humanplayers + botplayers > minplayers && botplayers)
 			// try to remove spectators first
-			if(!G_RemoveRandomBot(TEAM_SPECTATOR))
+			if(!removerandombot(TEAM_SPECTATOR))
 				// just remove the bot that is playing
-				G_RemoveRandomBot(-1);
+				removerandombot(-1);
 	}else if(g_gametype.integer == GT_FFA){
 		if(minplayers >= g_maxclients.integer)
 			minplayers = g_maxclients.integer-1;
-		humanplayers = G_CountHumanPlayers(TEAM_FREE);
-		botplayers = G_CountBotPlayers(TEAM_FREE);
+		humanplayers = numhumanplayers(TEAM_FREE);
+		botplayers = numbotplayers(TEAM_FREE);
 		if(humanplayers + botplayers < minplayers)
-			G_AddRandomBot(TEAM_FREE);
+			addrandombot(TEAM_FREE);
 		else if(humanplayers + botplayers > minplayers && botplayers)
-			G_RemoveRandomBot(TEAM_FREE);
+			removerandombot(TEAM_FREE);
 	}
 }
 
@@ -384,7 +384,7 @@ chkbotspawn(void)
 	int n;
 	char userinfo[MAX_INFO_VALUE];
 
-	G_CheckMinimumPlayers();
+	chkminplayers();
 
 	for(n = 0; n < BOT_SPAWN_QUEUE_DEPTH; n++){
 		if(!botSpawnQueue[n].spawntime)
@@ -457,7 +457,7 @@ botconnect(int clientNum, qboolean restart)
 
 
 static void
-G_AddBot(const char *name, float skill, const char *team, int delay, char *altname)
+addbot(const char *name, float skill, const char *team, int delay, char *altname)
 {
 	int clientNum;
 	char *botinfo;
@@ -615,7 +615,7 @@ Svcmd_AddBot_f(void)
 	// alternative name
 	trap_Argv(5, altname, sizeof(altname));
 
-	G_AddBot(name, skill, team, delay, altname);
+	addbot(name, skill, team, delay, altname);
 
 	// if this was issued during gameplay and we are playing locally,
 	// go ahead and load the bot's media immediately
@@ -658,7 +658,7 @@ Svcmd_BotList_f(void)
 G_SpawnBots
 */
 static void
-G_SpawnBots(char *botList, int baseDelay)
+spawnbots(char *botList, int baseDelay)
 {
 	char *bot;
 	char *p;
@@ -710,7 +710,7 @@ G_SpawnBots(char *botList, int baseDelay)
 G_LoadBotsFromFile
 */
 static void
-G_LoadBotsFromFile(char *filename)
+loadbotsfile(char *filename)
 {
 	int len;
 	fileHandle_t f;
@@ -731,14 +731,14 @@ G_LoadBotsFromFile(char *filename)
 	buf[len] = 0;
 	trap_FS_FCloseFile(f);
 
-	g_numBots += G_ParseInfos(buf, MAX_BOTS - g_numBots, &g_botInfos[g_numBots]);
+	g_numBots += parseinfos(buf, MAX_BOTS - g_numBots, &g_botInfos[g_numBots]);
 }
 
 /*
 G_LoadBots
 */
 static void
-G_LoadBots(void)
+loadbots(void)
 {
 	vmCvar_t botsFile;
 	int numdirs;
@@ -755,9 +755,9 @@ G_LoadBots(void)
 
 	trap_Cvar_Register(&botsFile, "g_botsFile", "", CVAR_INIT|CVAR_ROM);
 	if(*botsFile.string)
-		G_LoadBotsFromFile(botsFile.string);
+		loadbotsfile(botsFile.string);
 	else
-		G_LoadBotsFromFile("scripts/bots.txt");
+		loadbotsfile("scripts/bots.txt");
 
 	// get all bots from .bot files
 	numdirs = trap_FS_GetFileList("scripts", ".bot", dirlist, 1024);
@@ -766,7 +766,7 @@ G_LoadBots(void)
 		dirlen = strlen(dirptr);
 		strcpy(filename, "scripts/");
 		strcat(filename, dirptr);
-		G_LoadBotsFromFile(filename);
+		loadbotsfile(filename);
 	}
 	trap_Print(va("%i bots parsed\n", g_numBots));
 }
@@ -807,15 +807,15 @@ initbots(qboolean restart)
 	char map[MAX_QPATH];
 	char serverinfo[MAX_INFO_STRING];
 
-	G_LoadBots();
-	G_LoadArenas();
+	loadbots();
+	loadarenas();
 
 	trap_Cvar_Register(&bot_minplayers, "bot_minplayers", "0", CVAR_SERVERINFO);
 
 	if(g_gametype.integer == GT_SINGLE_PLAYER){
 		trap_GetServerinfo(serverinfo, sizeof(serverinfo));
 		Q_strncpyz(map, Info_ValueForKey(serverinfo, "mapname"), sizeof(map));
-		arenainfo = G_GetArenaInfoByMap(map);
+		arenainfo = arenainfobymap(map);
 		if(!arenainfo)
 			return;
 
@@ -844,6 +844,6 @@ initbots(qboolean restart)
 			basedelay += 10000;
 
 		if(!restart)
-			G_SpawnBots(Info_ValueForKey(arenainfo, "bots"), basedelay);
+			spawnbots(Info_ValueForKey(arenainfo, "bots"), basedelay);
 	}
 }

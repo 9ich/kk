@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "cg_local.h"
 
 static void
-CG_ResetEntity(centity_t *cent)
+resetent(centity_t *cent)
 {
 	// if the previous snapshot this entity was updated in is at least
 	// an event window back in time then we can reset the previous event
@@ -44,14 +44,14 @@ CG_ResetEntity(centity_t *cent)
 cent->nextstate is moved to cent->currstate and events are fired
 */
 static void
-CG_TransitionEntity(centity_t *cent)
+transitionent(centity_t *cent)
 {
 	cent->currstate = cent->nextstate;
 	cent->currvalid = qtrue;
 
 	// reset if the entity wasn't in the last frame or was teleported
 	if(!cent->interpolate)
-		CG_ResetEntity(cent);
+		resetent(cent);
 
 	// clear the next state.  if will be set by the next CG_SetNextSnap
 	cent->interpolate = qfalse;
@@ -68,7 +68,7 @@ CG_TransitionSnapshot instead.
 FIXME: Also called by map_restart?
 */
 void
-CG_SetInitialSnapshot(snapshot_t *snap)
+setinitialsnap(snapshot_t *snap)
 {
 	int i;
 	centity_t *cent;
@@ -96,7 +96,7 @@ CG_SetInitialSnapshot(snapshot_t *snap)
 		cent->interpolate = qfalse;
 		cent->currvalid = qtrue;
 
-		CG_ResetEntity(cent);
+		resetent(cent);
 
 		// check for events
 		chkevents(cent);
@@ -107,7 +107,7 @@ CG_SetInitialSnapshot(snapshot_t *snap)
 The transition point from snap to nextsnap has passed
 */
 static void
-CG_TransitionSnapshot(void)
+transitionsnap(void)
 {
 	centity_t *cent;
 	snapshot_t *oldframe;
@@ -140,7 +140,7 @@ CG_TransitionSnapshot(void)
 
 	for(i = 0; i < cg.snap->numEntities; i++){
 		cent = &cg_entities[cg.snap->entities[i].number];
-		CG_TransitionEntity(cent);
+		transitionent(cent);
 
 		// remember time of snapshot this entity was last updated in
 		cent->snapshottime = cg.snap->serverTime;
@@ -170,7 +170,7 @@ CG_TransitionSnapshot(void)
 A new snapshot has just been read in from the client system.
 */
 static void
-CG_SetNextSnap(snapshot_t *snap)
+setnextsnap(snapshot_t *snap)
 {
 	int num;
 	entityState_t *es;
@@ -223,7 +223,7 @@ times if the client system fails to return a
 valid snapshot.
 */
 static snapshot_t *
-CG_ReadNextSnapshot(void)
+readnextsnap(void)
 {
 	qboolean r;
 	snapshot_t *dest;
@@ -303,7 +303,7 @@ processsnaps(void)
 	// Once we have gotten the first snapshot, cg.snap will
 	// always have valid data for the rest of the game
 	while(!cg.snap){
-		snap = CG_ReadNextSnapshot();
+		snap = readnextsnap();
 		if(!snap)
 			// we can't continue until we get a snapshot
 			return;
@@ -311,7 +311,7 @@ processsnaps(void)
 		// set our weapon selection to what
 		// the playerstate is currently using
 		if(!(snap->snapFlags & SNAPFLAG_NOT_ACTIVE))
-			CG_SetInitialSnapshot(snap);
+			setinitialsnap(snap);
 	}
 
 	// loop until we either have a valid nextsnap with a serverTime
@@ -320,14 +320,14 @@ processsnaps(void)
 	do {
 		// if we don't have a nextframe, try and read a new one in
 		if(!cg.nextsnap){
-			snap = CG_ReadNextSnapshot();
+			snap = readnextsnap();
 
 			// if we still don't have a nextframe, we will just have to
 			// extrapolate
 			if(!snap)
 				break;
 
-			CG_SetNextSnap(snap);
+			setnextsnap(snap);
 
 			// if time went backwards, we have a level restart
 			if(cg.nextsnap->serverTime < cg.snap->serverTime)
@@ -339,7 +339,7 @@ processsnaps(void)
 			break;
 
 		// we have passed the transition from nextFrame to frame
-		CG_TransitionSnapshot();
+		transitionsnap();
 	} while(1);
 
 	// assert our valid conditions upon exiting

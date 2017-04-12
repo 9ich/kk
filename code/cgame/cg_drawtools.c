@@ -121,7 +121,7 @@ This repeats a 64*64 tile graphic to fill the screen around a sized down
 refresh window.
 */
 static void
-CG_TileClearBox(int x, int y, int w, int h, qhandle_t hShader)
+tileclearbox(int x, int y, int w, int h, qhandle_t hShader)
 {
 	float s1, t1, s2, t2;
 
@@ -154,16 +154,16 @@ tileclear(void)
 	right = left + cg.refdef.width-1;
 
 	// clear above view screen
-	CG_TileClearBox(0, 0, w, top, cgs.media.backTileShader);
+	tileclearbox(0, 0, w, top, cgs.media.backTileShader);
 
 	// clear below view screen
-	CG_TileClearBox(0, bottom, w, h - bottom, cgs.media.backTileShader);
+	tileclearbox(0, bottom, w, h - bottom, cgs.media.backTileShader);
 
 	// clear left of view screen
-	CG_TileClearBox(0, top, left, bottom - top + 1, cgs.media.backTileShader);
+	tileclearbox(0, top, left, bottom - top + 1, cgs.media.backTileShader);
 
 	// clear right of view screen
-	CG_TileClearBox(right, top, w - right, bottom - top + 1, cgs.media.backTileShader);
+	tileclearbox(right, top, w - right, bottom - top + 1, cgs.media.backTileShader);
 }
 
 float *

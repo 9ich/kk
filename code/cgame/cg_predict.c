@@ -73,7 +73,7 @@ mksolidlist(void)
 }
 
 static void
-CG_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
+clipmovetoents(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
 		      int skipNumber, int mask, trace_t *tr)
 {
 	int i, x, zd, zu;
@@ -134,7 +134,7 @@ cgtrace(trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t max
 	trap_CM_BoxTrace(&t, start, end, mins, maxs, 0, mask);
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
-	CG_ClipMoveToEntities(start, mins, maxs, end, skipNumber, mask, &t);
+	clipmovetoents(start, mins, maxs, end, skipNumber, mask, &t);
 
 	*result = t;
 }
@@ -176,7 +176,7 @@ Generates cg.pps by interpolating between
 cg.snap->player_state and cg.nextFrame->player_state
 */
 static void
-CG_InterpolatePlayerState(qboolean grabAngles)
+lerpplayerstate(qboolean grabAngles)
 {
 	float f;
 	int i;
@@ -220,7 +220,7 @@ CG_InterpolatePlayerState(qboolean grabAngles)
 }
 
 static void
-CG_TouchItem(centity_t *cent)
+touchitem(centity_t *cent)
 {
 	gitem_t *item;
 
@@ -276,7 +276,7 @@ CG_TouchItem(centity_t *cent)
 Predict push triggers and items
 */
 static void
-CG_TouchTriggerPrediction(void)
+touchtriggerprediction(void)
 {
 	int i;
 	trace_t trace;
@@ -299,7 +299,7 @@ CG_TouchTriggerPrediction(void)
 		ent = &cent->currstate;
 
 		if(ent->eType == ET_ITEM && !spectator){
-			CG_TouchItem(cent);
+			touchitem(cent);
 			continue;
 		}
 
@@ -374,13 +374,13 @@ predictplayerstate(void)
 
 	// demo playback just copies the moves
 	if(cg.demoplayback || (cg.snap->ps.pm_flags & PMF_FOLLOW)){
-		CG_InterpolatePlayerState(qfalse);
+		lerpplayerstate(qfalse);
 		return;
 	}
 
 	// non-predicting local movement will grab the latest angles
 	if(cg_nopredict.integer || cg_synchronousClients.integer){
-		CG_InterpolatePlayerState(qtrue);
+		lerpplayerstate(qtrue);
 		return;
 	}
 
@@ -512,7 +512,7 @@ predictplayerstate(void)
 		moved = qtrue;
 
 		// add push trigger movement effects
-		CG_TouchTriggerPrediction();
+		touchtriggerprediction();
 
 		// check for predictable events that changed from previous predictions
 		//chkpredictableevents(&cg.pps);

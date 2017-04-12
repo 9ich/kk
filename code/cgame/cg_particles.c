@@ -143,7 +143,7 @@ vec3_t rforward, rright, rup;
 float oldtime;
 
 void
-CG_ClearParticles(void)
+clearparticles(void)
 {
 	int i;
 
@@ -742,7 +742,7 @@ CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha)
 static float roll = 0.0;
 
 void
-CG_AddParticles(void)
+addparticles(void)
 {
 	cparticle_t *p, *next;
 	float alpha;
@@ -752,7 +752,7 @@ CG_AddParticles(void)
 	vec3_t rotate_ang;
 
 	if(!initparticles)
-		CG_ClearParticles();
+		clearparticles();
 
 	veccpy(cg.refdef.viewaxis[0], vforward);
 	veccpy(cg.refdef.viewaxis[1], vright);
@@ -853,7 +853,7 @@ CG_AddParticles(void)
 }
 
 void
-CG_ParticleSnow(qhandle_t pshader, vec3_t origin, vec3_t origin2, int turb, float range, int snum)
+particlesnow(qhandle_t pshader, vec3_t origin, vec3_t origin2, int turb, float range, int snum)
 {
 	cparticle_t *p;
 
@@ -905,7 +905,7 @@ CG_ParticleSnow(qhandle_t pshader, vec3_t origin, vec3_t origin2, int turb, floa
 }
 
 void
-CG_ParticleBubble(qhandle_t pshader, vec3_t origin, vec3_t origin2, int turb, float range, int snum)
+particlebubble(qhandle_t pshader, vec3_t origin, vec3_t origin2, int turb, float range, int snum)
 {
 	cparticle_t *p;
 	float randsize;
@@ -961,7 +961,7 @@ CG_ParticleBubble(qhandle_t pshader, vec3_t origin, vec3_t origin2, int turb, fl
 }
 
 void
-CG_ParticleSmoke(qhandle_t pshader, centity_t *cent)
+particlesmoke(qhandle_t pshader, centity_t *cent)
 {
 	// using cent->density = enttime
 	//		 cent->frame = startfade
@@ -1008,7 +1008,7 @@ CG_ParticleSmoke(qhandle_t pshader, centity_t *cent)
 }
 
 void
-CG_ParticleBulletDebris(vec3_t org, vec3_t vel, int duration)
+particlebulletdebris(vec3_t org, vec3_t vel, int duration)
 {
 	cparticle_t *p;
 
@@ -1049,7 +1049,7 @@ CG_ParticleBulletDebris(vec3_t org, vec3_t vel, int duration)
 
 
 void
-CG_ParticleExplosion(char *animStr, vec3_t origin, vec3_t vel, int duration, int sizeStart, int sizeEnd)
+particleexplosion(char *animStr, vec3_t origin, vec3_t vel, int duration, int sizeStart, int sizeEnd)
 {
 	cparticle_t *p;
 	int anim;
@@ -1106,7 +1106,7 @@ CG_ParticleExplosion(char *animStr, vec3_t origin, vec3_t vel, int duration, int
 // done.
 
 int
-CG_NewParticleArea(int num)
+newparticlearea(int num)
 {
 	// const char *str;
 	char *str;
@@ -1165,16 +1165,16 @@ CG_NewParticleArea(int num)
 
 	for(i = 0; i<numparticles; i++){
 		if(type >= 4)
-			CG_ParticleBubble(cgs.media.waterBubbleShader, origin, origin2, turb, range, snum);
+			particlebubble(cgs.media.waterBubbleShader, origin, origin2, turb, range, snum);
 		else
-			CG_ParticleSnow(cgs.media.waterBubbleShader, origin, origin2, turb, range, snum);
+			particlesnow(cgs.media.waterBubbleShader, origin, origin2, turb, range, snum);
 	}
 
 	return 1;
 }
 
 void
-CG_ParticleImpactSmokePuff(qhandle_t pshader, vec3_t origin)
+particleimpactsmokepuff(qhandle_t pshader, vec3_t origin)
 {
 	cparticle_t *p;
 
@@ -1215,7 +1215,7 @@ CG_ParticleImpactSmokePuff(qhandle_t pshader, vec3_t origin)
 }
 
 void
-CG_Particle_Bleed(qhandle_t pshader, vec3_t start, vec3_t dir, int fleshEntityNum, int duration)
+particlebleed(qhandle_t pshader, vec3_t start, vec3_t dir, int fleshEntityNum, int duration)
 {
 	cparticle_t *p;
 
@@ -1268,7 +1268,7 @@ CG_Particle_Bleed(qhandle_t pshader, vec3_t start, vec3_t dir, int fleshEntityNu
 #define LARGESIZE	32
 
 void
-CG_ParticleSparks(vec3_t org, vec3_t vel, int duration, float x, float speed)
+particlesparks(vec3_t org, vec3_t vel, int duration, float x, float speed)
 {
 	cparticle_t *p;
 	vec3_t dir;
@@ -1316,7 +1316,7 @@ CG_ParticleSparks(vec3_t org, vec3_t vel, int duration, float x, float speed)
 }
 
 void
-CG_ParticleThrustPlume(centity_t *cent, vec3_t origin, vec3_t dir)
+particlethrustplume(centity_t *cent, vec3_t origin, vec3_t dir)
 {
 	float length;
 	float dist;
@@ -1398,7 +1398,7 @@ CG_ParticleThrustPlume(centity_t *cent, vec3_t origin, vec3_t dir)
 }
 
 void
-CG_ParticleMisc(qhandle_t pshader, vec3_t origin, int size, int duration, float alpha)
+particlemisc(qhandle_t pshader, vec3_t origin, int size, int duration, float alpha)
 {
 	cparticle_t *p;
 

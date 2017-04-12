@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "cg_local.h"
 
 static void
-CG_ParseScores(void)
+parsescores(void)
 {
 	int i, powerups;
 
@@ -64,7 +64,7 @@ CG_ParseScores(void)
 }
 
 static void
-CG_ParseTeamInfo(void)
+parseteaminfo(void)
 {
 	int i;
 	int client;
@@ -121,7 +121,7 @@ parsesrvinfo(void)
 }
 
 static void
-CG_ParseWarmup(void)
+parsewarmup(void)
 {
 	const char *info;
 	int warmup;
@@ -311,7 +311,7 @@ shaderstatechanged(void)
 }
 
 static void
-CG_ConfigStringModified(void)
+configstringmodified(void)
 {
 	const char *str;
 	int num;
@@ -331,7 +331,7 @@ CG_ConfigStringModified(void)
 	else if(num == CS_SERVERINFO)
 		parsesrvinfo();
 	else if(num == CS_WARMUP)
-		CG_ParseWarmup();
+		parsewarmup();
 	else if(num == CS_ROUNDWARMUP)
 		parseroundwarmup();
 	else if(num == CS_CPS)
@@ -398,7 +398,7 @@ CG_ConfigStringModified(void)
 }
 
 static void
-CG_AddToTeamChat(const char *str)
+addtoteamchat(const char *str)
 {
 	int len;
 	char *p, *ls;
@@ -472,14 +472,14 @@ A tournement restart will clear everything, but doesn't
 require a reload of all the media
 */
 static void
-CG_MapRestart(void)
+maprestart(void)
 {
 	if(cg_showmiss.integer)
 		cgprintf("CG_MapRestart\n");
 
 	initlocalents();
 	initmarkpolys();
-	CG_ClearParticles();
+	clearparticles();
 
 	// make sure the "3 frags left" warnings play again
 	cg.fraglimitwarnings = 0;
@@ -511,7 +511,7 @@ CG_MapRestart(void)
 
 
 static void
-CG_RemoveChatEscapeChar(char *text)
+stripchatescapechar(char *text)
 {
 	int i, l;
 
@@ -529,7 +529,7 @@ The string has been tokenized and can be retrieved with
 Cmd_Argc() / Cmd_Argv()
 */
 static void
-CG_ServerCommand(void)
+servercmd(void)
 {
 	const char *cmd;
 	char text[MAX_SAY_TEXT];
@@ -546,7 +546,7 @@ CG_ServerCommand(void)
 	}
 
 	if(!strcmp(cmd, "cs")){
-		CG_ConfigStringModified();
+		configstringmodified();
 		return;
 	}
 
@@ -559,7 +559,7 @@ CG_ServerCommand(void)
 		if(!cg_teamChatsOnly.integer){
 			trap_S_StartLocalSound(cgs.media.talkSound, CHAN_LOCAL_SOUND);
 			Q_strncpyz(text, cgargv(1), MAX_SAY_TEXT);
-			CG_RemoveChatEscapeChar(text);
+			stripchatescapechar(text);
 			cgprintf("%s\n", text);
 		}
 		return;
@@ -568,25 +568,25 @@ CG_ServerCommand(void)
 	if(!strcmp(cmd, "tchat")){
 		trap_S_StartLocalSound(cgs.media.talkSound, CHAN_LOCAL_SOUND);
 		Q_strncpyz(text, cgargv(1), MAX_SAY_TEXT);
-		CG_RemoveChatEscapeChar(text);
-		CG_AddToTeamChat(text);
+		stripchatescapechar(text);
+		addtoteamchat(text);
 		cgprintf("%s\n", text);
 		return;
 	}
 
 
 	if(!strcmp(cmd, "scores")){
-		CG_ParseScores();
+		parsescores();
 		return;
 	}
 
 	if(!strcmp(cmd, "tinfo")){
-		CG_ParseTeamInfo();
+		parseteaminfo();
 		return;
 	}
 
 	if(!strcmp(cmd, "map_restart")){
-		CG_MapRestart();
+		maprestart();
 		return;
 	}
 
@@ -631,5 +631,5 @@ execnewsrvcmds(int latestSequence)
 {
 	while(cgs.serverCommandSequence < latestSequence)
 		if(trap_GetServerCommand(++cgs.serverCommandSequence))
-			CG_ServerCommand();
+			servercmd();
 }
