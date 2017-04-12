@@ -229,7 +229,7 @@ readnextsnap(void)
 	snapshot_t *dest;
 
 	if(cg.latestsnapnum > cgs.nprocessedsnaps + 1000)
-		cgprintf("WARNING: CG_ReadNextSnapshot: way out of range, %i > %i\n",
+		cgprintf("WARNING: readnextsnap: way out of range, %i > %i\n",
 			  cg.latestsnapnum, cgs.nprocessedsnaps);
 
 	while(cgs.nprocessedsnaps < cg.latestsnapnum){
