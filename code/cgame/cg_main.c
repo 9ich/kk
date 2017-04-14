@@ -99,7 +99,6 @@ int cg_nawardlist = ARRAY_LEN(cg_awardlist);
 
 vmCvar_t cg_railTrailTime;
 vmCvar_t cg_centertime;
-vmCvar_t cg_swingSpeed;
 vmCvar_t cg_shadows;
 vmCvar_t cg_gibs;
 vmCvar_t cg_drawDamageDir;
@@ -174,6 +173,7 @@ vmCvar_t cg_hudFiles;
 vmCvar_t cg_scorePlum;
 vmCvar_t cg_smoothClients;
 vmCvar_t pmove_fixed;
+vmCvar_t cg_testmodelscale;
 //vmCvar_t	cg_pmove_fixed;
 vmCvar_t pmove_msec;
 vmCvar_t cg_pmove_msec;
@@ -183,8 +183,6 @@ vmCvar_t cg_cameraOrbitDelay;
 vmCvar_t cg_timescaleFadeEnd;
 vmCvar_t cg_timescaleFadeSpeed;
 vmCvar_t cg_timescale;
-vmCvar_t cg_smallFont;
-vmCvar_t cg_bigFont;
 vmCvar_t cg_noTaunt;
 vmCvar_t cg_noProjectileTrail;
 vmCvar_t cg_oldRail;
@@ -193,6 +191,7 @@ vmCvar_t cg_oldPlasma;
 vmCvar_t cg_enemyThrustSounds;
 vmCvar_t cg_ownThrustSounds;
 vmCvar_t cg_thrustSmoke;
+vmCvar_t cg_thrustLight;
 vmCvar_t cg_rocketExpSmoke;
 vmCvar_t cg_rocketExpShockwave;
 vmCvar_t cg_rocketExpSparks;
@@ -261,7 +260,6 @@ static cvarTable_t cvarTable[] = {
 	{&cg_gun2_y, "cg_gun2Y", "-10", CVAR_CHEAT},
 	{&cg_gun2_z, "cg_gun2Z", "0", CVAR_CHEAT},
 	{&cg_centertime, "cg_centertime", "3", CVAR_CHEAT},
-	{&cg_swingSpeed, "cg_swingSpeed", "0.3", CVAR_CHEAT},
 	{&cg_animSpeed, "cg_animspeed", "1", CVAR_CHEAT},
 	{&cg_debugAnim, "cg_debuganim", "0", CVAR_CHEAT},
 	{&cg_debugPosition, "cg_debugposition", "0", CVAR_CHEAT},
@@ -323,18 +321,19 @@ static cvarTable_t cvarTable[] = {
 	{&cg_smoothClients, "cg_smoothClients", "0", CVAR_USERINFO | CVAR_ARCHIVE},
 	{&cg_cameraMode, "com_cameraMode", "0", CVAR_CHEAT},
 
+	{&cg_testmodelscale, "cg_testmodelscale", "1.0", 0},
+
 	{&pmove_fixed, "pmove_fixed", "0", CVAR_SYSTEMINFO},
 	{&pmove_msec, "pmove_msec", "8", CVAR_SYSTEMINFO},
 	{&cg_noTaunt, "cg_noTaunt", "0", CVAR_ARCHIVE},
 	{&cg_noProjectileTrail, "cg_noProjectileTrail", "0", CVAR_ARCHIVE},
-	{&cg_smallFont, "ui_smallFont", "0.25", CVAR_ARCHIVE},
-	{&cg_bigFont, "ui_bigFont", "0.4", CVAR_ARCHIVE},
 	{&cg_oldRail, "cg_oldRail", "1", CVAR_ARCHIVE},
 	{&cg_oldRocket, "cg_oldRocket", "1", CVAR_ARCHIVE},
 	{&cg_oldPlasma, "cg_oldPlasma", "1", CVAR_ARCHIVE},
 	{&cg_enemyThrustSounds, "cg_enemyThrustSounds", "1", CVAR_ARCHIVE},
 	{&cg_ownThrustSounds, "cg_ownThrustSounds", "1", CVAR_ARCHIVE},
 	{&cg_thrustSmoke, "cg_thrustSmoke", "1", CVAR_ARCHIVE},
+	{&cg_thrustLight, "cg_thrustLight", "1", CVAR_ARCHIVE},
 	{&cg_rocketExpShockwave, "cg_rocketExpShockwave", "1", CVAR_ARCHIVE},
 	{&cg_rocketExpSmoke, "cg_rocketExpSmoke", "1", CVAR_ARCHIVE},
 	{&cg_rocketExpSparks, "cg_rocketExpSparks", "60", CVAR_ARCHIVE},
