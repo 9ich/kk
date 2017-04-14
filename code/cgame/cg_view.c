@@ -250,9 +250,20 @@ addtestmodel(void)
 		}
 	}
 
-	for(k = 0; k < cg.ntestmodels; k++)
-		if(cg.testmodelent[k].hModel != 0)
-			trap_R_AddRefEntityToScene(&cg.testmodelent[k]);
+	for(k = 0; k < cg.ntestmodels; k++){
+		refEntity_t re;
+
+		if(cg.testmodelent[k].hModel == 0)
+			continue;
+
+		memcpy(&re, &cg.testmodelent[k], sizeof re);
+		vecmul(re.axis[0], cg_testmodelscale.value, re.axis[0]);
+		vecmul(re.axis[1], cg_testmodelscale.value, re.axis[1]);
+		vecmul(re.axis[2], cg_testmodelscale.value, re.axis[2]);
+		re.nonNormalizedAxes = qtrue;
+
+		trap_R_AddRefEntityToScene(&re);
+	}
 }
 
 static void
