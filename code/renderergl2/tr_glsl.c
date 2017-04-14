@@ -1233,9 +1233,9 @@ void GLSL_InitGPUShaders(void)
 	GLSL_InitUniforms(&tr.contrastShader);
 
 	GLSL_SetUniformInt(&tr.contrastShader, UNIFORM_TEXTUREMAP, TB_DIFFUSEMAP);
-	GLSL_SetUniformInt(&tr.contrastShader, UNIFORM_BRIGHTNESS, r_brightness->value);
-	GLSL_SetUniformInt(&tr.contrastShader, UNIFORM_CONTRAST, r_contrast->value);
-	GLSL_SetUniformInt(&tr.contrastShader, UNIFORM_GAMMA, r_gamma->value);
+	GLSL_SetUniformFloat(&tr.contrastShader, UNIFORM_BRIGHTNESS, r_brightness->value);
+	GLSL_SetUniformFloat(&tr.contrastShader, UNIFORM_CONTRAST, r_contrast->value);
+	GLSL_SetUniformFloat(&tr.contrastShader, UNIFORM_GAMMA, r_gamma->value);
 
 	GLSL_FinishGPUShader(&tr.contrastShader);
 
