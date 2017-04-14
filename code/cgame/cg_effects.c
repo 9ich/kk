@@ -512,8 +512,8 @@ launchgib(vec3_t origin, vec3_t velocity, qhandle_t hModel)
 
 	le->bouncefactor = 0.6f;
 
-	le->bouncesoundtype = LEBS_BLOOD;
-	le->marktype = LEMT_BLOOD;
+	le->bouncesoundtype = LEBS_BRASS;
+	le->marktype = LEMT_BURN;
 
 	//CG_ParticleExplosion("explode1", le->pos.trBase, le->pos.trDelta, 400, 20, 5);
 }
