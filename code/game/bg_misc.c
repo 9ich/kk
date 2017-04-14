@@ -925,7 +925,8 @@ Only in CTF games
 		"sound/weapons2/proxmine/wstbimpl.wav "
 		"sound/weapons2/proxmine/wstbimpm.wav "
 		"sound/weapons2/proxmine/wstbimpd.wav "
-		"sound/weapons2/proxmine/wstbactv.wav"
+		"sound/weapons2/proxmine/wstbactv.wav",
+		1
 	},
 
 /*QUAKED weapon_heminigun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
