@@ -744,8 +744,7 @@ pmweapevents(int slot)
 		pm->ps->pm_flags &= ~PMF_USE_ITEM_HELD;
 
 	// make weapon function
-	if(pm->ps->weaponTime[slot] > 0)
-		pm->ps->weaponTime[slot] -= pml.msec;
+	pm->ps->weaponTime[slot] -= pml.msec;
 
 	// check for weapon change
 	// can't change if weapon is firing, but can change
