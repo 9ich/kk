@@ -245,8 +245,6 @@ dorailtrail(clientInfo_t *ci, vec3_t start, vec3_t end)
 #define ROTATION	1
 #define SPACING		5
 
-	start[2] -= 4;
-
 	le = alloclocalent();
 	re = &le->refEntity;
 
@@ -275,9 +273,6 @@ dorailtrail(clientInfo_t *ci, vec3_t start, vec3_t end)
 	AxisClear(re->axis);
 
 	if(cg_oldRail.integer){
-		// nudge down a bit so it isn't exactly in center
-		re->origin[2] -= 8;
-		re->oldorigin[2] -= 8;
 		return;
 	}
 
@@ -1529,7 +1524,7 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		shader = cgs.media.rocketExplosionShader;
 		sfx = PICKRANDOM(cgs.media.sfx_rockexp);
 		mark = cgs.media.burnMarkShader;
-		radius = 64;
+		radius = 100;
 		light = 300;
 		isSprite = qtrue;
 		duration = 16*16.666666f;
@@ -1616,8 +1611,9 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		mod = cgs.media.bulletFlashModel;
 		shader = cgs.media.bulletExplosionShader;
 		mark = cgs.media.bulletMarkShader;
-		sfx = 0;
+		sfx = cgs.media.sfx_ric1;
 		radius = 5;
+		duration = 100;
 		break;
 	case WP_RAILGUN:
 		mod = cgs.media.ringFlashModel;
@@ -1652,8 +1648,9 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		mod = cgs.media.bulletFlashModel;
 		shader = cgs.media.bulletExplosionShader;
 		mark = cgs.media.bulletMarkShader;
-		sfx = 0;
-		radius = 4;
+		sfx = cgs.media.sfx_ric1;
+		radius = 5;
+		duration = 100;
 		break;
 	}
 
