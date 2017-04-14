@@ -1243,11 +1243,11 @@ playerfloatsprite(centity_t *cent, qhandle_t shader)
 	memset(&ent, 0, sizeof(ent));
 	veccpy(cent->lerporigin, ent.origin);
 	// offset upward relative to viewer
-	vecmad(ent.origin, 48, cg.refdef.viewaxis[2], ent.origin);
+	vecmad(ent.origin, 50, cg.refdef.viewaxis[2], ent.origin);
 	ent.reType = RT_SPRITE;
 	ent.customShader = shader;
 	ent.radius = 15;
-	ent.renderfx = rf | RF_DEPTHHACK;
+	ent.renderfx = rf;
 	ent.shaderRGBA[0] = 255;
 	ent.shaderRGBA[1] = 255;
 	ent.shaderRGBA[2] = 255;
