@@ -989,26 +989,28 @@ playerthrusters(centity_t *cent, refEntity_t *ship)
 	//
 	// lights
 	//
-	calcthrusterlight(cent, clr);
-	anglevecs(cent->lerpangles, forward, right, up);
-	if(f){
-		vecmad(pos, -40, forward, v);
-		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
-	}else if(b){
-		vecmad(pos, 40, forward, v);
-		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
-	}else if(r){
-		vecmad(pos, -36, right, v);
-		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
-	}else if(l){
-		vecmad(pos, 36, right, v);
-		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
-	}else if(u){
-		vecmad(pos, -36, up, v);
-		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
-	}else if(d){
-		vecmad(pos, 36, up, v);
-		trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
+	if(cg_thrustLight.integer){
+		calcthrusterlight(cent, clr);
+		anglevecs(cent->lerpangles, forward, right, up);
+		if(f){
+			vecmad(pos, -40, forward, v);
+			trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
+		}else if(b){
+			vecmad(pos, 40, forward, v);
+			trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
+		}else if(r){
+			vecmad(pos, -36, right, v);
+			trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
+		}else if(l){
+			vecmad(pos, 36, right, v);
+			trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
+		}else if(u){
+			vecmad(pos, -36, up, v);
+			trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
+		}else if(d){
+			vecmad(pos, 36, up, v);
+			trap_R_AddLightToScene(v, 200*clr[3], clr[0], clr[1], clr[2]);
+		}
 	}
 
 	//
