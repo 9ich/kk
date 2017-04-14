@@ -1164,25 +1164,25 @@ drawweapsel(void)
 	const int font = FONT1, fontsz = 8;
 	float strh;
 	float rectw, recth;
-	int i;
-	int bits;
-	int count;
+	int i, bits, count;
 	float x, y, iconx, icony, selx, sely, labelx, labely;
-	float *color, *color2;
+	float *fade, *fade2;
 	vec4_t priclr, secclr, bgclr;
+	float starty;
 
-	// don't display if dead
 	if(cg.pps.stats[STAT_HEALTH] <= 0)
 		return;
 
-	// display if we're selecting either primary or secondary weapon
-	color = fadecolor(cg.weapseltime[0], WEAPON_SELECT_TIME);
-	color2 = fadecolor(cg.weapseltime[1], WEAPON_SELECT_TIME);
-	if(!color && !color2)
+	// display only if we're selecting either primary or secondary weapon
+	fade = fadecolor(cg.weapseltime[0], WEAPON_SELECT_TIME);
+	fade2 = fadecolor(cg.weapseltime[1], WEAPON_SELECT_TIME);
+	if(!fade && !fade2)
 		return;
-	if(color2[3] > color[3])
-		color = color2;
-	trap_R_SetColor(color);
+
+	if(fade2[3] > fade[3])
+		fade = fade2;
+
+	trap_R_SetColor(fade);
 
 	// showing weapon select clears pickup item display, but not the blend blob
 	cg.itempkuptime = 0;
@@ -1197,17 +1197,25 @@ drawweapsel(void)
 
 	Vector4Copy(CLightBlue, priclr);
 	Vector4Copy(CLightSalmon, secclr);
-	priclr[3] = color[3];
-	secclr[3] = color[3];
+	priclr[3] = fade[3];
+	secclr[3] = fade[3];
 
-	VectorCopy4(color, bgclr);
+	VectorCopy4(fade, bgclr);
 	bgclr[3] *= 0.07f;
 
-	x = 40;
-	y = 0.5f*screenheight() - count * h/2;
+	x = 2;
+	starty = screenheight() - 160;
 
-	for(i = 1; i < MAX_WEAPONS; i++){
+	y = starty;
+	
+	for(i = MAX_WEAPONS; i >= 1; i--)
+		if(bits & (1 << i))
+			registerweap(i);
+
+	for(i = MAX_WEAPONS; i >= 1; i--){
 		if(!(bits & (1 << i)))
+			continue;
+		if(cg_weapons[i].item->weapslot != 0)
 			continue;
 
 		selx = x + 8;
@@ -1215,20 +1223,10 @@ drawweapsel(void)
 		iconx = selx + pad;
 		icony = sely + pad;
 		labelx = selx + sz + 2*pad + 2;
-		labely = y + 10;
-
-		registerweap(i);
+		labely = y + 7;
 
 		recth = h;
-		rectw = labelx - x + 55;
-
-		if(i == cg.weapsel[0] || i == cg.weapsel[1]){
-			float w;
-
-			w = labelx - x + stringwidth(cg_weapons[i].item->pickupname, font, fontsz, 0, -1) + 4;
-			rectw = MAX(rectw, w);
-			bgclr[3] *= 2.0f;
-		}
+		rectw = labelx - x + sz + 2*pad + 4;
 
 		fillrect(x, y, rectw - 1, recth - 1, bgclr);
 
@@ -1236,33 +1234,61 @@ drawweapsel(void)
 		drawpic(iconx, icony, sz, sz, cg_weapons[i].icon);
 		// ammo count
 		if(cg.pps.ammo[i] != -1)
-			drawstring(labelx, labely, va("%d", cg.pps.ammo[i]), font, 12, color);
+			drawstring(labelx, labely, va("%d", cg.pps.ammo[i]), font, 12, fade);
 
 		// draw selection marker
 		if(i == cg.weapsel[0]){
 			// pri/sec
 			drawstring(x + 2, y, "1", font, 7, priclr);
-			// name
-			drawstring(labelx, y, cg_weapons[i].item->pickupname, font, fontsz, priclr);
 			// selector icon
 			trap_R_SetColor(priclr);
 			drawpic(selx, sely, sz + 2*pad, sz + 2*pad, cgs.media.selectShader);
-			trap_R_SetColor(color);
+			trap_R_SetColor(fade);
 		}
+
+		y -= h + 1;
+	}
+
+	x += 68;
+	y = starty;
+
+	for(i = MAX_WEAPONS; i >= 1; i--){
+		if(!(bits & (1 << i)))
+			continue;
+		if(cg_weapons[i].item->weapslot != 1)
+			continue;
+
+		selx = x + 8;
+		sely = y;
+		iconx = selx + pad;
+		icony = sely + pad;
+		labelx = selx + sz + 2*pad + 2 + 4;
+		labely = y + 7;
+
+		recth = h;
+		rectw = labelx - x + sz + 2*pad;
+
+		if(i == cg.weapsel[1])
+			registerweap(i);
+
+		fillrect(x, y, rectw - 1, recth - 1, bgclr);
+
+		// draw weapon icon
+		drawpic(iconx, icony, sz, sz, cg_weapons[i].icon);
+		// ammo count
+		if(cg.pps.ammo[i] != -1)
+			drawstring(labelx, labely, va("%d", cg.pps.ammo[i]), font, 12, fade);
 
 		if(i == cg.weapsel[1]){
 			// pri/sec
-			strh = stringheight("2", font, 7);
-			drawstring(x + 2, y + sz - strh, "2", font, 7, secclr);
-			// name
-			drawstring(labelx, y, cg_weapons[i].item->pickupname, font, fontsz, secclr);
+			drawstring(x + 2, y, "2", font, 7, secclr);
 			// selector icon
 			trap_R_SetColor(secclr);
 			drawpic(selx, sely, sz + 2*pad, sz + 2*pad, cgs.media.selectShader);
-			trap_R_SetColor(color);
+			trap_R_SetColor(fade);
 		}
 
-		y += h;
+		y -= h + 1;
 	}
 	trap_R_SetColor(nil);
 }
