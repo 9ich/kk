@@ -230,14 +230,9 @@ doitem(centity_t *cent)
 	// create an arbitrary ent.axis[1]
 	vecperp(ent.axis[1], ent.axis[2]);
 	veccpy(ent.axis[1], tmp);
-	// rotate it around axis[2] at one of two speeds
-	if(item->type == IT_HEALTH){
-		RotatePointAroundVector(ent.axis[1], ent.axis[2], tmp, cg.time/2);
-		veccross(ent.axis[2], ent.axis[1], ent.axis[0]);
-	}else{
-		RotatePointAroundVector(ent.axis[1], ent.axis[2], tmp, cg.time/4);
-		veccross(ent.axis[2], ent.axis[1], ent.axis[0]);
-	}
+	// rotate it around "up" axis, axis[2]
+	RotatePointAroundVector(ent.axis[1], ent.axis[2], tmp, cg.time/4);
+	veccross(ent.axis[2], ent.axis[1], ent.axis[0]);
 
 	// items bob up and down on their "up" axis
 	scale = 0.005 + cent->currstate.number * 0.00001;
@@ -341,9 +336,6 @@ doitem(centity_t *cent)
 
 		if(item->type == IT_HEALTH || item->type == IT_POWERUP || item->type == IT_ARMOR)
 			if((ent.hModel = cg_items[es->modelindex].models[1]) != 0){
-				spinAngles[1] = (cg.time & 1023) * 360 / 1024.0f;
-				angles2axis(spinAngles, ent.axis);
-
 				// scale up if respawning
 				if(frac != 1.0){
 					vecmul(ent.axis[0], frac, ent.axis[0]);
