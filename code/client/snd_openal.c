@@ -2428,15 +2428,15 @@ S_AL_Init(soundInterface_t *si)
 	s_alPrecache = Cvar_Get("s_alPrecache", "1", CVAR_ARCHIVE);
 	s_alGain = Cvar_Get("s_alGain", "1.0", CVAR_ARCHIVE);
 	s_alSources = Cvar_Get("s_alSources", "96", CVAR_ARCHIVE);
-	s_alDopplerFactor = Cvar_Get("s_alDopplerFactor", "1.0", CVAR_ARCHIVE);
+	s_alDopplerFactor = Cvar_Get("s_alDopplerFactor", "1.6", CVAR_ARCHIVE);
 	s_alDopplerSpeed = Cvar_Get("s_alDopplerSpeed", "15000", CVAR_ARCHIVE);
-	s_reverbMix = Cvar_Get("s_reverbMix", "0.16", CVAR_ARCHIVE);
+	s_reverbMix = Cvar_Get("s_reverbMix", "0.05", CVAR_ARCHIVE);
 	s_reverbDiffusion = Cvar_Get("s_reverbDiffusion", "1.0", CVAR_ARCHIVE);
 	s_reverbDecay = Cvar_Get("s_reverbDecay", "9.6", CVAR_ARCHIVE);
-	s_alMinDistance = Cvar_Get("s_alMinDistance", "800", CVAR_CHEAT);
-	s_alMaxDistance = Cvar_Get("s_alMaxDistance", "10000", CVAR_CHEAT);
+	s_alMinDistance = Cvar_Get("s_alMinDistance", "550", CVAR_CHEAT);
+	s_alMaxDistance = Cvar_Get("s_alMaxDistance", "3000", CVAR_CHEAT);
 	s_alRolloff = Cvar_Get("s_alRolloff", "0.5", CVAR_CHEAT);
-	s_alGraceDistance = Cvar_Get("s_alGraceDistance", "512", CVAR_CHEAT);
+	s_alGraceDistance = Cvar_Get("s_alGraceDistance", "10", CVAR_CHEAT);
 
 	s_alDriver = Cvar_Get("s_alDriver", ALDRIVER_DEFAULT, CVAR_ARCHIVE | CVAR_LATCH);
 
