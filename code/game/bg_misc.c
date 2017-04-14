@@ -81,7 +81,7 @@ gitem_t bg_itemlist[] =
 		"item_shield_small",
 		"sound/misc/ar2_pkup.wav",
 		{"models/powerups/greenshieldgen/greenshieldgen.md3",
-		 "models/powerups/shieldblob/shieldblob.md3",
+		 "models/powerups/shieldblob/shieldsphere.md3",
 		 nil, nil},
 /* icon */ "icons/armor_yellow",
 /* pickup */ "50 Shield",
@@ -98,7 +98,7 @@ gitem_t bg_itemlist[] =
 		"item_shield_med",
 		"sound/misc/ar2_pkup.wav",
 		{"models/powerups/yellowshieldgen/yellowshieldgen.md3",
-		 "models/powerups/shieldblob/shieldblob.md3",
+		 "models/powerups/shieldblob/shieldsphere.md3",
 		 nil, nil},
 /* icon */ "icons/armor_yellow",
 /* pickup */ "100 Shield",
@@ -115,7 +115,7 @@ gitem_t bg_itemlist[] =
 		"item_shield_large",
 		"sound/misc/ar2_pkup.wav",
 		{"models/powerups/redshieldgen/redshieldgen.md3",
-		 "models/powerups/shieldblob/shieldblob.md3",
+		 "models/powerups/shieldblob/shieldsphere.md3",
 		 nil, nil},
 /* icon */ "icons/armor_red",
 /* pickup */ "150 Shield",
@@ -148,7 +148,7 @@ gitem_t bg_itemlist[] =
 */
 	{
 		"item_health",
-		"sound/items/n_health.wav",
+		"sound/items/s_health.wav",
 		{"models/powerups/25hp/25hp.md3",
 		 "models/powerups/shieldblob/shieldblob.md3",
 		 nil, nil},
@@ -165,7 +165,7 @@ gitem_t bg_itemlist[] =
 */
 	{
 		"item_health_large",
-		"sound/items/l_health.wav",
+		"sound/items/s_health.wav",
 		{"models/powerups/50hp/50hp.md3",
 		 "models/powerups/shieldblob/shieldblob.md3",
 		 nil, nil},
@@ -182,7 +182,7 @@ gitem_t bg_itemlist[] =
 */
 	{
 		"item_health_mega",
-		"sound/items/m_health.wav",
+		"sound/items/s_health.wav",
 		{"models/powerups/refit/refit.md3",
 		 nil,
 		 nil, nil},
