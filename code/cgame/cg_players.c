@@ -894,7 +894,7 @@ static void
 calcthrusterlight(centity_t *cent, vec4_t color)
 {
 	if(cent->flicker.interval == 0)
-		cent->flicker.interval = (1000/15.0f);
+		cent->flicker.interval = (1000/20.0f + crandom()*6.0f);
 
 	if(cent->currstate.forwardmove == 0 &&
 	   cent->currstate.rightmove == 0 &&
@@ -905,11 +905,16 @@ calcthrusterlight(centity_t *cent, vec4_t color)
 		   0.5f*(0.4f + 0.05f*crandom()), 0.005f*crandom(), 0.0f);
 		cent->flicker.time = cg.time;
 	}else if(cent->flicker.time + cent->flicker.interval < cg.time){
+		float a;
+
+		a = 0.5f*(0.6f + 0.1*crandom());
 		// begin transition to next colour
 		Vector4Copy(cent->flicker.b, cent->flicker.a);
-		VectorSet4(cent->flicker.b, 0.5f*(0.9f + 0.1*crandom()),
-		   0.5f*(0.4f + 0.05f*crandom()), 0.005f*crandom(),
-		   1.0f+0.1f*crandom());
+		VectorSet4(cent->flicker.b,
+		   a,
+		   a,
+		   0.5f*(0.9f + 0.1*crandom()),
+		   1.0f+0.03f*crandom());
 		cent->flicker.time = cg.time;
 	}
 
