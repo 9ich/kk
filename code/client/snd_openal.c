@@ -2435,7 +2435,7 @@ S_AL_Init(soundInterface_t *si)
 	s_reverbDecay = Cvar_Get("s_reverbDecay", "9.6", CVAR_ARCHIVE);
 	s_alMinDistance = Cvar_Get("s_alMinDistance", "550", CVAR_CHEAT);
 	s_alMaxDistance = Cvar_Get("s_alMaxDistance", "3000", CVAR_CHEAT);
-	s_alRolloff = Cvar_Get("s_alRolloff", "0.5", CVAR_CHEAT);
+	s_alRolloff = Cvar_Get("s_alRolloff", "1.0", CVAR_CHEAT);
 	s_alGraceDistance = Cvar_Get("s_alGraceDistance", "10", CVAR_CHEAT);
 
 	s_alDriver = Cvar_Get("s_alDriver", ALDRIVER_DEFAULT, CVAR_ARCHIVE | CVAR_LATCH);
