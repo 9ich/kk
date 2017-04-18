@@ -1560,9 +1560,9 @@ drawlockonwarning(void)
 			continue;
 
 		if(es->lockontime - es->lockonstarttime > HOMING_SCANWAIT)
-			drawbigstr(screenwidth()/2, screenheight()/2 - 100, "ENEMY LOCK", 1.0f);
+			drawbigstr(screenwidth()/2, screenheight()/2 + 70, "ENEMY LOCK", 1.0f);
 		else
-			drawbigstr(screenwidth()/2, screenheight()/2 - 100, "WARNING", 1.0f);
+			drawbigstr(screenwidth()/2, screenheight()/2 + 70, "WARNING", 1.0f);
 		break;
 	}
 
