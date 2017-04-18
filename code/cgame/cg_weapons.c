@@ -699,9 +699,13 @@ registeritemgfx(int itemNum)
 
 	// powerups have an accompanying ring or sphere
 	if(item->type == IT_POWERUP || item->type == IT_HEALTH ||
-	   item->type == IT_ARMOR || item->type == IT_HOLDABLE)
-		if(item->model[1])
-			itemInfo->models[1] = trap_R_RegisterModel(item->model[1]);
+	   item->type == IT_ARMOR || item->type == IT_HOLDABLE){
+		int i;
+
+		for(i = 0; i < ARRAY_LEN(item->model); i++)
+			if(item->model[i] != nil)
+				itemInfo->models[i] = trap_R_RegisterModel(item->model[i]);
+	}
 }
 
 static int

@@ -330,12 +330,44 @@ doitem(centity_t *cent)
 
 	// accompanying rings / spheres for powerups
 	if(!cg_simpleItems.integer){
-		vec3_t spinAngles;
-
-		vecclear(spinAngles);
-
 		if(item->type == IT_HEALTH || item->type == IT_POWERUP || item->type == IT_ARMOR)
 			if((ent.hModel = cg_items[es->modelindex].models[1]) != 0){
+				// scale up if respawning
+				if(frac != 1.0){
+					vecmul(ent.axis[0], frac, ent.axis[0]);
+					vecmul(ent.axis[1], frac, ent.axis[1]);
+					vecmul(ent.axis[2], frac, ent.axis[2]);
+					ent.nonNormalizedAxes = qtrue;
+				}
+				trap_R_AddRefEntityToScene(&ent);
+			}
+
+			if((ent.hModel = cg_items[es->modelindex].models[2]) != 0){
+				angles2axis(cent->currstate.angles, ent.axis);
+				// create an arbitrary ent.axis[1]
+				vecperp(ent.axis[1], ent.axis[2]);
+				veccpy(ent.axis[1], tmp);
+				RotatePointAroundVector(ent.axis[1], ent.axis[2], tmp, cg.time/6);
+				veccross(ent.axis[2], ent.axis[1], ent.axis[0]);
+
+				// scale up if respawning
+				if(frac != 1.0){
+					vecmul(ent.axis[0], frac, ent.axis[0]);
+					vecmul(ent.axis[1], frac, ent.axis[1]);
+					vecmul(ent.axis[2], frac, ent.axis[2]);
+					ent.nonNormalizedAxes = qtrue;
+				}
+				trap_R_AddRefEntityToScene(&ent);
+			}
+
+			if((ent.hModel = cg_items[es->modelindex].models[3]) != 0){
+				angles2axis(cent->currstate.angles, ent.axis);
+				// create an arbitrary ent.axis[1]
+				vecperp(ent.axis[1], ent.axis[2]);
+				veccpy(ent.axis[1], tmp);
+				RotatePointAroundVector(ent.axis[1], ent.axis[2], tmp, cg.time/8);
+				veccross(ent.axis[2], ent.axis[1], ent.axis[0]);
+
 				// scale up if respawning
 				if(frac != 1.0){
 					vecmul(ent.axis[0], frac, ent.axis[0]);
