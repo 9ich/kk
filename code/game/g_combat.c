@@ -232,10 +232,6 @@ body_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage,
 {
 	if(self->health > GIB_HEALTH)
 		return;
-	if(!g_blood.integer){
-		self->health = GIB_HEALTH+1;
-		return;
-	}
 
 	entgib(self, 0);
 }
@@ -627,7 +623,7 @@ player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damag
 		// for the no-blood option, we need to prevent the health
 		// from going to gib level
 		if(self->health <= GIB_HEALTH)
-			self->health = GIB_HEALTH+1;
+			self->health = 0;
 
 		self->client->ps.torsoAnim =
 			((self->client->ps.torsoAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT) | anim;

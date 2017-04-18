@@ -873,6 +873,8 @@ image_t *R_CreateImage( const char *name, byte *pic, int width, int height,
 	image->height = height;
 	if (flags & IMGFLAG_CLAMPTOEDGE)
 		glWrapClampMode = GL_CLAMP_TO_EDGE;
+	else if(flags & IMGFLAG_MIRROREDREPEAT)
+		glWrapClampMode = GL_MIRRORED_REPEAT_ARB;
 	else
 		glWrapClampMode = GL_REPEAT;
 
