@@ -890,7 +890,7 @@ entevent(centity_t *cent, vec3_t position)
 		if(CG_WaterLevel(cent) == 3)
 			trap_S_StartSound(nil, es->number, CHAN_VOICE, customsound(es->number, "*drown.wav"));
 		else
-			trap_S_StartSound(nil, es->number, CHAN_VOICE, customsound(es->number, va("*death%i.wav", event - EV_DEATH1 + 1)));
+			trap_S_StartSound(nil, es->number, CHAN_VOICE, customsound(es->number, va("sound/player/death.wav", event - EV_DEATH1 + 1)));
 
 		break;
 

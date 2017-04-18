@@ -23,9 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "cg_local.h"
 
 char *cg_customSoundNames[MAX_CUSTOM_SOUNDS] = {
-	"*death1.wav",
-	"*death2.wav",
-	"*death3.wav",
+	"sound/player/death.wav",
 	"*jump1.wav",
 	"sound/player/pain25_1.wav",
 	"sound/player/pain50_1.wav",
