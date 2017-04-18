@@ -364,13 +364,13 @@ painevent(centity_t *cent, int health)
 		return;
 
 	if(health < 25)
-		snd = "*pain25_1.wav";
+		snd = "sound/player/pain25_1.wav";
 	else if(health < 50)
-		snd = "*pain50_1.wav";
+		snd = "sound/player/pain50_1.wav";
 	else if(health < 75)
-		snd = "*pain75_1.wav";
+		snd = "sound/player/pain75_1.wav";
 	else
-		snd = "*pain100_1.wav";
+		snd = "sound/player/pain100_1.wav";
 	// play a gurp sound instead of a normal pain sound
 	if(CG_WaterLevel(cent) == 3){
 		if(rand()&1)
