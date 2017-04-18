@@ -485,6 +485,22 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
+/*QUAKED ammo_homingrockets (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+*/
+	{
+		"ammo_homingrockets",
+		"sound/misc/am_pkup.wav",
+		{"models/powerups/ammo/homingam.md3",
+		 nil, nil, nil},
+/* icon */ "icons/ammo_homingrockets",
+/* pickup */ "Homing Rockets",
+		5,
+		IT_AMMO,
+		WP_HOMING_LAUNCHER,
+/* precache */ "",
+/* sounds */ ""
+	},
+
 /*QUAKED ammo_slugs (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
