@@ -740,6 +740,83 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			}
 		}
 		//
+		// naturalmap <name>
+		//
+		else if ( !Q_stricmp( token, "naturalmap" ) )
+		{
+			token = COM_ParseExt( text, qfalse );
+			if ( !token[0] )
+			{
+				ri.Printf( PRINT_WARNING, "WARNING: missing parameter for 'map' keyword in shader '%s'\n", shader.name );
+				return qfalse;
+			}
+
+			if ( !Q_stricmp( token, "$whiteimage" ) )
+			{
+				stage->bundle[0].image[0] = tr.whiteImage;
+				continue;
+			}
+			else if ( !Q_stricmp( token, "$lightmap" ) )
+			{
+				stage->bundle[0].isLightmap = qtrue;
+				if ( shader.lightmapIndex < 0 || !tr.lightmaps ) {
+					stage->bundle[0].image[0] = tr.whiteImage;
+				} else {
+					stage->bundle[0].image[0] = tr.lightmaps[shader.lightmapIndex];
+				}
+				continue;
+			}
+			else if ( !Q_stricmp( token, "$deluxemap" ) )
+			{
+				if (!tr.worldDeluxeMapping)
+				{
+					ri.Printf( PRINT_WARNING, "WARNING: shader '%s' wants a deluxe map in a map compiled without them\n", shader.name );
+					return qfalse;
+				}
+
+				stage->bundle[0].isLightmap = qtrue;
+				if ( shader.lightmapIndex < 0 ) {
+					stage->bundle[0].image[0] = tr.whiteImage;
+				} else {
+					stage->bundle[0].image[0] = tr.deluxemaps[shader.lightmapIndex];
+				}
+				continue;
+			}
+			else
+			{
+				imgType_t type = IMGTYPE_COLORALPHA;
+				imgFlags_t flags = IMGFLAG_MIRROREDREPEAT;
+
+				if (!shader.noMipMaps)
+					flags |= IMGFLAG_MIPMAP;
+
+				if (!shader.noPicMip)
+					flags |= IMGFLAG_PICMIP;
+
+				if (stage->type == ST_NORMALMAP || stage->type == ST_NORMALPARALLAXMAP)
+				{
+					type = IMGTYPE_NORMAL;
+					flags |= IMGFLAG_NOLIGHTSCALE;
+
+					if (stage->type == ST_NORMALPARALLAXMAP)
+						type = IMGTYPE_NORMALHEIGHT;
+				}
+				else
+				{
+					if (r_genNormalMaps->integer)
+						flags |= IMGFLAG_GENNORMALMAP;
+				}
+
+				stage->bundle[0].image[0] = R_FindImageFile( token, type, flags );
+
+				if ( !stage->bundle[0].image[0] )
+				{
+					ri.Printf( PRINT_WARNING, "WARNING: R_FindImageFile could not find '%s' in shader '%s'\n", token, shader.name );
+					return qfalse;
+				}
+			}
+		}
+		//
 		// animMap <frequency> <image1> .... <imageN>
 		//
 		else if ( !Q_stricmp( token, "animMap" ) )
