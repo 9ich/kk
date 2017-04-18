@@ -282,6 +282,8 @@ weapon_hominglauncher_scan(gentity_t *ent)
 
 		if(!g_entities[i].inuse)
 			continue;
+		if(onsameteam(ent, &g_entities[i]))
+			continue;
 		veccpy(g_entities[i].r.currentOrigin, entpos);
 		vecsub(entpos, ps->origin, dir);
 		vecnorm(dir);
@@ -300,8 +302,7 @@ weapon_hominglauncher_scan(gentity_t *ent)
 		bestdist = dist;
 	}
 
-	if(best == ENTITYNUM_NONE || onsameteam(ent, &g_entities[best]) ||
-	   !g_entities[best].inuse){
+	if(best == ENTITYNUM_NONE && (ps->lockontime - ps->lockonstarttime > HOMING_MEMORYTIME)){
 	   	// nothing to lock on to
 		ps->lockontarget = ENTITYNUM_NONE;
 		ps->lockontime = 0;

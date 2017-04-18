@@ -828,4 +828,6 @@ qboolean	playertouchingitem(playerState_t *ps, entityState_t *item, int atTime);
 // hominglauncher
 #define HOMING_SCANWAIT		600
 // pause after locking on so player actually sees reticle change
-#define HOMING_GRACEPERIOD	250
+#define HOMING_GRACEPERIOD	100
+// how long to remember the last enemy we were locking on
+#define HOMING_MEMORYTIME	500
