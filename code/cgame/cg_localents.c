@@ -204,6 +204,17 @@ reflectvel(localEntity_t *le, trace_t *trace)
 
 	veccpy(trace->endpos, le->pos.trBase);
 	le->pos.trTime = cg.time;
+
+	// random tumble
+	if(le->flags & LEF_TUMBLE){
+		vec3_t angles;
+
+		evaltrajectory(&le->angles, cg.time, angles);
+		veccpy(angles, le->angles.trBase);
+		vecset(le->angles.trDelta, crandom(), crandom(), crandom());
+		vecmul(le->angles.trDelta, 460, le->angles.trDelta);
+		le->angles.trTime = cg.time;
+	}
 }
 
 void

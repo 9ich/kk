@@ -69,6 +69,7 @@ machinegunejectbrass(centity_t *cent)
 	xvelocity[1] = velocity[0] * v[0][1] + velocity[1] * v[1][1] + velocity[2] * v[2][1];
 	xvelocity[2] = velocity[0] * v[0][2] + velocity[1] * v[1][2] + velocity[2] * v[2][2];
 	vecmul(xvelocity, waterScale, le->pos.trDelta);
+	vecadd(le->pos.trDelta, cent->currstate.pos.trDelta, le->pos.trDelta);
 
 	AxisCopy(axisDefault, re->axis);
 	re->hModel = cgs.media.machinegunBrassModel;
@@ -80,9 +81,9 @@ machinegunejectbrass(centity_t *cent)
 	le->angles.trBase[0] = cent->lerpangles[0] + (rand()&31);
 	le->angles.trBase[1] = cent->lerpangles[1] + (-89 + (rand()&31));
 	le->angles.trBase[2] = cent->lerpangles[2] + (rand()&31);
-	le->angles.trDelta[0] = -15 + 30*random();
-	le->angles.trDelta[1] = -15 + 30*random();
-	le->angles.trDelta[2] = -15 + 30*random();
+	le->angles.trDelta[0] = -15 + 80*random();
+	le->angles.trDelta[1] = -15 + 80*random();
+	le->angles.trDelta[2] = -15 + 80*random();
 
 	le->flags = LEF_TUMBLE;
 	le->bouncesoundtype = LEBS_BRASS;
