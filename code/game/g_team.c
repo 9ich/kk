@@ -1371,29 +1371,8 @@ spawnobelisk(vec3_t origin, int team, int spawnflags)
 		ent->touch = ObeliskTouch;
 	}
 
-	if(spawnflags & 1)
-		// suspended
-		setorigin(ent, ent->s.origin);
-	else{
-		// mappers like to put them exactly on the floor, but being coplanar
-		// will sometimes show up as starting in solid, so lif it up one pixel
-		ent->s.origin[2] += 1;
-
-		// drop to floor
-		vecset(dest, ent->s.origin[0], ent->s.origin[1], ent->s.origin[2] - 4096);
-		trap_Trace(&tr, ent->s.origin, ent->r.mins, ent->r.maxs, dest, ent->s.number, MASK_SOLID);
-		if(tr.startsolid){
-			ent->s.origin[2] -= 1;
-			gprintf("SpawnObelisk: %s startsolid at %s\n", ent->classname, vtos(ent->s.origin));
-
-			ent->s.groundEntityNum = ENTITYNUM_NONE;
-			setorigin(ent, ent->s.origin);
-		}else{
-			// allow to ride movers
-			ent->s.groundEntityNum = tr.entityNum;
-			setorigin(ent, tr.endpos);
-		}
-	}
+	// suspended
+	setorigin(ent, ent->s.origin);
 
 	ent->spawnflags = team;
 

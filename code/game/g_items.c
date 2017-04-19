@@ -627,24 +627,8 @@ itemspawnfinish(gentity_t *ent)
 	// using an item causes it to respawn
 	ent->use = Use_Item;
 
-	if(ent->spawnflags & 1)
-		// suspended
-		setorigin(ent, ent->s.origin);
-	else{
-		// drop to floor
-		vecset(dest, ent->s.origin[0], ent->s.origin[1], ent->s.origin[2] - 4096);
-		trap_Trace(&tr, ent->s.origin, ent->r.mins, ent->r.maxs, dest, ent->s.number, MASK_SOLID);
-		if(tr.startsolid){
-			gprintf("itemspawnfinish: %s startsolid at %s\n", ent->classname, vtos(ent->s.origin));
-			entfree(ent);
-			return;
-		}
-
-		// allow to ride movers
-		ent->s.groundEntityNum = tr.entityNum;
-
-		setorigin(ent, tr.endpos);
-	}
+	// suspended
+	setorigin(ent, ent->s.origin);
 
 	// team slaves and targeted items aren't present at start
 	if((ent->flags & FL_TEAMSLAVE) || ent->targetname){
