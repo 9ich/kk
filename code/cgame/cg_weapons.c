@@ -584,8 +584,23 @@ registerweap(int weaponNum)
 		break;
 
 	case WP_ROCKET_LAUNCHER:
-	case WP_HOMING_LAUNCHER:
 		weapinfo->missilemodel = trap_R_RegisterModel("models/missiles/rocket.md3");
+		weapinfo->missilesound = trap_S_RegisterSound("sound/weapons/rocket/rockfly.wav", qfalse);
+		weapinfo->missileTrailFunc = rockettrail;
+		weapinfo->missilelight = 400;
+		weapinfo->trailtime = 2000;
+		weapinfo->trailradius = 64;
+
+		MAKERGB(weapinfo->missilelightcolor, 0.9f*0.4f, 0.45f*0.4f, 0.0f);
+		MAKERGB(weapinfo->flashcolor, 0.9f, 0.4f, 0.0f);
+
+		weapinfo->flashsnd[0] = trap_S_RegisterSound("sound/weapons/rocket/rocklf1a.wav", qfalse);
+		weapinfo->flashsnd[1] = trap_S_RegisterSound("sound/weapons/rocket/rocklf2a.wav", qfalse);
+		cgs.media.rocketExplosionShader = trap_R_RegisterShader("explode2");
+		break;
+
+	case WP_HOMING_LAUNCHER:
+		weapinfo->missilemodel = trap_R_RegisterModel("models/missiles/rockethoming.md3");
 		weapinfo->missilesound = trap_S_RegisterSound("sound/weapons/rocket/rockfly.wav", qfalse);
 		weapinfo->missileTrailFunc = rockettrail;
 		weapinfo->missilelight = 200;
