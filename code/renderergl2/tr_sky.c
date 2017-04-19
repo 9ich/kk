@@ -612,10 +612,6 @@ static void FillCloudBox( const shader_t *shader, int stage )
 		if ( 1 ) // FIXME? shader->sky.fullClouds )
 		{
 			MIN_T = -HALF_SKY_SUBDIVISIONS;
-
-			// still don't want to draw the bottom, even if fullClouds
-			if ( i == 5 )
-				continue;
 		}
 		else
 		{
@@ -627,9 +623,7 @@ static void FillCloudBox( const shader_t *shader, int stage )
 			case 3:
 				MIN_T = -1;
 				break;
-			case 5:
-				// don't draw clouds beneath you
-				continue;
+			case 5:		// beneath
 			case 4:		// top
 			default:
 				MIN_T = -HALF_SKY_SUBDIVISIONS;
