@@ -136,16 +136,6 @@ applyfriction(void)
 
 	drop = 0;
 
-	// apply ground friction
-	if(pm->waterlevel <= 1){
-		if(pml.walking && !(pml.groundtrace.surfaceFlags & SURF_SLICK))
-			// if getting knocked back, no friction
-			if(!(pm->ps->pm_flags & PMF_TIME_KNOCKBACK)){
-				control = speed < pm_stopspeed ? pm_stopspeed : speed;
-				drop += control*pm_friction*pml.frametime;
-			}
-	}
-
 	// apply water friction even if just wading
 	if(pm->waterlevel)
 		drop += speed*pm_waterfriction*pm->waterlevel*pml.frametime;
