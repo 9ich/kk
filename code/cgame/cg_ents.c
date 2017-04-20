@@ -226,9 +226,8 @@ doitem(centity_t *cent)
 
 	// item rotation
 
-	angles2axis(cent->currstate.angles, ent.axis);
+	AxisCopy(cg.refdef.viewaxis, ent.axis);
 	// create an arbitrary ent.axis[1]
-	vecperp(ent.axis[1], ent.axis[2]);
 	veccpy(ent.axis[1], tmp);
 	// rotate it around "up" axis, axis[2]
 	RotatePointAroundVector(ent.axis[1], ent.axis[2], tmp, cg.time/4);
