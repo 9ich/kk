@@ -564,12 +564,12 @@ ifdef MINGW
   endif
 
   ifeq ($(ARCH),x86_64)
-    OPTIMIZEVM = -O3
+    OPTIMIZEVM = -O3 -march=core2
     OPTIMIZE = $(OPTIMIZEVM) -ffast-math
     HAVE_VM_COMPILED = true
   endif
   ifeq ($(ARCH),x86)
-    OPTIMIZEVM = -O3 -march=i586
+    OPTIMIZEVM = -O3 -march=pentium4
     OPTIMIZE = $(OPTIMIZEVM) -ffast-math
     HAVE_VM_COMPILED = true
   endif
