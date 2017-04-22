@@ -342,9 +342,9 @@ doitem(centity_t *cent)
 			}
 
 			if((ent.hModel = cg_items[es->modelindex].models[2]) != 0){
-				angles2axis(cent->currstate.angles, ent.axis);
+				AxisCopy(cg.refdef.viewaxis, ent.axis);
 				// create an arbitrary ent.axis[1]
-				vecperp(ent.axis[1], ent.axis[2]);
+				veccpy(ent.axis[1], tmp);
 				veccpy(ent.axis[1], tmp);
 				RotatePointAroundVector(ent.axis[1], ent.axis[2], tmp, cg.time/6);
 				veccross(ent.axis[2], ent.axis[1], ent.axis[0]);
@@ -360,9 +360,9 @@ doitem(centity_t *cent)
 			}
 
 			if((ent.hModel = cg_items[es->modelindex].models[3]) != 0){
-				angles2axis(cent->currstate.angles, ent.axis);
+				AxisCopy(cg.refdef.viewaxis, ent.axis);
 				// create an arbitrary ent.axis[1]
-				vecperp(ent.axis[1], ent.axis[2]);
+				veccpy(ent.axis[1], tmp);
 				veccpy(ent.axis[1], tmp);
 				RotatePointAroundVector(ent.axis[1], ent.axis[2], tmp, cg.time/8);
 				veccross(ent.axis[2], ent.axis[1], ent.axis[0]);
