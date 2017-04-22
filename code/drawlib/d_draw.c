@@ -117,16 +117,21 @@ popalign(int n)
 }
 
 /*
-Scales virtual coordinates to real display resolution.
+Scales virtual coordinates to real display res.
 */
 void
 scalecoords(float *x, float *y, float *w, float *h)
 {
-	// scale to fit display height
-	*x = *x/SCREEN_WIDTH * draw.vidh*(SCREEN_WIDTH/SCREEN_HEIGHT);
+	*x = *x/SCREEN_HEIGHT * draw.vidh;
 	*y = *y/SCREEN_HEIGHT * draw.vidh;
-	*w = *w/SCREEN_WIDTH * draw.vidh*(SCREEN_WIDTH/SCREEN_HEIGHT);
+	*w = *w/SCREEN_HEIGHT * draw.vidh;
 	*h = *h/SCREEN_HEIGHT * draw.vidh;
+	*x = floor(*x);
+	*y = floor(*y);
+	if(*w > 1.0f)
+		*w = floor(*w);
+	if(*h > 1.0f)
+		*h = floor(*h);
 }
 
 /*
