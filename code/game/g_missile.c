@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #include "g_local.h"
 
-#define MISSILE_PRESTEP_TIME 40
+#define MISSILE_PRESTEP_TIME 10
 
 void
 bouncemissile(gentity_t *ent, trace_t *trace)
