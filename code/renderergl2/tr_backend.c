@@ -1576,13 +1576,13 @@ const void *RB_PostProcess(const void *data)
 	if (r_drawSunRays->integer)
 		RB_SunRays(NULL, srcBox, NULL, dstBox);
 
-	if (r_bloom->integer)
-		RB_Bloom(NULL, srcBox, NULL, dstBox);
-
 	if (1)
 		RB_BokehBlur(NULL, srcBox, NULL, dstBox, backEnd.refdef.blurFactor);
 	else
 		RB_GaussianBlur(backEnd.refdef.blurFactor);
+
+	if (r_bloom->integer)
+		RB_Bloom(NULL, srcBox, NULL, dstBox);
 
 	RB_Contrast(NULL, srcBox, NULL, dstBox);
 

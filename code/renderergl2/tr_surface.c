@@ -199,16 +199,18 @@ void RB_InstantQuad2(vec4_t quadVerts[4], vec2_t texCoords[4])
 
 	tess.indexes[tess.numIndexes++] = 0;
 	tess.indexes[tess.numIndexes++] = 1;
-	tess.indexes[tess.numIndexes++] = 2;
-	tess.indexes[tess.numIndexes++] = 0;
-	tess.indexes[tess.numIndexes++] = 2;
 	tess.indexes[tess.numIndexes++] = 3;
+	tess.indexes[tess.numIndexes++] = 2;
 	tess.minIndex = 0;
 	tess.maxIndex = 3;
 
 	RB_UpdateTessVao(ATTR_POSITION | ATTR_TEXCOORD);
 
-	R_DrawElementsVao(tess.numIndexes, tess.firstIndex, tess.minIndex, tess.maxIndex);
+	// like R_DrawElementsVao but with a triangle strip
+	if (glRefConfig.drawRangeElements)
+		qglDrawRangeElements(GL_TRIANGLE_STRIP, tess.minIndex, tess.maxIndex, tess.numIndexes, GL_INDEX_TYPE, BUFFER_OFFSET(tess.firstIndex * sizeof(glIndex_t)));
+	else
+		qglDrawElements(GL_TRIANGLE_STRIP, tess.numIndexes, GL_INDEX_TYPE, BUFFER_OFFSET(tess.firstIndex * sizeof(glIndex_t)));
 
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;

@@ -116,6 +116,9 @@ cvar_t  *r_mergeLeafSurfaces;
 cvar_t  *r_cameraExposure;
 
 cvar_t	*r_bloom;
+cvar_t	*r_bloomAlpha;
+cvar_t	*r_bloomRamp;
+cvar_t	*r_bloomBlur;
 
 cvar_t	*r_brightness;
 cvar_t	*r_contrast;
@@ -1208,9 +1211,12 @@ void R_Register( void )
 	r_forceAutoExposureMin = ri.Cvar_Get( "r_forceAutoExposureMin", "-2.0", CVAR_CHEAT );
 	r_forceAutoExposureMax = ri.Cvar_Get( "r_forceAutoExposureMax", "2.0", CVAR_CHEAT );
 
-	r_cameraExposure = ri.Cvar_Get( "r_cameraExposure", "0", CVAR_CHEAT );
+	r_cameraExposure = ri.Cvar_Get( "r_cameraExposure", "0.36", CVAR_ARCHIVE );
 
 	r_bloom = ri.Cvar_Get( "r_bloom", "1", CVAR_ARCHIVE );
+	r_bloomAlpha = ri.Cvar_Get( "r_bloomAlpha", "0.2", CVAR_ARCHIVE );
+	r_bloomRamp = ri.Cvar_Get( "r_bloomRamp", "3.0", CVAR_ARCHIVE );
+	r_bloomBlur = ri.Cvar_Get( "r_bloomBlur", "3.0", CVAR_ARCHIVE );
 
 	r_brightness = ri.Cvar_Get( "r_brightness", "0.0", CVAR_ARCHIVE );
 	r_contrast = ri.Cvar_Get( "r_contrast", "1.0", CVAR_ARCHIVE );

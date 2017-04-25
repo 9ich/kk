@@ -697,6 +697,9 @@ typedef enum
 
 	UNIFORM_CUBEMAPINFO,
 
+	UNIFORM_BLOOMALPHA,
+	UNIFORM_BLOOMRAMP,
+
 	UNIFORM_BRIGHTNESS,
 	UNIFORM_CONTRAST,
 	UNIFORM_GAMMA,
@@ -1793,6 +1796,9 @@ extern  cvar_t  *r_depthPrepass;
 extern  cvar_t  *r_ssao;
 
 extern	cvar_t	*r_bloom;
+extern	cvar_t	*r_bloomAlpha;
+extern	cvar_t	*r_bloomRamp;
+extern	cvar_t	*r_bloomBlur;
 
 extern	cvar_t	*r_brightness;
 extern	cvar_t	*r_contrast;

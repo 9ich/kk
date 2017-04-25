@@ -511,9 +511,9 @@ static void bloomblur(FBO_t *src, ivec4_t srcBox, FBO_t *dst, ivec4_t dstBox, fl
 		color[3] = 1.0f;
 
 		if (1 || i != 0)
-			FBO_Blit(tr.bloomFbo, NULL, blurTexScale, tr.bloomFbo, NULL, &tr.bokehShader, color, GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE);
+			FBO_Blit(tr.screenScratchFbo, NULL, blurTexScale, tr.screenScratchFbo, NULL, &tr.bokehShader, color, GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE);
 		else
-			FBO_Blit(tr.bloomFbo, NULL, blurTexScale, tr.bloomFbo, NULL, &tr.bokehShader, color, 0);
+			FBO_Blit(tr.screenScratchFbo, NULL, blurTexScale, tr.screenScratchFbo, NULL, &tr.bokehShader, color, 0);
 	}
 }
 
@@ -523,22 +523,22 @@ void RB_Bloom(FBO_t *src, ivec4_t srcBox, FBO_t *dst, ivec4_t dstBox)
 
 	if(!glRefConfig.framebufferObject)
 		return;
-		
+
+	GLSL_SetUniformFloat(&tr.bloomShader, UNIFORM_BLOOMALPHA, r_bloomAlpha->value);
+	GLSL_SetUniformFloat(&tr.bloomShader, UNIFORM_BLOOMRAMP, r_bloomRamp->value);
 	VectorSet4(color, 1, 1, 1, 1);
 	// copy screen
-	FBO_FastBlit(src, srcBox, tr.bloomFbo, srcBox, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	FBO_FastBlit(src, srcBox, tr.screenScratchFbo, srcBox, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 	// step it
-	FBO_Blit(tr.bloomFbo, srcBox, NULL, tr.bloomFbo, srcBox, &tr.bloomShader, color, 0);
+	FBO_Blit(tr.screenScratchFbo, srcBox, NULL, tr.screenScratchFbo, srcBox, &tr.bloomShader, NULL, 0);
 	// blur it
-	bloomblur(tr.bloomFbo, NULL, tr.bloomFbo, NULL, 2.0f);
-	// blit to screen
-	FBO_Blit(tr.bloomFbo, srcBox, NULL, dst, dstBox, NULL, NULL, GLS_SRCBLEND_ONE | GLS_DSTBLEND_SRC_ALPHA);
+	bloomblur(tr.screenScratchFbo, NULL, tr.screenScratchFbo, NULL, r_bloomBlur->value);
+	// additive blit to screen
+	FBO_Blit(tr.screenScratchFbo, srcBox, NULL, dst, dstBox, NULL, NULL, GLS_SRCBLEND_ONE | GLS_DSTBLEND_SRC_ALPHA);
 }
 
 void RB_Contrast(FBO_t *src, ivec4_t srcBox, FBO_t *dst, ivec4_t dstBox)
 {
-	float brightness = 2;
-
 	if(!glRefConfig.framebufferObject)
 		return;
 

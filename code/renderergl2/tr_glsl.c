@@ -151,6 +151,9 @@ static uniformInfo_t uniformsInfo[] =
 
 	{ "u_CubeMapInfo", GLSL_VEC4 },
 
+	{ "u_BloomAlpha",	GLSL_FLOAT },
+	{ "u_BloomRamp",	GLSL_FLOAT },
+
 	{ "u_Brightness",	GLSL_FLOAT },
 	{ "u_Contrast",		GLSL_FLOAT },
 	{ "u_Gamma",		GLSL_FLOAT },
@@ -1216,6 +1219,8 @@ void GLSL_InitGPUShaders(void)
 	GLSL_InitUniforms(&tr.bloomShader);
 
 	GLSL_SetUniformInt(&tr.bloomShader, UNIFORM_TEXTUREMAP, TB_DIFFUSEMAP);
+	GLSL_SetUniformFloat(&tr.bloomShader, UNIFORM_BLOOMALPHA, r_bloomAlpha->value);
+	GLSL_SetUniformFloat(&tr.bloomShader, UNIFORM_BLOOMRAMP, r_bloomRamp->value);
 
 	GLSL_FinishGPUShader(&tr.bloomShader);
 
