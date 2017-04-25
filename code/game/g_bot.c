@@ -495,7 +495,7 @@ addbot(const char *name, float skill, const char *team, int delay, char *altname
 		botname = altname;
 	Info_SetValueForKey(userinfo, "name", botname);
 	Info_SetValueForKey(userinfo, "rate", "25000");
-	Info_SetValueForKey(userinfo, "snaps", "20");
+	Info_SetValueForKey(userinfo, "snaps", "50");
 	Info_SetValueForKey(userinfo, "skill", va("%.2f", skill));
 
 	if(skill >= 1 && skill < 2)
