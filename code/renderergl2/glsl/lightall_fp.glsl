@@ -307,7 +307,7 @@ void main()
 
 	// Scale the incoming light to compensate for the baked-in light angle
 	// attenuation.
-	//lightColor /= max(surfNL, 0.25);
+	lightColor /= max(surfNL, 0.25);
 
 	// Recover any unused light as ambient, in case attenuation is over 4x or
 	// light is below the surface
