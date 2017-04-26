@@ -112,7 +112,6 @@ pushalign(const char *s)
 void
 popalign(int n)
 {
-	// keep index within range
 	draw.alignstack = MIN(MAX(0, draw.alignstack - n), MAXALIGNSTACK);
 }
 
@@ -126,12 +125,6 @@ scalecoords(float *x, float *y, float *w, float *h)
 	*y = *y/SCREEN_HEIGHT * draw.vidh;
 	*w = *w/SCREEN_HEIGHT * draw.vidh;
 	*h = *h/SCREEN_HEIGHT * draw.vidh;
-	*x = floor(*x);
-	*y = floor(*y);
-	if(*w > 1.0f)
-		*w = floor(*w);
-	if(*h > 1.0f)
-		*h = floor(*h);
 }
 
 /*
