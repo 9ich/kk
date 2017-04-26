@@ -1438,13 +1438,13 @@ touchtriggergravity(playerState_t *ps, entityState_t *zone, float framedur)
 }
 
 /*
-playerstate2entstate
+playerState_t to entityState_t
 
 This is done after each set of usercmd_t on the server,
 and after local prediction on the client
 */
 void
-playerstate2entstate(playerState_t *ps, entityState_t *s, qboolean snap)
+ps2es(playerState_t *ps, entityState_t *s, qboolean snap)
 {
 	int i;
 
@@ -1515,13 +1515,13 @@ playerstate2entstate(playerState_t *ps, entityState_t *s, qboolean snap)
 }
 
 /*
-playerstate2entstatexerp
+playerState_t to entityState_t, extrapolated
 
 This is done after each set of usercmd_t on the server,
 and after local prediction on the client
 */
 void
-playerstate2entstatexerp(playerState_t *ps, entityState_t *s, int time, qboolean snap)
+ps2es_xerp(playerState_t *ps, entityState_t *s, int time, qboolean snap)
 {
 	int i;
 

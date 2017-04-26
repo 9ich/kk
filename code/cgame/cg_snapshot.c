@@ -76,7 +76,7 @@ setinitialsnap(snapshot_t *snap)
 
 	cg.snap = snap;
 
-	playerstate2entstate(&snap->ps, &cg_entities[snap->ps.clientNum].currstate, qfalse);
+	ps2es(&snap->ps, &cg_entities[snap->ps.clientNum].currstate, qfalse);
 
 	// sort out solid entities
 	mksolidlist();
@@ -135,7 +135,7 @@ transitionsnap(void)
 	oldframe = cg.snap;
 	cg.snap = cg.nextsnap;
 
-	playerstate2entstate(&cg.snap->ps, &cg_entities[cg.snap->ps.clientNum].currstate, qfalse);
+	ps2es(&cg.snap->ps, &cg_entities[cg.snap->ps.clientNum].currstate, qfalse);
 	cg_entities[cg.snap->ps.clientNum].interpolate = qfalse;
 
 	for(i = 0; i < cg.snap->numEntities; i++){
@@ -178,7 +178,7 @@ setnextsnap(snapshot_t *snap)
 
 	cg.nextsnap = snap;
 
-	playerstate2entstate(&snap->ps, &cg_entities[snap->ps.clientNum].nextstate, qfalse);
+	ps2es(&snap->ps, &cg_entities[snap->ps.clientNum].nextstate, qfalse);
 	cg_entities[cg.snap->ps.clientNum].interpolate = qtrue;
 
 	// copy new entity state

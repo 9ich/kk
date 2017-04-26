@@ -624,7 +624,7 @@ sendpredictableevents(playerState_t *ps)
 		// create temporary entity for event
 		t = enttemp(ps->origin, event);
 		number = t->s.number;
-		playerstate2entstate(ps, &t->s, qtrue);
+		ps2es(ps, &t->s, qtrue);
 		t->s.number = number;
 		t->s.eType = ET_EVENTS + event;
 		t->s.eFlags |= EF_PLAYER_EVENT;
@@ -810,9 +810,9 @@ ClientThink_real(gentity_t *ent)
 	if(ent->client->ps.eventSequence != oldEventSequence)
 		ent->eventtime = level.time;
 	if(g_smoothClients.integer)
-		playerstate2entstatexerp(&ent->client->ps, &ent->s, ent->client->ps.commandTime, qtrue);
+		ps2es_xerp(&ent->client->ps, &ent->s, ent->client->ps.commandTime, qtrue);
 	else
-		playerstate2entstate(&ent->client->ps, &ent->s, qtrue);
+		ps2es(&ent->client->ps, &ent->s, qtrue);
 	sendpredictableevents(&ent->client->ps);
 
 	if(!(ent->client->ps.eFlags & EF_FIRING))
@@ -1012,9 +1012,9 @@ clientendframe(gentity_t *ent)
 
 	// set the latest infor
 	if(g_smoothClients.integer)
-		playerstate2entstatexerp(&ent->client->ps, &ent->s, ent->client->ps.commandTime, qtrue);
+		ps2es_xerp(&ent->client->ps, &ent->s, ent->client->ps.commandTime, qtrue);
 	else
-		playerstate2entstate(&ent->client->ps, &ent->s, qtrue);
+		ps2es(&ent->client->ps, &ent->s, qtrue);
 	sendpredictableevents(&ent->client->ps);
 
 	// set the bit for the reachability area the client is currently in

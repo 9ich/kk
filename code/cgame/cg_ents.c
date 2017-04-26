@@ -916,7 +916,7 @@ addpacketents(void)
 
 	// generate and add the entity from the playerstate
 	ps = &cg.pps;
-	playerstate2entstate(ps, &cg.pplayerent.currstate, qfalse);
+	ps2es(ps, &cg.pplayerent.currstate, qfalse);
 	addcentity(&cg.pplayerent);
 
 	// lerp the non-predicted value for lightning gun origins

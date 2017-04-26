@@ -1103,7 +1103,7 @@ clientspawn(gentity_t *ent)
 	client->ps.lockontarget = ENTITYNUM_NONE;
 
 	// clear entity state values
-	playerstate2entstate(&client->ps, &ent->s, qtrue);
+	ps2es(&client->ps, &ent->s, qtrue);
 }
 
 /*

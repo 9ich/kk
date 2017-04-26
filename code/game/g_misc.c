@@ -112,7 +112,7 @@ teleportentity(gentity_t *player, vec3_t origin, vec3_t angles)
 		killbox(player);
 
 	// save results of pmove
-	playerstate2entstate(&player->client->ps, &player->s, qtrue);
+	ps2es(&player->client->ps, &player->s, qtrue);
 
 	// use the precise origin for linking
 	veccpy(player->client->ps.origin, player->r.currentOrigin);
