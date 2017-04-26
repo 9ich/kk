@@ -2724,7 +2724,7 @@ void R_CreateBuiltinImages( void ) {
 
 		tr.renderImage = R_CreateImage("_render", NULL, width, height, IMGTYPE_COLORALPHA, IMGFLAG_NO_COMPRESSION | IMGFLAG_CLAMPTOEDGE, hdrFormat);
 
-		//if (r_shadowBlur->integer || r_ssao->integer)
+		//if (r_shadowBlur->integer || r_bloom->integer || r_ssao->integer)
 			tr.screenScratchImage = R_CreateImage("screenScratch", NULL, width, height, IMGTYPE_COLORALPHA, IMGFLAG_NO_COMPRESSION | IMGFLAG_CLAMPTOEDGE, rgbFormat);
 
 		if (r_shadowBlur->integer || r_ssao->integer)
@@ -2732,8 +2732,6 @@ void R_CreateBuiltinImages( void ) {
 
 		if (r_drawSunRays->integer)
 			tr.sunRaysImage = R_CreateImage("*sunRays", NULL, width, height, IMGTYPE_COLORALPHA, IMGFLAG_NO_COMPRESSION | IMGFLAG_CLAMPTOEDGE, rgbFormat);
-
-		tr.bloomImage = R_CreateImage("*bloom", NULL, width, height, IMGTYPE_COLORALPHA, IMGFLAG_NO_COMPRESSION | IMGFLAG_CLAMPTOEDGE, rgbFormat);
 
 		if (glRefConfig.framebufferObject)
 		{
