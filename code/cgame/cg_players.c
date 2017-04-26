@@ -1521,6 +1521,119 @@ lightverts(vec3_t normal, int numVerts, polyVert_t *verts)
 	return qtrue;
 }
 
+// Copied from unlagged.
+void drawplayerbbox( centity_t *cent ) {
+	polyVert_t verts[4];
+	int i;
+	vec3_t mins = {MINS_X, MINS_Y, MINS_Z};
+	vec3_t maxs = {MAXS_X, MAXS_Y, MAXS_Z};
+	float extx, exty, extz;
+	vec3_t corners[8];
+	qhandle_t bboxShader;
+
+	if ( !cg_drawBBox.integer ) {
+		return;
+	}
+
+	// don't draw it if it's us in first-person
+	if ( cent->currstate.number == cg.pps.clientNum &&
+			!cg.thirdperson ) {
+		return;
+	}
+
+	// don't draw it for dead players
+	if ( cent->currstate.eFlags & EF_DEAD ) {
+		return;
+	}
+
+	bboxShader = cgs.media.whiteShader;
+	if ( !bboxShader ) {
+		return;
+	}
+
+	// get the extents (size)
+	extx = maxs[0] - mins[0];
+	exty = maxs[1] - mins[1];
+	extz = maxs[2] - mins[2];
+
+
+	// set the polygon's texture coordinates
+	verts[0].st[0] = 0;
+	verts[0].st[1] = 0;
+	verts[1].st[0] = 0;
+	verts[1].st[1] = 1;
+	verts[2].st[0] = 1;
+	verts[2].st[1] = 1;
+	verts[3].st[0] = 1;
+	verts[3].st[1] = 0;
+
+	// set the polygon's vertex colors
+	for ( i = 0; i < 4; i++ ) {
+		verts[i].modulate[0] = 128;
+		verts[i].modulate[1] = 0;
+		verts[i].modulate[2] = 128;
+		verts[i].modulate[3] = 200;
+	}
+
+	VectorAdd( cent->lerporigin, maxs, corners[3] );
+
+	VectorCopy( corners[3], corners[2] );
+	corners[2][0] -= extx;
+
+	VectorCopy( corners[2], corners[1] );
+	corners[1][1] -= exty;
+
+	VectorCopy( corners[1], corners[0] );
+	corners[0][0] += extx;
+
+	for ( i = 0; i < 4; i++ ) {
+		VectorCopy( corners[i], corners[i + 4] );
+		corners[i + 4][2] -= extz;
+	}
+
+	// top
+	VectorCopy( corners[0], verts[0].xyz );
+	VectorCopy( corners[1], verts[1].xyz );
+	VectorCopy( corners[2], verts[2].xyz );
+	VectorCopy( corners[3], verts[3].xyz );
+	trap_R_AddPolyToScene( bboxShader, 4, verts );
+
+	// bottom
+	VectorCopy( corners[7], verts[0].xyz );
+	VectorCopy( corners[6], verts[1].xyz );
+	VectorCopy( corners[5], verts[2].xyz );
+	VectorCopy( corners[4], verts[3].xyz );
+	trap_R_AddPolyToScene( bboxShader, 4, verts );
+
+	// top side
+	VectorCopy( corners[3], verts[0].xyz );
+	VectorCopy( corners[2], verts[1].xyz );
+	VectorCopy( corners[6], verts[2].xyz );
+	VectorCopy( corners[7], verts[3].xyz );
+	trap_R_AddPolyToScene( bboxShader, 4, verts );
+
+	// left side
+	VectorCopy( corners[2], verts[0].xyz );
+	VectorCopy( corners[1], verts[1].xyz );
+	VectorCopy( corners[5], verts[2].xyz );
+	VectorCopy( corners[6], verts[3].xyz );
+	trap_R_AddPolyToScene( bboxShader, 4, verts );
+
+	// right side
+	VectorCopy( corners[0], verts[0].xyz );
+	VectorCopy( corners[3], verts[1].xyz );
+	VectorCopy( corners[7], verts[2].xyz );
+	VectorCopy( corners[4], verts[3].xyz );
+	trap_R_AddPolyToScene( bboxShader, 4, verts );
+
+	// bottom side
+	VectorCopy( corners[1], verts[0].xyz );
+	VectorCopy( corners[0], verts[1].xyz );
+	VectorCopy( corners[4], verts[2].xyz );
+	VectorCopy( corners[5], verts[3].xyz );
+	trap_R_AddPolyToScene( bboxShader, 4, verts );
+}
+
 void
 doplayer(centity_t *cent)
 {
@@ -1704,6 +1817,8 @@ doplayer(centity_t *cent)
 	playerpowerups(cent, &torso);
 
 	playerthrusters(cent, &torso);
+
+	drawplayerbbox(cent);
 }
 
 //=====================================================================
