@@ -538,11 +538,10 @@ RB_TakeScreenshotJPEG
 void RB_TakeScreenshotJPEG(int x, int y, int width, int height, char *fileName)
 {
 	byte *buffer;
-	size_t offset = 0, memcount;
+	size_t offset = 0;
 	int padlen;
 
 	buffer = RB_ReadPixels(x, y, width, height, &offset, &padlen);
-	memcount = (width * 3 + padlen) * height;
 
 	RE_SaveJPG(fileName, r_screenshotJpegQuality->integer, width, height, buffer + offset, padlen);
 	ri.Hunk_FreeTempMemory(buffer);

@@ -519,14 +519,11 @@ static void bloomblur(FBO_t *src, ivec4_t srcBox, FBO_t *dst, ivec4_t dstBox, fl
 
 void RB_Bloom(FBO_t *src, ivec4_t srcBox, FBO_t *dst, ivec4_t dstBox)
 {
-	vec4_t color;
-
 	if(!glRefConfig.framebufferObject)
 		return;
 
 	GLSL_SetUniformFloat(&tr.bloomShader, UNIFORM_BLOOMALPHA, r_bloomAlpha->value);
 	GLSL_SetUniformFloat(&tr.bloomShader, UNIFORM_BLOOMRAMP, r_bloomRamp->value);
-	VectorSet4(color, 1, 1, 1, 1);
 	// copy screen
 	FBO_FastBlit(src, srcBox, tr.screenScratchFbo, srcBox, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 	// step it
