@@ -53,7 +53,7 @@ transitionent(centity_t *cent)
 	if(!cent->interpolate)
 		resetent(cent);
 
-	// clear the next state.  if will be set by the next CG_SetNextSnap
+	// clear the next state.  if will be set by the next setnextsnap
 	cent->interpolate = qfalse;
 
 	// check for events
@@ -181,7 +181,7 @@ setnextsnap(snapshot_t *snap)
 	playerstate2entstate(&snap->ps, &cg_entities[snap->ps.clientNum].nextstate, qfalse);
 	cg_entities[cg.snap->ps.clientNum].interpolate = qtrue;
 
-	// check for extrapolation errors
+	// copy new entity state
 	for(num = 0; num < snap->numEntities; num++){
 		es = &snap->entities[num];
 		cent = &cg_entities[es->number];
@@ -189,6 +189,7 @@ setnextsnap(snapshot_t *snap)
 		memcpy(&cent->nextstate, es, sizeof(entityState_t));
 		//cent->nextstate = *es;
 
+		// check for extrapolation errors.
 		// if this frame is a teleport, or the entity wasn't in the
 		// previous frame, don't interpolate
 		if(!cent->currvalid || ((cent->currstate.eFlags ^ es->eFlags) & EF_TELEPORT_BIT))
