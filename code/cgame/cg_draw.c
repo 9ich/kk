@@ -453,18 +453,22 @@ drawfpsgraph(void)
 	static int times[GRAPH_FRAMES] = {0};
 	static int beg = 0, end = ARRAY_LEN(times);
 	static int prev = 0;
-	const float h = 200, y = 200;
+	const float h = 100, y = 0;
 	int max;
 	int i, j;
 	int t;
 	float scale;
-	vec4_t clr;
+	vec4_t clr, bgclr;
 
 	t = trap_Milliseconds();
 	if(prev == 0)
 		prev = t;
 	times[beg % ARRAY_LEN(times)] = t - prev;
 	prev = t;
+
+	coloralpha(bgclr, CBlack, 0.5f);
+	fillrect(centerleft(), screenheight() - y - h, centerright() - centerleft(),
+	   h, bgclr);
 
 	max = 0;
 	for(i = beg; i < end; i++)
@@ -473,10 +477,10 @@ drawfpsgraph(void)
 	if(max == 0)
 		max = 1;
 	scale = 1.0f/max;
-	coloralpha(clr, CLightSkyBlue, 0.3f);
+	coloralpha(clr, CLightSkyBlue, 0.5f);
 	for(i = beg, j = 0; i < end; i++, j++){
 		t = h * scale * times[i % ARRAY_LEN(times)];
-		fillrect(centerleft() + j, screenheight() - y - t, 1, t, clr);
+		fillrect(centerleft() + j*2, screenheight() - y - t, 2, t, clr);
 	}
 	drawstring(centerleft(), screenheight() - y - 12, "0 ms", FONT2, 12, CWhite);
 	drawstring(centerleft(), screenheight() - y - h, va("%i ms", max), FONT2, 12, CWhite);
