@@ -533,7 +533,7 @@ typedef struct
 	qboolean	intermissionstarted;	// don't play voice rewards, because game will end shortly
 
 	// there are only one or two snapshot_t that are relevent at a time
-	int		latestsnapnum;	// the number of snapshots the client system has received
+	int		latestsnapnum;		// the number of snapshots the client system has received
 	int		latestsnapttime;	// the time from latestsnapnum, so we don't need to read the snapshot yet
 
 	snapshot_t	*snap;			// cg.snap->serverTime <= cg.time
@@ -548,7 +548,7 @@ typedef struct
 	int		frametime;		// cg.time - cg.oldtime
 
 	int		time;			// this is the time value that the client
-	// is rendering at.
+						// is rendering at.
 	int		oldtime;		// time at last frame, used for missile trails and prediction checking
 
 	int		phystime;		// either cg.snap->time or cg.nextsnap->time
