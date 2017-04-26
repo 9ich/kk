@@ -259,8 +259,11 @@ stringwidth(const char *str, int font, float size, int slicebegin, int sliceend)
 			// apply kerning if possible
 			if(*(p+1) != '\0')
 				w += kerning(font, *p, *(p+1)) * scale;
-			// add xadvance
-			w += charmaps[font].map[c][5] * scale;
+			// add xadvance, or width if last character in string
+			if(*(p+1) != '\0')
+				w += charmaps[font].map[c][5] * scale;
+			else if(charmaps[font].map[c][2] > 0)
+				w += charmaps[font].map[c][2] * scale;
 		}
 		p++;
 	}
