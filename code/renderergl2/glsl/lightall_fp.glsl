@@ -179,7 +179,6 @@ vec3 CalcSpecular(vec3 specular, float NH, float EH, float roughness)
 	return specular * (rrrr / (4.0 * d * d * v));
 }
 
-
 float CalcLightAttenuation(float point, float normDist)
 {
 	// zero light at 1.0, approximating q3 style
@@ -304,11 +303,11 @@ void main()
 	float surfNL = clamp(dot(var_Normal.xyz, L), 0.0, 1.0);
 
 	// reserve 25% ambient to avoid black areas on normalmaps
-	lightColor *= 0.75;
+	//lightColor *= 0.75;
 
 	// Scale the incoming light to compensate for the baked-in light angle
 	// attenuation.
-	lightColor /= max(surfNL, 0.25);
+	//lightColor /= max(surfNL, 0.25);
 
 	// Recover any unused light as ambient, in case attenuation is over 4x or
 	// light is below the surface
@@ -377,8 +376,8 @@ void main()
 
 	// normalize cubemap based on last roughness mip (~diffuse)
 	// multiplying cubemap values by lighting below depends on either this or the cubemap being normalized at generation
-	//vec3 cubeLightDiffuse = max(textureCubeLod(u_CubeMap, N, ROUGHNESS_MIPS).rgb, 0.5 / 255.0);
-	//cubeLightColor /= dot(cubeLightDiffuse, vec3(0.2125, 0.7154, 0.0721));
+	vec3 cubeLightDiffuse = max(textureCubeLod(u_CubeMap, N, ROUGHNESS_MIPS).rgb, 0.5 / 255.0);
+	cubeLightColor /= dot(cubeLightDiffuse, vec3(0.2125, 0.7154, 0.0721));
 
     #if defined(USE_PBR)
 	cubeLightColor *= cubeLightColor;
@@ -386,7 +385,7 @@ void main()
 
 	// multiply cubemap values by lighting
 	// not technically correct, but helps make reflections look less unnatural
-	//cubeLightColor *= lightColor * (attenuation * NL) + ambientColor;
+	cubeLightColor *= lightColor * (attenuation * NL) + ambientColor;
 
 	gl_FragColor.rgb += cubeLightColor * reflectance;
   #endif
