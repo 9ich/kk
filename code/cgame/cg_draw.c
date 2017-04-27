@@ -41,6 +41,93 @@ sawtoothwave(int time, float hz, float phase, float amp)
 	return amp * (((time + (int)(phase*time)) % 1000) / 1000.0f);
 }
 
+static void
+colorforhealth(int health, int armor, vec4_t hcolor)
+{
+	int count;
+	int max;
+
+	// calculate the total points of damage that can
+	// be sustained at the current health / armor level
+	if(health <= 0){
+		vecclear(hcolor);	// black
+		hcolor[3] = 1;
+		return;
+	}
+	count = armor;
+	max = health * ARMOR_PROTECTION / (1.0 - ARMOR_PROTECTION);
+	if(max < count)
+		count = max;
+	health += count;
+
+	// set the color based on health
+	hcolor[0] = 1.0;
+	hcolor[3] = 1.0;
+	if(health >= 100)
+		hcolor[2] = 1.0;
+	else if(health < 66)
+		hcolor[2] = 0;
+	else
+		hcolor[2] = (health - 66) / 33.0;
+
+	if(health > 60)
+		hcolor[1] = 1.0;
+	else if(health < 30)
+		hcolor[1] = 0;
+	else
+		hcolor[1] = (health - 30) / 30.0;
+}
+
+static void
+colorforammo(int weap, int ammo, vec4_t out)
+{
+	float *hi = CMagenta;
+	float *norm = CWhite;
+	float *lo = CYellow;
+	float *crit = CRed;
+	float *c = norm;
+
+	switch(weap){
+	default:
+		if(ammo > 50) c = hi;
+		else if(ammo > 25) c = norm;
+		else if(ammo > 10) c = lo;
+		else if(ammo < 0) c = CMagenta;	// -1 = inf
+		else c = crit;
+		break;
+	case WP_SHOTGUN:
+		if(ammo > 10) c = hi;
+		else if(ammo > 5) c = norm;
+		else if(ammo > 2) c = lo;
+		else c = crit;
+		break;
+	case WP_GRENADE_LAUNCHER:
+		if(ammo > 5) c = hi;
+		else if(ammo > 2) c = norm;
+		else c = crit;
+		break;
+	case WP_MACHINEGUN:
+		if(ammo > 50) c = hi;
+		else if(ammo > 30) c = norm;
+		else if(ammo > 15) c = lo;
+		else c = crit;
+		break;
+	case WP_LIGHTNING:
+		if(ammo > 100) c = hi;
+		else if(ammo > 35) c = norm;
+		else if(ammo > 20) c = lo;
+		else c = crit;
+		break;
+	case WP_ROCKET_LAUNCHER:
+		if(ammo > 15) c = hi;
+		else if(ammo > 6) c = norm;
+		else if(ammo > 3) c = lo;
+		else c = crit;
+		break;
+	}
+	Vector4Copy(c, out);
+}
+
 void
 drawmodel(float x, float y, float w, float h, qhandle_t model, qhandle_t skin, vec3_t origin, vec3_t angles)
 {
@@ -254,7 +341,7 @@ drawstatusbar(void)
 	if(cent->currstate.weapon[0]){
 		const char *s;
 
-		VectorCopy4(CWhite, clr);
+		colorforammo(ps->weapon[0], ps->ammo[cent->currstate.weapon[0]], clr);
 		if(cg.pps.weaponTime[0] > 100)
 			clr[3] = sawtoothwave(cg.pps.weaponTime[0], 8, 0, 1);
 
@@ -282,7 +369,7 @@ drawstatusbar(void)
 	if(cent->currstate.weapon[1]){
 		const char *s;
 
-		VectorCopy4(CWhite, clr);
+		colorforammo(ps->weapon[1], ps->ammo[cent->currstate.weapon[1]], clr);
 		if(cg.pps.weaponTime[1] > 100)
 			clr[3] = sawtoothwave(cg.pps.weaponTime[1], 8, 0, 1);
 
@@ -312,8 +399,10 @@ drawstatusbar(void)
 	value = ps->stats[STAT_HEALTH];
 	if(value > 100)
 		VectorCopy4(CMediumSlateBlue, clr);
-	else if(value > 30)
+	else if(value > 70)
 		VectorCopy4(CWhite, clr);
+	else if(value > 30)
+		VectorCopy4(CYellow, clr);
 	else if(value > 0)
 		VectorCopy4(CRed, clr);
 	else{
@@ -480,7 +569,7 @@ drawfpsgraph(void)
 	coloralpha(clr, CLightSkyBlue, 0.5f);
 	for(i = beg, j = 0; i < end; i++, j++){
 		t = h * scale * times[i % ARRAY_LEN(times)];
-		fillrect(centerleft() + j*2, screenheight() - y - t, 2, t, clr);
+		fillrect(centerleft() + j*2, screenheight() - y - t, 1, t, clr);
 	}
 	drawstring(centerleft(), screenheight() - y - 12, "0 ms", FONT2, 12, CWhite);
 	drawstring(centerleft(), screenheight() - y - h, va("%i ms", max), FONT2, 12, CWhite);
@@ -697,7 +786,7 @@ drawteamoverlay(float y, qboolean right, qboolean upper)
 				drawstring(xx, y, p, FONT2, 12, hcolor);
 			}
 
-			getcolorforhealth(ci->health, ci->armor, hcolor);
+			colorforhealth(ci->health, ci->armor, hcolor);
 
 			Com_sprintf(st, sizeof(st), "%3i %3i", ci->health, ci->armor);
 
@@ -1368,7 +1457,8 @@ drawxhair(void)
 		return;
 
 	if(cg_crosshairHealth.integer)
-		colorforhealth(clr);	// set color based on health
+		colorforhealth(cg.snap->ps.stats[STAT_HEALTH],
+		   cg.snap->ps.stats[STAT_ARMOR], clr);
 	else
 		Com_HexStrToColor(cg_crosshairColor.string, clr);
 	trap_R_SetColor(clr);

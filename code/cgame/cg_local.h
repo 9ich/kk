@@ -1327,8 +1327,6 @@ int	drawstrlen(const char *str);
 float * fadecolor(int startMsec, int totalMsec);
 float * teamcolor(int team);
 void	tileclear(void);
-void	colorforhealth(vec4_t hcolor);
-void	getcolorforhealth(int health, int armor, vec4_t hcolor);
 void	drawsides(float x, float y, float w, float h, float size);
 void	drawtopbottom(float x, float y, float w, float h, float size);
 
