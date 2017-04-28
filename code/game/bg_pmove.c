@@ -810,7 +810,7 @@ pmweapevents(int slot)
 
 	// check for out of ammo
 	if(!pm->ps->ammo[pm->ps->weapon[slot]]){
-		pmaddevent(EV_NOAMMO);
+		pmaddevent(EV_NOAMMO + slot);
 		pm->ps->weaponTime[slot] += 200;
 		return;
 	}
@@ -820,17 +820,7 @@ pmweapevents(int slot)
 		pm->ps->ammo[pm->ps->weapon[slot]]--;
 
 	// fire weapon
-	switch(slot){
-	case 1:
-		pmaddevent(EV_FIRE_WEAPON2);
-		break;
-	case 2:
-		pmaddevent(EV_FIRE_WEAPON3);
-		break;
-	default:	// 0
-		pmaddevent(EV_FIRE_WEAPON);
-		break;
-	}
+	pmaddevent(EV_FIRE_WEAPON + slot);
 
 	switch(pm->ps->weapon[slot]){
 	default:

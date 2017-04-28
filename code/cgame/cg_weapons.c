@@ -1431,15 +1431,15 @@ CG_Weapon_f(void)
 The current weapon has just run out of ammo
 */
 void
-outofammochange(void)
+outofammochange(int slot)
 {
 	int i;
 
-	cg.weapseltime[0] = cg.time;
+	cg.weapseltime[slot] = cg.time;
 
 	for(i = WP_NUM_WEAPONS-1; i > 0; i--)
-		if(weapselectable(0, i)){
-			cg.weapsel[0] = i;
+		if(weapselectable(slot, i)){
+			cg.weapsel[slot] = i;
 			break;
 		}
 }

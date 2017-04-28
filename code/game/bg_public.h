@@ -436,7 +436,8 @@ typedef enum
 	EV_ITEM_PICKUP,		// normal item pickups are predictable
 	EV_GLOBAL_ITEM_PICKUP,	// powerup / team sounds are broadcast to everyone
 
-	EV_NOAMMO,
+	EV_NOAMMO,		// slot 0
+	EV_NOAMMO2,		// slot 1
 	EV_CHANGE_WEAPON,
 	EV_FIRE_WEAPON,		// slot 0
 	EV_FIRE_WEAPON2,	// slot 1

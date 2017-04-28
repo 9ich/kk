@@ -1423,7 +1423,7 @@ void	addviewweap(playerState_t *ps);
 void	addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team, int slot);
 void	drawweapsel(void);
 
-void	outofammochange(void);	// should this be in pmove?
+void	outofammochange(int slot);	// should this be in pmove?
 
 // cg_marks.c
 void	initmarkpolys(void);

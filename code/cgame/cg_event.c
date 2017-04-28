@@ -560,7 +560,13 @@ entevent(centity_t *cent, vec3_t position)
 		DEBUGNAME("EV_NOAMMO");
 //		trap_S_StartSound (nil, es->number, CHAN_AUTO, cgs.media.noAmmoSound );
 		if(es->number == cg.snap->ps.clientNum)
-			outofammochange();
+			outofammochange(0);
+		break;
+	case EV_NOAMMO2:
+		DEBUGNAME("EV_NOAMMO");
+//		trap_S_StartSound (nil, es->number, CHAN_AUTO, cgs.media.noAmmoSound );
+		if(es->number == cg.snap->ps.clientNum)
+			outofammochange(1);
 		break;
 	case EV_CHANGE_WEAPON:
 		DEBUGNAME("EV_CHANGE_WEAPON");
