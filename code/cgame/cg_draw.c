@@ -2163,8 +2163,6 @@ Perform all drawing needed to completely fill the screen
 void
 drawactive(stereoFrame_t stereoview)
 {
-	drawlibbeginframe(cg.time, cg.refdef.width, cg.refdef.height);
-
 	// optionally draw the info screen instead
 	if(!cg.snap){
 		drawinfo();

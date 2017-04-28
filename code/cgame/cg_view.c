@@ -744,6 +744,8 @@ drawframe(int serverTime, stereoFrame_t stereoview, qboolean demoplayback)
 	// update cvars
 	updatecvars();
 
+	drawlibbeginframe(cg.time, cgs.glconfig.vidWidth, cgs.glconfig.vidHeight);
+
 	// if we are only updating the screen as a loading
 	// pacifier, don't even try to read snapshots
 	if(cg.infoscreentext[0] != 0){
