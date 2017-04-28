@@ -107,9 +107,9 @@ colorforammo(int weap, int ammo, vec4_t out)
 		else c = crit;
 		break;
 	case WP_MACHINEGUN:
-		if(ammo > 50) c = hi;
-		else if(ammo > 30) c = norm;
-		else if(ammo > 15) c = lo;
+		if(ammo > 150) c = hi;
+		else if(ammo > 50) c = norm;
+		else if(ammo > 20) c = lo;
 		else c = crit;
 		break;
 	case WP_LIGHTNING:
