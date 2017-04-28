@@ -1465,18 +1465,19 @@ drawxhair(void)
 
 	w = h = cg_crosshairSize.value;
 
-	// pulse the size of the crosshair when picking up items
+	// flash the screen when an item is picked up
 	f = cg.time - cg.itempkupblendtime;
 	if(f > 0 && f < ITEM_BLOB_TIME){
+		vec4_t clr;
+
 		f /= ITEM_BLOB_TIME;
-		w *= (1 + f);
-		h *= (1 + f);
+		f = 1-f;
+		coloralpha(clr, CSlateBlue, f*0.13f);
+		fillrect(0, 0, screenwidth(), screenheight(), clr);
 	}
 
 	x = cg_crosshairX.integer;
 	y = cg_crosshairY.integer;
-	//w = round(w);
-	//h = round(h);
 
 	ca = cg_crosshair.integer - 1;
 	if(ca < 0)
@@ -1520,11 +1521,15 @@ drawxhair3d(void)
 
 	w = cg_crosshairSize.value;
 
-	// pulse the size of the crosshair when picking up items
+	// flash the screen when an item is picked up
 	f = cg.time - cg.itempkupblendtime;
 	if(f > 0 && f < ITEM_BLOB_TIME){
+		vec4_t clr;
+
 		f /= ITEM_BLOB_TIME;
-		w *= (1 + f);
+		f = 1-f;
+		coloralpha(clr, CSlateBlue, f*0.13f);
+		fillrect(0, 0, screenwidth(), screenheight(), clr);
 	}
 
 	ca = cg_crosshair.integer;
