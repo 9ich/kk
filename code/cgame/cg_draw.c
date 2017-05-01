@@ -169,6 +169,39 @@ drawmodel(float x, float y, float w, float h, qhandle_t model, qhandle_t skin, v
 }
 
 /*
+Draws fullscreen flash when an item is picked up.
+*/
+void
+drawpickupflash()
+{
+	float f;
+	float alpha = 0.13f;
+
+	f = cg.time - cg.itempkupblendtime;
+	if(f > 0 && f < PICKUP_FLASH_TIME){
+		vec4_t clr;
+
+		f /= PICKUP_FLASH_TIME;
+		f = 1-f;
+		alpha *= f;
+
+		switch(bg_itemlist[cg.itempkup].type){
+		case IT_ARMOR:
+			coloralpha(clr, CSlateBlue, alpha);
+			break;
+		case IT_HEALTH:
+			coloralpha(clr, CTeal, alpha);
+			break;
+		default:
+			coloralpha(clr, CWhite, alpha);
+			break;
+		}
+
+		fillrect(0, 0, screenwidth(), screenheight(), clr);
+	}
+}
+
+/*
 Draws 2D damage indicators depending on the attacker's
 position relative to our viewangles.
 */
@@ -1442,7 +1475,6 @@ drawxhair(void)
 {
 	float w, h;
 	qhandle_t hShader;
-	float f;
 	float x, y;
 	int ca;
 	vec4_t clr;
@@ -1464,17 +1496,6 @@ drawxhair(void)
 	trap_R_SetColor(clr);
 
 	w = h = cg_crosshairSize.value;
-
-	// flash the screen when an item is picked up
-	f = cg.time - cg.itempkupblendtime;
-	if(f > 0 && f < ITEM_BLOB_TIME){
-		vec4_t clr;
-
-		f /= ITEM_BLOB_TIME;
-		f = 1-f;
-		coloralpha(clr, CSlateBlue, f*0.13f);
-		fillrect(0, 0, screenwidth(), screenheight(), clr);
-	}
 
 	x = cg_crosshairX.integer;
 	y = cg_crosshairY.integer;
@@ -1501,7 +1522,6 @@ drawxhair3d(void)
 {
 	float w;
 	qhandle_t hShader;
-	float f;
 	int ca;
 
 	trace_t trace;
@@ -1520,17 +1540,6 @@ drawxhair3d(void)
 		return;
 
 	w = cg_crosshairSize.value;
-
-	// flash the screen when an item is picked up
-	f = cg.time - cg.itempkupblendtime;
-	if(f > 0 && f < ITEM_BLOB_TIME){
-		vec4_t clr;
-
-		f /= ITEM_BLOB_TIME;
-		f = 1-f;
-		coloralpha(clr, CSlateBlue, f*0.13f);
-		fillrect(0, 0, screenwidth(), screenheight(), clr);
-	}
 
 	ca = cg_crosshair.integer;
 	if(ca < 0)
@@ -2125,6 +2134,8 @@ draw2d(stereoFrame_t stereoFrame)
 		if(cgs.gametype >= GT_TEAM)
 			drawteaminfo();
 	}
+
+	drawpickupflash();
 
 	drawdmgindicator();
 

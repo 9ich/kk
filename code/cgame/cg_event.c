@@ -303,7 +303,6 @@ CG_ItemPickup(int itemNum)
 			cg.weapseltime[slot] = cg.time;
 			cg.weapsel[slot] = bg_itemlist[itemNum].tag;
 		}
-
 }
 
 /*
