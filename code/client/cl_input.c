@@ -301,15 +301,12 @@ Moves the local angle positions
 */
 void CL_AdjustAngles( vec3_t delta ) {
 	float speed, sign, inertia;
+	float frametime;
 	
-	if ( in_speed.active ) {
-		speed = 0.001 * cls.frametime * cl_anglespeedkey->value;
-	} else {
-		speed = 0.001 * cls.frametime;
-	}
-
+	frametime = cls.frametime;
 	if(com_timescale->value != 0)
-		speed /= com_timescale->value;
+		frametime /= com_timescale->value;
+	speed = 0.001f * frametime;
 
 	delta[YAW] -= speed*cl_yawspeed->value*CL_KeyState (&in_right);
 	delta[YAW] += speed*cl_yawspeed->value*CL_KeyState (&in_left);

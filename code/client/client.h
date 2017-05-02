@@ -318,9 +318,9 @@ typedef struct {
 	qboolean	cgameStarted;
 
 	int			framecount;
-	int			frametime;			// msec since last frame
+	int			frametime;			// msec since last frame, scaled by com_timescale
 
-	int			realtime;			// ignores pause
+	int			realtime;			// ignores pause, scaled by com_timescale
 	int			realFrametime;		// ignoring pause, so console always works
 
 	int			numlocalservers;
