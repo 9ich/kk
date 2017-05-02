@@ -999,18 +999,18 @@ drawlowerright(void)
 	drawpowerups(y);
 }
 
-
-
-static int
-drawpickup(int y)
+static void
+drawpickup(void)
 {
 	int value;
 	float *fadeColor;
+	float x, y;
 
 	if(cg.snap->ps.stats[STAT_HEALTH] <= 0)
-		return y;
+		return;
 
-	y -= ICON_SIZE;
+	y = screenheight() - 2 - ICON_SIZE;
+	x = 2;
 
 	value = cg.itempkup;
 	if(value){
@@ -1018,18 +1018,14 @@ drawpickup(int y)
 		if(fadeColor){
 			registeritemgfx(value);
 			trap_R_SetColor(fadeColor);
-			drawpic(8, y, ICON_SIZE, ICON_SIZE, cg_items[value].icon);
-			drawbigstr(ICON_SIZE + 16, y + (ICON_SIZE/2 - BIGCHAR_HEIGHT/2), bg_itemlist[value].pickupname, fadeColor[0]);
+			drawpic(x, y, ICON_SIZE, ICON_SIZE, cg_items[value].icon);
+			drawstring(x + ICON_SIZE + 16, y + (ICON_SIZE/2 - 8),
+			   bg_itemlist[value].pickupname, FONT3, 16, fadeColor);
 			trap_R_SetColor(nil);
 		}
 	}
-
-	return y;
 }
 
-
-/*
-*/
 static void
 drawlowerleft(void)
 {
