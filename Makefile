@@ -1182,7 +1182,6 @@ endef
 #############################################################################
 # MAIN TARGETS
 #############################################################################
-
 default: release
 all: debug release
 
@@ -1266,7 +1265,7 @@ endif
 	@echo ""
 ifneq ($(TARGETS),)
   ifndef DEBUG_MAKEFILE
-	@$(MAKE) $(TARGETS) $(B).zip V=$(V)
+	@$(MAKE) $(TARGETS) V=$(V)
   endif
 endif
 
