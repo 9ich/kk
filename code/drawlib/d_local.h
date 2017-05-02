@@ -39,12 +39,6 @@ typedef struct
 
 extern drawStatic_t draw;
 extern charmap_t charmaps[NUMFONTS];
-extern int font1map[128][6];
-extern kerning_t font1kernings[506];
-extern int font2map[128][6];
-extern kerning_t font2kernings[292];
-extern int font3map[128][6];
-extern int font4map[128][6];
 
 // d_font.c
 extern void	registercharmap(int font, const char *filename);
