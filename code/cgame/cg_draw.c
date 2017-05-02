@@ -326,7 +326,6 @@ drawflagstatus(void)
 	}
 }
 
-
 void
 drawteambg(int x, int y, int w, int h, float alpha, int team)
 {
@@ -348,13 +347,26 @@ drawteambg(int x, int y, int w, int h, float alpha, int team)
 	trap_R_SetColor(nil);
 }
 
+#define HEALTHSPACE_X	75
+#define AMMOSPACE_X	125
+#define HUDROW1_Y	320
+#define HUDROW2_Y	(HUDROW1_Y + 42)
+#define HUDROW3_Y	(HUDROW2_Y + 38)
+#define HUDICONSIZE	22
+#define HUDICONSPACE_X	(29 - HUDICONSIZE/2)
+#define HUDFONT		FONT3
+#define HUDFONTSIZE	34
+
 static void
 drawstatusbar(void)
 {
 	centity_t *cent;
 	playerState_t *ps;
 	int value;
-	vec4_t clr;
+	const char *s;
+	vec4_t clr, bgclr;
+	float bgwidth = 70;
+	float pad = 4;
 
 	if(cg_drawStatus.integer == 0)
 		return;
@@ -368,12 +380,11 @@ drawstatusbar(void)
 	if(cgs.gametype == GT_CTF || cgs.gametype == GT_1FCTF)
 		drawflagstatus();
 
-	setalign("left");
+	coloralpha(bgclr, CBlack, 0.5f);
 
 	// primary ammo
+	setalign("right");
 	if(cent->currstate.weapon[0]){
-		const char *s;
-
 		colorforammo(ps->weapon[0], ps->ammo[cent->currstate.weapon[0]], clr);
 		if(cg.pps.weaponTime[0] > 100)
 			clr[3] = sawtoothwave(cg.pps.weaponTime[0], 8, 0, 1);
@@ -383,7 +394,8 @@ drawstatusbar(void)
 			s = "inf";
 		else
 			s = va("%d", value);
-		drawhudfield(0.5f*screenwidth() + 75, 320, s, clr);
+		fillrect(screenwidth()/2 - AMMOSPACE_X, HUDROW2_Y, bgwidth, HUDFONTSIZE, bgclr);
+		drawstring(screenwidth()/2 - AMMOSPACE_X - pad, HUDROW2_Y, s, HUDFONT, HUDFONTSIZE, clr);
 		
 		trap_R_SetColor(nil);
 
@@ -391,17 +403,20 @@ drawstatusbar(void)
 		if(cg_drawIcons.integer){
 			float strh;
 
-			drawpic(0.5f*screenwidth() + 74 - 2, 300 - 2, 16 + 4, 16 + 4, cgs.media.selectShader);
-			drawpic(0.5f*screenwidth() + 74, 300, 16, 16, cg_weapons[cg.pps.weapon[0]].ammoicon);
-			strh = stringheight(cg_weapons[cg.pps.weapon[0]].item->pickupname, FONT3, 7);
-			drawstring(0.5f*screenwidth() + 100, 300 + 8 - 0.5f*strh, cg_weapons[cg.pps.weapon[0]].item->pickupname, FONT3, 7, CWhite);
+			setalign("midcenter");
+			//drawpic(0.5f*screenwidth() + 74 - 2, 300 - 2, 16 + 4, 16 + 4, cgs.media.selectShader);
+			drawpic(screenwidth()/2 - AMMOSPACE_X + HUDICONSPACE_X,
+			   HUDROW2_Y + HUDFONTSIZE/2, HUDICONSIZE, HUDICONSIZE,
+			   cg_weapons[cg.pps.weapon[0]].ammoicon);
+			setalign("right");
+			strh = 7;
+			drawstring(screenwidth()/2 - AMMOSPACE_X, HUDROW3_Y, cg_weapons[cg.pps.weapon[0]].item->pickupname, HUDFONT, 7, CWhite);
 		}
 	}
 
 	// secondary ammo
+	setalign("left");
 	if(cent->currstate.weapon[1]){
-		const char *s;
-
 		colorforammo(ps->weapon[1], ps->ammo[cent->currstate.weapon[1]], clr);
 		if(cg.pps.weaponTime[1] > 100)
 			clr[3] = sawtoothwave(cg.pps.weaponTime[1], 8, 0, 1);
@@ -411,7 +426,8 @@ drawstatusbar(void)
 			s = "inf";
 		else
 			s = va("%d", value);
-		drawhudfield(0.5f*screenwidth() + 75, 320 + 80, s, clr);
+		fillrect(screenwidth()/2 + AMMOSPACE_X, HUDROW2_Y, bgwidth, HUDFONTSIZE, bgclr);
+		drawstring(screenwidth()/2 + AMMOSPACE_X + pad, HUDROW2_Y, s, HUDFONT, HUDFONTSIZE, clr);
 		
 		trap_R_SetColor(nil);
 
@@ -419,19 +435,22 @@ drawstatusbar(void)
 		if(cg_drawIcons.integer){
 			float strh;
 
-			drawpic(0.5f*screenwidth() + 74 - 2, 300 - 2 + 80, 16 + 4, 16 + 4, cgs.media.selectShader);
-			drawpic(0.5f*screenwidth() + 74, 300 + 80, 16, 16, cg_weapons[cg.pps.weapon[1]].ammoicon);
-			strh = stringheight(cg_weapons[cg.pps.weapon[1]].item->pickupname, FONT3, 7);
-			drawstring(0.5f*screenwidth() + 100, 300 + 8 - 0.5f*strh + 80, cg_weapons[cg.pps.weapon[1]].item->pickupname, FONT3, 7, CWhite);
+			setalign("midcenter");
+			//drawpic(0.5f*screenwidth() + 74 - 2, 300 - 2 + 80, 16 + 4, 16 + 4, cgs.media.selectShader);
+			drawpic(screenwidth()/2 + AMMOSPACE_X - HUDICONSPACE_X,
+			   HUDROW2_Y + HUDFONTSIZE/2, HUDICONSIZE, HUDICONSIZE,
+			   cg_weapons[cg.pps.weapon[1]].ammoicon);
+			strh = 7;
+			setalign("left");
+			drawstring(screenwidth()/2 + AMMOSPACE_X, HUDROW3_Y, cg_weapons[cg.pps.weapon[1]].item->pickupname, HUDFONT, 7, CWhite);
 		}
 	}
 
-	setalign("right");
-
 	// health
+	setalign("right");
 	value = ps->stats[STAT_HEALTH];
 	if(value > 100)
-		VectorCopy4(CMediumSlateBlue, clr);
+		VectorCopy4(CMagenta, clr);
 	else if(value > 70)
 		VectorCopy4(CWhite, clr);
 	else if(value > 30)
@@ -446,21 +465,24 @@ drawstatusbar(void)
 		clr[2] = clr[1];
 		clr[3] = 1-sawtoothwave(cg.time, 4, 0, 0.5f);
 	}
-	drawhudfield(0.5f*screenwidth() - 75, 320, va("%d", value), clr);
+	s = va("%d", value);
+	fillrect(screenwidth()/2 - HEALTHSPACE_X, HUDROW1_Y, bgwidth, HUDFONTSIZE, bgclr);
+	drawstring(screenwidth()/2 - HEALTHSPACE_X - pad, HUDROW1_Y, s, HUDFONT, HUDFONTSIZE, clr);
 
-	// armor
+	// shield
+	setalign("left");
 	value = ps->stats[STAT_ARMOR];
-	if(value > 0){
-		drawhudfield(0.5f*screenwidth() - 75, 364, va("%d", value), CWhite);
-		// if we didn't draw a 3D icon, draw a 2D icon for armor
-		if(0 && cg_drawIcons.integer)
-			drawpic(370 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE, cgs.media.armorIcon);
-
-	}
+	s = va("%d", value);
+	VectorCopy4(CWhite, clr);
+	s = va("%d", value);
+	fillrect(screenwidth()/2 + HEALTHSPACE_X, HUDROW1_Y, bgwidth, HUDFONTSIZE, bgclr);
+	drawstring(screenwidth()/2 + HEALTHSPACE_X + pad, HUDROW1_Y, s, HUDFONT, HUDFONTSIZE, clr);
+	// if we didn't draw a 3D icon, draw a 2D icon for armor
+	if(0 && cg_drawIcons.integer)
+		drawpic(370 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE, cgs.media.armorIcon);
 
 	setalign("");
 }
-
 
 /*
 ===========================================================================================
@@ -709,7 +731,6 @@ drawtimer(float y)
 	return y + 16;
 }
 
-
 static float
 drawteamoverlay(float y, qboolean right, qboolean upper)
 {
@@ -894,7 +915,6 @@ drawupperright(stereoFrame_t stereoFrame)
 ===========================================================================================
 */
 
-
 static float
 drawpowerups(float y)
 {
@@ -984,9 +1004,6 @@ drawpowerups(float y)
 	return y;
 }
 
-
-/*
-*/
 static void
 drawlowerright(void)
 {
@@ -1037,12 +1054,10 @@ drawlowerleft(void)
 		y = drawteamoverlay(y, qfalse, qfalse);
 
 
-	drawpickup(y);
+	drawpickup();
 }
 
-
 //===========================================================================================
-
 
 static void
 drawteaminfo(void)
@@ -1104,8 +1119,6 @@ drawteaminfo(void)
 	}
 }
 
-
-
 static void
 drawholdable(void)
 {
@@ -1117,9 +1130,6 @@ drawholdable(void)
 		drawpic(640-ICON_SIZE, (screenheight()-ICON_SIZE)/2, ICON_SIZE, ICON_SIZE, cg_items[value].icon);
 	}
 }
-
-
-
 
 static void
 drawreward(void)
@@ -1243,11 +1253,6 @@ lagometersnapinfo(snapshot_t *snap)
 	lagometer.snapshotCount++;
 }
 
-/*
-drawdisconnect
-
-Should we draw something differnet for long lag vs no packets?
-*/
 static void
 drawdisconnect(void)
 {
@@ -1280,9 +1285,6 @@ drawdisconnect(void)
 #define MAX_LAGOMETER_PING	900
 #define MAX_LAGOMETER_RANGE	300
 
-/*
-drawlagometer
-*/
 static void
 drawlagometer(void)
 {
@@ -1696,7 +1698,6 @@ drawvote(void)
 	drawsmallstr(0, 58, s, 1.0F);
 }
 
-
 static void
 drawteamvote(void)
 {
@@ -1733,11 +1734,9 @@ drawscoreboard(void)
 	return drawoldscoreboard();
 }
 
-
 static void
 drawintermission(void)
 {
-//	int key;
 	if(cgs.gametype == GT_SINGLE_PLAYER){
 		drawcenterstr();
 		return;
@@ -1745,7 +1744,6 @@ drawintermission(void)
 	cg.scorefadetime = cg.time;
 	cg.scoreboardshown = drawscoreboard();
 }
-
 
 static qboolean
 drawfollow(void)
@@ -1771,7 +1769,6 @@ drawfollow(void)
 
 	return qtrue;
 }
-
 
 static void
 drawammowarning(void)
@@ -1823,7 +1820,6 @@ drawproxwarning(void)
 }
 
 #endif
-
 
 static void
 drawwarmup(void)
@@ -2076,9 +2072,7 @@ drawcp(void)
 }
 
 //==================================================================================
-/*
-draw2d
-*/
+
 static void
 draw2d(stereoFrame_t stereoFrame)
 {

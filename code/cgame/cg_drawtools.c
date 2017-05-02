@@ -92,7 +92,7 @@ Used for HUD numbers.
 void
 drawhudfield(float x, float y, const char *s, vec4_t color)
 {
-	drawstring(x, y, s, FONT3, 48, color);
+	drawstring(x, y, s, FONT3, 34, color);
 }
 
 /*
