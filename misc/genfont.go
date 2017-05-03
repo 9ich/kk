@@ -12,6 +12,7 @@ import (
 	"log"
 	"os"
 	"sort"
+	"strings"
 	"text/tabwriter"
 )
 
@@ -82,6 +83,8 @@ func main() {
 	w := new(tabwriter.Writer)
 	// Format in tab-separated columns with a tab stop of 8.
 	w.Init(os.Stdout, 0, 8, 0, '\t', 0)
+
+	font.Page.File = strings.TrimSuffix(font.Page.File, ".png")
 
 	fmt.Fprintf(w, "// %s\nfont\t%s%s \t%d\t%d\t%d\n\n", font.Info.Face,
 		pathprefix, font.Page.File, font.Info.Size, font.Common.ScaleW,
