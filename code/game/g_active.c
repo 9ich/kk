@@ -196,7 +196,7 @@ touchtriggers(gentity_t *ent)
 	gentity_t *hit;
 	trace_t trace;
 	vec3_t mins, maxs;
-	static vec3_t range = {40, 40, 52};
+	static vec3_t range = {MAXS_X, MAXS_Y, MAXS_Z};
 
 	if(!ent->client)
 		return;
