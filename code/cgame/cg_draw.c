@@ -1628,8 +1628,9 @@ drawxhairnames(void)
 	}
 
 	name = cgs.clientinfo[cg.xhairclientnum].name;
-	w = drawstrlen(name) * BIGCHAR_WIDTH;
-	drawbigstr(320 - w / 2, 170, name, color[3] * 0.5f);
+	pushalign("center");
+	drawbigstr(screenwidth()/2, 170, name, color[3] * 0.5f);
+	popalign(1);
 	trap_R_SetColor(nil);
 }
 
