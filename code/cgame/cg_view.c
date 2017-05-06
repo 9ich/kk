@@ -694,24 +694,31 @@ drawlockon(void)
 	ent.renderfx = 0;
 
 	if(cg.snap->ps.lockontime - cg.snap->ps.lockonstarttime < HOMING_SCANWAIT){
+		// acquiring
+		float frac;
+
+		ent.customShader = cgs.media.lockingOnShader;
 		ent.shaderRGBA[0] = 255;
 		ent.shaderRGBA[1] = 255;
 		ent.shaderRGBA[2] = 255;
 		ent.shaderRGBA[3] = 200;
-		// acquiring
-		ent.customShader = cgs.media.lockingOnShader;
-		ent.radius = 2*30;
-		ent.rotation = 0.05f * cg.time;
+		// shrink indicator as lock-on is acquired
+		frac = (float)(HOMING_SCANWAIT -
+		   (cg.time - cg.snap->ps.lockonstarttime)) / HOMING_SCANWAIT;
+		frac = Com_Clamp(0.75f, 1.0f, frac);
+		frac = Com_Scale(frac, 0.75f, 1.0f, 0.0f, 1.0f);
+		ent.radius = 60 + frac*30;
+		ent.rotation = -0.1f * cg.time;
 		trap_R_AddRefEntityToScene(&ent);
 
 		//trap_S_StartLocalSound(cgs.media.lockingOnSound, CHAN_ANNOUNCER);
 	}else{
+		// locked on
+		ent.customShader = cgs.media.lockedOnShader;
 		ent.shaderRGBA[0] = 115;
 		ent.shaderRGBA[1] = 237;
 		ent.shaderRGBA[2] = 101;
 		ent.shaderRGBA[3] = 200;
-		// locked on	
-		ent.customShader = cgs.media.lockedOnShader;
 		ent.radius = 2*72;
 		trap_R_AddRefEntityToScene(&ent);
 
