@@ -925,6 +925,9 @@ char	* QDECL va(char *format, ...) __attribute__ ((format (printf, 1, 2)));
 void Com_TruncateLongString( char *buffer, const char *s );
 char *vtos(const vec3_t v);
 
+#undef itoa
+#define itoa(x) (va("ld", (x)))
+
 //=============================================
 
 //
