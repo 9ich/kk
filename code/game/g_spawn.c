@@ -578,7 +578,7 @@ SP_worldspawn(void)
 
 	// see if we want a warmup time
 	trap_SetConfigstring(CS_WARMUP, "");
-	trap_SetConfigstring(CS_ROUNDWARMUP, "");
+	trap_SetConfigstring(CS_WARMUPSTATE, itoa(WARMUP_NONE));
 }
 
 /*

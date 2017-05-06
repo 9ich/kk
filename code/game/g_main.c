@@ -350,6 +350,56 @@ errorf(const char *fmt, ...)
 	trap_Error(text);
 }
 
+void
+setwarmup(warmupstate_t state, int time)
+{
+	qboolean newstate, newtime;
+	static const char *warmupstr[WARMUP_MAX] = {
+		"WARMUP_NONE",
+		"WARMUP_MATCH",
+		"WARMUP_ROUND",
+		"WARMUP_NEEDPLAYERS",
+		"WARMUP_READYUP"
+	};
+	logprintf("warmup transition %s -> %s, time %d -> %d\n",
+	   warmupstr[level.warmupstate], warmupstr[state],
+	   level.warmuptime, time);
+	newstate = (state != level.warmupstate);
+	newtime = (time != level.warmuptime);
+	level.warmupstate = state;
+	level.warmuptime = time;
+	if(newstate)
+		trap_SetConfigstring(CS_WARMUPSTATE, va("%i", state));
+	if(newtime)
+		trap_SetConfigstring(CS_WARMUP, va("%i", time));
+}
+
+qboolean
+inmatchwarmup(void)
+{
+	if(level.intermissiontime != 0 || level.intermissionqueued != 0)
+		return qfalse;	// roundlimit was hit
+	return (level.warmupstate == WARMUP_MATCH && level.warmuptime > 0 && level.time <= level.warmuptime);
+}
+
+qboolean
+inroundwarmup(void)
+{
+	if(level.intermissiontime != 0 || level.intermissionqueued != 0)
+		return qfalse;	// roundlimit was hit
+	return (level.warmupstate == WARMUP_ROUND && level.warmuptime > 0 && level.time <= level.warmuptime);
+}
+
+qboolean
+inwarmup(void)
+{
+	if(level.intermissiontime != 0 || level.intermissionqueued != 0)
+		return qfalse;	// roundlimit was hit
+	return (level.warmupstate != WARMUP_NONE &&
+	   (level.warmuptime < 0 ||
+	      (level.warmuptime > 0 && level.time <= level.warmuptime)));
+}
+
 /*
 Chain together all entities with a matching team field.
 Entity teams are used for item groups and multi-entity mover groups.
@@ -640,8 +690,9 @@ gameinit(int levelTime, int randomSeed, int restart)
 
 	level.round = 1;
 	if(g_restarted.integer){
+		logprintf("resetting warmup and round after g_restarted\n");
 		trap_Cvar_Set("g_restarted", "0");
-		level.warmuptime = 0;
+		setwarmup(WARMUP_NONE, 0);
 		// roundwarmup
 		if(g_gametype.integer == GT_LMS || g_gametype.integer == GT_CA ||
 		   g_gametype.integer == GT_LTS){
@@ -650,9 +701,9 @@ gameinit(int levelTime, int randomSeed, int restart)
 			setupcpround();
 		}
 	}else if(g_doWarmup.integer){	// Turn it on
-		level.warmuptime = WARMUP_NEEDPLAYERS;
-		trap_SetConfigstring(CS_WARMUP, va("%i", level.warmuptime));
-		logprintf("Warmup:\n");
+		logprintf("setting WARMUP_NEEDPLAYERS, g_dowarmup != 0\n");
+		setwarmup(WARMUP_NEEDPLAYERS, -1);
+		logprintf("Warmup (awaiting players):\n");
 	}
 
 	// general initialization
@@ -775,7 +826,7 @@ addduelplayer(void)
 	if(!nextInLine)
 		return;
 
-	level.warmuptime = WARMUP_NEEDPLAYERS;
+	setwarmup(WARMUP_NEEDPLAYERS, -1);
 
 	// set them to free-for-all team
 	setteam(&g_entities[nextInLine - level.clients], "f");
@@ -1403,7 +1454,7 @@ chkexitrules(void)
 		// always wait for sudden death
 		return;
 
-	if(g_timelimit.integer && !level.warmuptime)
+	if(g_timelimit.integer && !level.warmuptime)	// FIXME
 		if(level.time - level.roundbegintime >= g_timelimit.integer*60000){
 			trap_SendServerCommand(-1, "print \"Timelimit hit.\n\"");
 			logexit("Timelimit hit.");
@@ -1517,51 +1568,52 @@ chkduel(void)
 
 		// if we don't have two players, go back to "waiting for players"
 		if(level.nplayingclients != 2){
-			if(level.warmuptime != WARMUP_NEEDPLAYERS){
-				level.warmuptime = WARMUP_NEEDPLAYERS;
-				trap_SetConfigstring(CS_WARMUP, va("%i", level.warmuptime));
-				logprintf("Warmup:\n");
+			if(level.warmupstate != WARMUP_NEEDPLAYERS){
+				setwarmup(WARMUP_NEEDPLAYERS, -1);
+				logprintf("Warmup (awaiting players):\n");
 			}
 			return;
 		}
 
-		if(level.warmuptime == 0)
+		if(!inwarmup())
 			return;
 
 		// if the warmup is changed at the console, restart it
 		if(g_warmup.modificationCount != level.warmupmodificationcount){
+			logprintf("warmup is changed at the console, restart it\n");
 			level.warmupmodificationcount = g_warmup.modificationCount;
-			level.warmuptime = WARMUP_NEEDPLAYERS;
+			setwarmup(WARMUP_NEEDPLAYERS, -1);	// FIXME??
 		}
 
 		// both players have arrived; wait for both to ready up
-		if(level.warmuptime == WARMUP_NEEDPLAYERS){
-			level.warmuptime = WARMUP_READYUP;
-			trap_SetConfigstring(CS_WARMUP, va("%i", level.warmuptime));
+		if(level.warmupstate == WARMUP_NEEDPLAYERS){
+			logprintf("both players have arrived; wait for both to ready up\n");
+			setwarmup(WARMUP_READYUP, -1);
 			return;
 		}
 
 		// if all players are ready, start the warmup countdown
-		if(level.warmuptime == WARMUP_READYUP && allready()){
+		if(level.warmupstate == WARMUP_READYUP && allready()){
 			// fudge by -1 to account for extra delays
+			logprintf("all players are ready, starting match warmup\n");
 			if(g_warmup.integer > 1)
-				level.warmuptime = level.time + (g_warmup.integer - 1) * 1000;
+				setwarmup(WARMUP_MATCH, level.time + (g_warmup.integer - 1) * 1000);
 			else
-				level.warmuptime = 0;
-
-			trap_SetConfigstring(CS_WARMUP, va("%i", level.warmuptime));
+				setwarmup(WARMUP_NONE, 0);
 			return;
 		}
 
 		// if the warmup time has counted down, restart
-		if(level.warmuptime > 0 && level.time > level.warmuptime){
-			level.warmuptime += 10000;
+		if(inmatchwarmup()){
+			logprintf("warmup time has counted down, restart\n");
+			//setwarmup(WARMUP_MATCH, level.warmuptime + 10000);	// FIXME??
+			setwarmup(WARMUP_NONE, 0);
 			trap_Cvar_Set("g_restarted", "1");
 			trap_SendConsoleCommand(EXEC_APPEND, "map_restart 0\n");
 			level.restarted = qtrue;
 			return;
 		}
-	}else if(g_gametype.integer != GT_SINGLE_PLAYER && level.warmuptime != 0){
+	}else if(g_gametype.integer != GT_SINGLE_PLAYER && inwarmup()){
 		int counts[TEAM_NUM_TEAMS];
 		qboolean notEnough = qfalse;
 
@@ -1575,21 +1627,21 @@ chkduel(void)
 			notEnough = qtrue;
 
 		if(notEnough){
-			if(level.warmuptime != WARMUP_NEEDPLAYERS){
-				level.warmuptime = WARMUP_NEEDPLAYERS;
-				trap_SetConfigstring(CS_WARMUP, va("%i", level.warmuptime));
-				logprintf("Warmup:\n");
+			if(level.warmupstate != WARMUP_NEEDPLAYERS){
+				logprintf("Warmup (awaiting players):\n");
+				setwarmup(WARMUP_NEEDPLAYERS, -1);
 			}
 			return;	// still waiting for team members
 		}
 
-		if(level.warmuptime == 0)
+		if(!inwarmup())
 			return;
 
 		// if the warmup is changed at the console, restart it
 		if(g_warmup.modificationCount != level.warmupmodificationcount){
 			level.warmupmodificationcount = g_warmup.modificationCount;
-			level.warmuptime = WARMUP_NEEDPLAYERS;
+			logprintf("g_warmup was modified\n");
+			setwarmup(WARMUP_NEEDPLAYERS, -1);
 		}
 
 
@@ -1597,40 +1649,41 @@ chkduel(void)
 		// in other gamemodes we immediately start the warmup countdown
 		if(g_gametype.integer >= GT_TEAM){
 			// all players have arrived, wait for all to ready up
-			if(level.warmuptime == WARMUP_NEEDPLAYERS){
-				level.warmuptime = WARMUP_READYUP;
-				trap_SetConfigstring(CS_WARMUP, va("%i", level.warmuptime));
+			if(level.warmupstate == WARMUP_NEEDPLAYERS){
+				logprintf("all players have arrived, waiting for all to ready up\n");
+				setwarmup(WARMUP_READYUP, -1);
 				return;
 			}
 
 			// if all players are ready, start the warmup countdown
-			if(level.warmuptime == WARMUP_READYUP && allready()){
+			if(level.warmupstate == WARMUP_READYUP && allready()){
 				// fudge by -1 to account for extra delays
+				logprintf("all players are ready, starting match warmup\n");
 				if(g_warmup.integer > 1)
-					level.warmuptime = level.time + (g_warmup.integer - 1) * 1000;
+					setwarmup(WARMUP_MATCH, level.time + (g_warmup.integer - 1) * 1000);
 				else
-					level.warmuptime = 0;
-
-				trap_SetConfigstring(CS_WARMUP, va("%i", level.warmuptime));
+					setwarmup(WARMUP_NONE, 0);
 				return;
 			}
 		}else{
 			// all players have arrived; start the warmup countdown
-			if(level.warmuptime < 0){
+			if(level.warmupstate == WARMUP_NEEDPLAYERS ||
+			   level.warmupstate == WARMUP_READYUP){
 				// fudge by -1 to account for extra delays
+				logprintf("all players have arrived, starting warmup\n");
 				if(g_warmup.integer > 1)
-					level.warmuptime = level.time + (g_warmup.integer - 1) * 1000;
+					setwarmup(WARMUP_MATCH, level.time + (g_warmup.integer - 1) * 1000);
 				else
-					level.warmuptime = 0;
-
-				trap_SetConfigstring(CS_WARMUP, va("%i", level.warmuptime));
+					setwarmup(WARMUP_NONE, 0);
 				return;
 			}
 		}
 
 		// if the warmup time has counted down, start the match
 		if(level.warmuptime > 0 && level.time > level.warmuptime){
-			level.warmuptime += 10000;
+			logprintf("if the warmup time has counted down, start the match\n");
+			//setwarmup(WARMUP_MATCH, level.warmuptime + 10000);	// FIXME??
+			setwarmup(WARMUP_NONE, 0);
 			trap_Cvar_Set("g_restarted", "1");
 			trap_SendConsoleCommand(EXEC_APPEND, "map_restart 0\n");
 			level.restarted = qtrue;
@@ -1647,21 +1700,21 @@ chkroundwarmup(void)
 {
 	int i;
 
+	// only some gametypes have rounds
 	if(g_gametype.integer != GT_LMS && g_gametype.integer != GT_CA &&
 	   g_gametype.integer != GT_LTS && g_gametype.integer != GT_CP)
 		return;
-	// main warmup isn't our concern
-	if(level.warmuptime != 0)
+	// match warmup isn't our concern
+	if(level.warmupstate != WARMUP_ROUND)
 		return;
 	// no longer in roundwarmup
-	if(level.roundwarmuptime == 0)
+	if(level.warmuptime == 0)
 		return;
 
-	if(level.time > level.roundwarmuptime){
-		level.roundwarmuptime = 0;
-		level.roundbegintime = level.time;
-		trap_SetConfigstring(CS_ROUNDWARMUP, va("%i", level.roundwarmuptime));
+	if(level.time > level.warmuptime){
 		logprintf("RoundBegin:\n");
+		level.roundbegintime = level.time;
+		setwarmup(WARMUP_NONE, 0);
 		for(i = 0; i < g_maxclients.integer; i++){
 			if(g_clients[i].pers.connected == CON_DISCONNECTED)
 				continue;
@@ -1715,11 +1768,9 @@ beginroundwarmup(void)
 	if(getteamcount(-1, TEAM_RED) < 1 && getteamcount(-1, TEAM_BLUE))
 		return;
 	if(g_gametype.integer == GT_CP)
-		level.roundwarmuptime = level.setuptime;
+		setwarmup(WARMUP_ROUND, level.setuptime);
 	else
-		level.roundwarmuptime = level.time + g_roundwarmup.value*1000;
-	
-	trap_SetConfigstring(CS_ROUNDWARMUP, va("%i", level.roundwarmuptime));
+		setwarmup(WARMUP_ROUND, level.time + g_roundwarmup.value*1000);
 	logprintf("RoundWarmup:\n");
 }
 
@@ -2029,7 +2080,7 @@ chkreadyplayers(void)
 	int i;
 	qboolean rdy;
 
-	if(level.warmuptime != WARMUP_READYUP)
+	if(level.warmupstate != WARMUP_READYUP)
 		return;
 	for(i = 0; i < g_maxclients.integer; i++){
 		if(g_clients[i].pers.connected != CON_CONNECTED)
@@ -2085,11 +2136,7 @@ chkround(void)
 	// if roundlimit was hit
 	if(level.intermissiontime != 0 || level.intermissionqueued != 0)
 		return;
-	if(level.warmuptime < 0)
-		return;
-	if(level.warmuptime > 0 && level.time <= level.warmuptime)
-		return;
-	if(level.roundwarmuptime != 0 && level.time <= level.roundwarmuptime)
+	if(inmatchwarmup() || inroundwarmup())
 		return;
 
 	if(level.roundendtime != 0){

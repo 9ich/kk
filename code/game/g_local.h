@@ -364,6 +364,7 @@ typedef struct
 	int			nentities;	// MAX_CLIENTS <= nentities <= ENTITYNUM_MAX_NORMAL
 
 	int			warmuptime;	// restart match at this time
+	int			warmupstate;	// WARMUP_*
 
 	fileHandle_t		logfile;
 
@@ -439,7 +440,6 @@ typedef struct
 	int		totalkills;
 
 	// rounded game types
-	qboolean	roundwarmuptime;	// in pre-round countdown
 	int		roundbegintime;		// time that pre-round countdown ended, if any
 	int		roundendtime;
 	int		round;
@@ -619,6 +619,9 @@ void		chkteamleader(int team);
 void		runthink(gentity_t *ent);
 void		addduelqueue(gclient_t *client);
 void		beginroundwarmup(void);
+qboolean	inmatchwarmup(void);
+qboolean	inroundwarmup(void);
+qboolean	inwarmup(void);
 void QDECL	logprintf(const char *fmt, ...) __attribute__ ((format(printf, 1, 2)));
 void		sendscoreboard(void);
 void QDECL	gprintf(const char *fmt, ...) __attribute__ ((format(printf, 1, 2)));

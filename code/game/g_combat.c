@@ -44,8 +44,8 @@ addscore(gentity_t *ent, vec3_t origin, int score)
 {
 	if(!ent->client)
 		return;
-	// no scoring during pre-match warmup
-	if(level.warmuptime)
+	// no scoring during warmups
+	if(inwarmup())
 		return;
 	// show score plum
 	scoreplum(ent, origin, score);
@@ -462,10 +462,11 @@ player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damag
 	// and is not afk, give them an AWARD_SADDAY
 	if(self->client->killsthislife < 1 &&
 	   level.time < self->client->afktime &&
-	   level.roundwarmuptime == 0 && level.warmuptime == 0)
+	   !inwarmup())
 		self->client->ps.persistant[PERS_NO_KILLS]++;
 	else
 		self->client->ps.persistant[PERS_NO_KILLS] = 0;
+
 	if(self->client->ps.persistant[PERS_NO_KILLS] >= 3)
 		giveaward(self->client, AWARD_SADDAY);
 
@@ -584,12 +585,14 @@ player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damag
 	self->r.maxs[2] = -8;
 
 	// respawn wait
+	//
 	// in normal CA/LTS/LMS play, players can't respawn until next round
-	// begins. during roundwarmup, however, players do respawn.
+	// begins.
+	// during warmup, however, players can respawn.
 	if((g_gametype.integer == GT_CA || g_gametype.integer == GT_LMS ||
-	   g_gametype.integer == GT_LTS) && numonteam(TEAM_RED) > 0 &&
-	   numonteam(TEAM_BLUE) > 0 && (level.roundwarmuptime != 0 &&
-	   level.time > level.roundwarmuptime))
+	   g_gametype.integer == GT_LTS) &&
+	   (getteamcount(-1, TEAM_RED) > 0 && getteamcount(-1, TEAM_BLUE) > 0) &&
+	   !inwarmup())
 		self->client->respawntime = -1;
 	else
 		self->client->respawntime = level.time + 1700;

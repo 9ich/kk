@@ -143,19 +143,6 @@ parsewarmup(void)
 }
 
 static void
-parseroundwarmup(void)
-{
-	const char *info;
-	int warmup;
-
-	info = getconfigstr(CS_ROUNDWARMUP);
-
-	warmup = atoi(info);
-	cg.roundwarmupcount = -1;
-	cg.roundwarmup = warmup;
-}
-
-static void
 parsecps(void)
 {
 	char buf[MAX_INFO_STRING], *p, *tok;
@@ -266,7 +253,7 @@ setconfigvals(void)
 	}
 
 	cg.warmup = atoi(getconfigstr(CS_WARMUP));
-	cg.roundwarmup = atoi(getconfigstr(CS_ROUNDWARMUP));
+	cg.warmupstate = atoi(getconfigstr(CS_WARMUPSTATE));
 
 	parsecps();
 	parsecpstatus();
@@ -332,8 +319,8 @@ configstringmodified(void)
 		parsesrvinfo();
 	else if(num == CS_WARMUP)
 		parsewarmup();
-	else if(num == CS_ROUNDWARMUP)
-		parseroundwarmup();
+	else if(num == CS_WARMUPSTATE)
+		cg.warmupstate = atoi(str);
 	else if(num == CS_CPS)
 		parsecps();
 	else if(num == CS_CPSTATUS)

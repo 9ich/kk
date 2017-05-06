@@ -1826,23 +1826,25 @@ static void
 drawwarmup(void)
 {
 	int sec;
+	int state;
 	int i;
 	clientInfo_t *ci1, *ci2;
 	const char *s;
 	char buf[MAX_INFO_STRING];
 
 	sec = cg.warmup;
+	state = cg.warmupstate;
 	if(!sec)
 		return;
 
-	if(sec == WARMUP_NEEDPLAYERS){
+	if(state == WARMUP_NEEDPLAYERS){
 		s = "Waiting for players";
 		pushalign("center");
 		drawbigstr(0.5f*screenwidth(), 24, s, 1.0F);
 		popalign(1);
 		cg.warmupcount = 0;
 		return;
-	}else if(sec == WARMUP_READYUP){
+	}else if(state == WARMUP_READYUP){
 		trap_Cvar_VariableStringBuffer("cl_ready", buf, sizeof buf);
 		if(!atoi(buf))
 			s = "Press F3 to ready up";
@@ -1852,6 +1854,15 @@ drawwarmup(void)
 		drawbigstr(0.5f*screenwidth(), 24, s, 1.0F);
 		popalign(1);
 		cg.warmupcount = 0;
+		return;
+	}else if(state == WARMUP_NONE){
+		drawbigstr(screenwidth()/2, 24, "WARMUP_NONE", 1);
+		return;
+	}else if(state == WARMUP_MATCH){
+		drawbigstr(screenwidth()/2, 24, "WARMUP_MATCH", 1);
+		return;
+	}else if(state == WARMUP_ROUND){
+		drawbigstr(screenwidth()/2, 24, "WARMUP_ROUND", 1);
 		return;
 	}
 
@@ -1934,6 +1945,7 @@ drawwarmup(void)
 static void
 drawroundwarmup(void)
 {
+	/*
 	int sec;
 	const char *s;
 
@@ -1974,6 +1986,7 @@ drawroundwarmup(void)
 	pushalign("center");
 	drawstring(0.5f*screenwidth(), 70, s, FONT1, 24, CText);
 	popalign(1);
+	 */
 }
 
 static void

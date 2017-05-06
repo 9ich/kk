@@ -675,10 +675,7 @@ typedef struct
 	// warmup countdown
 	int	warmup;
 	int	warmupcount;
-
-	// CA etc. pre-round warmup
-	int	roundwarmup;
-	int	roundwarmupcount;
+	int	warmupstate;
 
 	//==========================
 

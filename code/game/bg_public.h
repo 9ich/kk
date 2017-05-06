@@ -79,8 +79,15 @@ enum
 
 #define VOTE_TIME		30000	// 30 seconds before vote times out
 
-#define WARMUP_NEEDPLAYERS	-1	// waiting for players to connect, for CS_WARMUP
-#define WARMUP_READYUP		-2	// waiting for players to ready up, for CS_WARMUP
+// warmup states
+typedef enum {
+	WARMUP_NONE,
+	WARMUP_MATCH,		// counting down to whole game start
+	WARMUP_ROUND,		// counting down to round start
+	WARMUP_NEEDPLAYERS,	// waiting for players to connect
+	WARMUP_READYUP,		// waiting for players to ready up
+	WARMUP_MAX
+} warmupstate_t;
 
 #define MAXS_X			30
 #define MAXS_Y			30
@@ -124,7 +131,7 @@ enum
 #define CS_LAST_READY		32	// last client to change /ready state
 					// either "ready\\[clientnum]" or "unready\\[clientnum]"
 #define CS_ROUND		33	// incremented at beginning of each round
-#define CS_ROUNDWARMUP		34
+#define CS_WARMUPSTATE		34
 
 #define CS_CPS			35	// control point ent indices
 #define CS_CPSTATUS		36	// control points' status (CP_IDLE etc.)

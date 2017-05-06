@@ -137,7 +137,7 @@ G_RankRunFrame()
 void
 G_RankFireWeapon(int self, int weapon)
 {
-	if(level.warmuptime != 0)
+	if(inwarmup())
 		// no reports during warmup period
 		return;
 
@@ -195,7 +195,7 @@ G_RankDamage(int self, int attacker, int damage, int means_of_death)
 	int key_damage;
 	int key_splash;
 
-	if(level.warmuptime != 0)
+	if(inwarmup())
 		// no reports during warmup period
 		return;
 
@@ -429,7 +429,7 @@ G_RankPlayerDie(int self, int attacker, int means_of_death)
 	int p1;
 	int p2;
 
-	if(level.warmuptime != 0)
+	if(inwarmup())
 		// no reports during warmup period
 		return;
 
@@ -567,7 +567,7 @@ G_RankWeaponTime(int self, int weapon)
 	gclient_t* client;
 	int time;
 
-	if(level.warmuptime != 0)
+	if(inwarmup())
 		// no reports during warmup period
 		return;
 
@@ -619,7 +619,7 @@ G_RankWeaponTime(int self, int weapon)
 void
 G_RankPickupWeapon(int self, int weapon)
 {
-	if(level.warmuptime != 0)
+	if(inwarmup())
 		// no reports during warmup period
 		return;
 
@@ -663,7 +663,7 @@ G_RankPickupWeapon(int self, int weapon)
 void
 G_RankPickupAmmo(int self, int weapon, int quantity)
 {
-	if(level.warmuptime != 0)
+	if(inwarmup())
 		// no reports during warmup period
 		return;
 
@@ -711,7 +711,7 @@ G_RankPickupAmmo(int self, int weapon, int quantity)
 void
 G_RankPickupHealth(int self, int quantity)
 {
-	if(level.warmuptime != 0)
+	if(inwarmup())
 		// no reports during warmup period
 		return;
 
@@ -740,7 +740,7 @@ G_RankPickupHealth(int self, int quantity)
 void
 G_RankPickupArmor(int self, int quantity)
 {
-	if(level.warmuptime != 0)
+	if(inwarmup())
 		// no reports during warmup period
 		return;
 
@@ -766,7 +766,7 @@ G_RankPickupArmor(int self, int quantity)
 void
 G_RankPickupPowerup(int self, int powerup)
 {
-	if(level.warmuptime != 0)
+	if(inwarmup())
 		// no reports during warmup period
 		return;
 
@@ -806,7 +806,7 @@ G_RankPickupPowerup(int self, int powerup)
 void
 G_RankPickupHoldable(int self, int holdable)
 {
-	if(level.warmuptime != 0)
+	if(inwarmup())
 		// no reports during warmup period
 		return;
 
@@ -826,7 +826,7 @@ G_RankPickupHoldable(int self, int holdable)
 void
 G_RankUseHoldable(int self, int holdable)
 {
-	if(level.warmuptime != 0)
+	if(inwarmup())
 		// no reports during warmup period
 		return;
 
@@ -846,7 +846,7 @@ G_RankUseHoldable(int self, int holdable)
 void
 G_RankReward(int self, int award)
 {
-	if(level.warmuptime != 0)
+	if(inwarmup())
 		// no reports during warmup period
 		return;
 
@@ -866,7 +866,7 @@ G_RankReward(int self, int award)
 void
 G_RankCapture(int self)
 {
-	if(level.warmuptime != 0)
+	if(inwarmup())
 		// no reports during warmup period
 		return;
 
@@ -877,7 +877,7 @@ G_RankCapture(int self)
 void
 G_RankUserTeamName(int self, char* team_name)
 {
-	if(level.warmuptime != 0)
+	if(inwarmup())
 		// no reports during warmup period
 		return;
 
@@ -892,7 +892,7 @@ G_RankClientDisconnect(int self)
 	int time;
 	int match_rating;
 
-	if(level.warmuptime != 0)
+	if(inwarmup())
 		// no reports during warmup period
 		return;
 
@@ -916,7 +916,7 @@ G_RankGameOver(void)
 	char str[MAX_INFO_VALUE];
 	int num;
 
-	if(level.warmuptime != 0)
+	if(inwarmup())
 		// no reports during warmup period
 		return;
 
