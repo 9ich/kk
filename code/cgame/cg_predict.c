@@ -58,7 +58,7 @@ mksolidlist(void)
 		cent = &cg_entities[snap->entities[i].number];
 		ent = &cent->currstate;
 
-		if(ent->eType == ET_ITEM || ent->eType == ET_PUSH_TRIGGER || ent->eType == ET_TELEPORT_TRIGGER || ET_TRIGGER_GRAVITY){
+		if(ent->eType == ET_ITEM || ent->eType == ET_PUSH_TRIGGER || ent->eType == ET_TELEPORT_TRIGGER || ent->eType == ET_TRIGGER_GRAVITY){
 			cg_triggerEntities[cg_numTriggerEntities] = cent;
 			cg_numTriggerEntities++;
 			continue;
