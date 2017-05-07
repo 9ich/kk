@@ -310,123 +310,6 @@ SelectSpectatorSpawnPoint(vec3_t origin, vec3_t angles)
 	return nil;
 }
 
-
-void
-initbodyqueue(void)
-{
-	int i;
-	gentity_t *ent;
-
-	level.bodyqueueindex = 0;
-	for(i = 0; i<BODY_QUEUE_SIZE; i++){
-		ent = entspawn();
-		ent->classname = "bodyque";
-		ent->neverfree = qtrue;
-		level.bodyqueue[i] = ent;
-	}
-}
-
-/*
-After sitting around for five seconds, fall into the ground and dissapear
-*/
-void
-bodysink(gentity_t *ent)
-{
-	if(level.time - ent->timestamp > 6500){
-		// the body ques are never actually freed, they are just unlinked
-		trap_UnlinkEntity(ent);
-		ent->physobj = qfalse;
-		return;
-	}
-	ent->nextthink = level.time + 100;
-	ent->s.pos.trBase[2] -= 1;
-}
-
-/*
-A player is respawning, so make an entity that looks
-just like the existing corpse to leave behind.
-*/
-void
-copytobodyqueue(gentity_t *ent)
-{
-#ifdef MISSIONPACK
-	gentity_t *e;
-	int i;
-#endif
-	gentity_t *body;
-	int contents;
-
-	trap_UnlinkEntity(ent);
-
-	// if client is in a nodrop area, don't leave the body
-	contents = trap_PointContents(ent->s.origin, -1);
-	if(contents & CONTENTS_NODROP)
-		return;
-
-	// grab a body que and cycle to the next one
-	body = level.bodyqueue[level.bodyqueueindex];
-	level.bodyqueueindex = (level.bodyqueueindex + 1) % BODY_QUEUE_SIZE;
-
-	body->s = ent->s;
-	body->s.eFlags = EF_DEAD;	// clear EF_TALK, etc
-#ifdef MISSIONPACK
-	if(ent->s.eFlags & EF_KAMIKAZE){
-		body->s.eFlags |= EF_KAMIKAZE;
-
-		// check if there is a kamikaze timer around for this owner
-		for(i = 0; i < level.nentities; i++){
-			e = &g_entities[i];
-			if(!e->inuse)
-				continue;
-			if(e->activator != ent)
-				continue;
-			if(strcmp(e->classname, "kamikaze timer"))
-				continue;
-			e->activator = body;
-			break;
-		}
-	}
-#endif
-	body->s.powerups = 0;	// clear powerups
-	body->s.loopSound = 0;	// clear lava burning
-	body->s.number = body - g_entities;
-	body->timestamp = level.time;
-	body->physobj = qtrue;
-	body->physbounce = 0;	// don't bounce
-	if(body->s.groundEntityNum == ENTITYNUM_NONE){
-		body->s.pos.trType = TR_GRAVITY;
-		body->s.pos.trTime = level.time;
-		veccpy(ent->client->ps.velocity, body->s.pos.trDelta);
-	}else
-		body->s.pos.trType = TR_STATIONARY;
-	body->s.event = 0;
-
-	body->r.svFlags = ent->r.svFlags;
-	veccpy(ent->r.mins, body->r.mins);
-	veccpy(ent->r.maxs, body->r.maxs);
-	veccpy(ent->r.absmin, body->r.absmin);
-	veccpy(ent->r.absmax, body->r.absmax);
-
-	body->clipmask = CONTENTS_SOLID | CONTENTS_PLAYERCLIP;
-	body->r.contents = CONTENTS_CORPSE;
-	body->r.ownerNum = ent->s.number;
-
-	body->nextthink = level.time + 5000;
-	body->think = bodysink;
-
-	body->die = body_die;
-
-	// don't take more damage if already gibbed
-	if(ent->health <= GIB_HEALTH)
-		body->takedmg = qfalse;
-	else
-		body->takedmg = qtrue;
-
-
-	veccpy(body->s.pos.trBase, body->r.currentOrigin);
-	trap_LinkEntity(body);
-}
-
 //======================================================================
 
 void
@@ -440,7 +323,6 @@ setviewangles(gentity_t *ent, vec3_t angle)
 void
 clientrespawn(gentity_t *ent)
 {
-	copytobodyqueue(ent);
 	clientspawn(ent);
 }
 

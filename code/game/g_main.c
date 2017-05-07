@@ -680,9 +680,6 @@ gameinit(int levelTime, int randomSeed, int restart)
 	trap_LocateGameData(level.entities, level.nentities, sizeof(gentity_t),
 			    &level.clients[0].ps, sizeof(level.clients[0]));
 
-	// reserve some spots for dead player bodies
-	initbodyqueue();
-
 	clearitems();
 
 	// parse the key/value pairs and spawn entities

@@ -502,10 +502,6 @@ setteam(gentity_t *ent, char *s)
 
 	// execute the team change
 
-	// if the player was dead leave the body
-	if(client->ps.stats[STAT_HEALTH] <= 0)
-		copytobodyqueue(ent);
-
 	// he starts at 'base'
 	client->pers.teamstate.state = TEAM_BEGIN;
 	if(oldTeam != TEAM_SPECTATOR){

@@ -1450,7 +1450,7 @@ ps2es(playerState_t *ps, entityState_t *s, qboolean snap)
 
 	if(ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPECTATOR)
 		s->eType = ET_INVISIBLE;
-	else if(ps->stats[STAT_HEALTH] <= GIB_HEALTH)
+	else if(ps->stats[STAT_HEALTH] <= 0)
 		s->eType = ET_INVISIBLE;
 	else
 		s->eType = ET_PLAYER;
@@ -1527,7 +1527,7 @@ ps2es_xerp(playerState_t *ps, entityState_t *s, int time, qboolean snap)
 
 	if(ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPECTATOR)
 		s->eType = ET_INVISIBLE;
-	else if(ps->stats[STAT_HEALTH] <= GIB_HEALTH)
+	else if(ps->stats[STAT_HEALTH] <= 0)
 		s->eType = ET_INVISIBLE;
 	else
 		s->eType = ET_PLAYER;

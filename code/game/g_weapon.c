@@ -1022,10 +1022,7 @@ startkamikaze(gentity_t *ent)
 		// nuke the guy that used it
 		entdamage(ent, ent, ent, nil, nil, 100000, DAMAGE_NO_PROTECTION, MOD_KAMIKAZE);
 	}else{
-		if(!strcmp(ent->activator->classname, "bodyque"))
-			explosion->activator = &g_entities[ent->activator->r.ownerNum];
-		else
-			explosion->activator = ent->activator;
+		explosion->activator = ent->activator;
 	}
 
 	// play global sound at all clients

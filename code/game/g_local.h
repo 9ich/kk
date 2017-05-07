@@ -30,8 +30,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // the "gameversion" client command will print this plus compile date
 #define GAMEVERSION			BASEGAME
 
-#define BODY_QUEUE_SIZE			8
-
 #define INFINITE			1000000
 
 #define FRAMETIME			100	// msec
@@ -433,8 +431,6 @@ typedef struct
 
 	qboolean	loclinked;	// target_locations get linked
 	gentity_t	*lochead;	// head of the location list
-	int		bodyqueueindex;	// dead bodies
-	gentity_t	*bodyqueue[BODY_QUEUE_SIZE];
 
 	// total kills for AWARD_FIRSTBLOOD
 	int		totalkills;
@@ -587,10 +583,8 @@ int		getteamleader(int team);
 team_t		pickteam(int ignoreClientNum);
 void		setviewangles(gentity_t *ent, vec3_t angle);
 gentity_t *	selectspawnpoint(vec3_t avoidPoint, vec3_t origin, vec3_t angles, qboolean isbot);
-void		copytobodyqueue(gentity_t *ent);
 void		clientrespawn(gentity_t *ent);
 void		intermission(void);
-void		initbodyqueue(void);
 void		clientspawn(gentity_t *ent);
 void		player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod);
 void		addscore(gentity_t *ent, vec3_t origin, int score);

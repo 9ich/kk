@@ -230,7 +230,7 @@ entgib(gentity_t *self, int killer)
 void
 body_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath)
 {
-	if(self->health > GIB_HEALTH)
+	if(self->health > 0)
 		return;
 
 	entgib(self, 0);
@@ -394,7 +394,6 @@ player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damag
 {
 	gentity_t *ent;
 	int anim;
-	int contents;
 	int killer;
 	int i;
 	char *killername, *obit;
@@ -600,51 +599,9 @@ player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damag
 	// remove powerups
 	memset(self->client->ps.powerups, 0, sizeof(self->client->ps.powerups));
 
-	// never gib in a nodrop
-	contents = trap_PointContents(self->r.currentOrigin, -1);
-
-	if((self->health <= GIB_HEALTH && !(contents & CONTENTS_NODROP) && g_blood.integer) || meansOfDeath == MOD_SUICIDE)
-		// gib death
+	// gib death
+	if(self->health <= 0)
 		entgib(self, killer);
-	else{
-		// normal death
-		static int i;
-
-		switch(i){
-		case 0:
-			anim = BOTH_DEATH1;
-			break;
-		case 1:
-			anim = BOTH_DEATH2;
-			break;
-		case 2:
-		default:
-			anim = BOTH_DEATH3;
-			break;
-		}
-
-		// for the no-blood option, we need to prevent the health
-		// from going to gib level
-		if(self->health <= GIB_HEALTH)
-			self->health = 0;
-
-		self->client->ps.torsoAnim =
-			((self->client->ps.torsoAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT) | anim;
-
-		addevent(self, EV_DEATH1 + i, killer);
-
-		// the body can still be gibbed
-		self->die = body_die;
-
-		// globally cycle through the different death animations
-		i = (i + 1) % 3;
-
-#ifdef MISSIONPACK
-		if(self->s.eFlags & EF_KAMIKAZE)
-			Kamikaze_DeathTimer(self);
-
-#endif
-	}
 
 	trap_LinkEntity(self);
 }
