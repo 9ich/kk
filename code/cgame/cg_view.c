@@ -676,14 +676,19 @@ playbufferedsounds(void)
 static void
 drawlockon(void)
 {
+	static int prevacquire = ENTITYNUM_NONE;
+	static int prevlock = ENTITYNUM_NONE;
 	refEntity_t ent;
 	centity_t *enemy;
 
 	if(cg.scoreboardshown)
 		return;
 
-	if(cg.snap->ps.lockontarget == ENTITYNUM_NONE)
+	if(cg.snap->ps.lockontarget == ENTITYNUM_NONE){
+		prevacquire = ENTITYNUM_NONE;
+		prevlock = ENTITYNUM_NONE;
 		return;
+	}
 
 	enemy = &cg_entities[cg.snap->ps.lockontarget];
 	
@@ -700,15 +705,17 @@ drawlockon(void)
 		ent.customShader = cgs.media.lockingOnShader;
 		MAKERGBA(ent.shaderRGBA, 255, 255, 255, 200);
 		// shrink indicator as lock-on is acquired
-		frac = (float)(HOMING_SCANWAIT -
-		   (cg.time - cg.snap->ps.lockonstarttime)) / HOMING_SCANWAIT;
-		frac = Com_Clamp(0.75f, 1.0f, frac);
-		frac = Com_Scale(frac, 0.75f, 1.0f, 0.0f, 1.0f);
-		ent.radius = 64 + frac*40;
-		ent.rotation = -0.1f * cg.time;
+		frac = 1.0f - (float)((cg.time - cg.snap->ps.lockonstarttime)) / HOMING_SCANWAIT;
+		frac = Com_Clamp(0.0f, 1.0f, frac);
+		frac = frac*frac*frac;
+		ent.rotation = frac*90;
+		ent.radius = 64 + frac*120;
 		trap_R_AddRefEntityToScene(&ent);
 
-		//trap_S_StartLocalSound(cgs.media.lockingOnSound, CHAN_ANNOUNCER);
+		if(cg.snap->ps.lockontarget != prevacquire)
+			trap_S_StartLocalSound(cgs.media.lockingOnSound, CHAN_ANNOUNCER);
+		prevacquire = cg.snap->ps.lockontarget;
+		prevlock = ENTITYNUM_NONE;
 	}else{
 		// locked on
 		ent.customShader = cgs.media.lockedOnShader;
@@ -716,7 +723,10 @@ drawlockon(void)
 		ent.radius = 2*72;
 		trap_R_AddRefEntityToScene(&ent);
 
-		//trap_S_StartLocalSound(cgs.media.lockedOnSound, CHAN_ANNOUNCER);
+		if(cg.snap->ps.lockontarget != prevlock)
+			trap_S_StartLocalSound(cgs.media.lockedOnSound, CHAN_ANNOUNCER);
+		prevlock = cg.snap->ps.lockontarget;
+		prevacquire = ENTITYNUM_NONE;
 	}
 }
 
