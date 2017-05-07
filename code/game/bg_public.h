@@ -27,7 +27,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define GAME_VERSION		BASEGAME "-1"
 
 #define DEFAULT_GRAVITY		0
-#define ARMOR_PROTECTION	0.66	// FIXME: remove
 // for STAT_ARMORTYPE
 enum
 {
@@ -37,9 +36,9 @@ enum
 	ARMOR_RED	// 0.75
 };
 
-#define ARMOR_GREEN_PROTECTION	0.50
-#define ARMOR_YELLOW_PROECTION	0.66
-#define ARMOR_RED_PROTECTION	0.75
+#define ARMOR_GREEN_PROTECTION	0.50f
+#define ARMOR_YELLOW_PROECTION	0.66f
+#define ARMOR_RED_PROTECTION	0.75f
 
 #define MAX_ITEMS		256
 #define MAX_CONTROLPOINTS	32

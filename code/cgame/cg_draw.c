@@ -42,23 +42,18 @@ sawtoothwave(int time, float hz, float phase, float amp)
 }
 
 static void
-colorforhealth(int health, int armor, vec4_t hcolor)
+colorforhealth(int health, vec4_t hcolor)
 {
 	int count;
 	int max;
 
 	// calculate the total points of damage that can
-	// be sustained at the current health / armor level
+	// be sustained at the current health
 	if(health <= 0){
 		vecclear(hcolor);	// black
 		hcolor[3] = 1;
 		return;
 	}
-	count = armor;
-	max = health * ARMOR_PROTECTION / (1.0 - ARMOR_PROTECTION);
-	if(max < count)
-		count = max;
-	health += count;
 
 	// set the color based on health
 	hcolor[0] = 1.0;
@@ -840,9 +835,9 @@ drawteamoverlay(float y, qboolean right, qboolean upper)
 				drawstring(xx, y, p, FONT2, 12, hcolor);
 			}
 
-			colorforhealth(ci->health, ci->armor, hcolor);
+			colorforhealth(ci->health, hcolor);
 
-			Com_sprintf(st, sizeof(st), "%3i %3i", ci->health, ci->armor);
+			Com_sprintf(st, sizeof(st), "%3i %3i", ci->armor);
 
 			xx = x + TINYCHAR_WIDTH * 3 +
 			     TINYCHAR_WIDTH * pwidth + TINYCHAR_WIDTH * lwidth;
@@ -1487,8 +1482,7 @@ drawxhair(void)
 		return;
 
 	if(cg_crosshairHealth.integer)
-		colorforhealth(cg.snap->ps.stats[STAT_HEALTH],
-		   cg.snap->ps.stats[STAT_ARMOR], clr);
+		colorforhealth(cg.snap->ps.stats[STAT_HEALTH], clr);
 	else
 		Com_HexStrToColor(cg_crosshairColor.string, clr);
 	trap_R_SetColor(clr);
