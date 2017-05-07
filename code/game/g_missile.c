@@ -568,9 +568,9 @@ fire_grenade(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->splashmeansofdeath = MOD_GRENADE_SPLASH;
 	bolt->clipmask = MASK_SHOT;
 	bolt->target_ent = nil;
-	vecset(bolt->r.mins, -17, -17, -17);
-	vecset(bolt->r.maxs, 17, 17, 17);
-	bolt->r.contents = MASK_PLAYERSOLID;
+	vecset(bolt->r.mins, -1, -1, -1);
+	vecset(bolt->r.maxs, 1, 1, 1);
+	bolt->r.contents = 0;
 	bolt->health = 1;
 	bolt->takedmg = qtrue;
 	bolt->pain = grenade_pain;
