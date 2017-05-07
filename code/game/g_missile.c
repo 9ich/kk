@@ -351,7 +351,7 @@ missileimpact(gentity_t *ent, trace_t *trace)
 		setorigin(nent, v);
 
 		ent->think = weapon_hook_think;
-		ent->nextthink = level.time + FRAMETIME;
+		ent->nextthink = level.time + 16;
 
 		ent->parent->client->ps.pm_flags |= PMF_GRAPPLE_PULL;
 		veccpy(ent->r.currentOrigin, ent->parent->client->ps.grapplePoint);

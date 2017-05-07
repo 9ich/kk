@@ -504,6 +504,7 @@ weapon_hook_think(gentity_t *ent)
 		snapvectortowards(v, oldorigin);	// save net bandwidth
 
 		setorigin(ent, v);
+		ent->nextthink = level.time + 16;
 	}
 
 	veccpy(ent->r.currentOrigin, ent->parent->client->ps.grapplePoint);
