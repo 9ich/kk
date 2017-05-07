@@ -1849,15 +1849,6 @@ drawwarmup(void)
 		popalign(1);
 		cg.warmupcount = 0;
 		return;
-	}else if(state == WARMUP_NONE){
-		drawbigstr(screenwidth()/2, 24, "WARMUP_NONE", 1);
-		return;
-	}else if(state == WARMUP_MATCH){
-		drawbigstr(screenwidth()/2, 24, "WARMUP_MATCH", 1);
-		return;
-	}else if(state == WARMUP_ROUND){
-		drawbigstr(screenwidth()/2, 24, "WARMUP_ROUND", 1);
-		return;
 	}
 
 	if(cgs.gametype == GT_TOURNAMENT){
@@ -1913,7 +1904,10 @@ drawwarmup(void)
 		cg.warmup = 0;
 		sec = 0;
 	}
-	s = va("Warmup: %i", sec + 1);
+	if(state == WARMUP_MATCH)
+		s = va("Warmup: %i", sec + 1);
+	else
+		s = va("Round begins in: %i", sec + 1);
 	if(sec != cg.warmupcount){
 		cg.warmupcount = sec;
 		switch(sec){
@@ -1925,6 +1919,10 @@ drawwarmup(void)
 			break;
 		case 2:
 			trap_S_StartLocalSound(cgs.media.count3Sound, CHAN_ANNOUNCER);
+			break;
+		case 3:
+			if(state == WARMUP_ROUND)
+				trap_S_StartLocalSound(cgs.media.count4Sound, CHAN_ANNOUNCER);
 			break;
 		default:
 			break;

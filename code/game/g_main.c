@@ -1572,14 +1572,14 @@ chkduel(void)
 			return;
 		}
 
-		if(!inwarmup())
+		if(level.warmupstate == WARMUP_NONE)
 			return;
 
 		// if the warmup is changed at the console, restart it
 		if(g_warmup.modificationCount != level.warmupmodificationcount){
 			logprintf("warmup is changed at the console, restart it\n");
 			level.warmupmodificationcount = g_warmup.modificationCount;
-			setwarmup(WARMUP_NEEDPLAYERS, -1);	// FIXME??
+			//setwarmup(WARMUP_NEEDPLAYERS, -1);	// FIXME??
 		}
 
 		// both players have arrived; wait for both to ready up
@@ -1601,16 +1601,17 @@ chkduel(void)
 		}
 
 		// if the warmup time has counted down, restart
-		if(inmatchwarmup()){
+		if(level.warmupstate == WARMUP_MATCH && level.warmuptime > 0 && level.time > level.warmuptime){
 			logprintf("warmup time has counted down, restart\n");
 			//setwarmup(WARMUP_MATCH, level.warmuptime + 10000);	// FIXME??
-			setwarmup(WARMUP_NONE, 0);
+			level.warmuptime += 10000;
+			//setwarmup(WARMUP_NONE, 0);
 			trap_Cvar_Set("g_restarted", "1");
 			trap_SendConsoleCommand(EXEC_APPEND, "map_restart 0\n");
 			level.restarted = qtrue;
 			return;
 		}
-	}else if(g_gametype.integer != GT_SINGLE_PLAYER && inwarmup()){
+	}else if(g_gametype.integer != GT_SINGLE_PLAYER && level.warmupstate != WARMUP_NONE){
 		int counts[TEAM_NUM_TEAMS];
 		qboolean notEnough = qfalse;
 
@@ -1631,14 +1632,14 @@ chkduel(void)
 			return;	// still waiting for team members
 		}
 
-		if(!inwarmup())
+		if(level.warmupstate == WARMUP_NONE)
 			return;
 
 		// if the warmup is changed at the console, restart it
 		if(g_warmup.modificationCount != level.warmupmodificationcount){
 			level.warmupmodificationcount = g_warmup.modificationCount;
 			logprintf("g_warmup was modified\n");
-			setwarmup(WARMUP_NEEDPLAYERS, -1);
+			//setwarmup(WARMUP_NEEDPLAYERS, -1);
 		}
 
 
@@ -1677,10 +1678,11 @@ chkduel(void)
 		}
 
 		// if the warmup time has counted down, start the match
-		if(level.warmuptime > 0 && level.time > level.warmuptime){
+		if(level.warmupstate == WARMUP_MATCH && level.warmuptime > 0 && level.time > level.warmuptime){
 			logprintf("if the warmup time has counted down, start the match\n");
 			//setwarmup(WARMUP_MATCH, level.warmuptime + 10000);	// FIXME??
 			setwarmup(WARMUP_NONE, 0);
+			level.warmuptime += 10000;
 			trap_Cvar_Set("g_restarted", "1");
 			trap_SendConsoleCommand(EXEC_APPEND, "map_restart 0\n");
 			level.restarted = qtrue;

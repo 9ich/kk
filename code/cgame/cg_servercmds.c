@@ -133,7 +133,7 @@ parsewarmup(void)
 
 	if(warmup == 0 && cg.warmup){
 	}else if(warmup > 0 && cg.warmup <= 0){
-		if(cgs.gametype >= GT_CTF && cgs.gametype <= GT_HARVESTER)
+		if(cg.warmupstate == WARMUP_ROUND)
 			addbufferedsound(cgs.media.countPrepareTeamSound);
 		else
 			addbufferedsound(cgs.media.countPrepareSound);
