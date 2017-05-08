@@ -1634,8 +1634,8 @@ static qboolean SV_ClientCommand( client_t *cl, msg_t *msg ) {
 		clientOk = qfalse;
 	} 
 
-	// don't allow another command for one second
-	cl->nextReliableTime = svs.time + 1000;
+	// don't allow another command for a bit
+	cl->nextReliableTime = svs.time + 16;
 
 	SV_ExecuteClientCommand( cl, s, clientOk );
 
