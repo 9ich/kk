@@ -378,11 +378,6 @@ clienttimeractions(gentity_t *ent, int msec)
 		// count down health when over max
 		if(ent->health > client->ps.stats[STAT_MAX_HEALTH])
 			ent->health--;
-
-
-		// count down shield when over max
-		if(client->ps.stats[STAT_SHIELD] > client->ps.stats[STAT_MAX_HEALTH])
-			client->ps.stats[STAT_SHIELD]--;
 	}
 #ifdef MISSIONPACK
 	if(bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].tag == PW_AMMOREGEN){
