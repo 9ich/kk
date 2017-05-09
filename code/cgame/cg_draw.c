@@ -386,7 +386,7 @@ drawstatusbar(void)
 
 		value = ps->ammo[cent->currstate.weapon[0]];
 		if(value == -1)
-			s = "inf";
+			s = "--";
 		else
 			s = va("%d", value);
 		fillrect(screenwidth()/2 - AMMOSPACE_X, HUDROW2_Y, bgwidth, HUDFONTSIZE, bgclr);
@@ -396,17 +396,14 @@ drawstatusbar(void)
 
 		// draw a 2D icon for ammo
 		if(cg_drawIcons.integer){
-			float strh;
-
 			setalign("midcenter");
 			//drawpic(0.5f*screenwidth() + 74 - 2, 300 - 2, 16 + 4, 16 + 4, cgs.media.selectShader);
 			drawpic(screenwidth()/2 - AMMOSPACE_X + HUDICONSPACE_X,
 			   HUDROW2_Y + HUDFONTSIZE/2, HUDICONSIZE, HUDICONSIZE,
 			   cg_weapons[cg.pps.weapon[0]].ammoicon);
-			setalign("right");
-			strh = 7;
-			drawstring(screenwidth()/2 - AMMOSPACE_X, HUDROW3_Y, cg_weapons[cg.pps.weapon[0]].item->pickupname, HUDFONT, 7, CWhite);
 		}
+		setalign("right");
+		drawstring(screenwidth()/2 - AMMOSPACE_X, HUDROW3_Y, cg_weapons[cg.pps.weapon[0]].item->pickupname, HUDFONT, 7, CWhite);
 	}
 
 	// secondary ammo
@@ -418,7 +415,7 @@ drawstatusbar(void)
 
 		value = ps->ammo[cent->currstate.weapon[1]];
 		if(value == -1)
-			s = "inf";
+			s = "--";
 		else
 			s = va("%d", value);
 		fillrect(screenwidth()/2 + AMMOSPACE_X, HUDROW2_Y, bgwidth, HUDFONTSIZE, bgclr);
@@ -428,17 +425,14 @@ drawstatusbar(void)
 
 		// draw a 2D icon for ammo
 		if(cg_drawIcons.integer){
-			float strh;
-
 			setalign("midcenter");
 			//drawpic(0.5f*screenwidth() + 74 - 2, 300 - 2 + 80, 16 + 4, 16 + 4, cgs.media.selectShader);
 			drawpic(screenwidth()/2 + AMMOSPACE_X - HUDICONSPACE_X,
 			   HUDROW2_Y + HUDFONTSIZE/2, HUDICONSIZE, HUDICONSIZE,
 			   cg_weapons[cg.pps.weapon[1]].ammoicon);
-			strh = 7;
-			setalign("left");
-			drawstring(screenwidth()/2 + AMMOSPACE_X, HUDROW3_Y, cg_weapons[cg.pps.weapon[1]].item->pickupname, HUDFONT, 7, CWhite);
 		}
+		setalign("left");
+		drawstring(screenwidth()/2 + AMMOSPACE_X, HUDROW3_Y, cg_weapons[cg.pps.weapon[1]].item->pickupname, HUDFONT, 7, CWhite);
 	}
 
 	// health
@@ -467,14 +461,30 @@ drawstatusbar(void)
 	// shield
 	setalign("left");
 	value = ps->stats[STAT_ARMOR];
-	s = va("%d", value);
 	VectorCopy4(CWhite, clr);
 	s = va("%d", value);
 	fillrect(screenwidth()/2 + HEALTHSPACE_X, HUDROW1_Y, bgwidth, HUDFONTSIZE, bgclr);
 	drawstring(screenwidth()/2 + HEALTHSPACE_X + pad, HUDROW1_Y, s, HUDFONT, HUDFONTSIZE, clr);
-	// if we didn't draw a 3D icon, draw a 2D icon for armor
-	if(0 && cg_drawIcons.integer)
-		drawpic(370 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE, cgs.media.armorIcon);
+	// draw a 2D icon for armor
+	if(cg_drawIcons.integer){
+		qhandle_t shader;
+
+		switch(cg.pps.stats[STAT_ARMORTYPE]){
+		default:
+			shader = cgs.media.shieldGreenIcon;
+			break;
+		case ARMOR_YELLOW:
+			shader = cgs.media.shieldYellowIcon;
+			break;
+		case ARMOR_RED:
+			shader = cgs.media.shieldRedIcon;
+			break;
+		}
+		setalign("midcenter\n");
+		drawpic(screenwidth()/2 + HEALTHSPACE_X + bgwidth + HUDICONSIZE/2,
+		   HUDROW1_Y + HUDFONTSIZE/2, HUDICONSIZE, HUDICONSIZE,
+		   shader);
+	}
 
 	setalign("");
 }

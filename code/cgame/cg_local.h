@@ -760,8 +760,9 @@ typedef struct
 	qhandle_t	thrustFlameModel;
 	animation_t	thrustFlameAnims[MAX_ANIMATIONS];
 
-	qhandle_t	armorModel;
-	qhandle_t	armorIcon;
+	qhandle_t	shieldGreenIcon;
+	qhandle_t	shieldYellowIcon;
+	qhandle_t	shieldRedIcon;
 
 	qhandle_t	teamStatusBar;
 

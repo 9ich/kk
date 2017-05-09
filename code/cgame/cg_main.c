@@ -902,8 +902,9 @@ reggraphics(void)
 
 	cgs.media.thrustFlameModel = trap_R_RegisterModel("models/players/thrust.md3");
 
-	cgs.media.armorModel = trap_R_RegisterModel("models/powerups/armor/armor_yel.md3");
-	cgs.media.armorIcon = trap_R_RegisterShaderNoMip("icons/iconr_yellow");
+	cgs.media.shieldGreenIcon = trap_R_RegisterShaderNoMip("icons/shield_green");
+	cgs.media.shieldYellowIcon = trap_R_RegisterShaderNoMip("icons/shield_yellow");
+	cgs.media.shieldRedIcon = trap_R_RegisterShaderNoMip("icons/shield_red");
 
 	cgs.media.machinegunBrassModel = trap_R_RegisterModel("models/weapons2/shells/m_shell.md3");
 	cgs.media.shotgunBrassModel = trap_R_RegisterModel("models/weapons2/shells/s_shell.md3");
