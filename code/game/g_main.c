@@ -2093,7 +2093,7 @@ chkreadyplayers(void)
 			trap_SetConfigstring(CS_LAST_READY, va("ready\\%i", i));
 		}else if(g_clients[i].ready && !rdy){
 			g_clients[i].ready = qfalse;
-			trap_SetConfigstring(CS_LAST_READY, va("notready\\%i", i));
+			trap_SetConfigstring(CS_LAST_READY, va("unready\\%i", i));
 		}
 	}
 }

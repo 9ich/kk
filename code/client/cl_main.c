@@ -3401,7 +3401,7 @@ void CL_Ready_f( void )
 	Cvar_Set("cl_ready", "1");
 }
 
-void CL_NotReady_f( void )
+void CL_Unready_f( void )
 {
 	Cvar_Set("cl_ready", "0");
 }
@@ -3906,8 +3906,8 @@ void CL_Init( void ) {
 	Cmd_AddCommand ("video", CL_Video_f );
 	Cmd_AddCommand ("stopvideo", CL_StopVideo_f );
 	Cmd_AddCommand ("ready", CL_Ready_f );
-	Cmd_AddCommand ("notready", CL_NotReady_f );
-	Cmd_AddCommand ("auth", CL_Auth_f );
+	Cmd_AddCommand ("unready", CL_Unready_f );
+	Cmd_AddCommand ("unready", CL_Auth_f );
 	Cmd_AddCommand ("register", CL_AuthRegister_f );
 	Cmd_AddCommand ("delaccount", CL_AuthDelaccount_f );
 	if( !com_dedicated->integer ) {

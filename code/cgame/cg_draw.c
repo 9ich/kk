@@ -2009,8 +2009,8 @@ drawreadyup(void)
 	if(Q_strncmp(cs, "ready\\", strlen("ready\\")) == 0){
 		cs += strlen("ready\\");
 		msg = "is ready";
-	}else if(Q_strncmp(cs, "notready\\", strlen("notready\\")) == 0){
-		cs += strlen("notready\\");
+	}else if(Q_strncmp(cs, "unready\\", strlen("unready\\")) == 0){
+		cs += strlen("unready\\");
 		msg = "is not ready";
 	}
 
