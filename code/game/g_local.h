@@ -36,7 +36,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MULTIKILL_TIME			3000	// max interval between each multikill kill
 #define REWARD_SPRITE_TIME		2000
 #define AFK_TIME			10000	// player is inactive but not yet kicked
-#define ROUND_END_WAIT			5000	// wait after a clan arena round has ended
+#define ROUND_END_WAIT			1000	// wait after a clan arena round has ended
 
 #define INTERMISSION_DELAY_TIME		1000
 #define SP_INTERMISSION_DELAY_TIME	5000
