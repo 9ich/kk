@@ -612,6 +612,24 @@ setupcpround(void)
 }
 
 void
+forceallunready(void)
+{
+	char info[MAX_INFO_STRING];
+	int i;
+
+	for(i = 0; i < g_maxclients.integer; i++){
+		g_clients[i].ready = qfalse;
+		if(g_clients[i].pers.connected != CON_CONNECTED)
+			continue;
+		trap_GetUserinfo(i, info, sizeof info);
+		if(!Info_Validate(info))
+			continue;
+		Info_SetValueForKey(info, "cl_ready", "0");
+		trap_SetUserinfo(i, info);
+	}
+}
+
+void
 gameinit(int levelTime, int randomSeed, int restart)
 {
 	int i;
@@ -697,6 +715,7 @@ gameinit(int levelTime, int randomSeed, int restart)
 		}else if(g_gametype.integer == GT_CP){
 			setupcpround();
 		}
+		forceallunready();
 	}else if(g_doWarmup.integer){	// Turn it on
 		logprintf("setting WARMUP_NEEDPLAYERS, g_dowarmup != 0\n");
 		setwarmup(WARMUP_NEEDPLAYERS, -1);
@@ -2071,6 +2090,8 @@ runthink(gentity_t *ent)
 
 /*
  * Checks if anyone has just readied up.
+ * 
+ * FIXME: move to clientuserinfochanged?
  */
 static void
 chkreadyplayers(void)
