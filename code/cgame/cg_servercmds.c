@@ -87,7 +87,7 @@ parseteaminfo(void)
 
 		cgs.clientinfo[client].location = atoi(cgargv(i * 6 + 3));
 		cgs.clientinfo[client].health = atoi(cgargv(i * 6 + 4));
-		cgs.clientinfo[client].armor = atoi(cgargv(i * 6 + 5));
+		cgs.clientinfo[client].shield = atoi(cgargv(i * 6 + 5));
 		cgs.clientinfo[client].currweap = atoi(cgargv(i * 6 + 6));
 		cgs.clientinfo[client].powerups = atoi(cgargv(i * 6 + 7));
 	}

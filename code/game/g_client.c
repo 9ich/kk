@@ -921,10 +921,10 @@ clientspawn(gentity_t *ent)
 		ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH] + 25;
 
 	if(g_gametype.integer == GT_CA)
-		client->ps.stats[STAT_ARMOR] = 200;
+		client->ps.stats[STAT_SHIELD] = 200;
 
-	if(client->ps.stats[STAT_ARMOR] != 0)
-		client->ps.stats[STAT_ARMORTYPE] = ARMOR_YELLOW;
+	if(client->ps.stats[STAT_SHIELD] != 0)
+		client->ps.stats[STAT_SHIELDTYPE] = SHIELD_YELLOW;
 
 	setorigin(ent, spawn_origin);
 	veccpy(spawn_origin, client->ps.origin);

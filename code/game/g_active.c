@@ -40,7 +40,7 @@ playerdmgfeedback(gentity_t *player)
 		return;
 
 	// total points of damage shot at the player this frame
-	count = client->dmgblood + client->dmgarmor;
+	count = client->dmgblood + client->dmgshield;
 	if(count == 0)
 		return;	// didn't take any damage
 
@@ -73,7 +73,7 @@ playerdmgfeedback(gentity_t *player)
 
 	// clear totals
 	client->dmgblood = 0;
-	client->dmgarmor = 0;
+	client->dmgshield = 0;
 	client->dmgknockback = 0;
 }
 
@@ -115,7 +115,7 @@ playerworldeffects(gentity_t *ent)
 				ent->paindebouncetime = level.time + 200;
 
 				entdamage(ent, nil, nil, nil, nil,
-					 ent->damage, DAMAGE_NO_ARMOR, MOD_WATER);
+					 ent->damage, DAMAGE_NO_SHIELD, MOD_WATER);
 			}
 		}
 	}else{
@@ -380,9 +380,9 @@ clienttimeractions(gentity_t *ent, int msec)
 			ent->health--;
 
 
-		// count down armor when over max
-		if(client->ps.stats[STAT_ARMOR] > client->ps.stats[STAT_MAX_HEALTH])
-			client->ps.stats[STAT_ARMOR]--;
+		// count down shield when over max
+		if(client->ps.stats[STAT_SHIELD] > client->ps.stats[STAT_MAX_HEALTH])
+			client->ps.stats[STAT_SHIELD]--;
 	}
 #ifdef MISSIONPACK
 	if(bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].tag == PW_AMMOREGEN){

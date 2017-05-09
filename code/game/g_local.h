@@ -301,7 +301,7 @@ struct gclient_s
 
 	// sum up damage over an entire frame, so
 	// shotgun blasts give a single big kick
-	int		dmgarmor;		// damage absorbed by armor
+	int		dmgshield;		// damage absorbed by shield
 	int		dmgblood;		// damage taken out of health
 	int		dmgknockback;		// impact damage
 	vec3_t		dmgfrom;		// origin for vector calculation
@@ -336,7 +336,7 @@ struct gclient_s
 	int		switchteamtime;		// time the player switched teams
 
 	// residualtime is used to handle events that happen every second
-	// like health / armor countdowns and regeneration
+	// like health / shield countdowns and regeneration
 	int		residualtime;
 
 #ifdef MISSIONPACK
@@ -480,7 +480,7 @@ void		setrespawn(gentity_t *ent, float delay);
 void		itemspawn(gentity_t *ent, gitem_t *item);
 void		itemspawnfinish(gentity_t *ent);
 void		weap_think(gentity_t *ent);
-int		armorindex(gentity_t *ent);
+int		shieldindex(gentity_t *ent);
 void		addammo(gentity_t *ent, int weapon, int count);
 void		item_touch(gentity_t *ent, gentity_t *other, trace_t *trace);
 
@@ -532,11 +532,11 @@ void		giveaward(gclient_t *cl, int award);
 
 // damage flags
 #define DAMAGE_RADIUS			0x00000001	// damage was indirect
-#define DAMAGE_NO_ARMOR			0x00000002	// armour does not protect from this damage
+#define DAMAGE_NO_SHIELD			0x00000002	// armour does not protect from this damage
 #define DAMAGE_NO_KNOCKBACK		0x00000004	// do not affect velocity, just view angles
-#define DAMAGE_NO_PROTECTION		0x00000008	// armor, shields, invulnerability, and godmode have no effect
+#define DAMAGE_NO_PROTECTION		0x00000008	// shields, invulnerability, and godmode have no effect
 #ifdef MISSIONPACK
-#define DAMAGE_NO_TEAM_PROTECTION	0x00000010	// armor, shields, invulnerability, and godmode have no effect
+#define DAMAGE_NO_TEAM_PROTECTION	0x00000010	// shields, invulnerability, and godmode have no effect
 #endif
 
 // g_missile.c

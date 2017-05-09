@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   movers and respawn apropriately.
 */
 
-#define RESPAWN_ARMOR		25
+#define RESPAWN_SHIELD		25
 #define RESPAWN_HEALTH		35
 #define RESPAWN_AMMO		40
 #define RESPAWN_HOLDABLE	60
@@ -131,7 +131,7 @@ Pickup_PersistantPowerup(gentity_t *ent, gentity_t *other)
 		other->health = max;
 		other->client->ps.stats[STAT_HEALTH] = max;
 		other->client->ps.stats[STAT_MAX_HEALTH] = max;
-		other->client->ps.stats[STAT_ARMOR] = max;
+		other->client->ps.stats[STAT_SHIELD] = max;
 		other->client->pers.maxhealth = max;
 
 		break;
@@ -143,7 +143,7 @@ Pickup_PersistantPowerup(gentity_t *ent, gentity_t *other)
 		if(handicap<=0.0f || handicap>100.0f)
 			handicap = 100.0f;
 		other->client->pers.maxhealth = handicap;
-		other->client->ps.stats[STAT_ARMOR] = 0;
+		other->client->ps.stats[STAT_SHIELD] = 0;
 		break;
 
 	case PW_DOUBLER:
@@ -300,13 +300,13 @@ Pickup_Armor(gentity_t *ent, gentity_t *other)
 #ifdef MISSIONPACK
 	int upperBound;
 
-	other->client->ps.stats[STAT_ARMOR] += ent->item->quantity;
+	other->client->ps.stats[STAT_SHIELD] += ent->item->quantity;
 
-	if(Q_stricmp(ent->item->classname, "item_armor_shard") == 0){
-		if(other->client->ps.stats[STAT_ARMORTYPE] == 0)
-			other->client->ps.stats[STAT_ARMORTYPE] = ent->item->tag;
+	if(Q_stricmp(ent->item->classname, "item_shield_tiny") == 0){
+		if(other->client->ps.stats[STAT_SHIELDTYPE] == 0)
+			other->client->ps.stats[STAT_SHIELDTYPE] = ent->item->tag;
 	}else{
-		other->client->ps.stats[STAT_ARMORTYPE] = ent->item->tag;
+		other->client->ps.stats[STAT_SHIELDTYPE] = ent->item->tag;
 	}
 
 	if(other->client && bg_itemlist[other->client->ps.stats[STAT_PERSISTANT_POWERUP]].tag == PW_GUARD)
@@ -314,17 +314,17 @@ Pickup_Armor(gentity_t *ent, gentity_t *other)
 	else
 		upperBound = other->client->ps.stats[STAT_MAX_HEALTH] * 2;
 
-	if(other->client->ps.stats[STAT_ARMOR] > upperBound)
-		other->client->ps.stats[STAT_ARMOR] = upperBound;
+	if(other->client->ps.stats[STAT_SHIELD] > upperBound)
+		other->client->ps.stats[STAT_SHIELD] = upperBound;
 
 #else
-	other->client->ps.stats[STAT_ARMOR] += ent->item->quantity;
-	if(other->client->ps.stats[STAT_ARMOR] > other->client->ps.stats[STAT_MAX_HEALTH] * 2)
-		other->client->ps.stats[STAT_ARMOR] = other->client->ps.stats[STAT_MAX_HEALTH] * 2;
+	other->client->ps.stats[STAT_SHIELD] += ent->item->quantity;
+	if(other->client->ps.stats[STAT_SHIELD] > other->client->ps.stats[STAT_MAX_HEALTH] * 2)
+		other->client->ps.stats[STAT_SHIELD] = other->client->ps.stats[STAT_MAX_HEALTH] * 2;
 
 #endif
 
-	return RESPAWN_ARMOR;
+	return RESPAWN_SHIELD;
 }
 
 //======================================================================
@@ -423,7 +423,7 @@ item_touch(gentity_t *ent, gentity_t *other, trace_t *trace)
 		respawn = Pickup_Ammo(ent, other);
 //		predict = qfalse;
 		break;
-	case IT_ARMOR:
+	case IT_SHIELD:
 		respawn = Pickup_Armor(ent, other);
 		break;
 	case IT_HEALTH:

@@ -1366,7 +1366,7 @@ bot_moveresult_t BotFinishTravel_WaterJump(bot_movestate_t *ms, aas_reachability
 	//if not touching any water anymore don't do anything
 	//otherwise the bot sometimes keeps jumping?
 	VectorCopy(ms->origin, pnt);
-	pnt[2] -= 32;	//extra for q2dm4 near red armor/mega health
+	pnt[2] -= 32;	//extra for q2dm4 near red shield/mega health
 	if (!(AAS_PointContents(pnt) & (CONTENTS_LAVA|CONTENTS_SLIME|CONTENTS_WATER))) return result;
 	//swim straight to reachability end
 	VectorSubtract(reach->end, ms->origin, dir);

@@ -1467,8 +1467,8 @@ BotUpdateInventory(bot_state_t *bs)
 	int oldinventory[MAX_ITEMS];
 
 	memcpy(oldinventory, bs->inventory, sizeof(oldinventory));
-	//armor
-	bs->inventory[INVENTORY_ARMOR] = bs->cur_ps.stats[STAT_ARMOR];
+	//shield
+	bs->inventory[INVENTORY_SHIELD] = bs->cur_ps.stats[STAT_SHIELD];
 	//weapons
 	bs->inventory[INVENTORY_GAUNTLET] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_GAUNTLET)) != 0;
 	bs->inventory[INVENTORY_SHOTGUN] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_SHOTGUN)) != 0;
@@ -1909,8 +1909,8 @@ BotAggression(bot_state_t *bs)
 	if(bs->inventory[INVENTORY_HEALTH] < 60) return 0;
 	//if the bot is low on health
 	if(bs->inventory[INVENTORY_HEALTH] < 80)
-		//if the bot has insufficient armor
-		if(bs->inventory[INVENTORY_ARMOR] < 40) return 0;
+		//if the bot has insufficient shield
+		if(bs->inventory[INVENTORY_SHIELD] < 40) return 0;
 	//if the bot can use the bfg
 	if(bs->inventory[INVENTORY_BFG10K] > 0 &&
 	   bs->inventory[INVENTORY_BFGAMMO] > 7) return 100;
@@ -2084,8 +2084,8 @@ BotCanAndWantsToRocketJump(bot_state_t *bs)
 	if(bs->inventory[INVENTORY_HEALTH] < 60) return qfalse;
 	//if not full health
 	if(bs->inventory[INVENTORY_HEALTH] < 90)
-		//if the bot has insufficient armor
-		if(bs->inventory[INVENTORY_ARMOR] < 40) return qfalse;
+		//if the bot has insufficient shield
+		if(bs->inventory[INVENTORY_SHIELD] < 40) return qfalse;
 	rocketjumper = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_WEAPONJUMPING, 0, 1);
 	if(rocketjumper < 0.5) return qfalse;
 	return qtrue;
@@ -2112,8 +2112,8 @@ BotHasPersistantPowerupAndWeapon(bot_state_t *bs)
 	if(bs->inventory[INVENTORY_HEALTH] < 60) return qfalse;
 	//if the bot is low on health
 	if(bs->inventory[INVENTORY_HEALTH] < 80)
-		//if the bot has insufficient armor
-		if(bs->inventory[INVENTORY_ARMOR] < 40) return qfalse;
+		//if the bot has insufficient shield
+		if(bs->inventory[INVENTORY_SHIELD] < 40) return qfalse;
 	//if the bot can use the bfg
 	if(bs->inventory[INVENTORY_BFG10K] > 0 &&
 	   bs->inventory[INVENTORY_BFGAMMO] > 7) return qtrue;

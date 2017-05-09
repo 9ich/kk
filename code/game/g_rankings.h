@@ -51,7 +51,7 @@ Key digits:
                         02 = weapon
                         03 = ammo
                         04 = health
-                        05 = armor
+                        05 = shield
                         06 = powerup
                         07 = holdable
                         08 = hazard
@@ -317,13 +317,13 @@ Key digits:
 #define QGR_KEY_HEALTH_50	1111040300
 #define QGR_KEY_HEALTH_MEGA	1111040400
 
-// armor keys
-#define QGR_KEY_ARMOR		1111050000
-#define QGR_KEY_ARMOR_TOTAL	1111050001
+// shield keys
+#define QGR_KEY_SHIELD		1111050000
+#define QGR_KEY_SHIELD_TOTAL	1111050001
 
-#define QGR_KEY_ARMOR_SHARD	1111050100
-#define QGR_KEY_ARMOR_YELLOW	1111050200
-#define QGR_KEY_ARMOR_RED	1111050300
+#define QGR_KEY_SHIELD_SHARD	1111050100
+#define QGR_KEY_SHIELD_YELLOW	1111050200
+#define QGR_KEY_SHIELD_RED	1111050300
 
 // powerup keys
 #define QGR_KEY_POWERUP		1111060000

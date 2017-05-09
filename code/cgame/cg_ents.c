@@ -329,7 +329,7 @@ doitem(centity_t *cent)
 
 	// accompanying rings / spheres for powerups
 	if(!cg_simpleItems.integer){
-		if(item->type == IT_HEALTH || item->type == IT_POWERUP || item->type == IT_ARMOR)
+		if(item->type == IT_HEALTH || item->type == IT_POWERUP || item->type == IT_SHIELD)
 			if((ent.hModel = cg_items[es->modelindex].models[1]) != 0){
 				// scale up if respawning
 				if(frac != 1.0){

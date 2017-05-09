@@ -3531,8 +3531,8 @@ void AAS_SetWeaponJumpAreaFlags(void)
 	{
 		if (!AAS_ValueForBSPEpairKey(ent, "classname", classname, MAX_EPAIRKEY)) continue;
 		if (
-			!strcmp(classname, "item_armor_body") ||
-			!strcmp(classname, "item_armor_combat") ||
+			!strcmp(classname, "item_shield_body") ||
+			!strcmp(classname, "item_shield_combat") ||
 			!strcmp(classname, "item_health_mega") ||
 			!strcmp(classname, "weapon_grenadelauncher") ||
 			!strcmp(classname, "weapon_rocketlauncher") ||

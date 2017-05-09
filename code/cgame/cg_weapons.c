@@ -715,7 +715,7 @@ registeritemgfx(int itemNum)
 
 	// powerups have an accompanying ring or sphere
 	if(item->type == IT_POWERUP || item->type == IT_HEALTH ||
-	   item->type == IT_ARMOR || item->type == IT_HOLDABLE){
+	   item->type == IT_SHIELD || item->type == IT_HOLDABLE){
 		int i;
 
 		for(i = 0; i < ARRAY_LEN(item->model); i++)

@@ -57,7 +57,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},	// leave index 0 alone
 
-	// ARMOR
+	// SHIELD
 
 /*QUAKED item_shield_tiny (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
@@ -67,11 +67,11 @@ gitem_t bg_itemlist[] =
 		{"models/powerups/shieldblob/shieldblob.md3",
 		 "models/powerups/shieldblob/shieldsphere.md3",
 		 nil, nil},
-/* icon */ "icons/armor_shard",
+/* icon */ "icons/shield_tiny",
 /* pickup */ "5 Shield",
 		5,
-		IT_ARMOR,
-		ARMOR_GREEN,
+		IT_SHIELD,
+		SHIELD_GREEN,
 /* precache */ "",
 /* sounds */ ""
 	},
@@ -85,11 +85,11 @@ gitem_t bg_itemlist[] =
 		 "models/powerups/shieldblob/shieldsphere.md3",
 		 "models/powerups/shieldblob/shieldblob.md3",
 		 nil},
-/* icon */ "icons/armor_yellow",
+/* icon */ "icons/shield_green",
 /* pickup */ "50 Shield",
 		50,
-		IT_ARMOR,
-		ARMOR_GREEN,
+		IT_SHIELD,
+		SHIELD_GREEN,
 /* precache */ "",
 /* sounds */ ""
 	},
@@ -103,11 +103,11 @@ gitem_t bg_itemlist[] =
 		 "models/powerups/shieldblob/shieldsphere.md3",
 		 "models/powerups/shieldblob/shieldblob.md3",
 		 nil},
-/* icon */ "icons/armor_yellow",
+/* icon */ "icons/shield_yellow",
 /* pickup */ "100 Shield",
 		100,
-		IT_ARMOR,
-		ARMOR_YELLOW,
+		IT_SHIELD,
+		SHIELD_YELLOW,
 /* precache */ "",
 /* sounds */ ""
 	},
@@ -121,11 +121,11 @@ gitem_t bg_itemlist[] =
 		 "models/powerups/shieldblob/shieldsphere.md3",
 		 "models/powerups/redshieldgen/redshieldgen2.md3",
 		 "models/powerups/shieldblob/shieldblob.md3"},
-/* icon */ "icons/armor_red",
+/* icon */ "icons/shield_red",
 /* pickup */ "150 Shield",
 		150,
-		IT_ARMOR,
-		ARMOR_RED,
+		IT_SHIELD,
+		SHIELD_RED,
 /* precache */ "",
 /* sounds */ ""
 	},
@@ -1074,22 +1074,22 @@ cangrabitem(int gametype, const entityState_t *ent, const playerState_t *ps)
 			return qfalse;	// can't hold any more
 		return qtrue;
 
-	case IT_ARMOR:
+	case IT_SHIELD:
 #ifdef MISSIONPACK
 		if(bg_itemlist[ps->stats[STAT_PERSISTANT_POWERUP]].tag == PW_SCOUT)
 			return qfalse;
 
-		// we also clamp armor to the maxhealth for handicapping
+		// we also clamp shield to the maxhealth for handicapping
 		if(bg_itemlist[ps->stats[STAT_PERSISTANT_POWERUP]].tag == PW_GUARD)
 			upperBound = ps->stats[STAT_MAX_HEALTH];
 		else
 			upperBound = ps->stats[STAT_MAX_HEALTH] * 2;
 
-		if(ps->stats[STAT_ARMOR] >= upperBound)
+		if(ps->stats[STAT_SHIELD] >= upperBound)
 			return qfalse;
 
 #else
-		if(ps->stats[STAT_ARMOR] >= ps->stats[STAT_MAX_HEALTH] * 2)
+		if(ps->stats[STAT_SHIELD] >= ps->stats[STAT_MAX_HEALTH] * 2)
 			return qfalse;
 
 #endif

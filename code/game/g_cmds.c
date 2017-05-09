@@ -229,9 +229,9 @@ Cmd_Give_f(gentity_t *ent)
 			return;
 	}
 
-	if(give_all || Q_stricmp(name, "armor") == 0){
-		ent->client->ps.stats[STAT_ARMOR] = 200;
-		ent->client->ps.stats[STAT_ARMORTYPE] = ARMOR_YELLOW;
+	if(give_all || Q_stricmp(name, "shield") == 0){
+		ent->client->ps.stats[STAT_SHIELD] = 200;
+		ent->client->ps.stats[STAT_SHIELDTYPE] = SHIELD_YELLOW;
 
 		if(!give_all)
 			return;

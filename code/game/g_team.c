@@ -1080,7 +1080,7 @@ clientcmp(const void *a, const void *b)
 
 /*
 Format:
-	clientNum location health armor weapon powerups
+	clientNum location health shield weapon powerups
 */
 void
 teamplayinfomsg(gentity_t *ent)
@@ -1130,7 +1130,7 @@ teamplayinfomsg(gentity_t *ent)
 		player = g_entities + i;
 		if(player->inuse && player->client->sess.team == team){
 			h = player->client->ps.stats[STAT_HEALTH];
-			a = player->client->ps.stats[STAT_ARMOR];
+			a = player->client->ps.stats[STAT_SHIELD];
 			if(h < 0) h = 0;
 			if(a < 0) a = 0;
 

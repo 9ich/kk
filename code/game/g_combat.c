@@ -608,7 +608,7 @@ player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damag
 
 
 int
-chkarmor(gentity_t *ent, int damage, int dflags)
+chkshield(gentity_t *ent, int damage, int dflags)
 {
 	gclient_t *client;
 	int save;
@@ -622,29 +622,29 @@ chkarmor(gentity_t *ent, int damage, int dflags)
 	if(!client)
 		return 0;
 
-	if(client->ps.stats[STAT_ARMOR] < 1)
-		client->ps.stats[STAT_ARMORTYPE] = 0;
+	if(client->ps.stats[STAT_SHIELD] < 1)
+		client->ps.stats[STAT_SHIELDTYPE] = 0;
 
-	if(dflags & DAMAGE_NO_ARMOR)
+	if(dflags & DAMAGE_NO_SHIELD)
 		return 0;
 
-	switch(ent->client->ps.stats[STAT_ARMORTYPE]){
-	case ARMOR_GREEN:
-		protection = ARMOR_GREEN_PROTECTION;
+	switch(ent->client->ps.stats[STAT_SHIELDTYPE]){
+	case SHIELD_GREEN:
+		protection = SHIELD_GREEN_PROTECTION;
 		break;
-	case ARMOR_YELLOW:
-		protection = ARMOR_YELLOW_PROECTION;
+	case SHIELD_YELLOW:
+		protection = SHIELD_YELLOW_PROECTION;
 		break;
-	case ARMOR_RED:
-		protection = ARMOR_RED_PROTECTION;
+	case SHIELD_RED:
+		protection = SHIELD_RED_PROTECTION;
 		break;
 	default:
 		protection = 0;
 		break;
 	}
 
-	// armor
-	count = client->ps.stats[STAT_ARMOR];
+	// shield
+	count = client->ps.stats[STAT_SHIELD];
 	save = ceil(damage * protection);
 	if(save >= count)
 		save = count;
@@ -652,7 +652,7 @@ chkarmor(gentity_t *ent, int damage, int dflags)
 	if(!save)
 		return 0;
 
-	client->ps.stats[STAT_ARMOR] -= save;
+	client->ps.stats[STAT_SHIELD] -= save;
 
 	return save;
 }
@@ -742,9 +742,9 @@ inflictor, attacker, dir, and point can be nil for environmental effects
 
 dflags		these flags are used to control how T_Damage works
         DAMAGE_RADIUS			damage was indirect (from a nearby explosion)
-        DAMAGE_NO_ARMOR			armor does not protect from this damage
+        DAMAGE_NO_SHIELD			shield does not protect from this damage
         DAMAGE_NO_KNOCKBACK		do not affect velocity, just view angles
-        DAMAGE_NO_PROTECTION	kills godmode, armor, everything
+        DAMAGE_NO_PROTECTION	kills godmode, shield, everything
 */
 
 void
@@ -893,7 +893,7 @@ entdamage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			attacker->client->ps.persistant[PERS_HITS]--;
 		else
 			attacker->client->ps.persistant[PERS_HITS]++;
-		attacker->client->ps.persistant[PERS_ATTACKEE_ARMOR] = (targ->health<<8)|(client->ps.stats[STAT_ARMOR]);
+		attacker->client->ps.persistant[PERS_ATTACKEE_SHIELD] = (targ->health<<8)|(client->ps.stats[STAT_SHIELD]);
 	}
 
 	// always give half damage if hurting self
@@ -905,12 +905,12 @@ entdamage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		damage = 1;
 	take = damage;
 
-	// save some from armor
-	asave = chkarmor(targ, take, dflags);
+	// save some from shield
+	asave = chkshield(targ, take, dflags);
 	take -= asave;
 
 	if(g_debugDamage.integer)
-		gprintf("%i: client:%i health:%i damage:%i armor:%i\n", level.time, targ->s.number,
+		gprintf("%i: client:%i health:%i damage:%i shield:%i\n", level.time, targ->s.number,
 			 targ->health, take, asave);
 
 	// add to the damage inflicted on a player this frame
@@ -921,7 +921,7 @@ entdamage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			client->ps.persistant[PERS_ATTACKER] = attacker->s.number;
 		else
 			client->ps.persistant[PERS_ATTACKER] = ENTITYNUM_WORLD;
-		client->dmgarmor += asave;
+		client->dmgshield += asave;
 		client->dmgblood += take;
 		client->dmgknockback += knockback;
 		if(dir){

@@ -181,7 +181,7 @@ drawpickupflash()
 		alpha *= f;
 
 		switch(bg_itemlist[cg.itempkup].type){
-		case IT_ARMOR:
+		case IT_SHIELD:
 			coloralpha(clr, CSlateBlue, alpha);
 			break;
 		case IT_HEALTH:
@@ -460,23 +460,23 @@ drawstatusbar(void)
 
 	// shield
 	setalign("left");
-	value = ps->stats[STAT_ARMOR];
+	value = ps->stats[STAT_SHIELD];
 	VectorCopy4(CWhite, clr);
 	s = va("%d", value);
 	fillrect(screenwidth()/2 + HEALTHSPACE_X, HUDROW1_Y, bgwidth, HUDFONTSIZE, bgclr);
 	drawstring(screenwidth()/2 + HEALTHSPACE_X + pad, HUDROW1_Y, s, HUDFONT, HUDFONTSIZE, clr);
-	// draw a 2D icon for armor
+	// draw a 2D icon for shield
 	if(cg_drawIcons.integer){
 		qhandle_t shader;
 
-		switch(cg.pps.stats[STAT_ARMORTYPE]){
+		switch(cg.pps.stats[STAT_SHIELDTYPE]){
 		default:
 			shader = cgs.media.shieldGreenIcon;
 			break;
-		case ARMOR_YELLOW:
+		case SHIELD_YELLOW:
 			shader = cgs.media.shieldYellowIcon;
 			break;
-		case ARMOR_RED:
+		case SHIELD_RED:
 			shader = cgs.media.shieldRedIcon;
 			break;
 		}
@@ -847,7 +847,7 @@ drawteamoverlay(float y, qboolean right, qboolean upper)
 
 			colorforhealth(ci->health, hcolor);
 
-			Com_sprintf(st, sizeof(st), "%3i %3i", ci->armor);
+			Com_sprintf(st, sizeof(st), "%3i %3i", ci->shield);
 
 			xx = x + TINYCHAR_WIDTH * 3 +
 			     TINYCHAR_WIDTH * pwidth + TINYCHAR_WIDTH * lwidth;

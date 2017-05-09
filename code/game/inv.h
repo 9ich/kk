@@ -21,8 +21,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #define INVENTORY_NONE			0
-//armor
-#define INVENTORY_ARMOR			1
+//shield
+#define INVENTORY_SHIELD			1
 //weapons
 #define INVENTORY_GAUNTLET		4
 #define INVENTORY_SHOTGUN		5
@@ -86,9 +86,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 
 //item numbers (make sure they are in sync with bg_itemlist in bg_misc.c)
-#define MODELINDEX_ARMORSHARD		1
-#define MODELINDEX_ARMORCOMBAT		2
-#define MODELINDEX_ARMORBODY		3
+#define MODELINDEX_SHIELDSHARD		1
+#define MODELINDEX_SHIELDCOMBAT		2
+#define MODELINDEX_SHIELDBODY		3
 #define MODELINDEX_HEALTHSMALL		4
 #define MODELINDEX_HEALTH		5
 #define MODELINDEX_HEALTHLARGE		6

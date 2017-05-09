@@ -27,18 +27,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define GAME_VERSION		BASEGAME "-1"
 
 #define DEFAULT_GRAVITY		0
-// for STAT_ARMORTYPE
+// for STAT_SHIELDTYPE
 enum
 {
-	ARMOR_NONE,	// 0.00 protection
-	ARMOR_GREEN,	// 0.50
-	ARMOR_YELLOW,	// 0.66
-	ARMOR_RED	// 0.75
+	SHIELD_NONE,	// 0.00 protection
+	SHIELD_GREEN,	// 0.50
+	SHIELD_YELLOW,	// 0.66
+	SHIELD_RED	// 0.75
 };
 
-#define ARMOR_GREEN_PROTECTION	0.50f
-#define ARMOR_YELLOW_PROECTION	0.66f
-#define ARMOR_RED_PROTECTION	0.75f
+#define SHIELD_GREEN_PROTECTION	0.50f
+#define SHIELD_YELLOW_PROECTION	0.66f
+#define SHIELD_RED_PROTECTION	0.75f
 
 #define MAX_ITEMS		256
 #define MAX_CONTROLPOINTS	32
@@ -269,11 +269,11 @@ typedef enum
 	STAT_PERSISTANT_POWERUP,
 #endif
 	STAT_WEAPONS,		// 16 bit fields
-	STAT_ARMOR,
-	STAT_ARMORTYPE,		// red=0.75 protection, yellow=0.66, green=0.5
+	STAT_SHIELD,
+	STAT_SHIELDTYPE,		// red=0.75 protection, yellow=0.66, green=0.5
 	STAT_DEAD_YAW,		// look this direction when dead (FIXME: get rid of?)
 	STAT_CLIENTS_READY,	// bit mask of clients wishing to exit the intermission (FIXME: configstring?)
-	STAT_MAX_HEALTH		// health / armor limit, changable by handicap
+	STAT_MAX_HEALTH		// health / shield limit, changable by handicap
 } statIndex_t;
 
 // player_state->persistant[] indexes
@@ -288,7 +288,7 @@ typedef enum
 	PERS_TEAM,			// player team
 	PERS_SPAWN_COUNT,		// incremented every respawn
 	PERS_ATTACKER,			// clientnum of last damage inflicter
-	PERS_ATTACKEE_ARMOR,		// health/armor of last person we attacked
+	PERS_ATTACKEE_SHIELD,		// health/shield of last person we attacked
 	PERS_KILLED,			// count of the number of times you died
 	PERS_NO_KILLS			// times killed consecutively without getting any kills. Sad!
 } persEnum_t;
@@ -707,7 +707,7 @@ typedef enum
 	IT_BAD,
 	IT_WEAPON,	// EFX: rotate + upscale + minlight
 	IT_AMMO,	// EFX: rotate
-	IT_ARMOR,	// EFX: rotate + minlight
+	IT_SHIELD,	// EFX: rotate + minlight
 	IT_HEALTH,	// EFX: static external sphere + rotating internal
 	IT_POWERUP,	// instant on, timer based
 	// EFX: rotate + external ring that rotates
