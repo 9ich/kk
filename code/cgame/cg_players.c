@@ -1541,11 +1541,6 @@ void drawplayerbbox( centity_t *cent ) {
 		return;
 	}
 
-	// don't draw it for dead players
-	if ( cent->currstate.eFlags & EF_DEAD ) {
-		return;
-	}
-
 	bboxShader = cgs.media.whiteShader;
 	if ( !bboxShader ) {
 		return;
@@ -1569,10 +1564,7 @@ void drawplayerbbox( centity_t *cent ) {
 
 	// set the polygon's vertex colors
 	for ( i = 0; i < 4; i++ ) {
-		verts[i].modulate[0] = 128;
-		verts[i].modulate[1] = 0;
-		verts[i].modulate[2] = 128;
-		verts[i].modulate[3] = 200;
+		MAKERGBA(verts[i].modulate, 255, 0, 0, 200);
 	}
 
 	VectorAdd( cent->lerporigin, maxs, corners[3] );
