@@ -172,6 +172,9 @@ drawpickupflash()
 	float f;
 	float alpha = 0.13f;
 
+	if(!cg_pickupFlash.integer)
+		return;
+
 	f = cg.time - cg.itempkupblendtime;
 	if(f > 0 && f < PICKUP_FLASH_TIME){
 		vec4_t clr;

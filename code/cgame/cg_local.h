@@ -1255,6 +1255,7 @@ extern vmCvar_t cg_rocketExpShockwave;
 extern vmCvar_t cg_rocketExpSparks;
 extern vmCvar_t cg_rocketSmoke;
 extern vmCvar_t cg_rocketFlame;
+extern vmCvar_t	cg_pickupFlash;
 #ifdef MISSIONPACK
 extern vmCvar_t cg_redTeamName;
 extern vmCvar_t cg_blueTeamName;

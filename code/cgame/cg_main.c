@@ -198,7 +198,7 @@ vmCvar_t cg_rocketExpShockwave;
 vmCvar_t cg_rocketExpSparks;
 vmCvar_t cg_rocketSmoke;
 vmCvar_t cg_rocketFlame;
-
+vmCvar_t cg_pickupFlash;
 #ifdef MISSIONPACK
 vmCvar_t cg_redTeamName;
 vmCvar_t cg_blueTeamName;
@@ -340,7 +340,8 @@ static cvarTable_t cvarTable[] = {
 	{&cg_rocketExpSmoke, "cg_rocketExpSmoke", "1", CVAR_ARCHIVE},
 	{&cg_rocketExpSparks, "cg_rocketExpSparks", "60", CVAR_ARCHIVE},
 	{&cg_rocketFlame, "cg_rocketFlame", "1", CVAR_ARCHIVE},
-	{&cg_rocketSmoke, "cg_rocketSmoke", "1", CVAR_ARCHIVE}
+	{&cg_rocketSmoke, "cg_rocketSmoke", "1", CVAR_ARCHIVE},
+	{&cg_pickupFlash, "cg_pickupFlash", "1", CVAR_ARCHIVE}
 //	{ &cg_pmove_fixed, "cg_pmove_fixed", "0", CVAR_USERINFO | CVAR_ARCHIVE }
 };
 
