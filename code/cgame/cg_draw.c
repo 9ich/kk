@@ -360,7 +360,7 @@ drawstatusbar(void)
 	int value;
 	const char *s;
 	vec4_t clr, bgclr;
-	float bgwidth = 70;
+	float bgwidth = 74;
 	float pad = 4;
 
 	if(cg_drawStatus.integer == 0)
