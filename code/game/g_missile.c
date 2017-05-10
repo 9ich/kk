@@ -21,7 +21,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #include "g_local.h"
 
-#define MISSILE_PRESTEP_TIME 10
+int
+prestep(gentity_t *ent)
+{
+	if(ent->client == nil)
+		return 16;
+	return Com_Clamp(0, 60, ent->client->ps.ping/2) + 16;
+}
 
 void
 bouncemissile(gentity_t *ent, trace_t *trace)
@@ -507,7 +513,7 @@ fire_plasma(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->flakradius = bolt->splashradius;
 
 	bolt->s.pos.trType = TR_LINEAR;
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
+	bolt->s.pos.trTime = level.time - prestep(self);	// move a bit on the very first frame
 	veccpy(start, bolt->s.pos.trBase);
 	vecmul(dir, g_plasmaSpeed.value, bolt->s.pos.trDelta);
 	//SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
@@ -577,7 +583,7 @@ fire_grenade(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->die = grenade_die;
 
 	bolt->s.pos.trType = TR_GRAVITY;
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
+	bolt->s.pos.trTime = level.time - prestep(self);	// move a bit on the very first frame
 	veccpy(start, bolt->s.pos.trBase);
 	vecmul(dir, g_grenadeSpeed.value, bolt->s.pos.trDelta);
 //	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
@@ -614,7 +620,7 @@ fire_bfg(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->target_ent = nil;
 
 	bolt->s.pos.trType = TR_LINEAR;
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
+	bolt->s.pos.trTime = level.time - prestep(self);	// move a bit on the very first frame
 	veccpy(start, bolt->s.pos.trBase);
 	vecmul(dir, 2000, bolt->s.pos.trDelta);
 //	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
@@ -650,7 +656,7 @@ fire_bullet(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->target_ent = nil;
 
 	bolt->s.pos.trType = TR_LINEAR;
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
+	bolt->s.pos.trTime = level.time - prestep(self);	// move a bit on the very first frame
 	veccpy(start, bolt->s.pos.trBase);
 	vecmul(dir, g_minigunSpeed.value, bolt->s.pos.trDelta);
 //	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
@@ -718,7 +724,7 @@ fire_rocket(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->target_ent = nil;
 
 	bolt->s.pos.trType = TR_LINEAR;
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
+	bolt->s.pos.trTime = level.time - prestep(self);	// move a bit on the very first frame
 	veccpy(start, bolt->s.pos.trBase);
 	vecmul(dir, g_rocketSpeed.value, bolt->s.pos.trDelta);
 //	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
@@ -898,7 +904,7 @@ fire_grapple(gentity_t *self, vec3_t start, vec3_t dir)
 	hook->target_ent = nil;
 
 	hook->s.pos.trType = TR_LINEAR;
-	hook->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
+	hook->s.pos.trTime = level.time - prestep(self);	// move a bit on the very first frame
 	hook->s.otherEntityNum = self->s.number;// use to match beam in client
 	veccpy(start, hook->s.pos.trBase);
 	vecmul(dir, 99999999, hook->s.pos.trDelta);
@@ -933,7 +939,7 @@ fire_nail(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->target_ent = nil;
 
 	bolt->s.pos.trType = TR_LINEAR;
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
+	bolt->s.pos.trTime = level.time - prestep(self);	// move a bit on the very first frame
 	veccpy(start, bolt->s.pos.trBase);
 	vecmul(dir, 1600, bolt->s.pos.trDelta);
 //	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
@@ -974,7 +980,7 @@ fire_prox(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->s.generic1 = self->client->sess.team;
 
 	bolt->s.pos.trType = TR_GRAVITY;
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
+	bolt->s.pos.trTime = level.time - prestep(self);	// move a bit on the very first frame
 	veccpy(start, bolt->s.pos.trBase);
 	vecmul(dir, 700, bolt->s.pos.trDelta);
 //	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
