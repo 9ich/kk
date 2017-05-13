@@ -892,8 +892,19 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			// of the block
 			if(Q_stricmp(token, "diffuseMap") != 0)
 			{
+				ri.Printf(PRINT_DEVELOPER, "rend1: skipping stage %s in shader '%s'\n", token, shader.name);
 				while(token[0] != 0 && token[0] != '}')
 					token = COM_ParseExt(text, qtrue);
+				// map $whiteimage
+				stage->bundle[0].image[0] = tr.whiteImage;
+				// rgbgen identity
+				stage->rgbGen = CGEN_IDENTITY;
+				// blendfunc blend
+				blendSrcBits = GLS_SRCBLEND_SRC_ALPHA;
+				blendDstBits = GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+				// alphagen const 0
+				stage->constantColor[3] = 0;
+				stage->alphaGen = AGEN_CONST;
 				break;
 			}
 		}
