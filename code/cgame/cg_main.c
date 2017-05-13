@@ -731,7 +731,8 @@ regsounds(void)
 	//cgs.media.sfx_railg = trap_S_RegisterSound ("sound/weapons/railgun/railgf1a.wav", qfalse);
 	cgs.media.sfx_rockexp[0] = trap_S_RegisterSound("sound/weapons/rocket/rocklx1a.wav", qfalse);
 	cgs.media.sfx_rockexp[1] = trap_S_RegisterSound("sound/weapons/rocket/rocklx2a.wav", qfalse);
-	cgs.media.sfx_plasmaexp = trap_S_RegisterSound("sound/weapons/plasma/plasmx1a.wav", qfalse);
+	cgs.media.sfx_plasmaexp[0] = trap_S_RegisterSound("sound/weapons/plasma/plasmx1a.wav", qfalse);
+	cgs.media.sfx_plasmaexp[1] = trap_S_RegisterSound("sound/weapons/plasma/plasmx2a.wav", qfalse);
 #ifdef MISSIONPACK
 	cgs.media.sfx_proxexp = trap_S_RegisterSound("sound/weapons/proxmine/wstbexpl.wav", qfalse);
 	cgs.media.sfx_nghit = trap_S_RegisterSound("sound/weapons/nailgun/wnalimpd.wav", qfalse);

@@ -897,7 +897,7 @@ typedef struct
 	sfxHandle_t	sfx_ric3;
 	//sfxHandle_t	sfx_railg;
 	sfxHandle_t	sfx_rockexp[2];
-	sfxHandle_t	sfx_plasmaexp;
+	sfxHandle_t	sfx_plasmaexp[2];
 #ifdef MISSIONPACK
 	sfxHandle_t	sfx_proxexp;
 	sfxHandle_t	sfx_nghit;

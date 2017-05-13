@@ -656,6 +656,7 @@ registerweap(int weaponNum)
 		MAKERGB(weapinfo->flashcolor, 0.6f, 0.6f, 1.0f);
 		MAKERGB(weapinfo->missilelightcolor, 0.6f, 0.6f, 1.0f);
 		weapinfo->flashsnd[0] = trap_S_RegisterSound("sound/weapons/plasma/hyprbf1a.wav", qfalse);
+		weapinfo->flashsnd[1] = trap_S_RegisterSound("sound/weapons/plasma/hyprbf2a.wav", qfalse);
 		cgs.media.plasmaExplosionShader = trap_R_RegisterShader("models/missiles/plasmaball");
 		cgs.media.railRingsShader = trap_R_RegisterShader("railDisc");
 		break;
@@ -1665,14 +1666,14 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 		mod = cgs.media.ringFlashModel;
 		shader = cgs.media.railExplosionShader;
 		//sfx = cgs.media.sfx_railg;
-		sfx = cgs.media.sfx_plasmaexp;
+		sfx = PICKRANDOM(cgs.media.sfx_plasmaexp);
 		mark = cgs.media.energyMarkShader;
 		radius = 24;
 		break;
 	case WP_PLASMAGUN:
 		mod = cgs.media.ringFlashModel;
 		shader = cgs.media.plasmaExplosionShader;
-		sfx = cgs.media.sfx_plasmaexp;
+		sfx = PICKRANDOM(cgs.media.sfx_plasmaexp);
 		mark = cgs.media.energyMarkShader;
 		isSprite = qtrue;
 		radius = 8;
