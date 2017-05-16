@@ -95,8 +95,7 @@ int AAS_UpdateEntity(int entnum, bot_entitystate_t *state)
 	ent->i.eventParm = state->eventParm;
 	ent->i.powerups = state->powerups;
 	ent->i.weapon = state->weapon;
-	ent->i.legsAnim = state->legsAnim;
-	ent->i.torsoAnim = state->torsoAnim;
+	ent->i.shipanim = state->shipanim;
 	//number of the entity
 	ent->i.number = entnum;
 	//updated so set valid flag

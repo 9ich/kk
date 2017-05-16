@@ -80,13 +80,13 @@ pmbeginanim(int anim)
 {
 	if(pm->ps->pm_type >= PM_DEAD)
 		return;
-	pm->ps->torsoAnim = ((pm->ps->torsoAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT) | anim;
+	pm->ps->shipanim = ((pm->ps->shipanim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT) | anim;
 }
 
 static void
 pmfinishanim(int anim)
 {
-	if((pm->ps->torsoAnim & ~ANIM_TOGGLEBIT) == anim)
+	if((pm->ps->shipanim & ~ANIM_TOGGLEBIT) == anim)
 		return;
 	if(pm->ps->torsoTimer > 0)
 		return;	// a high priority animation is running
@@ -683,7 +683,7 @@ pmfinishweapchange(int slot)
 }
 
 static void
-pmtorsoanim(void)
+pmshipanim(void)
 {
 	if(pm->ps->weaponstate[0] == WEAPON_READY){
 		if(pm->ps->weapon[0] == WP_GAUNTLET)
@@ -1034,16 +1034,6 @@ PmoveSingle(pmove_t *pmove)
 
 	anglevecs(pm->ps->viewangles, pml.forward, pml.right, pml.up);
 
-	if(pm->cmd.upmove < 10)
-		// not holding jump
-		pm->ps->pm_flags &= ~PMF_JUMP_HELD;
-
-	// decide if backpedaling animations should be used
-	if(pm->cmd.forwardmove < 0)
-		pm->ps->pm_flags |= PMF_BACKWARDS_RUN;
-	else if(pm->cmd.forwardmove > 0 || (pm->cmd.forwardmove == 0 && pm->cmd.rightmove))
-		pm->ps->pm_flags &= ~PMF_BACKWARDS_RUN;
-
 	if(pm->ps->pm_type >= PM_DEAD){
 		pm->cmd.forwardmove = 0;
 		pm->cmd.rightmove = 0;
@@ -1104,7 +1094,7 @@ PmoveSingle(pmove_t *pmove)
 	pmweapevents(2);
 
 	// torso animation
-	pmtorsoanim();
+	pmshipanim();
 
 	// entering / leaving water splashes
 	waterevents();

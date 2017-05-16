@@ -26,7 +26,41 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define GAME_VERSION		BASEGAME "-1"
 
+#define MAX_ARENAS	1024
+#define MAX_ARENAS_TEXT 8192
+
+#define MAX_BOTS	1024
+#define MAX_BOTS_TEXT	8192
+
+// 1st shockwave times
+#define KAMI_SHOCKWAVE_STARTTIME	0
+#define KAMI_SHOCKWAVEFADE_STARTTIME	1500
+#define KAMI_SHOCKWAVE_ENDTIME		2000
+// explosion/implosion times
+#define KAMI_EXPLODE_STARTTIME		250
+#define KAMI_IMPLODE_STARTTIME		2000
+#define KAMI_IMPLODE_ENDTIME		2250
+// 2nd shockwave times
+#define KAMI_SHOCKWAVE2_STARTTIME	2000
+#define KAMI_SHOCKWAVE2FADE_STARTTIME	2500
+#define KAMI_SHOCKWAVE2_ENDTIME		3000
+// radius of the models without scaling
+#define KAMI_SHOCKWAVEMODEL_RADIUS	88
+#define KAMI_BOOMSPHEREMODEL_RADIUS	72
+// maximum radius of the models during the effect
+#define KAMI_SHOCKWAVE_MAXRADIUS	1320
+#define KAMI_BOOMSPHERE_MAXRADIUS	720
+#define KAMI_SHOCKWAVE2_MAXRADIUS	704
+
+// hominglauncher
+#define HOMING_SCANWAIT		600
+// pause after locking on so player actually sees reticle change
+#define HOMING_GRACEPERIOD	50
+// how long to remember the last enemy we were locking onto
+#define HOMING_MEMORYTIME	500
+
 #define DEFAULT_GRAVITY		0
+
 // for STAT_SHIELDTYPE
 enum
 {
@@ -200,13 +234,7 @@ typedef enum
 } weaponstate_t;
 
 // pmove->pm_flags
-#define PMF_DUCKED		1
-#define PMF_JUMP_HELD		2
-#define PMF_BACKWARDS_JUMP	8	// go into backwards land
-#define PMF_BACKWARDS_RUN	16	// coast down to backwards run
-#define PMF_TIME_LAND		32	// pm_time is time before rejump
 #define PMF_TIME_KNOCKBACK	64	// pm_time is an air-accelerate only time
-#define PMF_TIME_WATERJUMP	256	// pm_time is waterjump
 #define PMF_RESPAWNED		512	// clear after attack and jump buttons come up
 #define PMF_USE_ITEM_HELD	1024
 #define PMF_GRAPPLE_PULL	2048	// pull towards grapple location
@@ -215,7 +243,7 @@ typedef enum
 #define PMF_INVULEXPAND		16384	// invulnerability sphere set to full size
 #define PMF_WARMUP		32768	// can't fire during warmup
 
-#define PMF_ALL_TIMES		(PMF_TIME_WATERJUMP|PMF_TIME_LAND|PMF_TIME_KNOCKBACK)
+#define PMF_ALL_TIMES		(PMF_TIME_KNOCKBACK)
 
 #define MAXTOUCH		32
 typedef struct
@@ -227,7 +255,6 @@ typedef struct
 	usercmd_t	cmd;
 	int		tracemask;	// collide against these types of surfaces
 	int		debuglevel;	// if set, diagnostic output will be printed
-	qboolean	nofootsteps;	// if the game is setup for no footsteps by the server
 	qboolean	gauntlethit;	// true if a gauntlet attack would actually hit something
 
 	int		framecount;
@@ -426,17 +453,12 @@ typedef enum
 {
 	EV_NONE,
 
-	EV_FALL_SHORT,
-	EV_FALL_MEDIUM,
-	EV_FALL_FAR,
-
 	EV_JUMP_PAD,	// boing sound at origin, jump sound on player
 
-	EV_JUMP,
-	EV_WATER_TOUCH,	// foot touches
-	EV_WATER_LEAVE,	// foot leaves
-	EV_WATER_UNDER,	// head touches
-	EV_WATER_CLEAR,	// head leaves
+	EV_WATER_TOUCH,	// origin touches
+	EV_WATER_LEAVE,	// origin leaves
+	EV_WATER_UNDER,	// origin touches
+	EV_WATER_CLEAR,	// origin leaves
 
 	EV_ITEM_PICKUP,		// normal item pickups are predictable
 	EV_GLOBAL_ITEM_PICKUP,	// powerup / team sounds are broadcast to everyone
@@ -476,15 +498,11 @@ typedef enum
 	EV_GLOBAL_SOUND,	// no attenuation
 	EV_GLOBAL_TEAM_SOUND,
 
-	EV_BULLET_HIT_FLESH,
-	EV_BULLET_HIT_WALL,
-
 	EV_MISSILE_HIT,
 	EV_MISSILE_MISS,
 	EV_MISSILE_MISS_METAL,
 	EV_RAILTRAIL,
 	EV_SHOTGUN,
-	EV_BULLET,	// otherEntity is the shooter
 
 	EV_PAIN,
 	EV_DEATH1,
@@ -513,12 +531,6 @@ typedef enum
 	EV_DEBUG_LINE,
 	EV_STOPLOOPINGSOUND,
 	EV_TAUNT,
-	EV_TAUNT_YES,
-	EV_TAUNT_NO,
-	EV_TAUNT_FOLLOWME,
-	EV_TAUNT_GETFLAG,
-	EV_TAUNT_GUARDBASE,
-	EV_TAUNT_PATROL
 } entity_event_t;
 
 typedef enum
@@ -555,6 +567,7 @@ typedef enum
 	ANIM_FLASH,
 
 	// ET_PLAYER
+	// FIXME
 	BOTH_DEATH1 = 0,
 	BOTH_DEAD1,
 	BOTH_DEATH2,
@@ -751,11 +764,6 @@ gitem_t *	finditemforholdable(holdable_t pw);
 
 qboolean	cangrabitem(int gametype, const entityState_t *ent, const playerState_t *ps);
 
-// g_dmflags->integer flags
-#define DF_NO_FALLING		8
-#define DF_FIXED_FOV		16
-#define DF_NO_FOOTSTEPS		32
-
 // content masks
 #define MASK_ALL		(-1)
 #define MASK_SOLID		(CONTENTS_SOLID)
@@ -801,39 +809,3 @@ void		ps2es(playerState_t *ps, entityState_t *s, qboolean snap);
 void		ps2es_xerp(playerState_t *ps, entityState_t *s, int time, qboolean snap);
 
 qboolean	playertouchingitem(playerState_t *ps, entityState_t *item, int atTime);
-
-#define ARENAS_PER_TIER 4
-#define MAX_ARENAS	1024
-#define MAX_ARENAS_TEXT 8192
-
-#define MAX_BOTS	1024
-#define MAX_BOTS_TEXT	8192
-
-// Kamikaze
-
-// 1st shockwave times
-#define KAMI_SHOCKWAVE_STARTTIME	0
-#define KAMI_SHOCKWAVEFADE_STARTTIME	1500
-#define KAMI_SHOCKWAVE_ENDTIME		2000
-// explosion/implosion times
-#define KAMI_EXPLODE_STARTTIME		250
-#define KAMI_IMPLODE_STARTTIME		2000
-#define KAMI_IMPLODE_ENDTIME		2250
-// 2nd shockwave times
-#define KAMI_SHOCKWAVE2_STARTTIME	2000
-#define KAMI_SHOCKWAVE2FADE_STARTTIME	2500
-#define KAMI_SHOCKWAVE2_ENDTIME		3000
-// radius of the models without scaling
-#define KAMI_SHOCKWAVEMODEL_RADIUS	88
-#define KAMI_BOOMSPHEREMODEL_RADIUS	72
-// maximum radius of the models during the effect
-#define KAMI_SHOCKWAVE_MAXRADIUS	1320
-#define KAMI_BOOMSPHERE_MAXRADIUS	720
-#define KAMI_SHOCKWAVE2_MAXRADIUS	704
-
-// hominglauncher
-#define HOMING_SCANWAIT		600
-// pause after locking on so player actually sees reticle change
-#define HOMING_GRACEPERIOD	50
-// how long to remember the last enemy we were locking on
-#define HOMING_MEMORYTIME	500

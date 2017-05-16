@@ -1226,7 +1226,6 @@ typedef struct {
 typedef struct playerState_s {
 	int			commandTime;	// cmd->serverTime of last executed command
 	int			pm_type;
-	int			bobCycle;		// for view bobbing and footstep generation
 	int			pm_flags;		// ducked, jump_held, etc
 	int			pm_time;
 
@@ -1253,7 +1252,7 @@ typedef struct playerState_s {
 	int			legsTimer;		// don't change low priority animations until this runs out
 
 	int			torsoTimer;		// don't change low priority animations until this runs out
-	int			torsoAnim;		// mask off ANIM_TOGGLEBIT
+	int			shipanim;		// mask off ANIM_TOGGLEBIT
 
 	int			weapAnim[WS_NUMSLOTS];
 
@@ -1411,13 +1410,13 @@ typedef struct entityState_s {
 
 	int		solid;			// for client side prediction, trap_linkentity sets this properly
 
-	int		event;			// impulse events -- muzzle flashes, footsteps, etc
+	int		event;			// impulse events -- muzzle flashes, etc
 	int		eventParm;
 
 	// for players
 	int		powerups;		// bit flags
 	int		weapon[WS_NUMSLOTS];			// determines weapon and flash model, etc
-	int		torsoAnim;		// mask off ANIM_TOGGLEBIT
+	int		shipanim;		// mask off ANIM_TOGGLEBIT
 
 	// player weapons
 	int		weapAnim[WS_NUMSLOTS];

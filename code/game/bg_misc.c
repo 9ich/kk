@@ -1272,26 +1272,22 @@ evaltrajectorydelta(const trajectory_t *tr, int atTime, vec3_t result)
 char *eventnames[] = {
 	"EV_NONE",
 
-	"EV_FALL_SHORT",
-	"EV_FALL_MEDIUM",
-	"EV_FALL_FAR",
+	"EV_JUMP_PAD",	// boing sound at origin, jump sound on player
 
-	"EV_JUMP_PAD",	// boing sound at origin", jump sound on player
-
-	"EV_JUMP",
-	"EV_WATER_TOUCH",		// foot touches
-	"EV_WATER_LEAVE",		// foot leaves
-	"EV_WATER_UNDER",		// head touches
-	"EV_WATER_CLEAR",		// head leaves
+	"EV_WATER_TOUCH",	// origin touches
+	"EV_WATER_LEAVE",	// origin leaves
+	"EV_WATER_UNDER",	// origin touches
+	"EV_WATER_CLEAR",	// origin leaves
 
 	"EV_ITEM_PICKUP",		// normal item pickups are predictable
 	"EV_GLOBAL_ITEM_PICKUP",	// powerup / team sounds are broadcast to everyone
 
-	"EV_NOAMMO",
+	"EV_NOAMMO",		// slot 0
+	"EV_NOAMMO2",		// slot 1
 	"EV_CHANGE_WEAPON",
 	"EV_FIRE_WEAPON",		// slot 0
-	"EV_FIRE_WEAPON2",		// slot 1
-	"EV_FIRE_WEAPON3",		// slot 2
+	"EV_FIRE_WEAPON2",	// slot 1
+	"EV_FIRE_WEAPON3",	// slot 2
 
 	"EV_USE_ITEM0",
 	"EV_USE_ITEM1",
@@ -1342,14 +1338,14 @@ char *eventnames[] = {
 	"EV_POWERUP_REGEN",
 
 	"EV_GIB_PLAYER",	// gib a previously living player
-	"EV_SCOREPLUM",		// score plum
+	"EV_SCOREPLUM",	// score plum
 
 //#ifdef MISSIONPACK
 	"EV_PROXIMITY_MINE_STICK",
 	"EV_PROXIMITY_MINE_TRIGGER",
 	"EV_KAMIKAZE",		// kamikaze explodes
 	"EV_OBELISKEXPLODE",	// obelisk explodes
-	"EV_OBELISKPAIN",	// obelisk pain
+	"EV_OBELISKPAIN",		// obelisk is in pain
 	"EV_INVUL_IMPACT",	// invulnerability sphere impact
 	"EV_JUICED",		// invulnerability juiced effect
 	"EV_LIGHTNINGBOLT",	// lightning bolt bounced of invulnerability sphere
@@ -1358,12 +1354,6 @@ char *eventnames[] = {
 	"EV_DEBUG_LINE",
 	"EV_STOPLOOPINGSOUND",
 	"EV_TAUNT",
-	"EV_TAUNT_YES",
-	"EV_TAUNT_NO",
-	"EV_TAUNT_FOLLOWME",
-	"EV_TAUNT_GETFLAG",
-	"EV_TAUNT_GUARDBASE",
-	"EV_TAUNT_PATROL"
 };
 
 /*
@@ -1472,7 +1462,7 @@ ps2es(playerState_t *ps, entityState_t *s, qboolean snap)
 	s->weapAnim[0] = ps->weapAnim[0];
 	s->weapAnim[1] = ps->weapAnim[1];
 
-	s->torsoAnim = ps->torsoAnim;
+	s->shipanim = ps->shipanim;
 	s->clientNum = ps->clientNum;	// ET_PLAYER looks here instead of at number
 	// so corpses can also reference the proper config
 	s->eFlags = ps->eFlags;
@@ -1553,7 +1543,7 @@ ps2es_xerp(playerState_t *ps, entityState_t *s, int time, qboolean snap)
 	s->weapAnim[0] = ps->weapAnim[0];
 	s->weapAnim[1] = ps->weapAnim[1];
 
-	s->torsoAnim = ps->torsoAnim;
+	s->shipanim = ps->shipanim;
 	s->clientNum = ps->clientNum;	// ET_PLAYER looks here instead of at number
 	// so corpses can also reference the proper config
 	s->eFlags = ps->eFlags;

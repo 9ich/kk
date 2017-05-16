@@ -456,20 +456,6 @@ clientevents(gentity_t *ent, int oldEventSequence)
 		event = client->ps.events[i & (MAX_PS_EVENTS-1)];
 
 		switch(event){
-		case EV_FALL_MEDIUM:
-		case EV_FALL_FAR:
-			if(ent->s.eType != ET_PLAYER)
-				break;	// not in the player model
-			if(g_dmflags.integer & DF_NO_FALLING)
-				break;
-			if(event == EV_FALL_FAR)
-				damage = 10;
-			else
-				damage = 5;
-			ent->paindebouncetime = level.time + 200;	// no normal pain sound
-			entdamage(ent, nil, nil, nil, nil, damage, 0, MOD_FALLING);
-			break;
-
 		case EV_FIRE_WEAPON:
 			fireweapon(ent, 0);
 			break;
@@ -790,7 +776,6 @@ ClientThink_real(gentity_t *ent)
 	pm.trace = trap_Trace;
 	pm.pointcontents = trap_PointContents;
 	pm.debuglevel = g_debugMove.integer;
-	pm.nofootsteps = (g_dmflags.integer & DF_NO_FOOTSTEPS) > 0;
 
 	pm.pmove_fixed = pmove_fixed.integer | client->pers.pmovefixed;
 	pm.pmove_msec = pmove_msec.integer;

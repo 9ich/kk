@@ -23,16 +23,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "cg_local.h"
 
 char *cg_customSoundNames[MAX_CUSTOM_SOUNDS] = {
-	"sound/player/death.wav",
-	"*jump1.wav",
 	"sound/player/pain25_1.wav",
 	"sound/player/pain50_1.wav",
 	"sound/player/pain75_1.wav",
 	"sound/player/pain100_1.wav",
-	"*falling1.wav",
-	"*gasp.wav",
-	"*drown.wav",
-	"*fall1.wav",
 	"*taunt.wav"
 };
 
@@ -307,12 +301,12 @@ regclientskin(clientInfo_t *ci, const char *teamName, const char *modelname, con
 	char filename[MAX_QPATH];
 
 	if(findclientmodelfile(filename, sizeof(filename), ci, teamName, modelname, skinname, "hull", "skin"))
-		ci->torsoskin = trap_R_RegisterSkin(filename);
-	if(!ci->torsoskin)
+		ci->shipskin = trap_R_RegisterSkin(filename);
+	if(!ci->shipskin)
 		Com_Printf("Torso skin load failure: %s\n", filename);
 
 	// if any skins failed to load
-	if(!ci->torsoskin)
+	if(!ci->shipskin)
 		return qfalse;
 	return qtrue;
 }
@@ -324,8 +318,8 @@ regclientmodelname(clientInfo_t *ci, const char *modelname, const char *skinname
 	char newTeamName[MAX_QPATH];
 
 	Com_sprintf(filename, sizeof(filename), "models/players/%s/hull", modelname);
-	ci->torsomodel = trap_R_RegisterModel(filename);
-	if(!ci->torsomodel){
+	ci->shipmodel = trap_R_RegisterModel(filename);
+	if(!ci->shipmodel){
 		Com_Printf("Failed to load model file %s\n", filename);
 		return qfalse;
 	}
@@ -457,12 +451,8 @@ loadclientinfo(int clientNum, clientInfo_t *ci)
 static void
 cpyclientinfomodel(clientInfo_t *from, clientInfo_t *to)
 {
-	to->footsteps = from->footsteps;
-	to->gender = from->gender;
-
-	to->torsomodel = from->torsomodel;
-	to->torsoskin = from->torsoskin;
-	to->modelicon = from->modelicon;
+	to->shipmodel = from->shipmodel;
+	to->shipskin = from->shipskin;
 
 	memcpy(to->animations, from->animations, sizeof(to->animations));
 	memcpy(to->thrusttab, from->thrusttab, sizeof(to->thrusttab));
@@ -763,7 +753,7 @@ playeranim(centity_t *cent, int *torsoOld, int *torso, float *torsoBackLerp)
 
 	ci = &cgs.clientinfo[clientNum];
 
-	runlerpframe(ci->animations, &cent->pe.torso, cent->currstate.torsoAnim, speedScale);
+	runlerpframe(ci->animations, &cent->pe.torso, cent->currstate.shipanim, speedScale);
 
 	*torsoOld = cent->pe.torso.oldframe;
 	*torso = cent->pe.torso.frame;
@@ -1691,8 +1681,8 @@ doplayer(centity_t *cent)
 
 #endif
 	// add the torso
-	torso.hModel = ci->torsomodel;
-	torso.customSkin = ci->torsoskin;
+	torso.hModel = ci->shipmodel;
+	torso.customSkin = ci->shipskin;
 	if(cg_brightskins.integer){
 		if(cgs.gametype >= GT_TEAM){
 			if(ci->team == cgs.clientinfo[cg.pps.clientNum].team)
@@ -1824,7 +1814,7 @@ resetplayerent(centity_t *cent)
 	cent->errtime = -99999;	// guarantee no error decay added
 	cent->extrapolated = qfalse;
 
-	clearlerpframe(cgs.clientinfo[cent->currstate.clientNum].animations, &cent->pe.torso, cent->currstate.torsoAnim);
+	clearlerpframe(cgs.clientinfo[cent->currstate.clientNum].animations, &cent->pe.torso, cent->currstate.shipanim);
 
 	evaltrajectory(&cent->currstate.pos, cg.time, cent->lerporigin);
 	evaltrajectory(&cent->currstate.apos, cg.time, cent->lerpangles);

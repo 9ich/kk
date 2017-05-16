@@ -93,19 +93,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 typedef enum
 {
-	FOOTSTEP_NORMAL,
-	FOOTSTEP_BOOT,
-	FOOTSTEP_FLESH,
-	FOOTSTEP_MECH,
-	FOOTSTEP_ENERGY,
-	FOOTSTEP_METAL,
-	FOOTSTEP_SPLASH,
-
-	FOOTSTEP_TOTAL
-} footstep_t;
-
-typedef enum
-{
 	IMPACTSOUND_DEFAULT,
 	IMPACTSOUND_METAL,
 	IMPACTSOUND_FLESH
@@ -402,30 +389,17 @@ typedef struct
 	int		invulnerabilityStartTime;
 	int		invulnerabilityStopTime;
 
-	int		breathPuffTime;
-
 	// when clientinfo is changed, the loading of models/skins/sounds
 	// can be deferred until you are dead, to prevent hitches in
 	// gameplay
 	char		modelname[MAX_QPATH];
 	char		skinname[MAX_QPATH];
-	char		headmodelname[MAX_QPATH];
-	char		headskinname[MAX_QPATH];
 	char		redteam[MAX_TEAMNAME];
 	char		blueteam[MAX_TEAMNAME];
 	qboolean	deferred;
 
-	qboolean	fixedlegs;	// true if legs yaw is always the same as torso yaw
-	qboolean	fixedtorso;	// true if torso never changes yaw
-
-	vec3_t		headoffset;	// move head in icon views
-	footstep_t	footsteps;
-	gender_t	gender;		// from model
-
-	qhandle_t	torsomodel;
-	qhandle_t	torsoskin;
-
-	qhandle_t	modelicon;
+	qhandle_t	shipmodel;
+	qhandle_t	shipskin;
 
 	animation_t	animations[MAX_TOTALANIMATIONS];
 
@@ -888,7 +862,6 @@ typedef struct
 	sfxHandle_t	selectSound;
 	sfxHandle_t	useNothingSound;
 	sfxHandle_t	wearOffSound;
-	sfxHandle_t	footsteps[FOOTSTEP_TOTAL][4];
 	sfxHandle_t	sfx_lghit1;
 	sfxHandle_t	sfx_lghit2;
 	sfxHandle_t	sfx_lghit3;
@@ -901,10 +874,8 @@ typedef struct
 #ifdef MISSIONPACK
 	sfxHandle_t	sfx_proxexp;
 	sfxHandle_t	sfx_nghit;
-	sfxHandle_t	sfx_nghitflesh;
 	sfxHandle_t	sfx_nghitmetal;
 	sfxHandle_t	sfx_chghit;
-	sfxHandle_t	sfx_chghitflesh;
 	sfxHandle_t	sfx_chghitmetal;
 	sfxHandle_t	kamikazeExplodeSound;
 	sfxHandle_t	kamikazeImplodeSound;
@@ -1186,7 +1157,6 @@ extern vmCvar_t cg_errorDecay;
 extern vmCvar_t cg_nopredict;
 extern vmCvar_t cg_noPlayerAnims;
 extern vmCvar_t cg_showmiss;
-extern vmCvar_t cg_footsteps;
 extern vmCvar_t cg_addMarks;
 extern vmCvar_t cg_brassTime;
 extern vmCvar_t cg_gun_frame;

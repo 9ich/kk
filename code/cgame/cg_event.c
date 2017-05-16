@@ -415,37 +415,6 @@ entevent(centity_t *cent, vec3_t position)
 	ci = &cgs.clientinfo[clientNum];
 
 	switch(event){
-	// movement generated events
-	case EV_FALL_SHORT:
-		DEBUGNAME("EV_FALL_SHORT");
-		trap_S_StartSound(nil, es->number, CHAN_AUTO, cgs.media.landSound);
-		if(clientNum == cg.pps.clientNum){
-			// smooth landing z changes
-			cg.landchange = -8;
-			cg.landtime = cg.time;
-		}
-		break;
-	case EV_FALL_MEDIUM:
-		DEBUGNAME("EV_FALL_MEDIUM");
-		// use normal pain sound
-		trap_S_StartSound(nil, es->number, CHAN_VOICE, customsound(es->number, "*pain100_1.wav"));
-		if(clientNum == cg.pps.clientNum){
-			// smooth landing z changes
-			cg.landchange = -16;
-			cg.landtime = cg.time;
-		}
-		break;
-	case EV_FALL_FAR:
-		DEBUGNAME("EV_FALL_FAR");
-		trap_S_StartSound(nil, es->number, CHAN_AUTO, customsound(es->number, "*fall1.wav"));
-		cent->pe.paintime = cg.time;	// don't play a pain sound right after this
-		if(clientNum == cg.pps.clientNum){
-			// smooth landing z changes
-			cg.landchange = -24;
-			cg.landtime = cg.time;
-		}
-		break;
-
 	case EV_JUMP_PAD:
 		DEBUGNAME("EV_JUMP_PAD");
 //		cgprintf( "EV_JUMP_PAD w/effect #%i\n", es->eventParm );
@@ -466,29 +435,21 @@ entevent(centity_t *cent, vec3_t position)
 		trap_S_StartSound(nil, es->number, CHAN_VOICE, customsound(es->number, "*jump1.wav"));
 		break;
 
-	case EV_JUMP:
-		DEBUGNAME("EV_JUMP");
-		trap_S_StartSound(nil, es->number, CHAN_VOICE, customsound(es->number, "*jump1.wav"));
-		break;
 	case EV_TAUNT:
 		DEBUGNAME("EV_TAUNT");
 		trap_S_StartSound(nil, es->number, CHAN_VOICE, customsound(es->number, "*taunt.wav"));
 		break;
 	case EV_WATER_TOUCH:
 		DEBUGNAME("EV_WATER_TOUCH");
-		trap_S_StartSound(nil, es->number, CHAN_AUTO, cgs.media.watrInSound);
 		break;
 	case EV_WATER_LEAVE:
 		DEBUGNAME("EV_WATER_LEAVE");
-		trap_S_StartSound(nil, es->number, CHAN_AUTO, cgs.media.watrOutSound);
 		break;
 	case EV_WATER_UNDER:
 		DEBUGNAME("EV_WATER_UNDER");
-		trap_S_StartSound(nil, es->number, CHAN_AUTO, cgs.media.watrUnSound);
 		break;
 	case EV_WATER_CLEAR:
 		DEBUGNAME("EV_WATER_CLEAR");
-		trap_S_StartSound(nil, es->number, CHAN_AUTO, customsound(es->number, "*gasp.wav"));
 		break;
 
 	case EV_ITEM_PICKUP:
@@ -768,17 +729,6 @@ entevent(centity_t *cent, vec3_t position)
 		}
 		break;
 
-	case EV_BULLET_HIT_WALL:
-		DEBUGNAME("EV_BULLET_HIT_WALL");
-		ByteToDir(es->eventParm, dir);
-		dobullet(es->pos.trBase, es->otherEntityNum, dir, qfalse, ENTITYNUM_WORLD);
-		break;
-
-	case EV_BULLET_HIT_FLESH:
-		DEBUGNAME("EV_BULLET_HIT_FLESH");
-		dobullet(es->pos.trBase, es->otherEntityNum, dir, qtrue, es->eventParm);
-		break;
-
 	case EV_SHOTGUN:
 		DEBUGNAME("EV_SHOTGUN");
 		shotgunfire(es);
@@ -891,10 +841,7 @@ entevent(centity_t *cent, vec3_t position)
 	case EV_DEATH2:
 	case EV_DEATH3:
 		DEBUGNAME("EV_DEATHx");
-
-		if(CG_WaterLevel(cent) == 3)
-			trap_S_StartSound(nil, es->number, CHAN_VOICE, customsound(es->number, "*drown.wav"));
-		else
+		if(0)
 			trap_S_StartSound(nil, es->number, CHAN_VOICE, customsound(es->number, va("sound/player/death.wav", event - EV_DEATH1 + 1)));
 
 		break;

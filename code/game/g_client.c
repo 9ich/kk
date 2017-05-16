@@ -944,7 +944,7 @@ clientspawn(gentity_t *ent)
 	client->latchedbuttons = 0;
 
 	// set default animations
-	client->ps.torsoAnim = TORSO_STAND;
+	client->ps.shipanim = TORSO_STAND;
 
 	if(!level.intermissiontime){
 		if(ent->client->sess.team != TEAM_SPECTATOR){

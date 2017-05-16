@@ -86,7 +86,6 @@ dmgfeedback(int yawbyte, int pitchbyte, int damage)
 	// show the attacking player's head and name in corner
 	cg.attackertime = cg.time;
 
-	// the lower on health you are, the greater the view kick will be
 	health = cg.snap->ps.stats[STAT_HEALTH];
 	if(health < 40)
 		scale = 1;

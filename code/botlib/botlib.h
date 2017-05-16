@@ -162,7 +162,7 @@ typedef struct bot_entitystate_s
 	int		powerups;		// bit flags
 	int		weapon;			// determines weapon and flash model, etc
 	int		legsAnim;		// mask off ANIM_TOGGLEBIT
-	int		torsoAnim;		// mask off ANIM_TOGGLEBIT
+	int		shipanim;		// mask off ANIM_TOGGLEBIT
 } bot_entitystate_t;
 
 //bot AI library exported functions

@@ -1381,12 +1381,8 @@ BotSetupForMovement(bot_state_t *bs)
 	//set the teleported flag
 	if((bs->cur_ps.pm_flags & PMF_TIME_KNOCKBACK) && (bs->cur_ps.pm_time > 0))
 		initmove.or_moveflags |= MFL_TELEPORTED;
-	//set the waterjump flag
-	if((bs->cur_ps.pm_flags & PMF_TIME_WATERJUMP) && (bs->cur_ps.pm_time > 0))
-		initmove.or_moveflags |= MFL_WATERJUMP;
 	//set presence type
-	if(bs->cur_ps.pm_flags & PMF_DUCKED) initmove.presencetype = PRESENCE_CROUCH;
-	else initmove.presencetype = PRESENCE_NORMAL;
+	initmove.presencetype = PRESENCE_NORMAL;
 	if(bs->walker > 0.5) initmove.or_moveflags |= MFL_WALK;
 	veccpy(bs->viewangles, initmove.viewangles);
 	trap_BotInitMoveState(bs->ms, &initmove);
@@ -4478,11 +4474,7 @@ BotCheckEvents(bot_state_t *bs, entityState_t *state)
 		}
 		break;
 	}
-	case EV_FALL_SHORT:
-	case EV_FALL_MEDIUM:
-	case EV_FALL_FAR:
 	case EV_JUMP_PAD:
-	case EV_JUMP:
 	case EV_TAUNT:
 	case EV_WATER_TOUCH:
 	case EV_WATER_LEAVE:

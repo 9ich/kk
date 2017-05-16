@@ -1540,12 +1540,7 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound
 	default:
 #ifdef MISSIONPACK
 	case WP_NAILGUN:
-		if(soundType == IMPACTSOUND_FLESH)
-			sfx = cgs.media.sfx_nghitflesh;
-		else if(soundType == IMPACTSOUND_METAL)
-			sfx = cgs.media.sfx_nghitmetal;
-		else
-			sfx = cgs.media.sfx_nghit;
+		sfx = cgs.media.sfx_nghit;
 		mark = cgs.media.holeMarkShader;
 		radius = 12;
 		break;

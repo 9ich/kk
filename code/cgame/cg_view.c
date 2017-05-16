@@ -484,41 +484,30 @@ calcfov(void)
 	float zoomfov;
 	float f;
 	int inwater;
+	
+	fov_x = cg_fov.value;
+		if(fov_x < 1)
+			fov_x = 1;
+		else if(fov_x > 160)
+			fov_x = 160;
 
-	if(cg.pps.pm_type == PM_INTERMISSION)
-		// if in intermission, use a fixed value
-		fov_x = 90;
-	else{
-		// user selectable
-		if(cgs.dmflags & DF_FIXED_FOV)
-			// dmflag to prevent wide fov for all clients
-			fov_x = 90;
-		else{
-			fov_x = cg_fov.value;
-			if(fov_x < 1)
-				fov_x = 1;
-			else if(fov_x > 160)
-				fov_x = 160;
-		}
+	// account for zooms
+	zoomfov = cg_zoomFov.value;
+	if(zoomfov < 1)
+		zoomfov = 1;
+	else if(zoomfov > 160)
+		zoomfov = 160;
 
-		// account for zooms
-		zoomfov = cg_zoomFov.value;
-		if(zoomfov < 1)
-			zoomfov = 1;
-		else if(zoomfov > 160)
-			zoomfov = 160;
-
-		if(cg.zoomed){
-			f = (cg.time - cg.zoomtime) / (float)ZOOM_TIME;
-			if(f > 1.0)
-				fov_x = zoomfov;
-			else
-				fov_x = fov_x + f * (zoomfov - fov_x);
-		}else{
-			f = (cg.time - cg.zoomtime) / (float)ZOOM_TIME;
-			if(f <= 1.0)
-				fov_x = zoomfov + f * (fov_x - zoomfov);
-		}
+	if(cg.zoomed){
+		f = (cg.time - cg.zoomtime) / (float)ZOOM_TIME;
+		if(f > 1.0)
+			fov_x = zoomfov;
+		else
+			fov_x = fov_x + f * (zoomfov - fov_x);
+	}else{
+		f = (cg.time - cg.zoomtime) / (float)ZOOM_TIME;
+		if(f <= 1.0)
+			fov_x = zoomfov + f * (fov_x - zoomfov);
 	}
 
 	x = cg.refdef.width / tan(fov_x / 360 * M_PI);

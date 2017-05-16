@@ -1370,7 +1370,7 @@ BotAIStartFrame(int time)
 			state.event = ent->s.event;
 			state.eventParm = ent->s.eventParm;
 			state.powerups = ent->s.powerups;
-			state.torsoAnim = ent->s.torsoAnim;
+			state.shipanim = ent->s.shipanim;
 			state.weapon = ent->s.weapon[0];
 			trap_BotLibUpdateEntity(i, &state);
 		}

@@ -394,7 +394,6 @@ predictplayerstate(void)
 		cg_pmove.tracemask = MASK_PLAYERSOLID;
 	if(cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR)
 		cg_pmove.tracemask &= ~CONTENTS_BODY;	// spectators can fly through bodies
-	cg_pmove.nofootsteps = (cgs.dmflags & DF_NO_FOOTSTEPS) > 0;
 
 	// save the state before the pmove so we can detect transitions
 	oldPlayerState = cg.pps;
