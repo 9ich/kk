@@ -63,7 +63,7 @@ gitem_t bg_itemlist[] =
 */
 	{
 		"item_shield_tiny",
-		"sound/misc/ar1_pkup.wav",
+		"sound/items/shieldshard.wav",
 		{"models/powerups/shieldblob/shieldblob.md3",
 		 "models/powerups/shieldblob/shieldsphere.md3",
 		 nil, nil},
@@ -80,7 +80,7 @@ gitem_t bg_itemlist[] =
 */
 	{
 		"item_shield_small",
-		"sound/misc/ar2_pkup.wav",
+		"sound/items/shieldgreen.wav",
 		{"models/powerups/greenshieldgen/greenshieldgen.md3",
 		 "models/powerups/shieldblob/shieldsphere.md3",
 		 "models/powerups/shieldblob/shieldblob.md3",
@@ -98,7 +98,7 @@ gitem_t bg_itemlist[] =
 */
 	{
 		"item_shield_med",
-		"sound/misc/ar2_pkup.wav",
+		"sound/items/shieldyellow.wav",
 		{"models/powerups/yellowshieldgen/yellowshieldgen.md3",
 		 "models/powerups/shieldblob/shieldsphere.md3",
 		 "models/powerups/shieldblob/shieldblob.md3",
@@ -116,7 +116,7 @@ gitem_t bg_itemlist[] =
 */
 	{
 		"item_shield_large",
-		"sound/misc/ar2_pkup.wav",
+		"sound/items/shieldred.wav",
 		{"models/powerups/redshieldgen/redshieldgen.md3",
 		 "models/powerups/shieldblob/shieldsphere.md3",
 		 "models/powerups/redshieldgen/redshieldgen2.md3",
