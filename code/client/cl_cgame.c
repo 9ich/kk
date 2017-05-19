@@ -511,7 +511,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 		S_ClearLoopingSounds(args[1]);
 		return 0;
 	case CG_S_ADDLOOPINGSOUND:
-		S_AddLoopingSound( args[1], VMA(2), VMA(3), args[4] );
+		S_AddLoopingSound( args[1], args[2], VMA(3), VMA(4), args[5] );
 		return 0;
 	case CG_S_ADDREALLOOPINGSOUND:
 		S_AddRealLoopingSound( args[1], VMA(2), VMA(3), args[4] );

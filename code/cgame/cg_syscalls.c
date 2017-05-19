@@ -269,9 +269,9 @@ trap_S_ClearLoopingSounds(qboolean killall)
 }
 
 void
-trap_S_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx)
+trap_S_AddLoopingSound(int entityNum, int loopnum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx)
 {
-	syscall(CG_S_ADDLOOPINGSOUND, entityNum, origin, velocity, sfx);
+	syscall(CG_S_ADDLOOPINGSOUND, entityNum, loopnum, origin, velocity, sfx);
 }
 
 void

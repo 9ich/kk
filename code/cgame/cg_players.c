@@ -963,13 +963,13 @@ playerthrusters(centity_t *cent, refEntity_t *ship)
 
 		evaltrajectorydelta(&cent->currstate.pos, cg.time, vel);
 		if(f){
-			trap_S_AddLoopingSound(cent->currstate.number, pos,
+			trap_S_AddLoopingSound(cent->currstate.number, 1, pos,
 			   vel, thrustsound);
 		}else if(b || (l || r) || (u || d)){
-			trap_S_AddLoopingSound(cent->currstate.number, pos,
+			trap_S_AddLoopingSound(cent->currstate.number, 1, pos,
 			   vel, thrustbacksound);
 		}else if(0){
-			trap_S_AddLoopingSound(cent->currstate.number, pos,
+			trap_S_AddLoopingSound(cent->currstate.number, 1, pos,
 			   vel, idlesound);
 		}
 	}
@@ -1187,7 +1187,7 @@ playerpowerups(centity_t *cent, refEntity_t *torso)
 
 	// flight plays a looped sound
 	if(powerups & (1 << PW_FLIGHT))
-		trap_S_AddLoopingSound(cent->currstate.number, cent->lerporigin, vec3_origin, cgs.media.flightSound);
+		trap_S_AddLoopingSound(cent->currstate.number, 0, cent->lerporigin, vec3_origin, cgs.media.flightSound);
 
 	// redflag
 	if(powerups & (1 << PW_REDFLAG)){

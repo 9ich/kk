@@ -49,7 +49,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define NUM_MUSIC_BUFFERS	4
 #define MUSIC_BUFFER_SIZE	4096
 #define MAX_SFX			4096
-#define NLOOP	3
+#define NLOOP			4
 
 typedef struct src_s
 {
@@ -143,7 +143,6 @@ static qboolean alSourcesInitialised = qfalse;
 static int lastListenerNumber = -1;
 static vec3_t lastListenerOrigin = {0.0f, 0.0f, 0.0f};
 
-// for an entity i, its second loop can be set by using the index i*2, and so on
 static sentity_t entityList[MAX_GENTITIES*NLOOP];
 
 static srcHandle_t streamSourceHandles[MAX_RAW_STREAMS];
@@ -929,8 +928,8 @@ Remove given source as loop master if it is the master and hand off master statu
 static void
 S_AL_NewLoopMaster(src_t *rmSource, qboolean iskilled)
 {
-	int index;
-	src_t *curSource = NULL;
+	int i;
+	src_t *src = NULL;
 	alSfx_t *curSfx;
 
 	curSfx = &knownSfx[rmSource->sfx];
@@ -953,16 +952,19 @@ S_AL_NewLoopMaster(src_t *rmSource, qboolean iskilled)
 			// this sound will we need to find a new master.
 
 			if(iskilled || curSfx->loopActiveCnt)
-				for(index = 0; index < srcCount; index++){
-					curSource = &srcList[index];
+				for(i = 0; i < srcCount; i++){
+					src = &srcList[i];
 
-					if(curSource->sfx == rmSource->sfx && curSource != rmSource &&
-					   curSource->isActive && curSource->isLooping && curSource->priority == SRCPRI_AMBIENT){
-						if(curSource->isPlaying){
-							curSfx->masterLoopSrc = index;
+					if(src->sfx == rmSource->sfx &&
+					   src != rmSource &&
+					   src->isActive &&
+					   src->isLooping &&
+					   src->priority == SRCPRI_AMBIENT){
+						if(src->isPlaying){
+							curSfx->masterLoopSrc = i;
 							break;
 						}else if(firstInactive < 0)
-							firstInactive = index;
+							firstInactive = i;
 					}
 				}
 
@@ -972,19 +974,19 @@ S_AL_NewLoopMaster(src_t *rmSource, qboolean iskilled)
 						curSfx->masterLoopSrc = -1;
 						return;
 					}else
-						curSource = rmSource;
+						src = rmSource;
 				}else
-					curSource = &srcList[firstInactive];
+					src = &srcList[firstInactive];
 
 				if(rmSource->isPlaying)
 					// this was the last not stopped source, save last sample position + time
-					S_AL_SaveLoopPos(curSource, rmSource->alSource);
+					S_AL_SaveLoopPos(src, rmSource->alSource);
 				else{
 					// second case: all loops using this sound have stopped due to listener being of of range,
 					// and now the inactive master gets deleted. Just move over the soundpos settings to the
 					// new master.
-					curSource->lastTimePos = rmSource->lastTimePos;
-					curSource->lastSampleTime = rmSource->lastSampleTime;
+					src->lastTimePos = rmSource->lastTimePos;
+					src->lastSampleTime = rmSource->lastSampleTime;
 				}
 			}
 		}
@@ -1193,8 +1195,8 @@ S_AL_UpdateEntityPosition(int entityNum, const vec3_t origin)
 	S_AL_SanitiseVector(sanOrigin);
 	if(entityNum < 0 || entityNum >= MAX_GENTITIES)
 		Com_Error(ERR_DROP, "S_UpdateEntityPosition: bad entitynum %i", entityNum);
-	for(i = 1; i <= NLOOP; i++)
-		VectorCopy(sanOrigin, entityList[i*entityNum].origin);
+	for(i = 0; i < NLOOP; i++)
+		VectorCopy(sanOrigin, entityList[entityNum + i*MAX_GENTITIES].origin);
 }
 
 /*
@@ -1207,7 +1209,7 @@ Necessary for i.g. Western Quake3 mod which is buggy.
 static qboolean
 S_AL_CheckInput(int entityNum, sfxHandle_t sfx)
 {
-	if(entityNum < 0 || entityNum >= MAX_GENTITIES*NLOOP)
+	if(entityNum < 0 || entityNum >= MAX_GENTITIES)
 		Com_Error(ERR_DROP, "ERROR: S_AL_CheckInput: bad entitynum %i", entityNum);
 
 	if(sfx < 0 || sfx >= numSfx){
@@ -1327,15 +1329,19 @@ S_AL_SrcLoop
 */
 static void
 S_AL_SrcLoop(alSrcPriority_t priority, sfxHandle_t sfx,
-	     const vec3_t origin, const vec3_t velocity, int entityNum)
+	     const vec3_t origin, const vec3_t velocity, int entityNum,
+	     int loopnum)
 {
 	int src;
-	sentity_t *sent = &entityList[entityNum];
+	sentity_t *sent = &entityList[entityNum + loopnum*MAX_GENTITIES];
 	src_t *curSource;
 	vec3_t sorigin, svelocity;
 
 	if(S_AL_CheckInput(entityNum, sfx))
 		return;
+
+	// stride for multi-looping entities
+	entityNum = entityNum + loopnum*MAX_GENTITIES;
 
 	// Do we need to allocate a new source for this entity
 	if(!sent->srcAllocated){
@@ -1409,9 +1415,9 @@ S_AL_AddLoopingSound
 =================
 */
 static void
-S_AL_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx)
+S_AL_AddLoopingSound(int entityNum, int loopnum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx)
 {
-	S_AL_SrcLoop(SRCPRI_ENTITY, sfx, origin, velocity, entityNum);
+	S_AL_SrcLoop(SRCPRI_ENTITY, sfx, origin, velocity, entityNum, loopnum);
 }
 
 /*
@@ -1422,7 +1428,7 @@ S_AL_AddRealLoopingSound
 static void
 S_AL_AddRealLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx)
 {
-	S_AL_SrcLoop(SRCPRI_AMBIENT, sfx, origin, velocity, entityNum);
+	S_AL_SrcLoop(SRCPRI_AMBIENT, sfx, origin, velocity, entityNum, 0);
 }
 
 /*
@@ -1435,8 +1441,8 @@ S_AL_StopLoopingSound(int entityNum)
 {
 	int i;
 
-	for(i = 1; i <= NLOOP; i++){
-		if(entityList[i*entityNum].srcAllocated)
+	for(i = 0; i < NLOOP; i++){
+		if(entityList[entityNum + i*NLOOP].srcAllocated)
 			S_AL_SrcKill(entityList[i*entityNum].srcIndex);
 	}
 }

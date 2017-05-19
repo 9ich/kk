@@ -947,9 +947,9 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team,
 		// add weapon ready sound
 		if((cent->currstate.eFlags & firingmask) && weapon->firingsound){
 			// lightning gun and guantlet make a different sound when fire is held down
-			trap_S_AddLoopingSound(cent->currstate.number, cent->lerporigin, vec3_origin, weapon->firingsound);
+			trap_S_AddLoopingSound(cent->currstate.number, 2, cent->lerporigin, vec3_origin, weapon->firingsound);
 		}else if(weapon->rdysound)
-			trap_S_AddLoopingSound(cent->currstate.number, cent->lerporigin, vec3_origin, weapon->rdysound);
+			trap_S_AddLoopingSound(cent->currstate.number, 2, cent->lerporigin, vec3_origin, weapon->rdysound);
 	}
 
 	trap_R_LerpTag(&lerped, parent->hModel, parent->oldframe, parent->frame,

@@ -81,7 +81,9 @@ cvar_t		*s_show;
 cvar_t		*s_mixahead;
 cvar_t		*s_mixPreStep;
 
-static loopSound_t		loopSounds[MAX_GENTITIES];
+#define NLOOP	4
+
+static loopSound_t		loopSounds[MAX_GENTITIES*NLOOP];
 static	channel_t		*freelist = NULL;
 
 int						s_rawend[MAX_RAW_STREAMS];
@@ -733,9 +735,13 @@ continuous looping sounds are added each frame
 */
 
 void S_Base_StopLoopingSound(int entityNum) {
-	loopSounds[entityNum].active = qfalse;
-//	loopSounds[entityNum].sfx = 0;
-	loopSounds[entityNum].kill = qfalse;
+	int i;
+
+	for(i = 0; i < NLOOP; i++){
+		loopSounds[entityNum + i*MAX_GENTITIES].active = qfalse;
+	//	loopSounds[entityNum + i*MAX_GENTITIES].sfx = 0;
+		loopSounds[entityNum + i*MAX_GENTITIES].kill = qfalse;
+	}
 }
 
 /*
@@ -746,7 +752,7 @@ S_ClearLoopingSounds
 */
 void S_Base_ClearLoopingSounds( qboolean killall ) {
 	int i;
-	for ( i = 0 ; i < MAX_GENTITIES ; i++) {
+	for ( i = 0 ; i < MAX_GENTITIES * NLOOP; i++) {
 		if (killall || loopSounds[i].kill == qtrue || (loopSounds[i].sfx && loopSounds[i].sfx->soundLength == 0)) {
 			S_Base_StopLoopingSound(i);
 		}
@@ -762,7 +768,7 @@ Called during entity generation for a frame
 Include velocity in case I get around to doing doppler...
 ==================
 */
-void S_Base_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfxHandle ) {
+void S_Base_AddLoopingSound( int entityNum, int loopnum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfxHandle ) {
 	sfx_t *sfx;
 
 	if ( !s_soundStarted || s_soundMuted ) {
@@ -783,6 +789,8 @@ void S_Base_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t ve
 	if ( !sfx->soundLength ) {
 		Com_Error( ERR_DROP, "%s has length 0", sfx->soundName );
 	}
+
+	entityNum = entityNum + loopnum*MAX_GENTITIES;
 
 	VectorCopy( origin, loopSounds[entityNum].origin );
 	VectorCopy( velocity, loopSounds[entityNum].velocity );
@@ -878,7 +886,7 @@ void S_AddLoopSounds (void) {
 	time = Com_Milliseconds();
 
 	loopFrame++;
-	for ( i = 0 ; i < MAX_GENTITIES ; i++) {
+	for ( i = 0 ; i < MAX_GENTITIES*NLOOP; i++) {
 		loop = &loopSounds[i];
 		if ( !loop->active || loop->mergeFrame == loopFrame ) {
 			continue;	// already merged into an earlier sound
@@ -892,7 +900,7 @@ void S_AddLoopSounds (void) {
 
 		loop->sfx->lastTimeUsed = time;
 
-		for (j=(i+1); j< MAX_GENTITIES ; j++) {
+		for (j=(i+1); j< MAX_GENTITIES*NLOOP; j++) {
 			loop2 = &loopSounds[j];
 			if ( !loop2->active || loop2->doppler || loop2->sfx != loop->sfx) {
 				continue;
@@ -996,7 +1004,7 @@ void S_Base_RawSamples( int stream, int samples, int rate, int width, int s_chan
 	} else {
 		int leftvol, rightvol;
 
-		if ( entityNum >= 0 && entityNum < MAX_GENTITIES ) {
+		if ( entityNum >= 0 && entityNum < MAX_GENTITIES*NLOOP ) {
 			// support spatialized raw streams, e.g. for VoIP
 			S_SpatializeOrigin( loopSounds[ entityNum ].origin, 256, &leftvol, &rightvol );
 		} else {
@@ -1145,7 +1153,10 @@ void S_Base_Respatialize( int entityNum, const vec3_t head, const vec3_t vel, ve
 			if (ch->fixed_origin) {
 				VectorCopy( ch->origin, origin );
 			} else {
-				VectorCopy( loopSounds[ ch->entnum ].origin, origin );
+				int loopnum;
+
+				for(loopnum = 0; loopnum < NLOOP; loopnum++)
+					VectorCopy( loopSounds[ ch->entnum + loopnum*MAX_GENTITIES].origin, origin );
 			}
 
 			S_SpatializeOrigin (origin, ch->master_vol, &ch->leftvol, &ch->rightvol);

@@ -1557,7 +1557,7 @@ void	trap_S_StopLoopingSound(int entnum);
 // a local sound is always played full volume
 void	trap_S_StartLocalSound(sfxHandle_t sfx, int channelNum);
 void	trap_S_ClearLoopingSounds(qboolean killall);
-void	trap_S_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx);
+void	trap_S_AddLoopingSound(int entityNum, int loopnum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx);
 void	trap_S_AddRealLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx);
 void	trap_S_UpdateEntityPosition(int entityNum, const vec3_t origin);
 

@@ -164,11 +164,11 @@ void S_ClearLoopingSounds( qboolean killall )
 S_AddLoopingSound
 =================
 */
-void S_AddLoopingSound( int entityNum, const vec3_t origin,
+void S_AddLoopingSound( int entityNum, int loopnum, const vec3_t origin,
 		const vec3_t velocity, sfxHandle_t sfx )
 {
 	if( si.AddLoopingSound ) {
-		si.AddLoopingSound( entityNum, origin, velocity, sfx );
+		si.AddLoopingSound( entityNum, loopnum, origin, velocity, sfx );
 	}
 }
 

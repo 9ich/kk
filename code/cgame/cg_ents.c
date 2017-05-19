@@ -112,7 +112,7 @@ entfx(centity_t *cent)
 	// add loop sound
 	if(cent->currstate.loopSound){
 		if(cent->currstate.eType != ET_SPEAKER)
-			trap_S_AddLoopingSound(cent->currstate.number, cent->lerporigin, vec3_origin,
+			trap_S_AddLoopingSound(cent->currstate.number, 0, cent->lerporigin, vec3_origin,
 					       cgs.gamesounds[cent->currstate.loopSound]);
 		else
 			trap_S_AddRealLoopingSound(cent->currstate.number, cent->lerporigin, vec3_origin,
@@ -428,7 +428,7 @@ domissile(centity_t *cent)
 
 		evaltrajectorydelta(&cent->currstate.pos, cg.time, velocity);
 
-		trap_S_AddLoopingSound(cent->currstate.number, cent->lerporigin, velocity, weapon->missilesound);
+		trap_S_AddLoopingSound(cent->currstate.number, 0, cent->lerporigin, velocity, weapon->missilesound);
 	}
 
 	// create the render entity
@@ -482,7 +482,7 @@ dograpple(centity_t *cent)
 #if 0	// FIXME add grapple pull sound here..?
 	// add missile sound
 	if(weapon->missilesound)
-		trap_S_AddLoopingSound(cent->currstate.number, cent->lerporigin, vec3_origin, weapon->missilesound);
+		trap_S_AddLoopingSound(cent->currstate.number, 0, cent->lerporigin, vec3_origin, weapon->missilesound);
 
 #endif
 
