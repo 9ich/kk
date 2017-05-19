@@ -271,8 +271,8 @@ Svcmd_EntityList_f(void)
 	int e;
 	gentity_t *check;
 
-	check = g_entities+1;
-	for(e = 1; e < level.nentities; e++, check++){
+	check = g_entities;
+	for(e = 0; e < level.nentities; e++, check++){
 		if(!check->inuse)
 			continue;
 		gprintf("%3i:", e);
@@ -305,7 +305,7 @@ Svcmd_EntityList_f(void)
 			gprintf("ET_PUSH_TRIGGER     ");
 			break;
 		case ET_TRIGGER_GRAVITY:
-			gprintf("ET_TRIGGER_GRAVITY     ");
+			gprintf("ET_TRIGGER_GRAVITY   ");
 			break;
 		case ET_TELEPORT_TRIGGER:
 			gprintf("ET_TELEPORT_TRIGGER ");
