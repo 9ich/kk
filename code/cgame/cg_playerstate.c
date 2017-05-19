@@ -209,7 +209,7 @@ chklocalsounds(playerState_t *ps, playerState_t *ops)
 		return;
 
 	// hit changes
-	if(ps->persistant[PERS_HITS] > ops->persistant[PERS_HITS])
+	if(ps->persistant[PERS_DMG] > ops->persistant[PERS_DMG])
 		trap_S_StartLocalSound(cgs.media.hitSound, CHAN_LOCAL_SOUND);
 
 	// health changes of more than -1 should make pain sounds

@@ -455,7 +455,7 @@ player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damag
 
 	self->enemy = attacker;
 
-	self->client->ps.persistant[PERS_KILLED]++;
+	self->client->ps.persistant[PERS_DEATHS]++;
 
 	// if victim has died three times in a row without killing anyone,
 	// and is not afk, give them an AWARD_SADDAY
@@ -890,9 +890,9 @@ entdamage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	   && targ->s.eType != ET_MISSILE
 	   && targ->s.eType != ET_GENERAL){
 		if(onsameteam(targ, attacker))
-			attacker->client->ps.persistant[PERS_HITS]--;
+			attacker->client->ps.persistant[PERS_DMG]--;
 		else
-			attacker->client->ps.persistant[PERS_HITS]++;
+			attacker->client->ps.persistant[PERS_DMG]++;
 		attacker->client->ps.persistant[PERS_ATTACKEE_SHIELD] = (targ->health<<8)|(client->ps.stats[STAT_SHIELD]);
 	}
 

@@ -88,7 +88,7 @@ updateduel(void)
 				score1 = level.clients[level.sortedclients[1]].ps.persistant[PERS_SCORE];
 			}
 		}
-		if(won && player->client->ps.persistant[PERS_KILLED] == 0)
+		if(won && player->client->ps.persistant[PERS_DEATHS] == 0)
 			perfect = 1;
 		else
 			perfect = 0;
@@ -98,7 +98,7 @@ updateduel(void)
 			    perfect, score1, score2, level.time, player->client->ps.awards[AWARD_CAPTURE]);
 
 #else
-		perfect = (level.clients[playerClientNum].ps.persistant[PERS_RANK] == 0 && player->client->ps.persistant[PERS_KILLED] == 0) ? 1 : 0;
+		perfect = (level.clients[playerClientNum].ps.persistant[PERS_RANK] == 0 && player->client->ps.persistant[PERS_DEATHS] == 0) ? 1 : 0;
 		Com_sprintf(msg, sizeof(msg), "postgame %i %i %i %i %i %i %i %i", level.nnonspecclients, playerClientNum, accuracy,
 			    player->client->ps.awards[AWARD_IMPRESSIVE], 0 /* excellent */,
 			    player->client->ps.awards[AWARD_GAUNTLET], player->client->ps.persistant[PERS_SCORE],

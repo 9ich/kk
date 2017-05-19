@@ -4734,7 +4734,7 @@ BotDeathmatchAI(bot_state_t *bs, float thinktime)
 		ClientName(bs->client, name, sizeof(name));
 		trap_BotSetChatName(bs->cs, name, bs->client);
 		bs->lastframe_health = bs->inventory[INVENTORY_HEALTH];
-		bs->lasthitcount = bs->cur_ps.persistant[PERS_HITS];
+		bs->lasthitcount = bs->cur_ps.persistant[PERS_DMG];
 		bs->setupcount = 0;
 		BotSetupAlternativeRouteGoals();
 	}
@@ -4783,7 +4783,7 @@ BotDeathmatchAI(bot_state_t *bs, float thinktime)
 		BotAI_Print(PRT_ERROR, "%s at %1.1f switched more than %d AI nodes\n", name, FloatTime(), MAX_NODESWITCHES);
 	}
 	bs->lastframe_health = bs->inventory[INVENTORY_HEALTH];
-	bs->lasthitcount = bs->cur_ps.persistant[PERS_HITS];
+	bs->lasthitcount = bs->cur_ps.persistant[PERS_DMG];
 }
 
 /*

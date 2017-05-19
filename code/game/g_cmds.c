@@ -53,7 +53,7 @@ deathmatchscoreboardmsg(gentity_t *ent)
 			accuracy = cl->accuracyhits * 100 / cl->accuracyshots;
 		else
 			accuracy = 0;
-		perfect = (cl->ps.persistant[PERS_RANK] == 0 && cl->ps.persistant[PERS_KILLED] == 0) ? 1 : 0;
+		perfect = (cl->ps.persistant[PERS_RANK] == 0 && cl->ps.persistant[PERS_DEATHS] == 0) ? 1 : 0;
 
 		Com_sprintf(entry, sizeof(entry),
 			    " %i %i %i %i %i %i %i %i %i %i %i %i %i %i", level.sortedclients[i],

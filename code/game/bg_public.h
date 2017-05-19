@@ -310,13 +310,13 @@ typedef enum
 typedef enum
 {
 	PERS_SCORE,			// !!! MUST NOT CHANGE, SERVER AND GAME BOTH REFERENCE !!!
-	PERS_HITS,			// total points damage inflicted so damage beeps can sound on change
+	PERS_DMG,			// total points damage inflicted so damage beeps can sound on change
 	PERS_RANK,			// player rank or team rank
 	PERS_TEAM,			// player team
 	PERS_SPAWN_COUNT,		// incremented every respawn
 	PERS_ATTACKER,			// clientnum of last damage inflicter
 	PERS_ATTACKEE_SHIELD,		// health/shield of last person we attacked
-	PERS_KILLED,			// count of the number of times you died
+	PERS_DEATHS,			// count of the number of times you died
 	PERS_NO_KILLS			// times killed consecutively without getting any kills. Sad!
 } persEnum_t;
 
