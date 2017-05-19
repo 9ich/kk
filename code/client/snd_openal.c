@@ -108,6 +108,8 @@ typedef struct alSfx_s
 	int		masterLoopSrc;		// All other sources looping this buffer are synced to this master src
 } alSfx_t;
 
+cvar_t *s_show;
+
 // Console variables specific to OpenAL
 cvar_t *s_alPrecache;
 cvar_t *s_alGain;
@@ -1244,6 +1246,17 @@ S_AL_StartLocalSound(sfxHandle_t sfx, int channel)
 	// Set up the effect
 	S_AL_SrcSetup(src, sfx, SRCPRI_LOCAL, -1, channel, qtrue);
 
+	if(s_show->integer == 1){
+		alSfx_t *s;
+
+		s = &knownSfx[sfx];
+		Com_Printf("OpenAL: %s %d chans %d Hz", s->filename,
+		   s->info.channels, s->info.rate);
+		if(knownSfx[sfx].isDefault)
+			Com_Printf(" (NOT FOUND)");
+		Com_Printf("\n");
+	}
+
 	// Start it playing
 	srcList[src].isPlaying = qtrue;
 	qalSourcePlay(srcList[src].alSource);
@@ -1282,11 +1295,13 @@ S_AL_StartSound(vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx)
 
 	S_AL_SanitiseVector(sorigin);
 
+/*
 	if((srcActiveCnt > 5 * srcCount / 3) &&
 	   (DistanceSquared(sorigin, lastListenerOrigin) >=
 	    (s_alMaxDistance->value + s_alGraceDistance->value) * (s_alMaxDistance->value + s_alGraceDistance->value)))
 		// We're getting tight on sources and source is not within hearing distance so don't add it
 		return;
+*/
 
 	// Try to grab a source
 	src = S_AL_SrcAlloc(SRCPRI_ONESHOT, entnum, entchannel);
@@ -1294,6 +1309,17 @@ S_AL_StartSound(vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx)
 		return;
 
 	S_AL_SrcSetup(src, sfx, SRCPRI_ONESHOT, entnum, entchannel, qfalse);
+
+	if(s_show->integer == 1){
+		alSfx_t *s;
+
+		s = &knownSfx[sfx];
+		Com_Printf("OpenAL: %s %d chans %d Hz", s->filename,
+		   s->info.channels, s->info.rate);
+		if(knownSfx[sfx].isDefault)
+			Com_Printf(" (NOT FOUND)");
+		Com_Printf("\n");
+	}
 
 	curSource = &srcList[src];
 
@@ -2429,6 +2455,8 @@ S_AL_Init(soundInterface_t *si)
 		streamNumBuffers[i] = 0;
 		streamBufIndex[i] = 0;
 	}
+
+	s_show = Cvar_Get ("s_show", "0", CVAR_CHEAT);
 
 	// New console variables
 	s_alPrecache = Cvar_Get("s_alPrecache", "1", CVAR_ARCHIVE);
