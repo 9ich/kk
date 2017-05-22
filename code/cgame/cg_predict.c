@@ -427,8 +427,8 @@ predictplayerstate(void)
 		cg.phystime = cg.snap->serverTime;
 	}
 
-	if(pmove_msec.integer < 8)
-		trap_Cvar_Set("pmove_msec", "8");
+	if(pmove_msec.integer < 1)
+		trap_Cvar_Set("pmove_msec", "1");
 	else if(pmove_msec.integer > 33)
 		trap_Cvar_Set("pmove_msec", "33");
 
