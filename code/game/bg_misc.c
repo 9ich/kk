@@ -135,7 +135,7 @@ gitem_t bg_itemlist[] =
 */
 	{
 		"item_health_small",
-		"sound/items/s_health.wav",
+		"sound/items/health_tiny.wav",
 		{"models/powerups/5hp/5hp.md3",
 		 "models/powerups/shieldblob/shieldblob.md3",
 		 nil, nil},
@@ -152,7 +152,7 @@ gitem_t bg_itemlist[] =
 */
 	{
 		"item_health",
-		"sound/items/s_health.wav",
+		"sound/items/health.wav",
 		{"models/powerups/25hp/25hp.md3",
 		 "models/powerups/shieldblob/shieldblob.md3",
 		 nil, nil},
@@ -169,7 +169,7 @@ gitem_t bg_itemlist[] =
 */
 	{
 		"item_health_large",
-		"sound/items/s_health.wav",
+		"sound/items/health_large.wav",
 		{"models/powerups/50hp/50hp.md3",
 		 "models/powerups/shieldblob/shieldblob.md3",
 		 nil, nil},
@@ -186,7 +186,7 @@ gitem_t bg_itemlist[] =
 */
 	{
 		"item_health_mega",
-		"sound/items/s_health.wav",
+		"sound/items/health_mega.wav",
 		{"models/powerups/refit/refit.md3",
 		 nil,
 		 nil, nil},
