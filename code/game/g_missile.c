@@ -576,7 +576,7 @@ fire_grenade(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->target_ent = nil;
 	vecset(bolt->r.mins, -1, -1, -1);
 	vecset(bolt->r.maxs, 1, 1, 1);
-	bolt->r.contents = 0;
+	bolt->r.contents = CONTENTS_CORPSE;	// can be shot down
 	bolt->health = 1;
 	bolt->takedmg = qtrue;
 	bolt->pain = grenade_pain;
@@ -869,7 +869,7 @@ fire_homingrocket(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->homingtarget = self->client->ps.lockontarget;
 	vecset(bolt->r.mins, -6, -6, -6);
 	vecset(bolt->r.maxs, 6, 6, 6);
-	bolt->r.contents = MASK_PLAYERSOLID;
+	bolt->r.contents = CONTENTS_CORPSE;	// can be shot down
 	bolt->health = 1;
 	bolt->takedmg = qtrue;
 
