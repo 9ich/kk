@@ -376,16 +376,16 @@ void main()
 
 	// normalize cubemap based on last roughness mip (~diffuse)
 	// multiplying cubemap values by lighting below depends on either this or the cubemap being normalized at generation
-	//vec3 cubeLightDiffuse = max(textureCubeLod(u_CubeMap, N, ROUGHNESS_MIPS).rgb, 0.5 / 255.0);
-	//cubeLightColor /= dot(cubeLightDiffuse, vec3(0.2125, 0.7154, 0.0721));
+	vec3 cubeLightDiffuse = max(textureCubeLod(u_CubeMap, N, ROUGHNESS_MIPS).rgb, 0.5 / 255.0);
+	cubeLightColor /= dot(cubeLightDiffuse, vec3(0.2126, 0.7152, 0.0722));
 
     #if defined(USE_PBR)
-	//cubeLightColor *= cubeLightColor;
+	cubeLightColor = cubeLightColor * cubeLightColor;
     #endif
 
 	// multiply cubemap values by lighting
 	// not technically correct, but helps make reflections look less unnatural
-	//cubeLightColor *= lightColor * (attenuation * NL) + ambientColor;
+	cubeLightColor *= lightColor * (attenuation * NL) + ambientColor;
 
 	gl_FragColor.rgb += cubeLightColor * reflectance;
   #endif
