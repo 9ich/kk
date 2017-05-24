@@ -1055,7 +1055,6 @@ addviewweap(playerState_t *ps)
 	refEntity_t hand;
 	centity_t *cent;
 	clientInfo_t *ci;
-	float fovOffset;
 	vec3_t angles;
 	weaponInfo_t *weapon;
 
@@ -1091,12 +1090,6 @@ addviewweap(playerState_t *ps)
 	if(cg.testgun)
 		return;
 
-	// drop gun lower at higher fov
-	if(cg_fov.integer > 90)
-		fovOffset = -0.2 * (cg_fov.integer - 90);
-	else
-		fovOffset = 0;
-
 	cent = &cg.pplayerent;	// &cg_entities[cg.snap->ps.clientNum];
 
 	//
@@ -1113,7 +1106,7 @@ addviewweap(playerState_t *ps)
 
 	vecmad(hand.origin, cg_gun_x.value, cg.refdef.viewaxis[0], hand.origin);
 	vecmad(hand.origin, cg_gun_y.value, cg.refdef.viewaxis[1], hand.origin);
-	vecmad(hand.origin, (cg_gun_z.value+fovOffset), cg.refdef.viewaxis[2], hand.origin);
+	vecmad(hand.origin, cg_gun_z.value, cg.refdef.viewaxis[2], hand.origin);
 
 	angles2axis(angles, hand.axis);
 
@@ -1150,7 +1143,7 @@ addviewweap(playerState_t *ps)
 
 	vecmad(hand.origin, cg_gun2_x.value, cg.refdef.viewaxis[0], hand.origin);
 	vecmad(hand.origin, cg_gun2_y.value, cg.refdef.viewaxis[1], hand.origin);
-	vecmad(hand.origin, (cg_gun2_z.value+fovOffset), cg.refdef.viewaxis[2], hand.origin);
+	vecmad(hand.origin, cg_gun2_z.value, cg.refdef.viewaxis[2], hand.origin);
 
 	angles2axis(angles, hand.axis);
 
