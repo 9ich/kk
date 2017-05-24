@@ -185,23 +185,6 @@ tossclientpowerups(gentity_t *ent)
 #endif
 
 void
-lookatkiller(gentity_t *self, gentity_t *inflictor, gentity_t *attacker)
-{
-	vec3_t dir;
-
-	if(attacker && attacker != self)
-		vecsub(attacker->s.pos.trBase, self->s.pos.trBase, dir);
-	else if(inflictor && inflictor != self)
-		vecsub(inflictor->s.pos.trBase, self->s.pos.trBase, dir);
-	else{
-		self->client->ps.stats[STAT_DEAD_YAW] = self->s.angles[YAW];
-		return;
-	}
-
-	self->client->ps.stats[STAT_DEAD_YAW] = vectoyaw(dir);
-}
-
-void
 entgib(gentity_t *self, int killer)
 {
 	gentity_t *ent;
@@ -572,12 +555,6 @@ player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damag
 	self->s.weapon[1] = WP_NONE;
 	self->s.powerups = 0;
 	self->r.contents = CONTENTS_CORPSE;
-
-	self->s.angles[0] = 0;
-	self->s.angles[2] = 0;
-	lookatkiller(self, inflictor, attacker);
-
-	veccpy(self->s.angles, self->client->ps.viewangles);
 
 	self->s.loopSound = 0;
 

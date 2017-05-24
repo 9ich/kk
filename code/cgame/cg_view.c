@@ -333,11 +333,6 @@ offset3rdpersonview(void)
 
 	veccpy(cg.refdefviewangles, focusAngles);
 
-	// if dead, look at killer
-	if(cg.pps.stats[STAT_HEALTH] <= 0){
-		focusAngles[YAW] = cg.pps.stats[STAT_DEAD_YAW];
-		cg.refdefviewangles[YAW] = cg.pps.stats[STAT_DEAD_YAW];
-	}
 	anglevecs(focusAngles, forward, nil, nil);
 
 	vecmad(cg.refdef.vieworg, FOCUS_DISTANCE, forward, focusPoint);
@@ -385,15 +380,6 @@ offset1stpersonview(void)
 
 	origin = cg.refdef.vieworg;
 	angles = cg.refdefviewangles;
-
-	// if dead, fix the angle and don't add any kick
-	if(cg.snap->ps.stats[STAT_HEALTH] <= 0){
-		angles[ROLL] = 40;
-		angles[PITCH] = -15;
-		angles[YAW] = cg.snap->ps.stats[STAT_DEAD_YAW];
-		origin[2] += cg.pps.viewheight;
-		return;
-	}
 
 	// add angles based on damage kick
 	if(cg.dmgtime){

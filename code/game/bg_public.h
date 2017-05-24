@@ -298,7 +298,6 @@ typedef enum
 	STAT_WEAPONS,		// 16 bit fields
 	STAT_SHIELD,
 	STAT_SHIELDTYPE,		// red=0.75 protection, yellow=0.66, green=0.5
-	STAT_DEAD_YAW,		// look this direction when dead (FIXME: get rid of?)
 	STAT_CLIENTS_READY,	// bit mask of clients wishing to exit the intermission (FIXME: configstring?)
 	STAT_MAX_HEALTH		// health / shield limit, changable by handicap
 } statIndex_t;
