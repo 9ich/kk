@@ -870,13 +870,13 @@ pickupteam(gentity_t *ent, gentity_t *other)
 	}
 #endif
 	// figure out what team this flag is
-	if(strcmp(ent->classname, "team_CTF_redflag") == 0)
+	if(Q_stricmp(ent->classname, "team_CTF_redflag") == 0)
 		team = TEAM_RED;
-	else if(strcmp(ent->classname, "team_CTF_blueflag") == 0)
+	else if(Q_stricmp(ent->classname, "team_CTF_blueflag") == 0)
 		team = TEAM_BLUE;
 
 #ifdef MISSIONPACK
-	else if(strcmp(ent->classname, "team_CTF_neutralflag") == 0)
+	else if(Q_stricmp(ent->classname, "team_CTF_neutralflag") == 0)
 		team = TEAM_FREE;
 
 #endif
